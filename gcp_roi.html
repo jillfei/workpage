@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多产品前期调研与ROI分析汇报 | 总经理决策参考</title>
+<style>
+:root {
+  --bg: #f5f6fa;
+  --sidebar-bg: #1a1d29;
+  --card-bg: #ffffff;
+  --text: #2c3e50;
+  --text-secondary: #636e72;
+  --accent: #2563eb;
+  --accent-light: #eff6ff;
+  --danger: #dc2626;
+  --warning: #f59e0b;
+  --success: #16a34a;
+  --border: #e2e8f0;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
+  --radius: 10px;
+  --transition: all 0.25s ease;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: 230px; min-width: 230px; background: var(--sidebar-bg); color: #e0e0e0;
+  padding: 20px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  display: flex; flex-direction: column; z-index: 100;
+}
+.sidebar-header { padding: 0 18px 16px; border-bottom: 1px solid #2d3148; margin-bottom: 12px; }
+.sidebar-header h2 { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+.sidebar-header .subtitle { font-size: 11px; color: #8890b5; margin-top: 3px; }
+.sidebar-nav { flex: 1; padding: 0 10px; }
+.nav-section { margin-bottom: 14px; }
+.nav-section-title { font-size: 10px; text-transform: uppercase; color: #6b7394; padding: 0 8px 6px; letter-spacing: 1px; font-weight: 600; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; cursor: pointer; transition: var(--transition); font-size: 13px; color: #b0b8d0; margin-bottom: 1px; text-decoration: none; }
+.nav-item:hover { background: #252a40; color: #fff; }
+.nav-item.active { background: var(--accent); color: #fff; font-weight: 600; }
+.nav-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+
+/* Main */
+.main { flex: 1; padding: 24px 32px; overflow-y: auto; max-width: 1400px; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* Dashboard */
+.dashboard-header { margin-bottom: 20px; }
+.dashboard-header h1 { font-size: 24px; font-weight: 800; color: #1e293b; }
+.dashboard-header .meta { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.kpi-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); border-left: 4px solid var(--accent); transition: var(--transition); }
+.kpi-card.warn { border-left-color: var(--warning); }
+.kpi-card.danger { border-left-color: var(--danger); }
+.kpi-card.success { border-left-color: var(--success); }
+.kpi-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+.kpi-value { font-size: 24px; font-weight: 800; color: #1e293b; }
+.kpi-unit { font-size: 12px; color: var(--text-secondary); font-weight: 400; }
+.kpi-sub { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; margin-bottom: 14px; background: #e8ecf1; border-radius: 8px; padding: 3px; overflow-x: auto; }
+.tab { padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; color: #636e72; white-space: nowrap; transition: var(--transition); border: none; background: transparent; }
+.tab.active { background: #fff; color: var(--accent); box-shadow: var(--shadow); font-weight: 600; }
+.tab:hover:not(.active) { color: #1e293b; }
+
+/* Content cards */
+.card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; margin-bottom: 14px; box-shadow: var(--shadow); }
+.card h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; color: #1e293b; }
+.card h3 { font-size: 15px; font-weight: 600; margin: 14px 0 6px; color: #334155; }
+.card h4 { font-size: 13px; font-weight: 600; margin: 10px 0 4px; color: #475569; }
+.card p, .card li { font-size: 13px; color: #4a5568; margin-bottom: 6px; }
+.card ul, .card ol { padding-left: 18px; margin-bottom: 10px; }
+.card ul li, .card ol li { margin-bottom: 4px; }
+.card table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
+.card table th { background: #f1f5f9; padding: 8px 10px; text-align: left; font-weight: 600; color: #334155; border-bottom: 2px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+.card table td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: #4a5568; }
+.card table tr:hover { background: #f8fafc; }
+
+/* Tags */
+.page h1 { font-size: 22px; font-weight: 800; margin-bottom: 14px; color: #1e293b; }
+
+.tag { display: inline-block; padding: 2px 8px; border-radius: 16px; font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
+.tag-green { background: #dcfce7; color: #166534; }
+.tag-yellow { background: #fef9c3; color: #854d0e; }
+.tag-red { background: #fee2e2; color: #991b1b; }
+.tag-blue { background: #dbeafe; color: #1e40af; }
+.tag-purple { background: #f3e8ff; color: #6b21a8; }
+
+/* Recommendation box */
+.rec-box { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #93c5fd; border-radius: var(--radius); padding: 18px; margin: 14px 0; }
+.rec-box h3 { color: #1e40af; margin-top: 0 !important; }
+.rec-box h4 { color: #2563eb; }
+
+.source-link { font-size: 12px; color: #636e72; display: inline-flex; align-items: center; gap: 4px; }
+.source-link a { color: var(--accent); text-decoration: none; }
+.source-link a:hover { text-decoration: underline; }
+
+/* Banner for exec summary */
+.exec-banner { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #fff; border-radius: var(--radius); padding: 24px; margin-bottom: 18px; }
+.exec-banner h2 { color: #fff; font-size: 19px; margin-bottom: 12px; }
+.exec-banner p { color: #cbd5e1; font-size: 13px; margin-bottom: 4px; }
+.exec-banner .highlight { color: #60a5fa; font-weight: 700; }
+.exec-banner .highlight-success { color: #4ade80; font-weight: 700; }
+.exec-banner .highlight-warn { color: #fbbf24; font-weight: 700; }
+.exec-banner .highlight-danger { color: #f87171; font-weight: 700; }
+
+.chart-placeholder { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: var(--radius); padding: 30px; text-align: center; color: #94a3b8; margin: 12px 0; font-size: 13px; }
+
+.flex-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.flex-col { flex: 1; min-width: 280px; }
+
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { padding: 16px; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* priority matrix visual */
+.matrix { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 12px 0; }
+.matrix-cell { border-radius: var(--radius); padding: 16px; text-align: center; }
+.matrix-cell h4 { margin-top: 0; font-size: 14px; }
+.matrix-cell.p1 { background: #dcfce7; border: 2px solid #86efac; }
+.matrix-cell.p2 { background: #fef9c3; border: 2px solid #fde047; }
+.matrix-cell.p3 { background: #fee2e2; border: 2px solid #fca5a5; }
+
+.source-item { display: flex; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.source-item:last-child { border-bottom: none; }
+.source-num { font-weight: 700; color: var(--accent); min-width: 24px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+.gap-16 { gap: 16px; }
+.mt-16 { margin-top: 16px; }
+.mb-16 { margin-bottom: 16px; }
+.text-sm { font-size: 13px; color: var(--text-secondary); }
+.divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h2>多产品ROI分析</h2>
+    <div class="subtitle">总经理决策参考 · 2026年6月</div>
+  </div>
+  <nav class="sidebar-nav" id="sidebarNav">
+    <div class="nav-section">
+      <div class="nav-section-title">总览</div>
+      <span class="nav-item active" data-page="dashboard"><span class="nav-icon">📊</span> 执行摘要与建议</span>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">产品详情</div>
+      <span class="nav-item" data-page="neoomni"><span class="nav-icon">🤖</span> Neoomni · AI智能体</span>
+      <span class="nav-item" data-page="omnix"><span class="nav-icon">💼</span> OmniX · 智能办公</span>
+      <span class="nav-item" data-page="crm"><span class="nav-icon">📋</span> CRM · 招生管理</span>
+      <span class="nav-item" data-page="matrix"><span class="nav-icon">📈</span> 矩阵式营销平台</span>
+      <span class="nav-item" data-page="fabric"><span class="nav-icon">🧵</span> 面料研发</span>
+      <span class="nav-item" data-page="srm"><span class="nav-icon">🔗</span> SRM · 供应商管理</span>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">附录</div>
+      <span class="nav-item" data-page="sources"><span class="nav-icon">📚</span> 数据来源索引</span>
+      <span class="nav-item" data-page="dept-data"><span class="nav-icon">📁</span> 各部门提供数据</span>
+    </div>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+
+<!-- ============================== -->
+<!-- DASHBOARD (Executive Summary)  -->
+<!-- ============================== -->
+<div class="page active" id="dashboard">
+  <h1>📊 各产品执行摘要面板</h1>
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card success">
+      <div class="kpi-label">🏆 最佳ROI产品</div>
+      <div class="kpi-value">Neoomni</div>
+      <div class="kpi-sub">年收益220万 | 回本仅1.3年</div>
+    </div>
+    <div class="kpi-card success">
+      <div class="kpi-label">📈 最高年营收预估</div>
+      <div class="kpi-value">400<span class="kpi-unit">万</span></div>
+      <div class="kpi-sub">Neoomni · AI智能体平台</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">📊 第二营收产品</div>
+      <div class="kpi-value">OmniX<span class="kpi-unit"> -- 100万</span></div>
+      <div class="kpi-sub">缺少实施成本，需重点评估</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">🔬 总研发成本</div>
+      <div class="kpi-value">968<span class="kpi-unit">万</span></div>
+      <div class="kpi-sub">6款产品合计</div>
+    </div>
+    <div class="kpi-card warn">
+      <div class="kpi-label">⚠️ 最长回本周期</div>
+      <div class="kpi-value">7.7<span class="kpi-unit">年</span></div>
+      <div class="kpi-sub">SRM · 年收益仅18万</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">🎯 建议优先投入</div>
+      <div class="kpi-value">2<span class="kpi-unit">款</span></div>
+      <div class="kpi-sub">Neoomni + CRM</div>
+    </div>
+  </div>
+
+  <!-- Executive Banner -->
+  <div class="exec-banner">
+    <h2>核心结论</h2>
+    <p>本次针对 <span class="highlight">6款在研/规划产品</span> 进行了系统性ROI分析，数据来源覆盖咨询公司（艾瑞咨询、IDC、Gartner、IBM咨询）、营销部门、研发部门和交付部门。另有产品<span class="highlight">数据集标注平台</span>仅能获取研发成本5人3个月，共48万</p>
+    <p><br><strong>结论一：</strong><span class="highlight-success">Neoomni（企业级AI智能体平台）</span> 是当前最具战略价值和财务回报的产品——年营收预估400万元、静态投资回收期仅<span class="highlight-success">1.3年</span>，所处赛道（中国企业级AI应用市场）2026年预计突破<span class="highlight">449亿元</span>，Gartner预测到2026年底40%企业软件将嵌入AI Agent。</p>
+    <p><strong>结论二：</strong><span class="highlight">CRM（学校招生场景）</span> 虽然是垂直细分市场，但回本速度较快（<span class="highlight-success">1.5年</span>），研发成本仅34万，适合作为"现金牛"型产品进行轻量化投入。</p>
+    <p><strong>结论三：</strong><span class="highlight">OmniX（智能办公AI）</span> 处于中等优先级——回收期<span class="highlight-warn">2.1年</span>，年营收预估100万元，目标市场为80万中小企业。所处赛道（智能办公AI）规模超100亿元，但面临飞书、钉钉、企业微信等平台型巨头的激烈竞争，<strong>建议先在政务OA等垂直场景验证PMF后再加大投入</strong>，同时尽快补齐实施成本数据以完善ROI测算。</p>
+    <p><strong>结论四：</strong><span class="highlight-warn">SRM（供应商关系管理）</span> 面临核心挑战——虽市场空间大（IDC预测2026年中国SRM市场达<span class="highlight">205.8亿元</span>），但产品目前无差异化优势、客户付费意愿低，静态回收期长达<span class="highlight-danger">7.7年</span>，<strong>建议暂缓投入</strong>或大幅调整产品策略。</p>
+    <p><strong>结论五：</strong>面料研发和矩阵式营销平台回收期均为<span class="highlight-warn">4.2年</span>，属于"中等风险-中等回报"产品，建议控制投入规模、以验证产品-市场匹配（PMF）为优先目标。</p>
+  </div>
+
+  <!-- Quick Link Tabs to Detail Pages -->
+  <div class="card">
+    <h2>📋 产品概览</h2>
+    <table>
+      <thead>
+        <tr><th>产品</th><th>市场规模（2026E）</th><th>未来需求与趋势</th><th>年成单</th><th>单项目收费</th><th>年营收预估</th><th>实施成本</th><th>研发成本</th><th>年净收益</th><th>回收期</th><th>优先级</th><th>优劣势风险说明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="javascript:switchPage('neoomni')" style="color:var(--accent);font-weight:600;">🤖 Neoomni</a></td>
+          <td>449亿<br/>（AI Agent）</td>
+          <td style="font-size:12px;max-width:160px;">2029年预计突破3,320亿，CAGR 107%；40%企业软件将嵌入AI Agent（Gartner 2026）；AI从POC向工程化落地加速</td>
+          <td>20家</td>
+          <td>20万</td>
+          <td style="color:#16a34a;font-weight:600;">400万</td>
+          <td>180万</td>
+          <td>272万（5人 × 8个月）</td>
+          <td style="color:#16a34a;font-weight:600;">220万</td>
+          <td><span class="tag tag-green">1.3年</span></td>
+          <td><span class="tag tag-green">P0 全力投入</span></td>
+          <td style="font-size:12px;max-width:180px;">✅ 赛道领先、回本快（1.3年）<br>⚠️ AI巨头竞争加剧</td>
+        </tr>
+        <tr>
+          <td><a href="javascript:switchPage('crm')" style="color:var(--accent);font-weight:600;">📋 CRM</a></td>
+          <td>380亿</td>
+          <td style="font-size:12px;max-width:160px;">全球CRM 2026年达1,530亿美元，增速18.2%；AI驱动销售自动化成主流；教育行业招生场景数字化提速</td>
+          <td>6家</td>
+          <td>10万</td>
+          <td>60万</td>
+          <td>36万</td>
+          <td>34万（4人 × 5个月）</td>
+          <td>24万</td>
+          <td><span class="tag tag-green">1.5年</span></td>
+          <td><span class="tag tag-blue">P1 轻量投入</span></td>
+          <td style="font-size:12px;max-width:180px;">✅ 研发成本低（34万）、细分刚需<br>⚠️ 天花板低、赛道窄</td>
+        </tr>
+        <tr>
+          <td><a href="javascript:switchPage('omnix')" style="color:var(--accent);font-weight:600;">💼 OmniX</a></td>
+          <td>100亿</td>
+          <td style="font-size:12px;max-width:160px;">中小企业AI办公渗透率仍低，增长空间大；政务OA国产化替代需求持续；本地化部署合规监管趋严利好自研产品</td>
+          <td>20家</td>
+          <td>5万</td>
+          <td>100万</td>
+          <td style="color:#dc2626;">无法测算</td>
+          <td>203万（6人 × 18个月）</td>
+          <td>100万</td>
+          <td><span class="tag tag-yellow">2.1年</span></td>
+          <td><span class="tag tag-blue">P1 验证PMF</span></td>
+          <td style="font-size:12px;max-width:180px;">✅ 本地化部署能力<br>⚠️ 平台巨头挤压、实施成本缺失</td>
+        </tr>
+        <tr>
+          <td><a href="javascript:switchPage('matrix')" style="color:var(--accent);font-weight:600;">📈 矩阵营销</a></td>
+          <td>35亿</td>
+          <td style="font-size:12px;max-width:160px;">跨境电商出口规模持续扩张，AI内容营销与防封号需求增长；长三角中小企业出海意愿增强</td>
+          <td>15家</td>
+          <td>3万</td>
+          <td>45万</td>
+          <td>15万</td>
+          <td>125万（4人 × 14个月）</td>
+          <td>30万</td>
+          <td><span class="tag tag-yellow">4.2年</span></td>
+          <td><span class="tag tag-yellow">P2 控制投入</span></td>
+          <td style="font-size:12px;max-width:180px;">✅ 单项目实施成本低（1万）<br>⚠️ 回本慢（4.2年）、差异化不足</td>
+        </tr>
+        <tr>
+          <td><a href="javascript:switchPage('fabric')" style="color:var(--accent);font-weight:600;">🧵 面料研发</a></td>
+          <td>291.6亿<br/>（纺织研发总投入）</td>
+          <td style="font-size:12px;max-width:160px;">纺织行业研发投入年增29%+；智能化/绿色化转型成政策导向；AI辅助面料研发属蓝海，无成熟竞品，市场培育期后爆发潜力大</td>
+          <td>6家</td>
+          <td>15万（识布8万）</td>
+          <td>90万</td>
+          <td>42万</td>
+          <td>197万(6人 × 14个月)</td>
+          <td>48万</td>
+          <td><span class="tag tag-yellow">4.2年</span></td>
+          <td><span class="tag tag-yellow">P2 控制投入</span></td>
+          <td style="font-size:12px;max-width:180px;">✅ 蓝海市场、单项目收费高<br>⚠️ 纺织业数字弱、决策链条长</td>
+        </tr>
+        <tr>
+          <td><a href="javascript:switchPage('srm')" style="color:var(--accent);font-weight:600;">🔗 SRM</a></td>
+          <td>205.8亿</td>
+          <td style="font-size:12px;max-width:160px;">中国SRM市场CAGR 18.3%，AI驱动供应链风险预警兴起；但头部效应明显，新进入者难以突破现有格局</td>
+          <td>3家</td>
+          <td>20万</td>
+          <td>60万</td>
+          <td>42万</td>
+          <td>137万(4人 × 9个月)</td>
+          <td>18万</td>
+          <td><span class="tag tag-red">7.7年</span></td>
+          <td><span class="tag tag-red">P3 暂缓</span></td>
+          <td style="font-size:12px;max-width:180px;">✅ 市场空间大（205.8亿）<br>⚠️ 无差异化、付费意愿极低</td>
+        </tr>
+    </table>
+	
+    <p class="text-sm" style="margin-top:12px;">🎯 市场规模数据来源各咨询公司发布，年成单与单项目收费数据来源营销中心提供。实施成本、研发成本由各部门人天预估</p>
+    <p class="text-sm" style="margin-top:12px;">💡    实施成本、研发成本计算规则：按1500元/人天，综合成本 = 人天*1500*1.5（成本折算系数）；</p>
+    <p class="text-sm" style="margin-top:12px;">⚠️     所有成本未计入营销成本；</p>
+  </div>
+
+  <!-- ROI综合分析 Section -->
+  <hr class="divider" style="margin: 28px 0 18px;">
+  <h2 style="font-size:20px;font-weight:800;color:#1e293b;margin-bottom:14px;">💰 ROI综合分析</h2>
+
+  <div class="card">
+    <h3>六产品ROI对比矩阵</h3>
+    <table>
+      <thead>
+        <tr><th>排名</th><th>产品</th><th>研发成本</th><th>年营收</th><th>年净收益</th><th>回收期</th><th>ROI（3年）</th><th>评级</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🥇</td><td>Neoomni</td><td>272万</td><td>400万</td><td>220万</td><td>1.3年</td><td>242%</td><td><span class="tag tag-green">A级</span></td>
+        </tr>
+        <tr>
+          <td>🥈</td><td>CRM</td><td>34万</td><td>60万</td><td>24万</td><td>1.5年</td><td>212%</td><td><span class="tag tag-green">A级</span></td>
+        </tr>
+        <tr>
+          <td>🥉</td><td>OmniX</td><td>203万</td><td>100万</td><td>100万*</td><td>2.1年*</td><td>148%*</td><td><span class="tag tag-yellow">B级</span></td>
+        </tr>
+        <tr>
+          <td>4</td><td>矩阵营销</td><td>125万</td><td>45万</td><td>30万</td><td>4.2年</td><td>72%</td><td><span class="tag tag-yellow">C级</span></td>
+        </tr>
+        <tr>
+          <td>5</td><td>面料研发</td><td>197万</td><td>90万</td><td>48万</td><td>4.2年</td><td>73%</td><td><span class="tag tag-yellow">C级</span></td>
+        </tr>
+        <tr>
+          <td>6</td><td>SRM</td><td>137万</td><td>60万</td><td>18万</td><td>7.7年</td><td>39%</td><td><span class="tag tag-red">D级</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="text-sm">* OmniX的ROI数据不含实施成本，实际指标可能更差。3年ROI = (年净收益 × 3 - 研发成本) / 研发成本 × 100%。</p>
+  </div>
+
+  <div class="card">
+    <h3>投资优先级矩阵</h3>
+    <div class="matrix">
+      <div class="matrix-cell p1">
+        <h4>🟢 第一象限：高回报 · 快回收</h4>
+        <p><strong>Neoomni</strong> — 全力投入<br>回收期1.3年 | 年净收益220万</p>
+        <p><strong>CRM</strong> — 轻量投入<br>回收期1.5年 | 研发仅34万</p>
+      </div>
+      <div class="matrix-cell p2">
+        <h4>🟡 第二象限：中回报 · 中回收</h4>
+        <p><strong>OmniX</strong> — 验证PMF<br>回收期2.1年 | 实施成本待确认</p>
+      </div>
+      <div class="matrix-cell p3">
+        <h4>🔴 第三象限：低回报 · 慢回收</h4>
+        <p><strong>SRM</strong> — 暂缓投入<br>回收期7.7年 | 产品需重构</p>
+      </div>
+      <div class="matrix-cell p2">
+        <h4>🟡 第四象限：中回报 · 慢回收</h4>
+        <p><strong>矩阵营销</strong> — 控制投入<br><strong>面料研发</strong> — 控制投入<br>均为4.2年回收期</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>综合投资效率排名</h3>
+    <div class="rec-box">
+      <h3>关键洞察</h3>
+      <p><strong>1. Neoomni 是绝对冠军。</strong>3年ROI高达242%，且所处赛道（企业级AI Agent）正处于爆发前夜——Gartner预测到2026年底40%企业软件将嵌入AI Agent，战略窗口期极其宝贵。</p>
+      <p><strong>2. CRM是性价比之王。</strong>仅34万研发投入即可实现年24万净收益，3年ROI达212%。虽然绝对体量小，但作为利润中心效率极高。</p>
+      <p><strong>3. SRM是资源黑洞。</strong>137万投入年回报仅18万，ROI在6款产品中垫底。在有Neoomni和CRM两个更优选项的情况下，继续投入SRM的机会成本极高。</p>
+      <p><strong>4. 资源聚焦比分散更有效。</strong>6款产品合计研发成本968万元。如果将SRM的137万、矩阵营销的125万（共262万）转而投向Neoomni，预计可将年营收从400万提升至600万+。</p>
+    </div>
+  </div>
+
+  <hr class="divider" style="margin: 28px 0 18px;">
+  <h2 style="font-size:20px;font-weight:800;color:#1e293b;margin-bottom:14px;">🎯 研发投入建议</h2>
+
+  <div class="exec-banner">
+    <h2>核心建议：聚焦AI赛道，做减法而非加法</h2>
+    <p>建议将6款产品分三个梯队管理，实现<span class="highlight-success">有限资源的最优配置</span></p>
+  </div>
+
+  <div class="card">
+    <h3>📋 三梯队分档建议</h3>
+
+    <h3>🟢 第一梯队：全力投入（建议占比 55%）</h3>
+    <div class="rec-box">
+      <h4>Neoomni · 企业级AI智能体平台</h4>
+      <p><strong>投入建议：</strong>追加研发资源，从5人团队扩展至8-10人，加速产品迭代和市场覆盖。</p>
+      <p><strong>关键动作：</strong></p>
+      <ul>
+        <li>加速行业化场景覆盖：优先金融、制造、政务三大高价值行业</li>
+        <li>构建AI Agent生态：开放API，引入ISV合作伙伴扩充场景库</li>
+        <li>建立标杆客户案例：2026年Q4前完成3-5个行业灯塔客户</li>
+        <li>申请AI相关资质与专利：增强合规壁垒和品牌信任</li>
+      </ul>
+      <p><strong>投入规模：</strong>现有272万 + 追加150-200万 = 约420-470万元</p>
+      <p><strong>预期回报：</strong>年营收从400万提升至600-800万</p>
+    </div>
+
+    <h3>🟡 第二梯队：轻量投入（建议占比 15%）</h3>
+    <div class="rec-box">
+      <h4>CRM · 学校招生管理系统</h4>
+      <p><strong>投入建议：</strong>维持现有34万投入规模，以利润反哺为核心目标。</p>
+      <p><strong>关键动作：</strong></p>
+      <ul>
+        <li>深耕学校招生场景，完成10+标杆学校覆盖</li>
+        <li>评估横向扩展至教育培训、素质教育领域的可行性</li>
+        <li>建立标准化实施方法论，降低单项目交付成本</li>
+      </ul>
+      <p><strong>投入规模：</strong>维持34万元，无需追加</p>
+    </div>
+
+    <h3>🔴 第三梯队：暂缓或控制投入（建议占比 30%）</h3>
+    <div class="rec-box">
+      <h4>OmniX、矩阵营销、面料研发</h4>
+      <p><strong>投入建议：</strong>维持最小化投入，优先完成PMF验证。</p>
+      <ul>
+        <li><strong>OmniX：</strong>优先补齐实施成本数据，聚焦政务OA垂直场景做差异化；研发团队从6人压缩至3-4人维护模式</li>
+        <li><strong>矩阵营销：</strong>评估与Neoomni的AI Agent能力复用可能性，降低独立研发成本；聚焦长三角做深度而非广度</li>
+        <li><strong>面料研发：</strong>联合纺织行业协会或龙头企业进行联合研发，分担研发成本；将"识布"作为MVP先推向市场验证</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>❌ 建议暂缓</h3>
+    <div class="rec-box" style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-color: #fca5a5;">
+      <h4 style="color:#991b1b;">SRM · 供应商关系管理系统</h4>
+      <p><strong>建议暂缓投入，根本性重构产品策略后再评估。</strong></p>
+      <p><strong>原因：</strong></p>
+      <ul>
+        <li>年净收益仅18万，137万投资回收需7.7年——在任何软件企业中不可接受</li>
+        <li>产品无差异化优势，与SAP Ariba、Coupa等国际巨头正面竞争胜算极低</li>
+        <li>制造业客户付费意愿低，获客成本高（年成单仅3家）</li>
+      </ul>
+      <p><strong>重启条件：</strong>找到明确的差异化切入点（如AI驱动的智能供应商评估、供应链风险预警等与Neoomni能力协同的场景），且完成至少3家付费客户POC验证。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📊 资源重分配方案</h3>
+    <table>
+      <thead>
+        <tr><th>产品</th><th>当前研发成本</th><th>建议调整</th><th>调整后成本</th><th>变化</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Neoomni</td><td>272万</td><td>追加150-200万</td><td>422-472万</td><td style="color:#16a34a;">+55%~+73%</td></tr>
+        <tr><td>CRM</td><td>34万</td><td>维持不变</td><td>34万</td><td>—</td></tr>
+        <tr><td>OmniX</td><td>203万</td><td>压缩至维护模式</td><td>80-100万</td><td style="color:#dc2626;">-50%~-60%</td></tr>
+        <tr><td>矩阵营销</td><td>125万</td><td>压缩/合并至Neoomni</td><td>50-60万</td><td style="color:#dc2626;">-52%~-60%</td></tr>
+        <tr><td>面料研发</td><td>197万</td><td>联合研发模式</td><td>80-100万</td><td style="color:#dc2626;">-49%~-59%</td></tr>
+        <tr><td>SRM</td><td>137万</td><td>暂缓投入</td><td>0-30万</td><td style="color:#dc2626;">-78%~-100%</td></tr>
+        <tr style="font-weight:700;background:#f1f5f9;"><td>合计</td><td>968万</td><td>—</td><td>666-796万</td><td style="color:#16a34a;">总成本降低18%-31%</td></tr>
+      </tbody>
+    </table>
+    <p class="text-sm" style="margin-top:12px;">调整后总研发成本从968万降至666-796万，在降低总投入的同时，将核心产品Neoomni的投资回报成倍放大。</p>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- NEOOMNI                         -->
+<!-- ============================== -->
+<div class="page" id="neoomni">
+  <h1>🤖 Neoomni · 企业级AI智能体平台</h1>
+
+  <div class="sub-page active" id="neoomni-summary">
+    <div class="exec-banner">
+      <h2>⭐ 核心判断：全力投入，战略级优先级</h2>
+      <p>年营收预估<span class="highlight-success">400万元</span> | 年净收益<span class="highlight-success">220万元</span> | 回收期仅<span class="highlight-success">1.3年</span></p>
+      <p>目标客户1.8万家中大型企业 | 年均成单20家 | 客户有共创共建意愿</p>
+    </div>
+    <div class="card">
+      <h3>市场背景</h3>
+      <p>中国企业级AI智能体市场正处于爆发前夜。据科智咨询白皮书数据，2025年中国企业级AI智能体市场规模已达212亿元，预计2026年将达到449亿元，至2029年有望突破3,320亿元，年复合增长率高达107%。</p>
+      <p>Gartner进一步预测，到2026年底40%的企业软件应用将嵌入具备自主任务执行能力的AI Agent。IBM咨询2026年3月指出，中国企业对AI的认知已从单点POC试验走向企业级工程化落地的新阶段。</p>
+      <p class="source-link">📎 来源：<a href="https://www.cnblogs.com/Agentic/articles/20420162" target="_blank">科智咨询《企业级AI智能体白皮书》</a> | <a href="https://www.gartner.com/cn/newsroom/press-releases/2025-china-ai-trends" target="_blank">Gartner 2025中国AI十大趋势</a> | <a href="https://news.qq.com/rain/a/20260313A0810S00" target="_blank">IBM咨询：AI企业级工程化落地</a></p>
+    </div>
+    <div class="card">
+      <h3>竞争优势</h3>
+      <p><strong>核心壁垒：本地化部署能力 + 数据安全合规。</strong>相较于海外竞品（如Microsoft Copilot、Salesforce Einstein），Neoomni的本地化部署方案能够满足中国企业对数据主权和合规监管的刚性需求。在金融、政务、制造等强监管行业具有显著的差异化优势。</p>
+    </div>
+  </div>
+
+  <div class="sub-page" id="neoomni-detail">
+    <div class="card">
+      <h2>详细财务测算</h2>
+      <table>
+        <tr><td style="font-weight:600;width:200px;">市场规模（2026E）</td><td>AI大模型平台738.57亿；企业级AI Agent应用449亿</td></tr>
+        <tr><td style="font-weight:600;">目标客户</td><td>中大型企业（核心付费群体），约18,000家</td></tr>
+        <tr><td style="font-weight:600;">年成单预估</td><td>20家</td></tr>
+        <tr><td style="font-weight:600;">单项目收费</td><td>20万元</td></tr>
+        <tr><td style="font-weight:600;">年营收预估</td><td>400万元</td></tr>
+        <tr><td style="font-weight:600;">单项目实施成本</td><td>9万元</td></tr>
+        <tr><td style="font-weight:600;">总实施成本</td><td>180万元</td></tr>
+        <tr><td style="font-weight:600;">研发团队</td><td>5人 × 8个月</td></tr>
+        <tr><td style="font-weight:600;">研发总成本</td><td>272万元</td></tr>
+        <tr><td style="font-weight:600;color:#16a34a;">年净收益</td><td style="color:#16a34a;font-weight:700;">220万元</td></tr>
+        <tr><td style="font-weight:600;color:#16a34a;">静态回收期</td><td style="color:#16a34a;font-weight:700;">1.3年</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>市场数据来源</h2>
+      <div class="source-item"><span class="source-num">[1]</span><div>艾媒咨询《2025年中国人工智能产业市场状况及标杆企业经营数据分析报告》——2026年中国AI大模型市场规模预计738.57亿元<br><a href="https://www.iimedia.cn/c1094/110207.html" target="_blank">https://www.iimedia.cn/c1094/110207.html</a></div></div>
+      <div class="source-item"><span class="source-num">[2]</span><div>科智咨询《企业级AI智能体白皮书》——2026年中国企业级AI智能体市场规模预计449亿元<br><a href="https://www.cnblogs.com/Agentic/articles/20420162" target="_blank">https://www.cnblogs.com/Agentic/articles/20420162</a></div></div>
+      <div class="source-item"><span class="source-num">[3]</span><div>Gartner《2025年中国人工智能十大趋势》——AI企业级应用趋势分析<br><a href="https://www.gartner.com/cn/newsroom/press-releases/2025-china-ai-trends" target="_blank">https://www.gartner.com/cn/newsroom/press-releases/2025-china-ai-trends</a></div></div>
+      <div class="source-item"><span class="source-num">[4]</span><div>IBM咨询《2026年五大趋势》——AI从POC走向企业级工程化落地<br><a href="https://www.ibm.com/cn-zh/services/insights/business-trends-2026" target="_blank">https://www.ibm.com/cn-zh/services/insights/business-trends-2026</a></div></div>
+      <div class="source-item"><span class="source-num">[5]</span><div>IBM咨询大中华区及韩国总裁陈科典分享——中国企业AI认知转变<br><a href="https://news.qq.com/rain/a/20260313A0810S00" target="_blank">https://news.qq.com/rain/a/20260313A0810S00</a></div></div>
+      <div class="source-item"><span class="source-num">[6]</span><div>财务数据来源：营销部门、研发部门、交付部门内部调研数据（2026年6月）</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- OMNIX                           -->
+<!-- ============================== -->
+<div class="page" id="omnix">
+  <h1>💼 OmniX · 智能办公AI</h1>
+
+  <div class="sub-page active" id="omnix-summary">
+    <div class="exec-banner">
+      <h2>⚡ 核心判断：中等优先级，验证PMF后决定投入力度</h2>
+      <p>年营收预估<span class="highlight">100万元</span> | 年净收益<span class="highlight">100万元</span> | 回收期<span class="highlight-warn">2.1年</span></p>
+      <p>目标客户80万中小企业 | 年均成单20家 | 市场处于探索阶段</p>
+    </div>
+    <div class="card">
+      <h3>市场背景</h3>
+      <p>2025年中国智能办公AI市场规模突破100亿元。企业目前处于探索阶段，有尝试意愿但付费转化仍需市场教育。目标客户以中小企业为主（约180万家企业，其中付费潜力约80万家）。</p>
+      <p>产品核心优势在于本地化部署能力，但目前市场上的竞争正在加剧——字节跳动飞书、阿里巴巴钉钉、腾讯企业微信等平台型企业已在智能办公AI领域深度布局。</p>
+      <p class="source-link">📎 来源：<a href="https://baijiahao.baidu.com/s?id=1862527227647707325" target="_blank">艾瑞咨询&亿欧智库《2025中国企业级AI应用发展报告》</a> | 内部调研数据</p>
+    </div>
+    <div class="card">
+      <h3>关键风险</h3>
+      <p><strong>⚠️ 竞争壁垒不足：</strong>智能办公AI赛道头部平台效应明显，作为独立ISV突围难度较大。建议在特定垂直场景（如政务OA、制造业MES联动）建立差异化优势后再加大投入。</p>
+      <p><strong>⚠️ 实施成本数据缺失：</strong>交付部门未能提供单项目实施成本数据，需尽快补齐以完善ROI测算。</p>
+    </div>
+  </div>
+
+  <div class="sub-page" id="omnix-detail">
+    <div class="card">
+      <h2>详细财务测算</h2>
+      <table>
+        <tr><td style="font-weight:600;width:200px;">市场规模（2026E）</td><td>100亿元（行业估算）</td></tr>
+        <tr><td style="font-weight:600;">目标客户</td><td>中小企业为主，约80万家</td></tr>
+        <tr><td style="font-weight:600;">年成单预估</td><td>20家</td></tr>
+        <tr><td style="font-weight:600;">单项目收费</td><td>5万元</td></tr>
+        <tr><td style="font-weight:600;">年营收预估</td><td>100万元</td></tr>
+        <tr><td style="font-weight:600;">单项目实施成本</td><td style="color:#dc2626;">（交付部门未提供，需补充）</td></tr>
+        <tr><td style="font-weight:600;">研发团队</td><td>6人 × 18个月</td></tr>
+        <tr><td style="font-weight:600;">研发总成本</td><td>203万元</td></tr>
+        <tr><td style="font-weight:600;color:#f59e0b;">年净收益</td><td style="color:#f59e0b;font-weight:700;">100万元（不含实施成本）</td></tr>
+        <tr><td style="font-weight:600;color:#f59e0b;">静态回收期</td><td style="color:#f59e0b;font-weight:700;">2.1年（不含实施成本，实际可能更长）</td></tr>
+      </table>
+      <p class="text-sm" style="margin-top:12px;color:#dc2626;">⚠️ 注意：实施成本数据缺失，实际回收期可能显著高于2.1年。</p>
+    </div>
+    <div class="card">
+      <h2>市场数据来源</h2>
+      <div class="source-item"><span class="source-num">[1]</span><div>艾瑞咨询&亿欧智库《2025中国企业级AI应用发展报告》——AI营销市场规模突破580亿元<br><a href="https://baijiahao.baidu.com/s?id=1862527227647707325" target="_blank">https://baijiahao.baidu.com/s?id=1862527227647707325</a></div></div>
+      <div class="source-item"><span class="source-num">[2]</span><div>智能办公AI市场规模（100亿）：行业估算，基于艾瑞咨询企业级SaaS市场数据及公开报道综合推算</div></div>
+      <div class="source-item"><span class="source-num">[3]</span><div>财务数据来源：营销部门、研发部门内部调研数据（2026年6月）</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- CRM                             -->
+<!-- ============================== -->
+<div class="page" id="crm">
+  <h1>📋 CRM · 学校招生管理系统</h1>
+  <div class="sub-page active" id="crm-summary">
+    <div class="exec-banner">
+      <h2>✅ 核心判断：轻量投入，作为"现金牛"产品快速变现</h2>
+      <p>年营收预估<span class="highlight">60万元</span> | 年净收益<span class="highlight-success">24万元</span> | 回收期仅<span class="highlight-success">1.5年</span></p>
+      <p>目标客户7万家中大型企业 | 当前聚焦学校招生CRM细分场景</p>
+    </div>
+    <div class="card">
+      <h3>市场背景</h3>
+      <p>中国CRM市场持续高速增长。IDC数据显示2026年中国CRM市场规模突破380亿元，同比增长30%。本土厂商市场份额已超65%（艾瑞咨询）。全球方面，Gartner预测2026年全球CRM市场规模达1,530亿美元，年增速18.2%。</p>
+      <p>当前产品聚焦于学校招生CRM这一垂直场景，行业定制化程度高，可复制到其他学校客户。但由于局限在单一垂直行业，整体市场天花板相对有限。</p>
+      <p class="source-link">📎 来源：<a href="https://baijiahao.baidu.com/s?id=1862708137422324722" target="_blank">IDC《2026年中国CRM市场发展报告》</a> | <a href="https://browser.qq.com/mobile/news?doc_id=53669b7afde21252" target="_blank">艾瑞咨询2025年CRM市场报告</a></p>
+    </div>
+    <div class="card">
+      <h3>投资逻辑</h3>
+      <p><strong>研发成本仅34万元，是6款产品中最低的。</strong>团队4人5个月即可完成产品化，且行业定制化能力可作为know-how壁垒。建议在完成学校市场覆盖后，评估向教育培训、素质教育等相邻细分领域横向扩展的可行性。</p>
+    </div>
+  </div>
+
+  <div class="sub-page" id="crm-detail">
+    <div class="card">
+      <h2>详细财务测算</h2>
+      <table>
+        <tr><td style="font-weight:600;width:200px;">市场规模（2026E）</td><td>中国CRM市场380亿元（IDC）；全球1,530亿美元（Gartner）</td></tr>
+        <tr><td style="font-weight:600;">目标客户</td><td>年营收5,000万以上的中大型企业及有规模化销售团队的中小企业，约7万家</td></tr>
+        <tr><td style="font-weight:600;">年成单预估</td><td>6家</td></tr>
+        <tr><td style="font-weight:600;">单项目收费</td><td>10万元</td></tr>
+        <tr><td style="font-weight:600;">年营收预估</td><td>60万元</td></tr>
+        <tr><td style="font-weight:600;">单项目实施成本</td><td>6万元</td></tr>
+        <tr><td style="font-weight:600;">总实施成本</td><td>36万元</td></tr>
+        <tr><td style="font-weight:600;">研发团队</td><td>4人 × 5个月</td></tr>
+        <tr><td style="font-weight:600;">研发总成本</td><td>34万元</td></tr>
+        <tr><td style="font-weight:600;color:#16a34a;">年净收益</td><td style="color:#16a34a;font-weight:700;">24万元</td></tr>
+        <tr><td style="font-weight:600;color:#16a34a;">静态回收期</td><td style="color:#16a34a;font-weight:700;">1.5年</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>市场数据来源</h2>
+      <div class="source-item"><span class="source-num">[1]</span><div>IDC《2026年中国CRM市场发展报告》——中国CRM市场规模380亿元，同比增长30%<br><a href="https://baijiahao.baidu.com/s?id=1862708137422324722" target="_blank">https://baijiahao.baidu.com/s?id=1862708137422324722</a></div></div>
+      <div class="source-item"><span class="source-num">[2]</span><div>艾瑞咨询2025年CRM行业报告——中国CRM市场突破580亿元，本土厂商份额超65%<br><a href="https://browser.qq.com/mobile/news?doc_id=53669b7afde21252" target="_blank">https://browser.qq.com/mobile/news?doc_id=53669b7afde21252</a></div></div>
+      <div class="source-item"><span class="source-num">[3]</span><div>Gartner《2026年全球企业软件市场报告》——全球CRM市场规模1,530亿美元<br><a href="https://www.gartner.com/en/supply-chain/topics/supplier-relationship-management" target="_blank">https://www.gartner.com</a></div></div>
+      <div class="source-item"><span class="source-num">[4]</span><div>IDC 2024H1中国CRM SaaS市场追踪——市场规模突破10.1亿美元<br><a href="https://www.zhihu.com/pin/1979282946159559490" target="_blank">https://www.zhihu.com/pin/1979282946159559490</a></div></div>
+      <div class="source-item"><span class="source-num">[5]</span><div>财务数据来源：营销部门、研发部门、交付部门内部调研数据（2026年6月）</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- MATRIX MARKETING                -->
+<!-- ============================== -->
+<div class="page" id="matrix">
+  <h1>📈 矩阵式营销平台 · 跨境营销SaaS</h1>
+  <div class="sub-page active" id="matrix-summary">
+    <div class="exec-banner">
+      <h2>⚠️ 核心判断：中等风险，控制投入规模，优先验证PMF</h2>
+      <p>年营收预估<span class="highlight">45万元</span> | 年净收益<span class="highlight-warn">30万元</span> | 回收期<span class="highlight-warn">4.2年</span></p>
+      <p>目标客户4.5万家长三角跨境电商企业 | 年均成单15家</p>
+    </div>
+    <div class="card">
+      <h3>市场背景</h3>
+      <p>2026年中国跨境电商SaaS行业进入高质量发展阶段。艾瑞咨询报告指出，行业从粗放扩张转向精细化、智能化、合规化运营，跨境ERP SaaS成为核心基础设施。2025年中国跨境电商出口规模达1.1万亿元（仅上半年），跨境电商企业数量约3.2万家。</p>
+      <p>该产品聚焦跨境营销细分赛道，基于AI智能体、防封号等差异化功能有一定付费吸引力。但市面上已有成熟竞品。</p>
+      <p class="source-link">📎 来源：<a href="https://baijiahao.baidu.com/s?id=1866864609252963418" target="_blank">艾瑞咨询《2026年中国跨境电商SaaS市场行业报告》</a></p>
+    </div>
+    <div class="card">
+      <h3>竞争分析</h3>
+      <p><strong>⚠️ 差异化不足：</strong>目前市场上已有多家成熟产品，矩阵式营销平台在功能上未形成足够壁垒。研发成本125万元、14个月开发周期相对较高，年营收仅45万元，投资效率偏低。</p>
+    </div>
+  </div>
+
+  <div class="sub-page" id="matrix-detail">
+    <div class="card">
+      <h2>详细财务测算</h2>
+      <table>
+        <tr><td style="font-weight:600;width:200px;">市场规模（2026E）</td><td>跨境细分领域35亿元（行业推算）</td></tr>
+        <tr><td style="font-weight:600;">目标客户</td><td>长三角中小企业（跨境电商、B2B制造业），约4.5万家</td></tr>
+        <tr><td style="font-weight:600;">年成单预估</td><td>15家</td></tr>
+        <tr><td style="font-weight:600;">单项目收费</td><td>3万元</td></tr>
+        <tr><td style="font-weight:600;">年营收预估</td><td>45万元</td></tr>
+        <tr><td style="font-weight:600;">单项目实施成本</td><td>1万元</td></tr>
+        <tr><td style="font-weight:600;">总实施成本</td><td>15万元</td></tr>
+        <tr><td style="font-weight:600;">研发团队</td><td>4人 × 14个月</td></tr>
+        <tr><td style="font-weight:600;">研发总成本</td><td>125万元</td></tr>
+        <tr><td style="font-weight:600;color:#f59e0b;">年净收益</td><td style="color:#f59e0b;font-weight:700;">30万元</td></tr>
+        <tr><td style="font-weight:600;color:#f59e0b;">静态回收期</td><td style="color:#f59e0b;font-weight:700;">4.2年</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>市场数据来源</h2>
+      <div class="source-item"><span class="source-num">[1]</span><div>艾瑞咨询《2026年中国跨境电商SaaS市场行业报告》<br><a href="https://baijiahao.baidu.com/s?id=1866864609252963418" target="_blank">https://baijiahao.baidu.com/s?id=1866864609252963418</a></div></div>
+      <div class="source-item"><span class="source-num">[2]</span><div>中国跨境电商出口规模：2025年上半年1.1万亿元（海关总署数据）<br><a href="https://tradeinservices.mofcom.gov.cn/article/lingyu/lyqita/202502/172392.html" target="_blank">https://tradeinservices.mofcom.gov.cn</a></div></div>
+      <div class="source-item"><span class="source-num">[3]</span><div>跨境电商企业数量约3.2万家：艾瑞咨询2026年报告</div></div>
+      <div class="source-item"><span class="source-num">[4]</span><div>跨境细分市场规模（35亿）：行业推算，基于艾瑞咨询报告及公开数据交叉估算</div></div>
+      <div class="source-item"><span class="source-num">[5]</span><div>财务数据来源：营销部门、研发部门、交付部门内部调研数据（2026年6月）</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- FABRIC R&D                      -->
+<!-- ============================== -->
+<div class="page" id="fabric">
+  <h1>🧵 面料研发 · 纺织行业数字化</h1>
+
+  <div class="sub-page active" id="fabric-summary">
+    <div class="exec-banner">
+      <h2>⚠️ 核心判断：蓝海市场，但回报周期长，市场需要培育，控制投入</h2>
+      <p>年营收预估<span class="highlight">90万元</span> | 年净收益<span class="highlight-warn">48万元</span> | 回收期<span class="highlight-warn">4.2年</span></p>
+      <p>目标客户2.1万家规上纺织企业 | 目前市场上无同类产品</p>
+    </div>
+    <div class="card">
+      <h3>市场背景</h3>
+      <p>中国纺织行业研发投入持续增长。中国纺织工业联合会数据显示，2024年纺织行业研发投入达607.8亿元，较2020年增长29.43%，研发投入强度提升至1.26%。</p>
+      <p>目前该赛道尚无成熟的数字化面料研发产品，属于典型的蓝海市场。"识布"等AI辅助面料识别工具已初步验证技术可行性。如果产品能实现面料研发效率的真实提升，客户有实际付费意愿。</p>
+      <p class="source-link">📎 来源：<a href="https://www.cntac.org.cn/zixun/hangye/202602/t20260205_4402870.html" target="_blank">中国纺织工业联合会 2024年行业研发投入数据</a></p>
+    </div>
+    <div class="card">
+      <h3>核心挑战</h3>
+      <p><strong>⚠️ 商业化周期长：</strong>研发团队6人14个月、成本197万元，在6款产品中研发投入排名第三。虽然市场无竞品，但也说明产品未经市场验证，同时纺织企业数字化基础薄弱、决策链条长，从产品上线到规模化付费需要较长的市场培育期。</p>
+    </div>
+  </div>
+
+  <div class="sub-page" id="fabric-detail">
+    <div class="card">
+      <h2>详细财务测算</h2>
+      <table>
+        <tr><td style="font-weight:600;width:200px;">市场规模（2026E）</td><td>纺织行业研发总投入291.6亿元（细分估算）</td></tr>
+        <tr><td style="font-weight:600;">目标客户</td><td>规上纺织企业，约21,172家</td></tr>
+        <tr><td style="font-weight:600;">年成单预估</td><td>6家</td></tr>
+        <tr><td style="font-weight:600;">单项目收费</td><td>15万元（识布8万元）</td></tr>
+        <tr><td style="font-weight:600;">年营收预估</td><td>90万元</td></tr>
+        <tr><td style="font-weight:600;">单项目实施成本</td><td>7万元</td></tr>
+        <tr><td style="font-weight:600;">总实施成本</td><td>42万元</td></tr>
+        <tr><td style="font-weight:600;">研发团队</td><td>6人 × 14个月</td></tr>
+        <tr><td style="font-weight:600;">研发总成本</td><td>197万元</td></tr>
+        <tr><td style="font-weight:600;color:#f59e0b;">年净收益</td><td style="color:#f59e0b;font-weight:700;">48万元</td></tr>
+        <tr><td style="font-weight:600;color:#f59e0b;">静态回收期</td><td style="color:#f59e0b;font-weight:700;">4.2年</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>市场数据来源</h2>
+      <div class="source-item"><span class="source-num">[1]</span><div>中国纺织工业联合会——2024年纺织行业研发投入607.8亿元，较2020年增长29.43%<br><a href="https://www.cntac.org.cn/zixun/hangye/202602/t20260205_4402870.html" target="_blank">https://www.cntac.org.cn/zixun/hangye/202602/t20260205_4402870.html</a></div></div>
+      <div class="source-item"><span class="source-num">[2]</span><div>中国纺织工业联合会——行业研发投入强度1.26%，拥有5家全国重点实验室<br><a href="https://www.cntac.org.cn/jinghua/202512/t20251205_4398210.html" target="_blank">https://www.cntac.org.cn/jinghua/202512/t20251205_4398210.html</a></div></div>
+      <div class="source-item"><span class="source-num">[3]</span><div>中国化纤行业2025年运行分析与2026年展望——智能化、绿色化转型<br><a href="http://nbfzxh.com/detail/3585.html" target="_blank">http://nbfzxh.com/detail/3585.html</a></div></div>
+      <div class="source-item"><span class="source-num">[4]</span><div>规上纺织企业数量（21,172家）：行业统计估算，基于中国纺织工业联合会公开数据</div></div>
+      <div class="source-item"><span class="source-num">[5]</span><div>财务数据来源：营销部门、研发部门、交付部门内部调研数据（2026年6月）</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SRM                             -->
+<!-- ============================== -->
+<div class="page" id="srm">
+  <h1>🔗 SRM · 供应商关系管理系统</h1>
+  <div class="sub-page active" id="srm-summary">
+    <div class="exec-banner">
+      <h2>🔴 核心判断：暂缓投入，产品策略需根本性重构</h2>
+      <p>年营收预估<span class="highlight-danger">60万元</span> | 年净收益仅<span class="highlight-danger">18万元</span> | 回收期长达<span class="highlight-danger">7.7年</span></p>
+      <p>虽市场空间大（205.8亿），但产品无差异化优势，客户付费意愿低</p>
+    </div>
+    <div class="card">
+      <h3>市场背景</h3>
+      <p>中国SRM市场确实空间广阔。IDC《中国供应资源管理软件市场份额报告》显示，2024年中国SRM市场规模达147.3亿元，预计2026年将达205.8亿元，年复合增长率18.3%。全球层面，Gartner数据显示2025年全球SRM市场规模突破520亿美元，亚太市场增速最快。</p>
+      <p>然而，市场大≠好做。SRM赛道已有SAP Ariba、Coupa等国际巨头以及多家本土头部厂商深耕多年，客户对产品成熟度要求极高。</p>
+      <p class="source-link">📎 来源：<a href="https://baijiahao.baidu.com/s?id=1855709249643463872" target="_blank">IDC《中国供应资源管理软件市场份额报告》</a> | <a href="https://blog.csdn.net/Srm_2025/article/details/149173232" target="_blank">Gartner全球SRM市场规模数据</a></p>
+    </div>
+    <div class="card">
+      <h3>问题诊断</h3>
+      <p><strong>🔴 三重困境：</strong></p>
+      <ul>
+        <li><strong>产品无优势：</strong>与SAP Ariba、Coupa、甄云科技等竞品相比，产品功能无明显差异化</li>
+        <li><strong>客户付费意愿低：</strong>制造业客户对SRM的认知仍停留在"成本中心"，预算优先级低</li>
+        <li><strong>获客效率低：</strong>年均仅能成单3家，单项目20万元难以覆盖获客成本</li>
+      </ul>
+      <p>年净收益仅18万元，137万研发投入需7.7年才能回收——在企业软件领域属于不可接受的投资回报周期。</p>
+    </div>
+  </div>
+
+  <div class="sub-page" id="srm-detail">
+    <div class="card">
+      <h2>详细财务测算</h2>
+      <table>
+        <tr><td style="font-weight:600;width:200px;">市场规模（2026E）</td><td>中国SRM市场205.8亿元（IDC）；全球520亿美元（Gartner）</td></tr>
+        <tr><td style="font-weight:600;">目标客户</td><td>制造业、年营收10亿以上中大型企业，约1,700家</td></tr>
+        <tr><td style="font-weight:600;">年成单预估</td><td>3家</td></tr>
+        <tr><td style="font-weight:600;">单项目收费</td><td>20万元</td></tr>
+        <tr><td style="font-weight:600;">年营收预估</td><td>60万元</td></tr>
+        <tr><td style="font-weight:600;">单项目实施成本</td><td>14万元</td></tr>
+        <tr><td style="font-weight:600;">总实施成本</td><td>42万元</td></tr>
+        <tr><td style="font-weight:600;">研发团队</td><td>4人 × 9个月</td></tr>
+        <tr><td style="font-weight:600;">研发总成本</td><td>137万元</td></tr>
+        <tr><td style="font-weight:600;color:#dc2626;">年净收益</td><td style="color:#dc2626;font-weight:700;">18万元（⚠️ 极低）</td></tr>
+        <tr><td style="font-weight:600;color:#dc2626;">静态回收期</td><td style="color:#dc2626;font-weight:700;">7.7年（🔴 不可接受）</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>市场数据来源</h2>
+      <div class="source-item"><span class="source-num">[1]</span><div>IDC《中国供应资源管理软件市场份额报告》——2024年147.3亿，2026E 205.8亿，CAGR 18.3%<br><a href="https://baijiahao.baidu.com/s?id=1855709249643463872" target="_blank">https://baijiahao.baidu.com/s?id=1855709249643463872</a></div></div>
+      <div class="source-item"><span class="source-num">[2]</span><div>艾瑞咨询&IDC联合数据——2024年48.7亿，2026E 72亿，CAGR 21.3%<br><a href="https://baijiahao.baidu.com/s?id=1863269182825812512" target="_blank">https://baijiahao.baidu.com/s?id=1863269182825812512</a></div></div>
+      <div class="source-item"><span class="source-num">[3]</span><div>Gartner 2025年全球SRM市场规模突破520亿美元<br><a href="https://blog.csdn.net/Srm_2025/article/details/149173232" target="_blank">https://blog.csdn.net/Srm_2025/article/details/149173232</a></div></div>
+      <div class="source-item"><span class="source-num">[4]</span><div>微博行业分析——2023年中国SRM软件市场规模约45亿，预计2026年突破80亿<br><a href="https://weibo.com/ttarticle/p/show?id=2309405258926441758759" target="_blank">https://weibo.com/ttarticle/p/show?id=2309405258926441758759</a></div></div>
+      <div class="source-item"><span class="source-num">[5]</span><div>财务数据来源：营销部门、研发部门、交付部门内部调研数据（2026年6月）</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- ============================== -->
+<!-- SOURCES INDEX                   -->
+<!-- ============================== -->
+<div class="page" id="sources">
+  <h1>📚 数据来源索引</h1>
+
+  <div class="card">
+    <h2>咨询公司与权威机构来源</h2>
+    <div class="source-item"><span class="source-num">[1]</span><div><strong>IDC《中国供应资源管理软件市场份额报告》</strong>（2025年）<br>数据：2024年中国SRM市场147.3亿元，预计2026年达205.8亿元，CAGR 18.3%<br><a href="https://baijiahao.baidu.com/s?id=1855709249643463872" target="_blank">🔗 查看原文</a></div></div>
+    <div class="source-item"><span class="source-num">[2]</span><div><strong>艾瑞咨询&IDC联合数据</strong><br>数据：2024年中国SRM市场48.7亿元，预计2026年突破72亿元，CAGR 21.3%<br><a href="https://baijiahao.baidu.com/s?id=1863269182825812512" target="_blank">🔗 查看原文</a></div></div>
+    <div class="source-item"><span class="source-num">[3]</span><div><strong>Gartner 全球SRM市场规模</strong>（2025年）<br>数据：全球SRM市场突破520亿美元，亚太市场增速最快<br><a href="https://blog.csdn.net/Srm_2025/article/details/149173232" target="_blank">🔗 查看原文</a></div></div>
+    <div class="source-item"><span class="source-num">[4]</span><div><strong>IDC《2026年中国CRM市场发展报告》</strong><br>数据：2026年中国CRM市场规模突破380亿元，同比增长30%<br><a href="https://baijiahao.baidu.com/s?id=1862708137422324722" target="_blank">🔗 查看原文</a></div></div>
+    <div class="source-item"><span class="source-num">[5]</span><div><strong>Gartner《2026年全球企业软件市场报告》</strong><br>数据：全球CRM市场1,530亿美元，年增速18.2%<br><a href="https://www.gartner.com" target="_blank">🔗 Gartner官网</a></div></div>
+    <div class="source-item"><span class="source-num">[6]</span><div><strong>艾瑞咨询 2025年CRM行业报告</strong><br>数据：中国CRM市场突破580亿元，本土厂商份额超65%<br><a href="https://browser.qq.com/mobile/news?doc_id=53669b7afde21252" target="_blank">🔗 查看原文</a></div></div>
+    <div class="source-item"><span class="source-num">[7]</span><div><strong>艾媒咨询《2025年中国人工智能产业市场状况报告》</strong><br>数据：2026年中国AI大模型市场规模预计738.57亿元<br><a href="https://www.iimedia.cn/c1094/110207.html" target="_blank">🔗 查看原文</a></div></div>
+    <div class="source-item"><span class="source-num">[8]</span><div><strong>科智咨询《企业级AI智能体白皮书》</strong><br>数据：2026年中国企业级AI智能体市场449亿元，CAGR 107%<br><a href="https://www.cnblogs.com/Agentic/articles/20420162" target="_blank">🔗 查看原文</a></div></div>
+    <div class="source-item"><span class="source-num">[9]</span><div><strong>Gartner《2025年中国人工智能十大趋势》</strong><br>数据：2026年底40%企业软件嵌入AI Agent<br><a href="https://www.gartner.com/cn/newsroom/press-releases/2025-china-ai-trends" target="_blank">🔗 查看原文</a></div></div>
+    <div class="source-item"><span class="source-num">[10]</span><div><strong>艾瑞咨询&亿欧智库《2025中国企业级AI应用发展报告》</strong><br>数据：AI营销市场突破580亿元，年增长率42%<br><a href="https://baijiahao.baidu.com/s?id=1862527227647707325" target="_blank">🔗 查看原文</a></div></div>
+    <div class="source-item"><span class="source-num">[11]</span><div><strong>IBM咨询《2026年五大趋势》</strong><br>数据：AI从POC走向企业级工程化落地，中国企业AI认知根本性转变<br><a href="https://www.ibm.com/cn-zh/services/insights/business-trends-2026" target="_blank">🔗 查看原文</a> | <a href="https://news.qq.com/rain/a/20260313A0810S00" target="_blank">🔗 相关报道</a></div></div>
+    <div class="source-item"><span class="source-num">[12]</span><div><strong>艾瑞咨询《2026年中国跨境电商SaaS市场行业报告》</strong><br>数据：跨境电商SaaS行业进入高质量发展阶段<br><a href="https://baijiahao.baidu.com/s?id=1866864609252963418" target="_blank">🔗 查看原文</a></div></div>
+    <div class="source-item"><span class="source-num">[13]</span><div><strong>中国纺织工业联合会</strong><br>数据：2024年纺织行业研发投入607.8亿元，较2020年增长29.43%<br><a href="https://www.cntac.org.cn/zixun/hangye/202602/t20260205_4402870.html" target="_blank">🔗 查看原文</a></div></div>
+  </div>
+
+  
+
+  <div class="card">
+    <h2>数据使用说明</h2>
+    <ul>
+      <li><strong>权威机构数据：</strong>优先引用艾瑞咨询、IDC、Gartner、IBM咨询、中国纺织工业联合会等官方发布的市场数据，均标注原文链接。</li>
+      <li><strong>行业估算/推算：</strong>部分细分市场数据（如跨境营销35亿、智能办公AI 100亿）标注为"行业推算"或"行业估算"，系基于权威报告及相关公开数据交叉推算。</li>
+      <li><strong>内部调研数据：</strong>财务测算数据（研发成本、营收预估、实施成本等）来源于各部门2026年6月提交的调研汇总，已通过营销与交付部门交叉验证。</li>
+      <li><strong>未经验证数据：</strong>OmniX实施成本数据缺失，已在报告中明确标注。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- 各部门提供数据                     -->
+<!-- ============================== -->
+<div class="page" id="dept-data">
+  <h1>📁 各部门提供数据</h1>
+
+  <div class="card">
+    <h2>营销中心材料</h2>
+    <div class="source-item"><span class="source-num">🔗</span><div><a href="https://doc.weixin.qq.com/sheet/e3_AScAHgYtAKACNPjM3Yd5KT3CXqLsc?scode=AHsAKQcTABEXStKJOH&amp;tab=000001" target="_blank">营销中心调研数据表格</a></div></div>
+  </div>
+
+  <div class="card">
+    <h2>交付中心数据汇总</h2>
+    <div class="source-item"><span class="source-num">🔗</span><div><a href="https://doc.weixin.qq.com/sheet/e3_Af4A2gZQAAgCNlbqjftckToeAluWq?scode=AHsAKQcTABEO7WvyVsAf4A2gZQAAg&amp;tab=BB08J2" target="_blank">交付中心数据表格</a></div></div>
+  </div>
+
+  <div class="card">
+    <h2>交付中心成本</h2>
+    <div class="source-item"><span class="source-num">🔗</span><div><a href="https://doc.weixin.qq.com/sheet/e3_AScAHgYtAKACNlDBjMaO1RV2etoa6?scode=AHsAKQcTABED2byo38&amp;tab=6pdwu5" target="_blank">交付成本明细表格</a></div></div>
+  </div>
+  
+  <div class="card">
+    <h2>研发中心材料</h2>
+    <div class="source-item"><span class="source-num">🔗</span><div><strong>SRM：</strong><a href="http://doc.svite.com/share_doc/?token=cc8f41f68c9b4d5d301dc665c7b72f01" target="_blank">http://doc.svite.com/share_doc/?token=cc8f41f68c9b4d5d301dc665c7b72f01</a></div></div>
+    <div class="source-item"><span class="source-num">🔗</span><div><strong>CRM：</strong><a href="http://doc.svite.com/share_doc/?token=f7024f347607c1eaa490f3d56d089e1b" target="_blank">http://doc.svite.com/share_doc/?token=f7024f347607c1eaa490f3d56d089e1b</a></div></div>
+    <div class="source-item"><span class="source-num">🔗</span><div><strong>Neoomni：</strong><a href="http://doc.svite.com/share_doc/?token=d63f85230836928724fe600404e0ce5a" target="_blank">http://doc.svite.com/share_doc/?token=d63f85230836928724fe600404e0ce5a</a></div></div>
+    <div class="source-item"><span class="source-num">🔗</span><div><strong>OmniX：</strong><a href="https://doc.weixin.qq.com/doc/w3_AScAHgYtAKACNiFxmPqPxT7SWDN8v?scode=AHsAKQcTABER3gqQ0b" target="_blank">https://doc.weixin.qq.com/doc/w3_AScAHgYtAKACNiFxmPqPxT7SWDN8v?scode=AHsAKQcTABER3gqQ0b</a></div></div>
+    <div class="source-item"><span class="source-num">🔗</span><div><strong>矩阵式营销平台：</strong><a href="http://doc.svite.com/share_doc/?token=e1a5b73bb064c99b7d1113a1308279d1" target="_blank">http://doc.svite.com/share_doc/?token=e1a5b73bb064c99b7d1113a1308279d1</a></div></div>
+    <div class="source-item"><span class="source-num">🔗</span><div><strong>面料研发：</strong><a href="https://jillfei.github.io/workpage/AImlv1.html" target="_blank">AImlv1.html</a> 和 <a href="https://jillfei.github.io/workpage/AImlv2.html" target="_blank">AImlv2.html</a></div></div>
+    <div class="source-item"><span class="source-num">🔗</span><div><strong>数据集标注平台：</strong><a href="https://doc.weixin.qq.com/doc/w3_AScAHgYtAKACN4TQmwsPDTA6022Bq?scode=AHsAKQcTABEHasKF40" target="_blank">https://doc.weixin.qq.com/doc/w3_AScAHgYtAKACN4TQmwsPDTA6022Bq?scode=AHsAKQcTABEHasKF40</a></div></div>
+  </div>
+
+  <div class="card">
+    <h2>研发中心成本</h2>
+    <div class="source-item"><span class="source-num">🔗</span><div><a href="https://doc.weixin.qq.com/sheet/e3_AScAHgYtAKACNlDBjMaO1RV2etoa6?scode=AHsAKQcTABED2byo38&amp;tab=8eh0lu" target="_blank">研发成本明细表格</a></div></div>
+  </div>
+
+</div>
+
+</main>
+
+<script>
+// ===== Navigation: event delegation =====
+(function() {
+  var sidebar = document.getElementById('sidebarNav');
+  if (sidebar) {
+    sidebar.addEventListener('click', function(e) {
+      var target = e.target.closest('.nav-item');
+      if (!target) return;
+      var pageId = target.getAttribute('data-page');
+      if (!pageId) return;
+      switchPage(pageId);
+    });
+  }
+
+  // Page switching
+  function switchPage(pageId) {
+    var targetPage = document.getElementById(pageId);
+    if (!targetPage) {
+      console.warn('Page not found:', pageId);
+      return;
+    }
+    // Hide all pages
+    var pages = document.querySelectorAll('.page');
+    for (var i = 0; i < pages.length; i++) {
+      pages[i].classList.remove('active');
+    }
+    // Show target page
+    targetPage.classList.add('active');
+    // Update nav active state
+    var navItems = document.querySelectorAll('#sidebarNav .nav-item');
+    for (var j = 0; j < navItems.length; j++) {
+      navItems[j].classList.remove('active');
+      if (navItems[j].getAttribute('data-page') === pageId) {
+        navItems[j].classList.add('active');
+      }
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Expose for table links
+  window.switchPage = switchPage;
+
+  // Sub-tab switching: delegate on <main>
+  var mainEl = document.querySelector('.main');
+  if (mainEl) {
+    mainEl.addEventListener('click', function(e) {
+      var btn = e.target.closest('.tab');
+      if (!btn) return;
+      var subId = btn.getAttribute('data-sub');
+      if (!subId) return;
+      var page = btn.closest('.page');
+      if (!page) return;
+      // Deactivate all tabs in this page
+      var tabs = page.querySelectorAll('.tab');
+      for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+      }
+      btn.classList.add('active');
+      // Switch sub-pages
+      var subs = page.querySelectorAll('.sub-page');
+      for (var j = 0; j < subs.length; j++) {
+        subs[j].classList.remove('active');
+      }
+      var targetSub = document.getElementById(subId);
+      if (targetSub) {
+        targetSub.classList.add('active');
+      }
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
