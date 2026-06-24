@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>版本更新日志</title>
+    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
+    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+
+        .page-wrap {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+        /* Timeline */
+        .timeline-line {
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e5e7eb;
+        }
+
+        .version-card {
+            transition: all 0.2s ease;
+        }
+        .version-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-1px);
+        }
+
+        /* Tag styles */
+        .tag-feature { background: #dbeafe; color: #1d4ed8; }
+        .tag-fix { background: #fef3c7; color: #92400e; }
+        .tag-break { background: #fee2e2; color: #991b1b; }
+        .tag-optimize { background: #d1fae5; color: #065f46; }
+        .tag-new { background: #ede9fe; color: #5b21b6; }
+
+        /* Expand/collapse */
+        .change-detail {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .change-detail.expanded {
+            max-height: 2000px;
+        }
+
+        /* Status badge */
+        .status-planned { background: #f3f4f6; color: #6b7280; }
+        .status-dev { background: #dbeafe; color: #1d4ed8; }
+        .status-done { background: #d1fae5; color: #065f46; }
+        .status-review { background: #fef3c7; color: #92400e; }
+
+        /* Diff highlight */
+        .diff-add {
+            background: #f0fdf4;
+            border-left: 3px solid #22c55e;
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 13px;
+        }
+        .diff-modify {
+            background: #eff6ff;
+            border-left: 3px solid #3b82f6;
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 13px;
+        }
+        .diff-remove {
+            background: #fef2f2;
+            border-left: 3px solid #ef4444;
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 13px;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrap">
+
+    <!-- 顶部栏 -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
+        <div class="flex items-center space-x-3">
+            <span class="text-lg font-bold text-gray-900">版本更新日志</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="relative">
+                <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                <input class="pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-64"
+                       placeholder="搜索版本或变更内容..." type="text" id="searchInput"/>
+            </div>
+            <button class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                <iconify-icon icon="mdi:filter-variant"></iconify-icon>
+                <span>筛选</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- 内容滚动区 -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+        <!-- 统计概览 -->
+        <!--div class="grid grid-cols-4 gap-4 mb-8">
+            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                <div class="text-sm text-gray-500 mb-1">总版本数</div>
+                <div class="text-2xl font-bold text-gray-900">1</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                <div class="text-sm text-gray-500 mb-1">新增功能</div>
+                <div class="text-2xl font-bold text-blue-600">5</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                <div class="text-sm text-gray-500 mb-1">优化项</div>
+                <div class="text-2xl font-bold text-green-600">3</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                <div class="text-sm text-gray-500 mb-1">当前状态</div>
+                <div class="text-lg font-bold text-amber-600 flex items-center">
+                    <span class="w-2 h-2 bg-amber-500 rounded-full mr-2 animate-pulse"></span>
+                    修改中
+                </div>
+            </div>
+        </div-->
+
+        <!-- 时间线 -->
+        <div class="relative">
+            <div class="timeline-line"></div>
+
+            <!-- ========== v2.1 ========== -->
+            <div class="version-item mb-8 relative pl-14" data-version="v2.1">
+                <!-- Timeline dot -->
+                <div class="absolute left-12 top-6 w-4 h-4 bg-blue-600 rounded-full border-4 border-white shadow"></div>
+
+                <!-- Version header -->
+                <div class="version-card bg-white border border-gray-200 rounded-xl overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between cursor-pointer" onclick="toggleDetail('v21')">
+                        <div class="flex items-center space-x-4">
+                            <div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-lg font-bold text-gray-900">v2.1</span>
+                                    <span class="px-2 py-0.5 text-xs font-medium rounded-full status-review">修改中</span>
+                                </div>
+                                <div class="text-sm text-gray-500 mt-1">2026-06-24 · 角色权限管理模块 PRD v2.1</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="flex space-x-1">
+                                <span class="px-2 py-1 text-xs rounded tag-new">新增 5</span>
+                                <span class="px-2 py-1 text-xs rounded tag-optimize">优化 0</span>
+                            </div>
+                            <iconify-icon icon="mdi:chevron-down" class="text-gray-400 text-xl transition-transform" id="chevron-v21"></iconify-icon>
+                        </div>
+                    </div>
+
+                    <!-- Change summary -->
+                    <div class="px-6 py-4 bg-gray-50/50 border-b border-gray-100">
+                        <div class="text-sm font-medium text-gray-700 mb-2">📋 版本概述</div>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            本版本为角色权限管理模块的初始需求文档，基于 RBAC（Role-Based Access Control）模型设计，
+                            建立统一的权限管控中心。核心新增<strong>企业成员</strong>与<strong>个人用户</strong>双轨用户管理体系，
+                            实现部门树、角色权限、菜单管理的完整闭环，覆盖从组织架构到功能权限的全链路管控。
+                        </p>
+                    </div>
+
+                    <!-- Detailed changes -->
+                    <div class="change-detail" id="detail-v21">
+                        <div class="px-6 py-4 space-y-6">
+
+                            <!-- 新增功能 -->
+                            <div>
+                                <div class="flex items-center space-x-2 mb-3">
+                                    <span class="px-2 py-1 text-xs font-medium rounded tag-new">新增</span>
+                                    <span class="text-sm font-semibold text-gray-700">新增功能（5项）</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="diff-add">
+                                        <strong>4.1 部门管理：</strong>
+                                    </div>
+                                    <div class="diff-add">
+                                        <strong>4.2 角色权限：</strong>
+                                    </div>
+                                    <div class="diff-add">
+                                        <strong>4.3 企业成员：</strong>新增归属组织的内部用户管理入口。支持工号、姓名、所属部门、多角色绑定、手机号、邮箱等字段。功能包含单个新增/编辑、批量导入导出、批量启用停用、批量分配角色、批量调岗、重置密码、组合筛选。
+                                    </div>
+                                    <div class="diff-add">
+                                        <strong>4.4 个人用户：</strong>新增独立于企业组织架构的外部用户管理模块。个人用户不归属部门，角色固定为「个人角色」不可更改。字段精简（无部门字段），功能与企业成员基本一致但更轻量。
+                                    </div>
+                                    <div class="diff-add">
+                                        <strong>4.5 菜单管理：</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 优化项 -->
+                            <div>
+                                <div class="flex items-center space-x-2 mb-3">
+                                    <span class="px-2 py-1 text-xs font-medium rounded tag-optimize">优化</span>
+                                    <span class="text-sm font-semibold text-gray-700">优化项（3项）</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="diff-modify">
+                                        <strong>功能架构总览更新：</strong>在原有部门管理、角色权限、菜单管理基础上，新增「企业成员」和「个人用户」两个子模块，并更新核心关系链路图，展示双轨用户体系的完整数据流。
+                                    </div>
+                                    <div class="diff-modify">
+                                        <strong>交互流程补充：</strong>新增「新增个人用户流程」的完整交互步骤（进入管理页 → 填写信息 → 确认角色自动分配 → 提交保存），与企业成员流程并列展示。
+                                    </div>
+                                    <div class="diff-modify">
+                                        <strong>字段设计完善：</strong>企业成员字段新增「账号类型」字段（默认企业类型），个人用户字段新增「用户名」替代工号作为登录标识，角色字段明确标注为单选固定。
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- 关联文档 -->
+                            <div>
+                                <div class="flex items-center space-x-2 mb-3">
+                                    <iconify-icon icon="mdi:link-variant" class="text-gray-400"></iconify-icon>
+                                    <span class="text-sm font-semibold text-gray-700">关联文档</span>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <a href="./prd/v2.1 角色权限管理模块-PRD-v2.html" target="_blank" class="inline-flex items-center space-x-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition-colors">
+                                        <iconify-icon icon="mdi:file-document-outline"></iconify-icon>
+                                        <span>角色权限管理模块-PRD-v2.1.html</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== 占位：未来版本模板 ========== -->
+
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+function toggleDetail(id) {
+    var detail = document.getElementById('detail-' + id);
+    var chevron = document.getElementById('chevron-' + id);
+    if (detail.classList.contains('expanded')) {
+        detail.classList.remove('expanded');
+        chevron.style.transform = 'rotate(0deg)';
+    } else {
+        detail.classList.add('expanded');
+        chevron.style.transform = 'rotate(180deg)';
+    }
+}
+
+// Search filter
+document.getElementById('searchInput').addEventListener('input', function() {
+    var keyword = this.value.toLowerCase();
+    document.querySelectorAll('.version-item').forEach(function(item) {
+        var text = item.textContent.toLowerCase();
+        item.style.display = text.includes(keyword) ? '' : 'none';
+    });
+});
+</script>
+</body>
+</html>
