@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>角色权限</title>
+    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
+    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+
+        .page-wrap {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ── 滚动条 ── */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+        /* ─ 表格样式 ── */
+        .role-table { width: 100%; border-collapse: collapse; }
+        .role-table thead th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+            background: #fafafa;
+            white-space: nowrap;
+        }
+        .role-table tbody td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #374151;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .role-table tbody tr:hover { background: #f9fafb; }
+
+        /* ── 标签 ── */
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        .tag-default { background: #f3f4f6; color: #6b7280; }
+
+        /* ── 操作链接 ── */
+        .action-link {
+            color: #3b82f6;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .action-link:hover { color: #2563eb; }
+        .action-link.danger { color: #ef4444; }
+        .action-link.danger:hover { color: #dc2626; }
+
+        /* ── 模态框 ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 12px;
+            width: 560px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            transform: translateY(20px);
+            transition: transform 0.2s ease;
+        }
+        .modal-overlay.active .modal-box {
+            transform: translateY(0);
+        }
+
+        /* ── 权限树 ── */
+        .perm-tree {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            max-height: 260px;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+        .perm-tree-item {
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .perm-tree-item:hover { background: #f9fafb; }
+        .perm-tree-group {
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .perm-tree-group:hover { background: #f9fafb; }
+        .perm-tree-children {
+            padding-left: 24px;
+        }
+        .perm-tree-children .perm-tree-item {
+            padding: 5px 16px;
+            font-size: 13px;
+            color: #4b5563;
+        }
+        .perm-tree-header {
+            padding: 8px 16px;
+            font-size: 13px;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ─ 表单 ── */
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        .form-label .required {
+            color: #ef4444;
+            margin-left: 2px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #374151;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+        .form-input::placeholder { color: #9ca3af; }
+
+        /* ── 自定义 checkbox ── */
+        .custom-checkbox {
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 3px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+        .custom-checkbox.checked {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+        .custom-checkbox.checked::after {
+            content: '';
+            width: 4px;
+            height: 8px;
+            border-left: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            transform: rotate(-45deg) translate(1px, -1px);
+        }
+        .custom-checkbox.indeterminate {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+        .custom-checkbox.indeterminate::after {
+            content: '';
+            width: 8px;
+            height: 2px;
+            background: #fff;
+        }
+
+        /* ── 展开箭头 ── */
+        .expand-arrow {
+            transition: transform 0.2s;
+            font-size: 16px;
+            color: #9ca3af;
+        }
+        .expand-arrow.expanded { transform: rotate(90deg); }
+
+        /* ── 空状态 ── */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+        .empty-state iconify-icon { font-size: 48px; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+<div class="page-wrap">
+
+    <!-- 顶部栏 -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
+        <div class="flex items-center space-x-2 text-sm text-gray-500">
+            <span>系统管理</span>
+            <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+            <span class="text-gray-900 font-medium">角色管理</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button onclick="openBatchDelete()" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">
+                <iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
+                <span>删除</span>
+            </button>
+            <button onclick="openModal()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <iconify-icon icon="mdi:plus"></iconify-icon>
+                <span>新增角色</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- 内容滚动区 -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+        <!-- 筛选栏 -->
+        <div class="flex items-center space-x-4 mb-6">
+            <div class="relative flex-1 max-w-md">
+                <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                <input id="searchInput" class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+                       placeholder="搜索角色名称" type="text" oninput="filterRoles()"/>
+            </div>
+        </div>
+
+        <!-- 角色列表表格 -->
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <table class="role-table">
+                <thead>
+                    <tr>
+                        <th style="width:40px">
+                            <div class="custom-checkbox" id="selectAll" onclick="toggleSelectAll()"></div>
+                        </th>
+                        <th>名称</th>
+                        <th>备注</th>
+                        <th>创建人</th>
+                        <th>创建时间</th>
+                        <th>更新人</th>
+                        <th>更新时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="roleTableBody">
+                    <!-- 动态渲染 -->
+                </tbody>
+            </table>
+            <div id="emptyState" class="empty-state hidden">
+                <iconify-icon icon="mdi:folder-open-outline" class="text-gray-300"></iconify-icon>
+                <p class="text-sm">暂无角色数据</p>
+            </div>
+        </div>
+    </div><!-- end 内容滚动区 -->
+</div><!-- end page-wrap -->
+
+<!-- ========== 新增/编辑角色 模态框 ========== -->
+<div class="modal-overlay" id="roleModal">
+    <div class="modal-box">
+        <!-- 标题栏 -->
+        <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900" id="modalTitle">新增角色</h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+            </button>
+        </div>
+
+        <!-- 表单内容 -->
+        <div class="px-6 py-5 space-y-5">
+            <!-- 角色名称 -->
+            <div>
+                <div class="form-label">名称 <span class="required">*</span></div>
+                <input class="form-input" id="roleName" placeholder="请输入名称" type="text"/>
+            </div>
+            <!-- 角色标识 -->
+            <div>
+                <div class="form-label">角色标识 <span class="required">*</span></div>
+                <input class="form-input" id="roleCode" placeholder="请输入角色标识，如 ROLE_ADMIN" type="text"/>
+            </div>
+            <!-- 备注 -->
+            <div>
+                <div class="form-label">备注</div>
+                <input class="form-input" id="roleDesc" placeholder="请输入备注" type="text"/>
+            </div>
+            <!-- 菜单授权 -->
+            <div>
+                <div class="form-label">菜单授权</div>
+                <div class="perm-tree" id="permTree">
+                    <!-- 全选 -->
+                    <div class="perm-tree-header">
+                        <div class="custom-checkbox" id="permSelectAll" onclick="togglePermSelectAll()"></div>
+                        <span>全选 (<span id="permCheckedCount">0</span>/<span id="permTotalCount">0</span>)</span>
+                    </div>
+                    <!-- 动态渲染权限树 -->
+                    <div id="permTreeBody"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部按钮 -->
+        <div class="flex items-center justify-end space-x-3 px-6 pb-5 pt-2 border-t border-gray-100">
+            <button onclick="closeModal()" class="px-5 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">取消</button>
+            <button onclick="saveRole()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">确认</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========== 权限预览 模态框 ========== -->
+<div class="modal-overlay" id="previewModal">
+    <div class="modal-box" style="width:480px">
+        <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900">权限预览</h3>
+            <button onclick="closePreviewModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+            </button>
+        </div>
+        <div class="px-6 py-5">
+            <div class="text-sm text-gray-500 mb-3">角色：<span id="previewRoleName" class="font-medium text-gray-900"></span></div>
+            <div class="perm-tree" id="previewTree" style="max-height:360px"></div>
+        </div>
+        <div class="flex items-center justify-end px-6 pb-5 pt-2 border-t border-gray-100">
+            <button onclick="closePreviewModal()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========== 删除确认 模态框 ========== -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-box" style="width:400px">
+        <div class="px-6 py-8 text-center">
+            <iconify-icon icon="mdi:alert-circle-outline" class="text-5xl text-amber-500 mb-4"></iconify-icon>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2" id="deleteTitle">确认删除</h3>
+            <p class="text-sm text-gray-500" id="deleteMsg">确定要删除该角色吗？此操作不可撤销。</p>
+        </div>
+        <div class="flex items-center justify-center space-x-3 px-6 pb-5">
+            <button onclick="closeDeleteModal()" class="px-5 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">取消</button>
+            <button onclick="confirmDelete()" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">确认删除</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ── 模拟数据 ──
+const permissionTreeData = [
+    {
+        id: 'agent', name: '企业智能体', children: [
+            { id: 'agent_list', name: '专家管理' },
+        ]
+    },
+    {
+        id: 'resource', name: '资源管理', children: [
+            { id: 'model_mgmt', name: '模型管理' },
+            { id: 'rag', name: 'MCP管理' },
+            { id: 'knowledge_graph', name: '技能管理' },
+            { id: 'database', name: '专家词库' },
+            { id: 'tool_mgmt', name: '企业知识库' },
+        ]
+    },
+    {
+        id: 'system', name: '企业管理', children: [
+            { id: 'dept_mgmt', name: '企业成员' },
+            { id: 'member_mgmt', name: '个人用户' },
+            { id: 'role_mgmt', name: '部门管理' },
+            { id: 'menu_mgmt', name: '角色权限' },
+            { id: 'dict_mgmt', name: '菜单管理' },
+            { id: 'log_mgmt', name: '品牌设置' },
+            { id: 'log_mgmt', name: '组织架构同步' },
+        ]
+    }
+];
+
+let roles = [
+    { id: 1, name: '超级管理员', code: 'ROLE_SUPER_ADMIN', desc: '系统超级管理员,拥有所有权限', creator: '正凯', createTime: '2026-03-24', updater: '正凯', updateTime: '2026-03-24', isSystem: true, perms: ['all'] },
+    { id: 2, name: '普通用户', code: 'ROLE_USER', desc: '普通用户角色,无默认权限', creator: '正凯', createTime: '2026-03-24', updater: '正凯', updateTime: '2026-03-24', isSystem: false, perms: [] },
+    { id: 3, name: '运营', code: 'ROLE_OPERATOR', desc: '', creator: '孙礼飞', createTime: '2026-06-16', updater: '-', updateTime: '2026-06-16', isSystem: false, perms: ['resource', 'model_mgmt', 'rag', 'knowledge_graph', 'database', 'tool_mgmt', 'prompt_mgmt'] },
+];
+
+let selectedIds = new Set();
+let editingRoleId = null;
+let deletingRoleId = null;
+let isBatchDelete = false;
+let expandedGroups = new Set(['resource']);
+let checkedPerms = new Set();
+
+// ─ 初始化 ──
+document.addEventListener('DOMContentLoaded', function() {
+    renderTable();
+    initPermTree();
+});
+
+// ─ 表格渲染 ──
+function renderTable() {
+    const keyword = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+    const filtered = roles.filter(r => r.name.toLowerCase().includes(keyword));
+    const tbody = document.getElementById('roleTableBody');
+    const empty = document.getElementById('emptyState');
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+    }
+    empty.classList.add('hidden');
+
+    tbody.innerHTML = filtered.map(r => {
+        const checked = selectedIds.has(r.id) ? 'checked' : '';
+        const tagHtml = r.isSystem ? '<span class="tag tag-default">系统默认</span>' : '';
+        const descText = r.desc || '-';
+        const actions = r.isSystem
+            ? '<span class="action-link" onclick="previewRole(' + r.id + ')">查看</span>'
+            : '<span class="action-link" onclick="editRole(' + r.id + ')">编辑</span> <span class="action-link danger" onclick="deleteRole(' + r.id + ')">删除</span>';
+        return '<tr>' +
+            '<td><div class="custom-checkbox ' + checked + '" onclick="toggleSelect(' + r.id + ')"></div></td>' +
+            '<td class="font-medium text-gray-900">' + r.name + tagHtml + '</td>' +
+            '<td class="text-gray-500">' + descText + '</td>' +
+            '<td>' + r.creator + '</td>' +
+            '<td>' + r.createTime + '</td>' +
+            '<td>' + r.updater + '</td>' +
+            '<td>' + r.updateTime + '</td>' +
+            '<td>' + actions + '</td>' +
+            '</tr>';
+    }).join('');
+
+    updateSelectAllState();
+}
+
+function filterRoles() { renderTable(); }
+
+// ── 行选择 ──
+function toggleSelect(id) {
+    if (selectedIds.has(id)) selectedIds.delete(id);
+    else selectedIds.add(id);
+    renderTable();
+}
+
+function toggleSelectAll() {
+    const keyword = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+    const filtered = roles.filter(r => r.name.toLowerCase().includes(keyword));
+    const allSelected = filtered.every(r => selectedIds.has(r.id));
+    if (allSelected) {
+        filtered.forEach(r => selectedIds.delete(r.id));
+    } else {
+        filtered.forEach(r => selectedIds.add(r.id));
+    }
+    renderTable();
+}
+
+function updateSelectAllState() {
+    const keyword = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+    const filtered = roles.filter(r => r.name.toLowerCase().includes(keyword));
+    const el = document.getElementById('selectAll');
+    if (filtered.length === 0) {
+        el.className = 'custom-checkbox';
+    } else if (filtered.every(r => selectedIds.has(r.id))) {
+        el.className = 'custom-checkbox checked';
+    } else if (filtered.some(r => selectedIds.has(r.id))) {
+        el.className = 'custom-checkbox indeterminate';
+    } else {
+        el.className = 'custom-checkbox';
+    }
+}
+
+// ── 模态框 ──
+function openModal(roleId) {
+    editingRoleId = roleId || null;
+    document.getElementById('modalTitle').textContent = roleId ? '编辑角色' : '新增角色';
+    if (roleId) {
+        const role = roles.find(r => r.id === roleId);
+        document.getElementById('roleName').value = role.name;
+        document.getElementById('roleCode').value = role.code;
+        document.getElementById('roleDesc').value = role.desc || '';
+        checkedPerms = new Set(role.perms || []);
+    } else {
+        document.getElementById('roleName').value = '';
+        document.getElementById('roleCode').value = '';
+        document.getElementById('roleDesc').value = '';
+        checkedPerms = new Set();
+    }
+    renderPermTree();
+    document.getElementById('roleModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('roleModal').classList.remove('active');
+    editingRoleId = null;
+}
+
+// ── 权限树 ──
+function initPermTree() {
+    let total = 0;
+    permissionTreeData.forEach(g => { total += g.children.length; });
+    document.getElementById('permTotalCount').textContent = total;
+}
+
+function renderPermTree() {
+    const body = document.getElementById('permTreeBody');
+    let html = '';
+    permissionTreeData.forEach(g => {
+        const isExpanded = expandedGroups.has(g.id);
+        const groupChecked = g.children.every(c => checkedPerms.has(c.id));
+        const groupIndeterminate = !groupChecked && g.children.some(c => checkedPerms.has(c.id));
+        let cbClass = 'custom-checkbox';
+        if (groupChecked) cbClass += ' checked';
+        else if (groupIndeterminate) cbClass += ' indeterminate';
+
+        html += '<div class="perm-tree-group" onclick="toggleGroup(\'' + g.id + '\')">';
+        html += '<div class="flex items-center gap-2">';
+        html += '<div class="' + cbClass + '" onclick="event.stopPropagation();toggleGroupCheck(\'' + g.id + '\')"></div>';
+        html += '<span>' + g.name + '</span>';
+        html += '<span class="text-xs text-gray-400 ml-1">(' + g.children.filter(c => checkedPerms.has(c.id)).length + '/' + g.children.length + ')</span>';
+        html += '</div>';
+        html += '<iconify-icon icon="mdi:chevron-right" class="expand-arrow ' + (isExpanded ? 'expanded' : '') + '"></iconify-icon>';
+        html += '</div>';
+
+        if (isExpanded) {
+            html += '<div class="perm-tree-children">';
+            g.children.forEach(c => {
+                const isChecked = checkedPerms.has(c.id) ? 'checked' : '';
+                html += '<div class="perm-tree-item" onclick="togglePerm(\'' + c.id + '\')">';
+                html += '<div class="custom-checkbox ' + isChecked + '"></div>';
+                html += '<span>' + c.name + '</span>';
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+    });
+    body.innerHTML = html;
+
+    // 更新计数
+    let total = 0, checked = 0;
+    permissionTreeData.forEach(g => {
+        g.children.forEach(c => { total++; if (checkedPerms.has(c.id)) checked++; });
+    });
+    document.getElementById('permCheckedCount').textContent = checked;
+    document.getElementById('permTotalCount').textContent = total;
+
+    // 全选状态
+    const allEl = document.getElementById('permSelectAll');
+    if (checked === total && total > 0) allEl.className = 'custom-checkbox checked';
+    else if (checked > 0) allEl.className = 'custom-checkbox indeterminate';
+    else allEl.className = 'custom-checkbox';
+}
+
+function toggleGroup(id) {
+    if (expandedGroups.has(id)) expandedGroups.delete(id);
+    else expandedGroups.add(id);
+    renderPermTree();
+}
+
+function toggleGroupCheck(id) {
+    const group = permissionTreeData.find(g => g.id === id);
+    const allChecked = group.children.every(c => checkedPerms.has(c.id));
+    if (allChecked) {
+        group.children.forEach(c => checkedPerms.delete(c.id));
+    } else {
+        group.children.forEach(c => checkedPerms.add(c.id));
+    }
+    renderPermTree();
+}
+
+function togglePerm(id) {
+    if (checkedPerms.has(id)) checkedPerms.delete(id);
+    else checkedPerms.add(id);
+    renderPermTree();
+}
+
+function togglePermSelectAll() {
+    let total = 0, checked = 0;
+    permissionTreeData.forEach(g => {
+        g.children.forEach(c => { total++; if (checkedPerms.has(c.id)) checked++; });
+    });
+    if (checked === total) {
+        checkedPerms.clear();
+    } else {
+        permissionTreeData.forEach(g => g.children.forEach(c => checkedPerms.add(c.id)));
+    }
+    renderPermTree();
+}
+
+// ── 保存角色 ──
+function saveRole() {
+    const name = document.getElementById('roleName').value.trim();
+    const code = document.getElementById('roleCode').value.trim();
+    const desc = document.getElementById('roleDesc').value.trim();
+    if (!name) { alert('请输入角色名称'); return; }
+    if (!code) { alert('请输入角色标识'); return; }
+
+    const now = new Date().toISOString().slice(0, 10);
+
+    if (editingRoleId) {
+        const role = roles.find(r => r.id === editingRoleId);
+        role.name = name;
+        role.code = code;
+        role.desc = desc;
+        role.perms = Array.from(checkedPerms);
+        role.updater = '当前用户';
+        role.updateTime = now;
+    } else {
+        const newId = Math.max(...roles.map(r => r.id)) + 1;
+        roles.push({
+            id: newId, name, code, desc,
+            creator: '当前用户', createTime: now,
+            updater: '当前用户', updateTime: now,
+            isSystem: false,
+            perms: Array.from(checkedPerms)
+        });
+    }
+    closeModal();
+    renderTable();
+}
+
+// ── 编辑角色 ──
+function editRole(id) { openModal(id); }
+
+// ── 删除角色 ──
+function deleteRole(id) {
+    deletingRoleId = id;
+    isBatchDelete = false;
+    const role = roles.find(r => r.id === id);
+    document.getElementById('deleteTitle').textContent = '确认删除';
+    document.getElementById('deleteMsg').textContent = '确定要删除角色「' + role.name + '」吗？此操作不可撤销。';
+    document.getElementById('deleteModal').classList.add('active');
+}
+
+function openBatchDelete() {
+    if (selectedIds.size === 0) { alert('请先选择要删除的角色'); return; }
+    isBatchDelete = true;
+    document.getElementById('deleteTitle').textContent = '批量删除';
+    document.getElementById('deleteMsg').textContent = '确定要删除选中的 ' + selectedIds.size + ' 个角色吗？此操作不可撤销。';
+    document.getElementById('deleteModal').classList.add('active');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('active');
+    deletingRoleId = null;
+    isBatchDelete = false;
+}
+
+function confirmDelete() {
+    if (isBatchDelete) {
+        roles = roles.filter(r => !selectedIds.has(r.id));
+        selectedIds.clear();
+    } else {
+        const role = roles.find(r => r.id === deletingRoleId);
+        if (role && role.isSystem) {
+            alert('系统预置角色禁止删除');
+            closeDeleteModal();
+            return;
+        }
+        roles = roles.filter(r => r.id !== deletingRoleId);
+    }
+    closeDeleteModal();
+    renderTable();
+}
+
+// ── 权限预览 ──
+function previewRole(id) {
+    const role = roles.find(r => r.id === id);
+    document.getElementById('previewRoleName').textContent = role.name;
+    const tree = document.getElementById('previewTree');
+    let html = '';
+    permissionTreeData.forEach(g => {
+        const hasPerm = role.perms.includes('all') || g.children.some(c => role.perms.includes(c.id));
+        if (!hasPerm && !role.perms.includes('all')) return;
+        html += '<div class="perm-tree-group" style="cursor:default;border-bottom:1px solid #f3f4f6">';
+        html += '<span class="font-medium text-gray-700">' + g.name + '</span>';
+        html += '<iconify-icon icon="mdi:chevron-down" class="text-gray-400"></iconify-icon>';
+        html += '</div>';
+        html += '<div class="perm-tree-children">';
+        g.children.forEach(c => {
+            const isChecked = role.perms.includes('all') || role.perms.includes(c.id);
+            html += '<div class="perm-tree-item" style="cursor:default">';
+            html += '<div class="custom-checkbox ' + (isChecked ? 'checked' : '') + '" style="pointer-events:none"></div>';
+            html += '<span>' + c.name + '</span>';
+            html += '</div>';
+        });
+        html += '</div>';
+    });
+    tree.innerHTML = html || '<p class="text-sm text-gray-400 text-center py-6">暂无权限配置</p>';
+    document.getElementById('previewModal').classList.add('active');
+}
+
+function closePreviewModal() {
+    document.getElementById('previewModal').classList.remove('active');
+}
+
+// ── 点击遮罩关闭 ──
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('active');
+        }
+    });
+});
+</script>
+</body>
+</html>

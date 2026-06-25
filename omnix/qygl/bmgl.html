@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>部门管理</title>
+    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js">
+    </script>
+    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js">
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+
+        .page-wrap {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ─ 滚动条 ── */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #d1d5db;
+        }
+
+        /* ── 部门树样式 ── */
+        .dept-tree-item {
+            transition: all 0.15s ease;
+        }
+        .dept-tree-item:hover {
+            background: #f3f4f6;
+        }
+        .dept-tree-item.active {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+        .dept-tree-item.active .dept-name {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        /* ── Dept Action Dropdown ── */
+        .dept-action-btn {
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+        .dept-tree-item:hover .dept-action-btn {
+            opacity: 1;
+        }
+        .dept-dropdown {
+            position: fixed;
+            z-index: 9999;
+            min-width: 120px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            padding: 4px;
+            display: none;
+        }
+        .dept-dropdown.show {
+            display: block;
+        }
+        .dept-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #374151;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .dept-dropdown-item:hover {
+            background: #f3f4f6;
+        }
+        .dept-dropdown-item.danger {
+            color: #dc2626;
+        }
+        .dept-dropdown-item.danger:hover {
+            background: #fef2f2;
+        }
+
+        /* ── 表格样式 ── */
+        .member-table th {
+            font-weight: 500;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .member-table td {
+            font-size: 14px;
+            color: #374151;
+        }
+        .member-table tr:hover td {
+            background: #f9fafb;
+        }
+
+        /* ── 新增成员弹窗 ── */
+        .account-panel {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .account-panel-left {
+            border-right: 1px solid #e5e7eb;
+        }
+        .account-list-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .account-list-item:hover {
+            background: #f9fafb;
+        }
+        .account-list-item.selected {
+            background: #eff6ff;
+        }
+
+        /* ─ Modal ── */
+        .modal-overlay {
+            position: fixed !important;
+            inset: 0 !important;
+            background: rgba(0, 0, 0, 0.4) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 99999 !important;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            transform: scale(0.95);
+            transition: transform 0.2s;
+        }
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        /* ── Toast ── */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+            animation: slideIn 0.3s ease;
+        }
+        .toast.success {
+            background: #059669;
+        }
+        .toast.error {
+            background: #dc2626;
+        }
+        .toast.warning {
+            background: #d97706;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* 复选框鼠标手型 */
+        input[type="checkbox"] {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+
+        <!-- 顶部栏 -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
+            <div class="flex items-center space-x-2 text-sm text-gray-500">
+                <span>系统管理</span>
+                <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                <span class="text-gray-900 font-medium">部门管理</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="openAddDeptModal()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    <iconify-icon icon="mdi:plus"></iconify-icon>
+                    <span>新增部门</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 内容区：左右两栏 -->
+        <div class="flex-1 flex overflow-hidden">
+
+            <!-- 左侧：部门树面板 -->
+            <div class="w-72 bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
+                <!-- 搜索框 -->
+                <div class="p-4 border-b border-gray-100">
+                    <div class="relative">
+                        <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                        <input id="deptSearchInput" class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm" placeholder="搜索部门" type="text" oninput="filterDeptTree(this.value)" />
+                    </div>
+                </div>
+
+                <!-- 部门树 -->
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-3" id="deptTreeContainer">
+                    <!-- 动态渲染 -->
+                </div>
+            </div>
+
+            <!-- 右侧：成员列表面板 -->
+            <div class="flex-1 flex flex-col overflow-hidden bg-gray-50/50">
+                <!-- 部门标题栏 -->
+                <div class="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 flex-shrink-0">
+                    <div class="flex items-center space-x-3">
+                        <h2 class="text-xl font-semibold text-gray-900" id="currentDeptName">销售</h2>
+                        <span class="flex items-center space-x-1 text-sm text-gray-500">
+                            <iconify-icon icon="mdi:account-group-outline"></iconify-icon>
+                            <span id="memberCount">12</span>
+                        </span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="relative">
+                            <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                            <input id="memberSearchInput" class="w-64 pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm" placeholder="输入关键词搜索" type="text" oninput="filterMembers(this.value)" />
+                        </div>
+                        <button onclick="openAddMemberModal()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                            <iconify-icon icon="mdi:plus"></iconify-icon>
+                            <span>新增成员</span>
+                        </button>
+                        <button onclick="batchRemoveMembers()" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors text-sm" id="batchRemoveBtn">
+                            <iconify-icon icon="mdi:account-multiple-remove-outline"></iconify-icon>
+                            <span>批量移除</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 成员表格 -->
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                        <table class="member-table w-full">
+                            <thead>
+                                <tr class="border-b border-gray-100 bg-gray-50/50">
+                                    <th class="text-left px-4 py-3 w-10">
+                                        <input type="checkbox" class="rounded border-gray-300" id="selectAllMembers" onchange="toggleSelectAllMembers()" />
+                                    </th>
+                                    <th class="text-left px-4 py-3">姓名</th>
+                                    <th class="text-left px-4 py-3">工号</th>
+                                    <th class="text-left px-4 py-3">手机号</th>
+                                    <th class="text-left px-4 py-3">邮箱</th>
+                                    <th class="text-left px-4 py-3">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100" id="memberTableBody">
+                                <!-- 动态渲染 -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 分页 -->
+                    <div class="flex items-center justify-between mt-4">
+                        <div class="text-sm text-gray-500">
+                            共 <span class="font-medium text-gray-700" id="totalMemberRecords">12</span> 条记录，每页
+                            <select class="border border-gray-200 rounded px-2 py-1 text-sm mx-1 focus:outline-none focus:ring-1 focus:ring-blue-500" onchange="changePageSize(this.value)">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                            条
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1.5 text-sm text-gray-400 border border-gray-200 rounded-lg cursor-not-allowed" disabled id="prevPageBtn">上一页</button>
+                            <div id="paginationNumbers" class="flex items-center space-x-1"></div>
+                            <button class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50" id="nextPageBtn" onclick="goNextPage()">下一页</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end page-wrap -->
+
+    <!-- Dept Action Dropdown -->
+    <div class="dept-dropdown" id="deptDropdown">
+        <div class="dept-dropdown-item" onclick="editDept()">
+            <iconify-icon icon="mdi:pencil-outline"></iconify-icon>
+            <span>编辑</span>
+        </div>
+        <div class="dept-dropdown-item danger" onclick="deleteDept()">
+            <iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
+            <span>删除</span>
+        </div>
+    </div>
+
+    <!-- 新增/编辑部门 Modal -->
+    <div class="modal-overlay" id="deptModal">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900" id="deptModalTitle">新增部门</h3>
+                <button onclick="closeDeptModal()" class="text-gray-400 hover:text-gray-600">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">部门名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="formDeptName" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" placeholder="请输入部门名称" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">上级部门</label>
+                    <select id="formParentDept" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white">
+                        <option value="">无（根部门）</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">排序号</label>
+                    <input type="number" id="formDeptSort" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" value="0" min="0" />
+                </div>
+            </div>
+            <div class="flex items-center justify-end space-x-3 px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+                <button onclick="closeDeptModal()" class="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="submitDeptForm()" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700" id="deptModalSubmitBtn">确认创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增成员 Modal -->
+    <div class="modal-overlay" id="memberModal">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-xl mx-4 overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900">新增成员</h3>
+                <button onclick="closeMemberModal()" class="text-gray-400 hover:text-gray-600">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5">
+                <!-- Tab 标签 -->
+                <div class="flex items-center space-x-1 mb-4">
+                    <button class="px-4 py-1.5 text-sm font-medium bg-blue-50 text-blue-600 rounded-lg">账号</button>
+                </div>
+                <!-- 左右面板 -->
+                <div class="account-panel flex" style="height: 320px;">
+                    <!-- 左侧：账号列表 -->
+                    <div class="account-panel-left flex-1 flex flex-col">
+                        <div class="p-3 border-b border-gray-100">
+                            <div class="relative">
+                                <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base" icon="mdi:magnify"></iconify-icon>
+                                <input id="accountSearchInput" class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" placeholder="搜索" type="text" oninput="filterAccountList(this.value)" />
+                            </div>
+                        </div>
+                        <div class="flex-1 overflow-y-auto custom-scrollbar" id="accountListContainer">
+                            <!-- 动态渲染 -->
+                        </div>
+                    </div>
+                    <!-- 右侧：已选 -->
+                    <div class="w-48 flex flex-col">
+                        <div class="px-4 py-3 border-b border-gray-100 text-sm text-gray-500" id="selectedCountLabel">已选0个</div>
+                        <div class="flex-1 overflow-y-auto custom-scrollbar p-2" id="selectedListContainer">
+                            <!-- 动态渲染已选 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end space-x-3 px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+                <button onclick="closeMemberModal()" class="px-5 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="submitMemberForm()" class="px-5 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认 Modal -->
+    <div class="modal-overlay" id="deleteConfirmModal">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
+            <div class="px-6 py-5">
+                <div class="flex items-center justify-center w-12 h-12 mx-auto rounded-full bg-red-100 mb-4">
+                    <iconify-icon icon="mdi:alert-circle" class="text-2xl text-red-600"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 text-center mb-2">确认删除</h3>
+                <p class="text-sm text-gray-500 text-center" id="deleteConfirmText">确定要删除该部门吗？此操作不可撤销。</p>
+            </div>
+            <div class="flex items-center justify-end space-x-3 px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+                <button onclick="closeDeleteModal()" class="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="confirmDelete()" class="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 容器 -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ==================== 数据模型 ====================
+        let departments = [
+            { id: 1, name: '思维特', parentId: null, managerId: null, sort: 0, status: 'active', expanded: true },
+            { id: 2, name: '营销中心', parentId: 1, managerId: null, sort: 0, status: 'active', expanded: false },
+            { id: 3, name: '研发中心', parentId: 1, managerId: null, sort: 1, status: 'active', expanded: false },
+            { id: 4, name: '交付中心', parentId: 1, managerId: null, sort: 2, status: 'active', expanded: false },
+        ];
+
+        let members = [
+            { id: 1, empNo: '56183', name: '唐迁', phone: '138****1234', email: '56183@zhink.com', deptId: 2 },
+            { id: 2, empNo: '33326', name: '王金', phone: '139****5678', email: '33326@zhink.cc', deptId: 2 },
+            { id: 3, empNo: '56202', name: '许悦', phone: '137****9012', email: 'xy-56202@zhink.cc', deptId: 2 },
+            { id: 4, empNo: 'ydsk', name: '移动数科', phone: '136****3456', email: 'ydsk@163.com', deptId: 2 },
+            { id: 5, empNo: '', name: '26653', phone: '135****7890', email: '26653@zhink.cc', deptId: 2 },
+            { id: 6, empNo: '33515', name: '代胜燃', phone: '133****2345', email: 'dsr-33515@zhink.cc', deptId: 2 },
+            { id: 7, empNo: '', name: '苏展祺', phone: '131****6789', email: '33726@zhink.cc', deptId: 2 },
+            { id: 8, empNo: '', name: '202101', phone: '130****0123', email: '202101@zhink.cc', deptId: 2 },
+            { id: 9, empNo: '57585', name: '王博宇', phone: '158****4567', email: '57585@zhink.cc', deptId: 2 },
+            { id: 10, empNo: '56711', name: '陈佳斌', phone: '159****8901', email: '56711@zhink.cc', deptId: 2 },
+            { id: 11, empNo: '44201', name: '李明', phone: '186****2345', email: '44201@zhink.cc', deptId: 2 },
+            { id: 12, empNo: '38892', name: '赵婷', phone: '188****6789', email: '38892@zhink.cc', deptId: 2 },
+        ];
+
+        // 可选账号池（用于新增成员弹窗）
+        let allAccounts = [
+            { id: 101, name: '徐炎栋', empNo: '10001', phone: '138****1111', email: 'xyd@zhink.com' },
+            { id: 102, name: '谈晨初', empNo: '10002', phone: '139****2222', email: 'tcc@zhink.com' },
+            { id: 103, name: '仝柳柳', empNo: '10003', phone: '137****3333', email: 'tll@zhink.com' },
+            { id: 104, name: '李艺', empNo: '10004', phone: '136****4444', email: 'ly@zhink.com' },
+            { id: 105, name: '正凯', empNo: '10005', phone: '135****5555', email: 'zk@zhink.com' },
+            { id: 106, name: '陈科翰', empNo: '10006', phone: '133****6666', email: 'ckh@zhink.com' },
+        ];
+
+        let selectedAccountIds = new Set();
+        let selectedMemberIds = new Set();
+        let deleteTargetIds = [];
+
+        let currentDeptId = 2;
+        let dropdownDeptId = null;
+        let editingDeptId = null;
+        let deleteTargetType = null; // 'dept' or 'member'
+        let deleteTargetId = null;
+        let memberPage = 1;
+        let memberPageSize = 10;
+        let memberSearchKeyword = '';
+
+        // ==================== 部门树渲染 ====================
+        function buildDeptTree(parentId = null, level = 0) {
+            const children = departments
+                .filter(d => d.parentId === parentId)
+                .sort((a, b) => a.sort - b.sort);
+
+            let html = '';
+            children.forEach(dept => {
+                const hasChildren = departments.some(d => d.parentId === dept.id);
+                const isActive = dept.id === currentDeptId;
+                const paddingLeft = level * 20 + 12;
+
+                html += `
+                            <div class="dept-tree-item ${isActive ? 'active' : ''} rounded-lg cursor-pointer select-none relative" 
+                                 style="padding-left: ${paddingLeft}px"
+                                 data-dept-id="${dept.id}"
+                                 onclick="selectDept(${dept.id})">
+                                <div class="flex items-center py-2.5 pr-3">
+                                    ${hasChildren ? `
+                                        <button class="mr-1.5 text-gray-400 hover:text-gray-600 flex-shrink-0" onclick="event.stopPropagation(); toggleExpand(${dept.id})">
+                                            <iconify-icon icon="${dept.expanded ? 'mdi:chevron-down' : 'mdi:chevron-right'}" class="text-base"></iconify-icon>
+                                        </button>
+                                    ` : '<span class="w-5 mr-1.5 flex-shrink-0"></span>'}
+                                    <iconify-icon icon="mdi:office-building" class="text-gray-400 mr-2 flex-shrink-0 text-base"></iconify-icon>
+                                    <span class="dept-name text-sm truncate flex-1 ${isActive ? '' : 'text-gray-700'}">${dept.name}</span>
+                                    <button class="dept-action-btn text-gray-400 hover:text-gray-600 p-1 rounded" 
+                                            onclick="event.stopPropagation(); showDeptDropdown(event, ${dept.id})"
+                                            title="更多操作">
+                                        <iconify-icon icon="mdi:dots-horizontal" class="text-base"></iconify-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+
+                if (dept.expanded && hasChildren) {
+                    html += buildDeptTree(dept.id, level + 1);
+                }
+            });
+            return html;
+        }
+
+        function renderDeptTree() {
+            const container = document.getElementById('deptTreeContainer');
+            container.innerHTML = buildDeptTree();
+        }
+
+        function selectDept(deptId) {
+            currentDeptId = deptId;
+            memberPage = 1;
+            memberSearchKeyword = '';
+            selectedMemberIds.clear();
+            document.getElementById('memberSearchInput').value = '';
+            document.getElementById('selectAllMembers').checked = false;
+            renderDeptTree();
+            renderMemberTable();
+            updateDeptHeader();
+            hideDeptDropdown();
+        }
+
+        function toggleExpand(deptId) {
+            const dept = departments.find(d => d.id === deptId);
+            if (dept) {
+                dept.expanded = !dept.expanded;
+                localStorage.setItem('deptTreeExpanded', JSON.stringify(
+                    departments.filter(d => d.expanded).map(d => d.id)
+                ));
+                renderDeptTree();
+            }
+        }
+
+        function filterDeptTree(keyword) {
+            if (!keyword.trim()) {
+                renderDeptTree();
+                return;
+            }
+            const lower = keyword.toLowerCase();
+            // 简单高亮：展开所有匹配路径
+            departments.forEach(d => {
+                if (d.name.toLowerCase().includes(lower)) {
+                    let pid = d.parentId;
+                    while (pid) {
+                        const parent = departments.find(p => p.id === pid);
+                        if (parent) parent.expanded = true;
+                        pid = parent ? parent.parentId : null;
+                    }
+                }
+            });
+            renderDeptTree();
+            // 高亮匹配项
+            document.querySelectorAll('.dept-tree-item').forEach(el => {
+                const name = el.querySelector('.dept-name');
+                if (name && name.textContent.toLowerCase().includes(lower)) {
+                    el.style.background = '#fef3c7';
+                }
+            });
+        }
+
+        // ==================== Dept Dropdown ====================
+        function showDeptDropdown(event, deptId) {
+            event.stopPropagation();
+            dropdownDeptId = deptId;
+            const dropdown = document.getElementById('deptDropdown');
+            const rect = event.currentTarget.getBoundingClientRect();
+            let left = rect.right + 4;
+            let top = rect.bottom + 4;
+            if (left + 140 > window.innerWidth) {
+                left = rect.left - 140;
+            }
+            if (top + 100 > window.innerHeight) {
+                top = rect.top - 100;
+            }
+            dropdown.style.left = left + 'px';
+            dropdown.style.top = top + 'px';
+            dropdown.classList.add('show');
+        }
+
+        function hideDeptDropdown() {
+            document.getElementById('deptDropdown').classList.remove('show');
+            dropdownDeptId = null;
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dept-dropdown') && !e.target.closest('.dept-action-btn')) {
+                hideDeptDropdown();
+            }
+        });
+
+        // ==================== 编辑 / 删除部门（修复：移除对不存在DOM元素的引用） ====================
+        function editDept() {
+            const deptId = dropdownDeptId;
+            hideDeptDropdown();
+            const dept = departments.find(d => d.id === deptId);
+            if (!dept) return;
+
+            editingDeptId = dept.id;
+            document.getElementById('deptModalTitle').textContent = '编辑部门';
+            document.getElementById('deptModalSubmitBtn').textContent = '确认保存';
+            document.getElementById('formDeptName').value = dept.name;
+            document.getElementById('formDeptSort').value = dept.sort;
+
+            // 填充上级部门选项
+            const parentSelect = document.getElementById('formParentDept');
+            parentSelect.innerHTML = '<option value="">无（根部门）</option>';
+            departments.filter(d => d.id !== dept.id).forEach(d => {
+                parentSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+            });
+            parentSelect.value = dept.parentId || '';
+
+            // ✅ 修复：不再引用不存在的 formDeptStatus / formDeptManager
+            // 部门状态和经理在界面中不展示，编辑时保持原值
+
+            document.getElementById('deptModal').classList.add('show');
+        }
+
+        function deleteDept() {
+            const deptId = dropdownDeptId;
+            hideDeptDropdown();
+            const dept = departments.find(d => d.id === deptId);
+            if (!dept) return;
+
+            deleteTargetType = 'dept';
+            deleteTargetId = dept.id;
+            document.getElementById('deleteConfirmText').textContent =
+                `确定要删除部门「${dept.name}」吗？删除后不可恢复。`;
+            document.getElementById('deleteConfirmModal').classList.add('show');
+        }
+
+        function confirmDelete() {
+            if (deleteTargetType === 'dept') {
+                members = members.filter(m => m.deptId !== deleteTargetId);
+                departments = departments.filter(d => d.id !== deleteTargetId);
+                if (currentDeptId === deleteTargetId) {
+                    const first = departments[0];
+                    if (first) selectDept(first.id);
+                }
+                showToast('部门已删除', 'success');
+            } else if (deleteTargetType === 'member') {
+                members = members.filter(m => m.id !== deleteTargetId);
+                renderMemberTable();
+                showToast('成员已移除', 'success');
+                closeDeleteModal();
+                return;
+            } else if (deleteTargetType === 'batch') {
+                members = members.filter(m => !selectedMemberIds.has(m.id));
+                selectedMemberIds.clear();
+                document.getElementById('selectAllMembers').checked = false;
+                renderMemberTable();
+                showToast(`已批量移除 ${deleteTargetIds.length} 名成员`, 'success');
+                closeDeleteModal();
+                return;
+            }
+            closeDeleteModal();
+            renderDeptTree();
+            renderMemberTable();
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteConfirmModal').classList.remove('show');
+            deleteTargetType = null;
+            deleteTargetId = null;
+        }
+
+        // ==================== 成员表格渲染 ====================
+        function getFilteredMembers() {
+            let list = members.filter(m => m.deptId === currentDeptId);
+            if (memberSearchKeyword) {
+                const kw = memberSearchKeyword.toLowerCase();
+                list = list.filter(m =>
+                    m.name.toLowerCase().includes(kw) ||
+                    m.empNo.toLowerCase().includes(kw) ||
+                    m.email.toLowerCase().includes(kw)
+                );
+            }
+            return list;
+        }
+
+        function renderMemberTable() {
+            const filtered = getFilteredMembers();
+            const total = filtered.length;
+            const totalPages = Math.ceil(total / memberPageSize) || 1;
+            if (memberPage > totalPages) memberPage = totalPages;
+
+            const start = (memberPage - 1) * memberPageSize;
+            const pageData = filtered.slice(start, start + memberPageSize);
+
+            const tbody = document.getElementById('memberTableBody');
+            if (pageData.length === 0) {
+                tbody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="px-4 py-12 text-center text-gray-400">
+                                    <iconify-icon icon="mdi:inbox-outline" class="text-4xl mb-2 block mx-auto"></iconify-icon>
+                                    暂无成员数据
+                                </td>
+                            </tr>
+                        `;
+            } else {
+                tbody.innerHTML = pageData.map(m => {
+                    const isChecked = selectedMemberIds.has(m.id);
+                    return `
+                            <tr class="transition-colors ${isChecked ? 'bg-blue-50/40' : ''}">
+                                <td class="px-4 py-3"><input type="checkbox" class="rounded border-gray-300 member-checkbox" data-id="${m.id}" ${isChecked ? 'checked' : ''} onchange="toggleMemberSelect(${m.id}, this.checked)"/></td>
+                                <td class="px-4 py-3 font-medium text-gray-900">${m.name}</td>
+                                <td class="px-4 py-3 text-gray-500">${m.empNo || '-'}</td>
+                                <td class="px-4 py-3 text-gray-500">${m.phone || '-'}</td>
+                                <td class="px-4 py-3 text-gray-500">${m.email}</td>
+                                <td class="px-4 py-3">
+                                    <button onclick="removeMember(${m.id})" class="text-gray-400 hover:text-red-600 transition-colors" title="移除">
+                                        <iconify-icon icon="mdi:account-remove-outline" class="text-lg"></iconify-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                            `;
+                }).join('');
+            }
+
+            document.getElementById('totalMemberRecords').textContent = total;
+            document.getElementById('memberCount').textContent = members.filter(m => m.deptId === currentDeptId).length;
+            renderPagination(totalPages);
+        }
+
+        function renderPagination(totalPages) {
+            const container = document.getElementById('paginationNumbers');
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === memberPage) {
+                    html +=
+                    `<button class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg font-medium">${i}</button>`;
+                } else {
+                    html +=
+                        `<button class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50" onclick="goToPage(${i})">${i}</button>`;
+                }
+            }
+            container.innerHTML = html;
+
+            document.getElementById('prevPageBtn').disabled = memberPage <= 1;
+            document.getElementById('prevPageBtn').className = memberPage <= 1 ?
+                'px-3 py-1.5 text-sm text-gray-400 border border-gray-200 rounded-lg cursor-not-allowed' :
+                'px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50';
+            document.getElementById('prevPageBtn').onclick = () => goToPage(memberPage - 1);
+
+            document.getElementById('nextPageBtn').disabled = memberPage >= totalPages;
+            document.getElementById('nextPageBtn').className = memberPage >= totalPages ?
+                'px-3 py-1.5 text-sm text-gray-400 border border-gray-200 rounded-lg cursor-not-allowed' :
+                'px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50';
+        }
+
+        function goToPage(page) {
+            memberPage = page;
+            renderMemberTable();
+        }
+
+        function goNextPage() {
+            const total = getFilteredMembers().length;
+            const totalPages = Math.ceil(total / memberPageSize) || 1;
+            if (memberPage < totalPages) goToPage(memberPage + 1);
+        }
+
+        function changePageSize(size) {
+            memberPageSize = parseInt(size);
+            memberPage = 1;
+            renderMemberTable();
+        }
+
+        function filterMembers(keyword) {
+            memberSearchKeyword = keyword;
+            memberPage = 1;
+            renderMemberTable();
+        }
+
+        function toggleMemberSelect(id, checked) {
+            if (checked) {
+                selectedMemberIds.add(id);
+            } else {
+                selectedMemberIds.delete(id);
+            }
+            const allCheckboxes = document.querySelectorAll('.member-checkbox');
+            const allChecked = allCheckboxes.length > 0 && [...allCheckboxes].every(cb => cb.checked);
+            document.getElementById('selectAllMembers').checked = allChecked;
+            renderMemberTable();
+        }
+
+        function toggleSelectAllMembers() {
+            const checked = document.getElementById('selectAllMembers').checked;
+            const filtered = getFilteredMembers();
+            const pageStart = (memberPage - 1) * memberPageSize;
+            const pageData = filtered.slice(pageStart, pageStart + memberPageSize);
+            pageData.forEach(m => {
+                if (checked) selectedMemberIds.add(m.id);
+                else selectedMemberIds.delete(m.id);
+            });
+            renderMemberTable();
+        }
+
+        function batchRemoveMembers() {
+            if (selectedMemberIds.size === 0) {
+                showToast('请先勾选要移除的成员', 'warning');
+                return;
+            }
+            deleteTargetType = 'batch';
+            deleteTargetIds = [...selectedMemberIds];
+            document.getElementById('deleteConfirmText').textContent =
+                `确定要批量移除选中的 ${selectedMemberIds.size} 名成员吗？移除后不可恢复。`;
+            document.getElementById('deleteConfirmModal').classList.add('show');
+        }
+
+        function removeMember(memberId) {
+            deleteTargetType = 'member';
+            deleteTargetId = memberId;
+            const member = members.find(m => m.id === memberId);
+            document.getElementById('deleteConfirmText').textContent =
+                `确定要将「${member?.name}」从该部门移除吗？移除后不可恢复。`;
+            document.getElementById('deleteConfirmModal').classList.add('show');
+        }
+
+        // ==================== 部门 Modal（修复：移除对不存在DOM元素的引用） ====================
+        function openAddDeptModal() {
+            editingDeptId = null;
+            document.getElementById('deptModalTitle').textContent = '新增部门';
+            document.getElementById('deptModalSubmitBtn').textContent = '确认创建';
+            document.getElementById('formDeptName').value = '';
+            document.getElementById('formDeptSort').value = '0';
+            // ✅ 修复：不再引用不存在的 formDeptStatus / formDeptManager
+
+            // 填充上级部门选项
+            const parentSelect = document.getElementById('formParentDept');
+            parentSelect.innerHTML = '<option value="">无（根部门）</option>';
+            departments.forEach(d => {
+                parentSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+            });
+
+            // 如果有选中部门，默认作为父级
+            const current = departments.find(d => d.id === currentDeptId);
+            if (current && !editingDeptId) {
+                parentSelect.value = current.id;
+            }
+
+            document.getElementById('deptModal').classList.add('show');
+        }
+
+        function closeDeptModal() {
+            document.getElementById('deptModal').classList.remove('show');
+            editingDeptId = null;
+        }
+
+        function submitDeptForm() {
+            const name = document.getElementById('formDeptName').value.trim();
+            if (!name) {
+                showToast('部门名称不能为空', 'error');
+                return;
+            }
+
+            const parentId = document.getElementById('formParentDept').value;
+            const sortVal = parseInt(document.getElementById('formDeptSort').value) || 0;
+
+            if (editingDeptId) {
+                // 编辑模式：保留原有的 status 和 managerId，只更新名称、父级、排序
+                const dept = departments.find(d => d.id === editingDeptId);
+                if (dept) {
+                    dept.name = name;
+                    dept.parentId = parentId ? parseInt(parentId) : null;
+                    dept.sort = sortVal;
+                    // ✅ 修复：保留原有的 status 和 managerId，不覆盖
+                }
+                showToast('部门信息已更新', 'success');
+            } else {
+                // 新增模式：使用默认值
+                const newDept = {
+                    id: Date.now(),
+                    name: name,
+                    parentId: parentId ? parseInt(parentId) : null,
+                    managerId: null, // 默认无经理
+                    sort: sortVal,
+                    status: 'active', // 默认启用
+                    expanded: false,
+                };
+                departments.push(newDept);
+                if (newDept.parentId) {
+                    const parent = departments.find(d => d.id === newDept.parentId);
+                    if (parent) parent.expanded = true;
+                }
+                showToast('部门创建成功', 'success');
+            }
+
+            editingDeptId = null;
+            closeDeptModal();
+            renderDeptTree();
+            updateDeptHeader();
+        }
+
+        // ==================== 成员 Modal (账号选择) ====================
+        function openAddMemberModal() {
+            selectedAccountIds.clear();
+            document.getElementById('accountSearchInput').value = '';
+            renderAccountList();
+            renderSelectedList();
+            document.getElementById('memberModal').classList.add('show');
+        }
+
+        function closeMemberModal() {
+            document.getElementById('memberModal').classList.remove('show');
+            selectedAccountIds.clear();
+        }
+
+        function renderAccountList() {
+            const keyword = document.getElementById('accountSearchInput').value.toLowerCase();
+            const container = document.getElementById('accountListContainer');
+            const filtered = allAccounts.filter(a =>
+                a.name.toLowerCase().includes(keyword) || a.empNo.toLowerCase().includes(keyword)
+            );
+
+            let html = '';
+            const allFilteredIds = filtered.map(a => a.id);
+            const allSelected = allFilteredIds.length > 0 && allFilteredIds.every(id => selectedAccountIds.has(id));
+            html += `
+                        <div class="account-list-item border-b border-gray-50" onclick="toggleSelectAllAccounts()">
+                            <input type="checkbox" class="rounded border-gray-300" ${allSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelectAllAccounts()"/>
+                            <span class="text-sm text-gray-700">全选</span>
+                        </div>
+                    `;
+            filtered.forEach(a => {
+                const isSelected = selectedAccountIds.has(a.id);
+                html += `
+                            <div class="account-list-item ${isSelected ? 'selected' : ''}" onclick="toggleAccount(${a.id})">
+                                <input type="checkbox" class="rounded border-gray-300" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleAccount(${a.id})"/>
+                                <span class="text-sm text-gray-700">${a.name}</span>
+                            </div>
+                        `;
+            });
+            container.innerHTML = html;
+        }
+
+        function toggleAccount(id) {
+            if (selectedAccountIds.has(id)) {
+                selectedAccountIds.delete(id);
+            } else {
+                selectedAccountIds.add(id);
+            }
+            renderAccountList();
+            renderSelectedList();
+        }
+
+        function toggleSelectAllAccounts() {
+            const keyword = document.getElementById('accountSearchInput').value.toLowerCase();
+            const filtered = allAccounts.filter(a =>
+                a.name.toLowerCase().includes(keyword) || a.empNo.toLowerCase().includes(keyword)
+            );
+            const allFilteredIds = filtered.map(a => a.id);
+            const allSelected = allFilteredIds.every(id => selectedAccountIds.has(id));
+            if (allSelected) {
+                allFilteredIds.forEach(id => selectedAccountIds.delete(id));
+            } else {
+                allFilteredIds.forEach(id => selectedAccountIds.add(id));
+            }
+            renderAccountList();
+            renderSelectedList();
+        }
+
+        function renderSelectedList() {
+            const container = document.getElementById('selectedListContainer');
+            const count = selectedAccountIds.size;
+            document.getElementById('selectedCountLabel').textContent = `已选${count}个`;
+
+            if (count === 0) {
+                container.innerHTML = '<div class="text-sm text-gray-400 text-center py-8">暂无选择</div>';
+                return;
+            }
+
+            let html = '';
+            selectedAccountIds.forEach(id => {
+                const acc = allAccounts.find(a => a.id === id);
+                if (acc) {
+                    html += `
+                                <div class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50">
+                                    <span class="text-sm text-gray-700">${acc.name}</span>
+                                    <button onclick="toggleAccount(${acc.id})" class="text-gray-400 hover:text-red-500">
+                                        <iconify-icon icon="mdi:close" class="text-sm"></iconify-icon>
+                                    </button>
+                                </div>
+                            `;
+                }
+            });
+            container.innerHTML = html;
+        }
+
+        function filterAccountList(keyword) {
+            renderAccountList();
+        }
+
+        function submitMemberForm() {
+            if (selectedAccountIds.size === 0) {
+                showToast('请至少选择一个账号', 'error');
+                return;
+            }
+
+            selectedAccountIds.forEach(id => {
+                const acc = allAccounts.find(a => a.id === id);
+                if (acc && !members.some(m => m.deptId === currentDeptId && m.empNo === acc.empNo)) {
+                    members.push({
+                        id: Date.now() + id,
+                        empNo: acc.empNo,
+                        name: acc.name,
+                        phone: acc.phone,
+                        email: acc.email,
+                        deptId: currentDeptId,
+                    });
+                }
+            });
+
+            showToast(`成功添加 ${selectedAccountIds.size} 名成员`, 'success');
+            closeMemberModal();
+            renderMemberTable();
+        }
+
+        // ==================== 辅助函数 ====================
+        function updateDeptHeader() {
+            const dept = departments.find(d => d.id === currentDeptId);
+            if (dept) {
+                document.getElementById('currentDeptName').textContent = dept.name;
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // ==================== 初始化 ====================
+        function init() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('deptTreeExpanded') || '[]');
+                saved.forEach(id => {
+                    const dept = departments.find(d => d.id === id);
+                    if (dept) dept.expanded = true;
+                });
+            } catch (e) {}
+
+            renderDeptTree();
+            updateDeptHeader();
+            renderMemberTable();
+        }
+
+        init();
+    </script>
+</body>
+</html>

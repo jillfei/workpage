@@ -156,10 +156,11 @@
 
         <!-- 顶部操作栏 -->
         <header class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
-            <div>
-                <h1 class="text-xl font-bold text-gray-900">企业成员管理</h1>
-                <p class="text-sm text-gray-500 mt-0.5">管理企业成员、角色和权限</p>
-            </div>
+			<div class="flex items-center space-x-2 text-sm text-gray-500">
+			    <span>系统管理</span>
+			    <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+			    <span class="text-gray-900 font-medium">企业成员</span>
+			</div>
             <div class="flex items-center space-x-2">
                 <button class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
                     <iconify-icon icon="mdi:download-outline"></iconify-icon>
@@ -278,7 +279,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         <!-- Row 1: 正凯 -->
-                        <tr>
+                        <tr data-owner="true">
                             <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center space-x-2">
@@ -293,12 +294,12 @@
                             <td class="px-4 py-3 text-gray-500">654321@qq.com</td>
                             <td class="px-4 py-3"><span class="text-blue-600 font-medium">超级管理员</span></td>
                             <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
+                                <label class="toggle" style="pointer-events:none;opacity:0.6;"><input type="checkbox" checked disabled/><span class="slider"></span></label>
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center space-x-2">
                                     <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
+                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium hidden" onclick="confirmDelete(this)">删除</button>
                                     <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
                                 </div>
                             </td>
@@ -673,7 +674,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">绑定角色 <span class="text-red-500">*</span></label>
-                <div class="flex flex-wrap gap-2">
+                <div id="roleCheckboxes" class="flex flex-wrap gap-2">
                     <label class="inline-flex items-center px-3 py-1.5 border border-gray-200 rounded-lg text-sm cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-colors">
                         <input type="checkbox" class="custom-checkbox mr-2 modal-role-cb" value="超级管理员"/> 超级管理员
                     </label>
@@ -683,6 +684,12 @@
                     <label class="inline-flex items-center px-3 py-1.5 border border-gray-200 rounded-lg text-sm cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-colors">
                         <input type="checkbox" class="custom-checkbox mr-2 modal-role-cb" value="普通用户"/> 普通用户
                     </label>
+                </div>
+                <div id="ownerRoleInfo" class="hidden">
+                    <span class="inline-flex items-center px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700 font-medium">
+                        <iconify-icon icon="mdi:shield-crown" class="mr-1.5 text-amber-500"></iconify-icon>
+                        拥有所有权限
+                    </span>
                 </div>
             </div>
             <div>
@@ -757,11 +764,12 @@
                     </button>
                 </div>
             </div>
-            <div class="mt-4">
-                <a href="#" class="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1">
-                    <iconify-icon icon="mdi:download-outline"></iconify-icon>
-                    <span>下载导入模板</span>
-                </a>
+            <div class="flex items-start space-x-2 text-xs text-gray-400" style="margin-top: 1rem;">
+                <iconify-icon icon="mdi:information-outline" class="text-gray-400 mt-0.5 flex-shrink-0"></iconify-icon>
+                <div>
+                    <p>请先<a href="#" class="text-blue-500 hover:underline">下载导入模板</a>，按模板格式填写后上传。</p>
+                    <p class="mt-1">单次导入不超过 500 条数据。</p>
+                </div>
             </div>
         </div>
         <div class="flex items-center justify-end space-x-3 px-6 py-4 border-t border-gray-100 bg-gray-50/50">
@@ -795,6 +803,10 @@ function openAddModal() {
     document.getElementById('memberModalTitle').textContent = '新增企业成员';
     document.getElementById('memberSubmitBtn').textContent = '确认创建';
     document.getElementById('passwordField').style.display = '';
+    // Reset role section to default (show checkboxes, hide owner info)
+    document.getElementById('roleCheckboxes').style.display = '';
+    document.getElementById('ownerRoleInfo').style.display = 'none';
+    document.getElementById('ownerRoleInfo').classList.add('hidden');
     // Clear fields
     document.getElementById('modalEmployeeId').value = '';
     document.getElementById('modalPassword').value = '';
@@ -813,6 +825,13 @@ function openEditModal(btn) {
     document.getElementById('memberModalTitle').textContent = '编辑企业成员';
     document.getElementById('memberSubmitBtn').textContent = '保存修改';
     document.getElementById('passwordField').style.display = 'none';
+
+    // Owner: hide role checkboxes, show "拥有所有权限"
+    var isOwner = tr.getAttribute('data-owner') === 'true';
+    document.getElementById('roleCheckboxes').style.display = isOwner ? 'none' : '';
+    document.getElementById('ownerRoleInfo').style.display = isOwner ? '' : 'none';
+    if (isOwner) { document.getElementById('ownerRoleInfo').classList.remove('hidden'); }
+    else { document.getElementById('ownerRoleInfo').classList.add('hidden'); }
 
     var cells = tr.querySelectorAll('td');
     // Name

@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>菜单管理</title>
+    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js">
+    </script>
+    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js">
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+
+        .page-wrap {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #d1d5db;
+        }
+
+        .menu-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .menu-table thead th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+            background: #fafafa;
+            white-space: nowrap;
+        }
+        .menu-table tbody td {
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #374151;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+        .menu-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .type-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .type-catalog {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .type-menu {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .type-button {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-show {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .status-hide {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-link {
+            color: #3b82f6;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.15s;
+            margin-right: 6px;
+        }
+        .action-link:hover {
+            color: #2563eb;
+        }
+        .action-link.danger {
+            color: #ef4444;
+        }
+        .action-link.danger:hover {
+            color: #dc2626;
+        }
+        .action-link.disabled {
+            color: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .tree-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            color: #9ca3af;
+            flex-shrink: 0;
+        }
+        .tree-toggle.expanded {
+            transform: rotate(90deg);
+        }
+        .tree-toggle.hidden {
+            visibility: hidden;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 12px;
+            width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            transform: translateY(20px);
+            transition: transform 0.2s ease;
+        }
+        .modal-overlay.active .modal-box {
+            transform: translateY(0);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .form-label .required {
+            color: #ef4444;
+            margin-left: 2px;
+        }
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #374151;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            background: #fff;
+        }
+        .form-input:focus,
+        .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #d1d5db;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+        .switch-slider::before {
+            content: '';
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .switch input:checked+.switch-slider {
+            background: #3b82f6;
+        }
+        .switch input:checked+.switch-slider::before {
+            transform: translateX(20px);
+        }
+
+        .parent-select {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+        .parent-select-item {
+            padding: 6px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .parent-select-item:hover {
+            background: #f9fafb;
+        }
+        .parent-select-item.selected {
+            background: #eff6ff;
+            color: #1e40af;
+        }
+        .parent-select-item.disabled {
+            color: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+        .empty-state iconify-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .highlight {
+            background: #fef08a;
+            padding: 1px 2px;
+            border-radius: 2px;
+        }
+
+        .filter-select {
+            padding: 8px 32px 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #374151;
+            background: #fff;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            min-width: 100px;
+        }
+        .filter-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+
+        <!-- 顶部栏 -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
+            <div class="flex items-center space-x-2 text-sm text-gray-500">
+                <span>系统管理</span>
+                <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                <span class="text-gray-900 font-medium">菜单管理</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleExpandAll()" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">
+                    <iconify-icon icon="mdi:arrow-expand-all"></iconify-icon>
+                    <span id="expandBtnText">全部展开</span>
+                </button>
+                <button onclick="openModal()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    <iconify-icon icon="mdi:plus"></iconify-icon>
+                    <span>新增菜单</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 内容滚动区 -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+            <!-- 筛选栏 -->
+            <div class="flex items-center space-x-4 mb-6">
+                <div class="relative flex-1 max-w-md">
+                    <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                    <input id="searchInput" class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+                    placeholder="搜索菜单名称" type="text" oninput="searchMenu()" />
+                </div>
+                <select id="filterShowStatus" class="filter-select" onchange="searchMenu()">
+                    <option value="all">全部</option>
+                    <option value="show">显示</option>
+                    <option value="hide">隐藏</option>
+                </select>
+            </div>
+
+            <!-- 菜单树形表格 -->
+            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <table class="menu-table">
+                    <thead>
+                        <tr>
+                            <th style="width:260px">菜单名称</th>
+                            <th style="width:76px">类型</th>
+                            <th style="width:60px">图标</th>
+                            <th>路由地址</th>
+                            <th>权限标识</th>
+                            <th style="width:70px">排序</th>
+                            <th style="width:76px">显示</th>
+                            <th style="width:170px">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="menuTableBody">
+                        <!-- 动态渲染 -->
+                    </tbody>
+                </table>
+                <div id="emptyState" class="empty-state hidden">
+                    <iconify-icon icon="mdi:folder-open-outline" class="text-gray-300"></iconify-icon>
+                    <p class="text-sm">暂无菜单数据</p>
+                </div>
+            </div>
+        </div><!-- end 内容滚动区 -->
+    </div><!-- end page-wrap -->
+
+    <!-- ========== 新增/编辑菜单 模态框 ========== -->
+    <div class="modal-overlay" id="menuModal">
+        <div class="modal-box">
+            <!-- 标题栏 -->
+            <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900" id="modalTitle">新增菜单</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+
+            <!-- 表单内容 -->
+            <div class="px-6 py-5">
+                <!-- 菜单类型 -->
+                <div class="form-group">
+                    <label class="form-label">菜单类型 <span class="required">*</span></label>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="menuType" value="catalog" onchange="onTypeChange()" class="text-blue-600" />
+                            <span class="text-sm">目录</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="menuType" value="menu" onchange="onTypeChange()" class="text-blue-600" />
+                            <span class="text-sm">菜单</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="radio" name="menuType" value="button" onchange="onTypeChange()" class="text-blue-600" />
+                            <span class="text-sm">按钮</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 上级菜单 -->
+                <div class="form-group">
+                    <label class="form-label">上级菜单</label>
+                    <div class="parent-select" id="parentSelect">
+                        <!-- 动态渲染 -->
+                    </div>
+                </div>
+
+                <!-- 菜单名称 -->
+                <div class="form-group">
+                    <label class="form-label">菜单名称 <span class="required">*</span></label>
+                    <input class="form-input" id="menuName" placeholder="请输入菜单名称" type="text" />
+                </div>
+
+                <!-- 路由地址 (目录和菜单显示) -->
+                <div class="form-group" id="routeRow">
+                    <label class="form-label">路由地址 <span class="required">*</span></label>
+                    <input class="form-input" id="menuPath" placeholder="如 /system/dept" type="text" />
+                </div>
+
+                <!-- 权限标识 (按钮显示) -->
+                <div class="form-group" id="permRow" style="display:none">
+                    <label class="form-label">权限标识</label>
+                    <input class="form-input" id="permCode" placeholder="如 system:dept:add" type="text" />
+                </div>
+
+                <!-- 菜单图标 (目录和菜单显示) -->
+                <div class="form-group" id="iconRow">
+                    <label class="form-label">菜单图标</label>
+                    <input class="form-input" id="menuIcon" placeholder="如 mdi:account" type="text" />
+                </div>
+
+                <!-- 排序号 -->
+                <div class="form-group">
+                    <label class="form-label">排序号 <span class="required">*</span></label>
+                    <input class="form-input" id="sortOrder" placeholder="数字越小越靠前" type="number" value="0" />
+                </div>
+
+                <!-- 外链 & 显示状态 -->
+                <div class="form-row" id="extraRow">
+                    <div class="form-group">
+                        <label class="form-label">是否外链</label>
+                        <label class="switch">
+                            <input type="checkbox" id="isExternal" />
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">显示状态 <span class="required">*</span></label>
+                        <select class="form-select" id="showStatus">
+                            <option value="show">显示</option>
+                            <option value="hide">隐藏</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部按钮 -->
+            <div class="flex items-center justify-end space-x-3 px-6 pb-5 pt-2 border-t border-gray-100">
+                <button onclick="closeModal()" class="px-5 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">取消</button>
+                <button onclick="saveMenu()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 删除确认 模态框 ========== -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-box" style="width:400px">
+            <div class="px-6 py-8 text-center">
+                <iconify-icon icon="mdi:alert-circle-outline" class="text-5xl text-amber-500 mb-4"></iconify-icon>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2" id="deleteTitle">确认删除</h3>
+                <p class="text-sm text-gray-500" id="deleteMsg">确定要删除该菜单吗？此操作不可撤销。</p>
+            </div>
+            <div class="flex items-center justify-center space-x-3 px-6 pb-5">
+                <button onclick="closeDeleteModal()" class="px-5 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">取消</button>
+                <button onclick="confirmDelete()" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── 模拟数据 ──
+        let menuData = [{
+            id: 1,
+            name: '智能体开发',
+            type: 'catalog',
+            icon: 'mdi:robot',
+            parentId: 0,
+            path: '/agent',
+            component: '',
+            permCode: '',
+            sortOrder: 1,
+            isExternal: false,
+            isCache: true,
+            showStatus: 'show',
+            menuStatus: 'enabled',
+            children: [{
+                id: 11,
+                name: '智能体列表',
+                type: 'menu',
+                icon: 'mdi:list-box-outline',
+                parentId: 1,
+                path: 'list',
+                component: 'agent/list/index',
+                permCode: '',
+                sortOrder: 1,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: [{
+                    id: 111,
+                    name: '新增',
+                    type: 'button',
+                    icon: '',
+                    parentId: 11,
+                    path: '',
+                    component: '',
+                    permCode: 'agent:list:add',
+                    sortOrder: 1,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, {
+                    id: 112,
+                    name: '编辑',
+                    type: 'button',
+                    icon: '',
+                    parentId: 11,
+                    path: '',
+                    component: '',
+                    permCode: 'agent:list:edit',
+                    sortOrder: 2,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, {
+                    id: 113,
+                    name: '删除',
+                    type: 'button',
+                    icon: '',
+                    parentId: 11,
+                    path: '',
+                    component: '',
+                    permCode: 'agent:list:delete',
+                    sortOrder: 3,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, ]
+            }, ]
+        }, {
+            id: 2,
+            name: '资源管理',
+            type: 'catalog',
+            icon: 'mdi:database',
+            parentId: 0,
+            path: '/resource',
+            component: '',
+            permCode: '',
+            sortOrder: 2,
+            isExternal: false,
+            isCache: true,
+            showStatus: 'show',
+            menuStatus: 'enabled',
+            children: [{
+                id: 21,
+                name: '模型管理',
+                type: 'menu',
+                icon: 'mdi:brain',
+                parentId: 2,
+                path: 'model',
+                component: 'resource/model/index',
+                permCode: '',
+                sortOrder: 1,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: [{
+                    id: 211,
+                    name: '新增',
+                    type: 'button',
+                    icon: '',
+                    parentId: 21,
+                    path: '',
+                    component: '',
+                    permCode: 'resource:model:add',
+                    sortOrder: 1,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, {
+                    id: 212,
+                    name: '编辑',
+                    type: 'button',
+                    icon: '',
+                    parentId: 21,
+                    path: '',
+                    component: '',
+                    permCode: 'resource:model:edit',
+                    sortOrder: 2,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, ]
+            }, {
+                id: 22,
+                name: 'RAG',
+                type: 'menu',
+                icon: 'mdi:file-document-outline',
+                parentId: 2,
+                path: 'rag',
+                component: 'resource/rag/index',
+                permCode: '',
+                sortOrder: 2,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: []
+            }, {
+                id: 23,
+                name: '知识图谱',
+                type: 'menu',
+                icon: 'mdi:graph-outline',
+                parentId: 2,
+                path: 'knowledge',
+                component: 'resource/knowledge/index',
+                permCode: '',
+                sortOrder: 3,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: []
+            }, {
+                id: 24,
+                name: '数据库',
+                type: 'menu',
+                icon: 'mdi:database-outline',
+                parentId: 2,
+                path: 'database',
+                component: 'resource/database/index',
+                permCode: '',
+                sortOrder: 4,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: []
+            }, {
+                id: 25,
+                name: '工具管理',
+                type: 'menu',
+                icon: 'mdi:wrench-outline',
+                parentId: 2,
+                path: 'tool',
+                component: 'resource/tool/index',
+                permCode: '',
+                sortOrder: 5,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: []
+            }, {
+                id: 26,
+                name: '提示词管理',
+                type: 'menu',
+                icon: 'mdi:comment-text-outline',
+                parentId: 2,
+                path: 'prompt',
+                component: 'resource/prompt/index',
+                permCode: '',
+                sortOrder: 6,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: []
+            }, ]
+        }, {
+            id: 3,
+            name: '系统管理',
+            type: 'catalog',
+            icon: 'mdi:cog-outline',
+            parentId: 0,
+            path: '/system',
+            component: '',
+            permCode: '',
+            sortOrder: 3,
+            isExternal: false,
+            isCache: true,
+            showStatus: 'show',
+            menuStatus: 'enabled',
+            children: [{
+                id: 31,
+                name: '部门管理',
+                type: 'menu',
+                icon: 'mdi:office-building',
+                parentId: 3,
+                path: 'dept',
+                component: 'system/dept/index',
+                permCode: '',
+                sortOrder: 1,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: [{
+                    id: 311,
+                    name: '新增',
+                    type: 'button',
+                    icon: '',
+                    parentId: 31,
+                    path: '',
+                    component: '',
+                    permCode: 'system:dept:add',
+                    sortOrder: 1,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, {
+                    id: 312,
+                    name: '编辑',
+                    type: 'button',
+                    icon: '',
+                    parentId: 31,
+                    path: '',
+                    component: '',
+                    permCode: 'system:dept:edit',
+                    sortOrder: 2,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, {
+                    id: 313,
+                    name: '删除',
+                    type: 'button',
+                    icon: '',
+                    parentId: 31,
+                    path: '',
+                    component: '',
+                    permCode: 'system:dept:delete',
+                    sortOrder: 3,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, ]
+            }, {
+                id: 32,
+                name: '成员管理',
+                type: 'menu',
+                icon: 'mdi:account-group',
+                parentId: 3,
+                path: 'member',
+                component: 'system/member/index',
+                permCode: '',
+                sortOrder: 2,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: [{
+                    id: 321,
+                    name: '新增',
+                    type: 'button',
+                    icon: '',
+                    parentId: 32,
+                    path: '',
+                    component: '',
+                    permCode: 'system:member:add',
+                    sortOrder: 1,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, {
+                    id: 322,
+                    name: '编辑',
+                    type: 'button',
+                    icon: '',
+                    parentId: 32,
+                    path: '',
+                    component: '',
+                    permCode: 'system:member:edit',
+                    sortOrder: 2,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, {
+                    id: 323,
+                    name: '删除',
+                    type: 'button',
+                    icon: '',
+                    parentId: 32,
+                    path: '',
+                    component: '',
+                    permCode: 'system:member:delete',
+                    sortOrder: 3,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, ]
+            }, {
+                id: 33,
+                name: '角色管理',
+                type: 'menu',
+                icon: 'mdi:shield-account',
+                parentId: 3,
+                path: 'role',
+                component: 'system/role/index',
+                permCode: '',
+                sortOrder: 3,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: [{
+                    id: 331,
+                    name: '新增',
+                    type: 'button',
+                    icon: '',
+                    parentId: 33,
+                    path: '',
+                    component: '',
+                    permCode: 'system:role:add',
+                    sortOrder: 1,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, {
+                    id: 332,
+                    name: '编辑',
+                    type: 'button',
+                    icon: '',
+                    parentId: 33,
+                    path: '',
+                    component: '',
+                    permCode: 'system:role:edit',
+                    sortOrder: 2,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, {
+                    id: 333,
+                    name: '删除',
+                    type: 'button',
+                    icon: '',
+                    parentId: 33,
+                    path: '',
+                    component: '',
+                    permCode: 'system:role:delete',
+                    sortOrder: 3,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, ]
+            }, {
+                id: 34,
+                name: '菜单管理',
+                type: 'menu',
+                icon: 'mdi:menu',
+                parentId: 3,
+                path: 'menu',
+                component: 'system/menu/index',
+                permCode: '',
+                sortOrder: 4,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: [{
+                    id: 341,
+                    name: '新增',
+                    type: 'button',
+                    icon: '',
+                    parentId: 34,
+                    path: '',
+                    component: '',
+                    permCode: 'system:menu:add',
+                    sortOrder: 1,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, {
+                    id: 342,
+                    name: '编辑',
+                    type: 'button',
+                    icon: '',
+                    parentId: 34,
+                    path: '',
+                    component: '',
+                    permCode: 'system:menu:edit',
+                    sortOrder: 2,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, {
+                    id: 343,
+                    name: '删除',
+                    type: 'button',
+                    icon: '',
+                    parentId: 34,
+                    path: '',
+                    component: '',
+                    permCode: 'system:menu:delete',
+                    sortOrder: 3,
+                    isExternal: false,
+                    isCache: false,
+                    showStatus: 'show',
+                    menuStatus: 'enabled',
+                    children: []
+                }, ]
+            }, ]
+        }, {
+            id: 4,
+            name: '监控中心',
+            type: 'catalog',
+            icon: 'mdi:monitor-dashboard',
+            parentId: 0,
+            path: '/monitor',
+            component: '',
+            permCode: '',
+            sortOrder: 4,
+            isExternal: false,
+            isCache: true,
+            showStatus: 'show',
+            menuStatus: 'enabled',
+            children: [{
+                id: 41,
+                name: '服务监控',
+                type: 'menu',
+                icon: 'mdi:server',
+                parentId: 4,
+                path: 'server',
+                component: 'monitor/server/index',
+                permCode: '',
+                sortOrder: 1,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: []
+            }, {
+                id: 42,
+                name: '缓存监控',
+                type: 'menu',
+                icon: 'mdi:memory',
+                parentId: 4,
+                path: 'cache',
+                component: 'monitor/cache/index',
+                permCode: '',
+                sortOrder: 2,
+                isExternal: false,
+                isCache: true,
+                showStatus: 'show',
+                menuStatus: 'enabled',
+                children: []
+            }, ]
+        }];
+
+        let expandedIds = new Set([1, 2, 3, 4]);
+        let editingMenuId = null;
+        let deletingMenuId = null;
+        let selectedParentId = 0;
+        let allExpanded = false;
+        let searchKeyword = '';
+        let filterShowStatus = 'all';
+
+        // ─ 初始化 ──
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTable();
+        });
+
+        // ── 获取类型标签 ──
+        function getTypeTag(type) {
+            var map = { catalog: ['目录', 'type-catalog'], menu: ['菜单', 'type-menu'], button: ['按钮', 'type-button'] };
+            var entry = map[type] || ['', ''];
+            return '<span class="type-tag ' + entry[1] + '">' + entry[0] + '</span>';
+        }
+
+        // ── 获取显示状态标签 ──
+        function getShowStatusTag(status) {
+            if (status === 'show') {
+                return '<span class="status-tag status-show">显示</span>';
+            }
+            return '<span class="status-tag status-hide">隐藏</span>';
+        }
+
+        // ── 获取图标 ──
+        function getIconHtml(icon) {
+            if (!icon) return '<span class="text-gray-300">-</span>';
+            return '<iconify-icon icon="' + icon + '" class="text-lg text-gray-600"></iconify-icon>';
+        }
+
+        // ── 检查节点是否匹配搜索和筛选 ──
+        function nodeMatches(node) {
+            var nameMatch = true;
+            if (searchKeyword) {
+                nameMatch = node.name.toLowerCase().includes(searchKeyword.toLowerCase());
+            }
+            var statusMatch = true;
+            if (filterShowStatus !== 'all') {
+                statusMatch = node.showStatus === filterShowStatus;
+            }
+            var childMatch = false;
+            if (node.children && node.children.length > 0) {
+                childMatch = node.children.some(function(c) {
+                    return nodeMatches(c);
+                });
+            }
+            return (nameMatch && statusMatch) || childMatch;
+        }
+
+        // ── 渲染表格 ──
+        function renderTable() {
+            var tbody = document.getElementById('menuTableBody');
+            var empty = document.getElementById('emptyState');
+            var rows = [];
+
+            function renderNode(node, level) {
+                var hasChildren = node.children && node.children.length > 0;
+                var isExpanded = expandedIds.has(node.id);
+                var indent = level * 24;
+
+                if (!nodeMatches(node)) return;
+
+                var toggleClass = hasChildren ? 'tree-toggle ' + (isExpanded ? 'expanded' : '') : 'tree-toggle hidden';
+                var canAddChild = node.type !== 'button';
+                var canDelete = !hasChildren;
+
+                var pathDisplay = node.path || '-';
+
+                rows.push('<tr data-id="' + node.id + '">');
+                rows.push('<td>');
+                rows.push('<div style="display:flex;align-items:center;gap:8px;padding-left:' + indent + 'px">');
+                rows.push('<span class="' + toggleClass + '" onclick="toggleNode(' + node.id + ')">');
+                rows.push('<iconify-icon icon="mdi:chevron-right"></iconify-icon>');
+                rows.push('</span>');
+                rows.push('<span class="font-medium text-gray-900">' + highlightText(node.name) + '</span>');
+                rows.push('</div>');
+                rows.push('</td>');
+                rows.push('<td>' + getTypeTag(node.type) + '</td>');
+                rows.push('<td>' + getIconHtml(node.icon) + '</td>');
+                rows.push('<td class="text-sm text-gray-500 font-mono">' + pathDisplay + '</td>');
+                rows.push('<td class="text-sm text-gray-500 font-mono">' + (node.permCode || '-') + '</td>');
+                rows.push('<td>' + node.sortOrder + '</td>');
+                rows.push('<td>' + getShowStatusTag(node.showStatus) + '</td>');
+                rows.push('<td>');
+                if (canAddChild) {
+                    rows.push('<span class="action-link" onclick="openModal(' + node.id + ', \'' + node.type + '\')">新增</span> ');
+                }
+                rows.push('<span class="action-link" onclick="editMenu(' + node.id + ')">编辑</span> ');
+                if (canDelete) {
+                    rows.push('<span class="action-link danger" onclick="deleteMenu(' + node.id + ')">删除</span>');
+                } else {
+                    rows.push('<span class="action-link disabled" title="有子节点不可删除">删除</span>');
+                }
+                rows.push('</td>');
+                rows.push('</tr>');
+
+                if (hasChildren && isExpanded) {
+                    node.children.forEach(function(child) {
+                        renderNode(child, level + 1);
+                    });
+                }
+            }
+
+            menuData.forEach(function(node) {
+                renderNode(node, 0);
+            });
+
+            if (rows.length === 0) {
+                tbody.innerHTML = '';
+                empty.classList.remove('hidden');
+            } else {
+                tbody.innerHTML = rows.join('');
+                empty.classList.add('hidden');
+            }
+        }
+
+        function highlightText(text) {
+            if (!searchKeyword) return text;
+            var regex = new RegExp('(' + searchKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        // ── 展开/折叠 ──
+        function toggleNode(id) {
+            if (expandedIds.has(id)) expandedIds.delete(id);
+            else expandedIds.add(id);
+            renderTable();
+        }
+
+        function toggleExpandAll() {
+            allExpanded = !allExpanded;
+            if (allExpanded) {
+                function expandAll(nodes) {
+                    nodes.forEach(function(n) {
+                        expandedIds.add(n.id);
+                        if (n.children) expandAll(n.children);
+                    });
+                }
+                expandAll(menuData);
+                document.getElementById('expandBtnText').textContent = '全部折叠';
+            } else {
+                expandedIds.clear();
+                document.getElementById('expandBtnText').textContent = '全部展开';
+            }
+            renderTable();
+        }
+
+        // ── 搜索 + 筛选 ──
+        function searchMenu() {
+            searchKeyword = document.getElementById('searchInput').value.trim();
+            filterShowStatus = document.getElementById('filterShowStatus').value;
+
+            if (searchKeyword) {
+                function expandMatch(nodes, parentId) {
+                    nodes.forEach(function(n) {
+                        var match = n.name.toLowerCase().includes(searchKeyword.toLowerCase());
+                        if (n.children) {
+                            var childMatch = n.children.some(function(c) {
+                                return c.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+                                    (c.children && c.children.some(function(gc) {
+                                        return gc.name.toLowerCase().includes(searchKeyword.toLowerCase());
+                                    }));
+                            });
+                            if (match || childMatch) {
+                                expandedIds.add(n.id);
+                                if (parentId) expandedIds.add(parentId);
+                            }
+                            expandMatch(n.children, n.id);
+                        } else {
+                            if (match && parentId) {
+                                expandedIds.add(parentId);
+                            }
+                        }
+                    });
+                }
+                expandMatch(menuData, 0);
+            }
+            renderTable();
+        }
+
+        // ── 获取当前选中的菜单类型（带防御） ──
+        function getCurrentMenuType() {
+            var checked = document.querySelector('input[name="menuType"]:checked');
+            if (!checked) {
+                // 默认选中 catalog
+                var defaultRadio = document.querySelector('input[name="menuType"][value="catalog"]');
+                if (defaultRadio) defaultRadio.checked = true;
+                return 'catalog';
+            }
+            return checked.value;
+        }
+
+        // ── 模态框 ──
+        function openModal(parentId, parentType) {
+            editingMenuId = null;
+            document.getElementById('modalTitle').textContent = '新增菜单';
+            document.getElementById('menuName').value = '';
+            document.getElementById('menuPath').value = '';
+            document.getElementById('permCode').value = '';
+            document.getElementById('menuIcon').value = '';
+            document.getElementById('sortOrder').value = '0';
+            document.getElementById('isExternal').checked = false;
+            document.getElementById('showStatus').value = 'show';
+
+            // ★ 先设置上级菜单 ID
+            selectedParentId = parentId || 0;
+
+            // ★ 先设置类型 radio（必须在 renderParentSelect 之前）
+            var radioCatalog = document.querySelector('input[name="menuType"][value="catalog"]');
+            var radioMenu = document.querySelector('input[name="menuType"][value="menu"]');
+            var radioButton = document.querySelector('input[name="menuType"][value="button"]');
+
+            if (parentType === 'catalog') {
+                if (radioCatalog) radioCatalog.checked = true;
+            } else if (parentType === 'menu') {
+                if (radioButton) radioButton.checked = true;
+            } else {
+                if (radioCatalog) radioCatalog.checked = true;
+            }
+
+            // ★ 调用 onTypeChange 更新 UI（内部会调用 renderParentSelect，此时 radio 已就绪）
+            onTypeChange();
+
+            document.getElementById('menuModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('menuModal').classList.remove('active');
+            editingMenuId = null;
+        }
+
+        // ── 类型切换 ──
+        function onTypeChange() {
+            var type = getCurrentMenuType();
+            var isButton = type === 'button';
+
+            document.getElementById('routeRow').style.display = isButton ? 'none' : 'block';
+            document.getElementById('permRow').style.display = isButton ? 'block' : 'none';
+            document.getElementById('iconRow').style.display = isButton ? 'none' : 'block';
+            document.getElementById('extraRow').style.display = isButton ? 'none' : 'grid';
+
+            renderParentSelect();
+        }
+
+        // ── 上级菜单选择器 ──
+        function renderParentSelect() {
+            var container = document.getElementById('parentSelect');
+            // ★ 防御：如果没有选中的 radio，默认 catalog
+            var type = getCurrentMenuType();
+
+            var html = '<div class="parent-select-item ' + (selectedParentId === 0 ? 'selected' : '') + '" data-id="0" onclick="selectParent(0, this)">';
+            html += '<span>根目录</span></div>';
+
+            function renderOptions(nodes, level) {
+                nodes.forEach(function(n) {
+                    var disabled = false;
+                    if (type === 'button' && n.type !== 'menu') disabled = true;
+                    if (type === 'catalog' && n.type === 'button') disabled = true;
+                    if (type === 'menu' && n.type !== 'catalog' && n.type !== 'menu') disabled = true;
+                    if (editingMenuId && n.id === editingMenuId) disabled = true;
+
+                    var indent = level * 16;
+                    var cls = 'parent-select-item ' + (selectedParentId === n.id ? 'selected' : '') + (disabled ?
+                        ' disabled' : '');
+                    var clickHandler = disabled ? '' : 'selectParent(' + n.id + ', this)';
+                    html += '<div class="' + cls + '" data-id="' + n.id + '" onclick="' + clickHandler + '">';
+                    html += '<span style="padding-left:' + indent + 'px">' + n.name + '</span></div>';
+
+                    if (n.children && n.children.length > 0) {
+                        renderOptions(n.children, level + 1);
+                    }
+                });
+            }
+            renderOptions(menuData, 1);
+            container.innerHTML = html;
+        }
+
+        function selectParent(id, el) {
+            if (el.classList.contains('disabled')) return;
+            selectedParentId = id;
+            document.querySelectorAll('.parent-select-item').forEach(function(item) {
+                item.classList.remove('selected');
+            });
+            el.classList.add('selected');
+        }
+
+        // ── 编辑菜单 ──
+        function editMenu(id) {
+            var menu = findMenu(id);
+            if (!menu) return;
+
+            editingMenuId = id;
+            document.getElementById('modalTitle').textContent = '编辑菜单';
+            document.getElementById('menuName').value = menu.name;
+            document.getElementById('menuPath').value = menu.path || '';
+            document.getElementById('permCode').value = menu.permCode || '';
+            document.getElementById('menuIcon').value = menu.icon || '';
+            document.getElementById('sortOrder').value = menu.sortOrder;
+            document.getElementById('isExternal').checked = menu.isExternal;
+            document.getElementById('showStatus').value = menu.showStatus;
+
+            selectedParentId = menu.parentId;
+            var radio = document.querySelector('input[name="menuType"][value="' + menu.type + '"]');
+            if (radio) radio.checked = true;
+            // onTypeChange 内部会调用 renderParentSelect
+            onTypeChange();
+
+            document.getElementById('menuModal').classList.add('active');
+        }
+
+        function findMenu(id, nodes) {
+            nodes = nodes || menuData;
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].id === id) return nodes[i];
+                if (nodes[i].children) {
+                    var found = findMenu(id, nodes[i].children);
+                    if (found) return found;
+                }
+            }
+            return null;
+        }
+
+        // ── 保存菜单 ──
+        function saveMenu() {
+            var name = document.getElementById('menuName').value.trim();
+            var type = getCurrentMenuType();
+            var sortOrder = parseInt(document.getElementById('sortOrder').value) || 0;
+
+            if (!name) { alert('请输入菜单名称'); return; }
+
+            if (editingMenuId) {
+                var menu = findMenu(editingMenuId);
+                if (!menu) return;
+
+                menu.name = name;
+                menu.type = type;
+                menu.parentId = selectedParentId;
+                menu.path = document.getElementById('menuPath').value.trim();
+                menu.permCode = document.getElementById('permCode').value.trim();
+                menu.icon = document.getElementById('menuIcon').value.trim();
+                menu.sortOrder = sortOrder;
+                menu.isExternal = document.getElementById('isExternal').checked;
+                menu.showStatus = document.getElementById('showStatus').value;
+            } else {
+                var newId = Date.now();
+                var newMenu = {
+                    id: newId,
+                    name: name,
+                    type: type,
+                    parentId: selectedParentId,
+                    path: document.getElementById('menuPath').value.trim(),
+                    component: '',
+                    permCode: document.getElementById('permCode').value.trim(),
+                    icon: document.getElementById('menuIcon').value.trim(),
+                    sortOrder: sortOrder,
+                    isExternal: document.getElementById('isExternal').checked,
+                    isCache: false,
+                    showStatus: document.getElementById('showStatus').value,
+                    menuStatus: 'enabled',
+                    children: []
+                };
+
+                if (selectedParentId === 0) {
+                    menuData.push(newMenu);
+                } else {
+                    var parent = findMenu(selectedParentId);
+                    if (parent) {
+                        if (!parent.children) parent.children = [];
+                        parent.children.push(newMenu);
+                        expandedIds.add(selectedParentId);
+                    }
+                }
+            }
+
+            closeModal();
+            renderTable();
+        }
+
+        // ── 删除菜单 ──
+        function deleteMenu(id) {
+            var menu = findMenu(id);
+            if (!menu) return;
+
+            if (menu.children && menu.children.length > 0) {
+                alert('该菜单下有子节点，请先删除子节点');
+                return;
+            }
+
+            deletingMenuId = id;
+            document.getElementById('deleteTitle').textContent = '确认删除';
+            document.getElementById('deleteMsg').textContent = '确定要删除「' + menu.name + '」吗？此操作不可撤销。';
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deletingMenuId = null;
+        }
+
+        function confirmDelete() {
+            function removeFromTree(nodes, id) {
+                for (var i = 0; i < nodes.length; i++) {
+                    if (nodes[i].id === id) {
+                        nodes.splice(i, 1);
+                        return true;
+                    }
+                    if (nodes[i].children && removeFromTree(nodes[i].children, id)) return true;
+                }
+                return false;
+            }
+
+            removeFromTree(menuData, deletingMenuId);
+            closeDeleteModal();
+            renderTable();
+        }
+
+        // ── 点击遮罩关闭 ──
+        document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
