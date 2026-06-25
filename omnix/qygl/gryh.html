@@ -25,36 +25,44 @@
         }
 
         .page-wrap {
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
         }
 
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
+        .member-table th, .member-table td {
+            white-space: nowrap;
+        }
+
+        /* Toggle Switch */
         .toggle { position: relative; display: inline-block; width: 36px; height: 20px; }
         .toggle input { opacity: 0; width: 0; height: 0; }
-        .toggle .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #d1d5db; transition: .3s; border-radius: 20px;
+        .slider {
+            position: absolute; cursor: pointer; inset: 0;
+            background-color: #e5e7eb; border-radius: 20px;
+            transition: .3s;
         }
-        .toggle .slider::before {
-            content: ""; position: absolute; height: 16px; width: 16px;
-            left: 2px; bottom: 2px; background: white; transition: .3s; border-radius: 50%;
+        .slider::before {
+            content: ''; position: absolute;
+            height: 16px; width: 16px; left: 2px; bottom: 2px;
+            background-color: white; border-radius: 50%;
+            transition: .3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .toggle input:checked + .slider { background-color: #3b82f6; }
         .toggle input:checked + .slider::before { transform: translateX(16px); }
 
-        .member-table tbody tr:hover { background-color: #f9fafb; }
-        .member-table tbody tr { transition: background-color 0.15s; }
-
+        /* Checkbox */
         .custom-checkbox {
-            width: 16px; height: 16px; border: 1.5px solid #d1d5db; border-radius: 4px;
-            appearance: none; cursor: pointer; position: relative;
+            appearance: none; width: 16px; height: 16px;
+            border: 1.5px solid #d1d5db; border-radius: 4px;
+            cursor: pointer; position: relative;
+            transition: all 0.15s ease;
         }
         .custom-checkbox:checked {
             background-color: #3b82f6; border-color: #3b82f6;
@@ -68,14 +76,62 @@
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 50;
             display: none; align-items: center; justify-content: center;
+            animation: fadeIn 0.2s ease;
         }
         .modal-overlay.active { display: flex; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-12px); } }
+
+        .modal-content { animation: slideUp 0.25s ease; }
 
         .tag-personal {
             display: inline-block; padding: 1px 8px; border-radius: 10px;
             font-size: 11px; background: #ede9fe; color: #5b21b6; font-weight: 500;
             margin-left: 6px; vertical-align: middle;
         }
+
+        /* Toast */
+        .toast-container {
+            position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+            z-index: 100; display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+        .toast {
+            padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12); animation: toastIn 0.3s ease;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .toast.success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .toast.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .toast.hiding { animation: toastOut 0.3s ease forwards; }
+
+        /* Status dropdown */
+        .status-dropdown {
+            position: relative; display: inline-block;
+        }
+        .status-dropdown-menu {
+            position: absolute; top: calc(100% + 4px); left: 0;
+            background: white; border: 1px solid #e5e7eb; border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); min-width: 120px;
+            z-index: 30; display: none; overflow: hidden;
+        }
+        .status-dropdown-menu.active { display: block; }
+        .status-dropdown-item {
+            padding: 8px 14px; font-size: 13px; color: #374151; cursor: pointer;
+            transition: background 0.15s;
+        }
+        .status-dropdown-item:hover { background: #f3f4f6; }
+        .status-dropdown-item.selected { color: #3b82f6; font-weight: 500; background: #eff6ff; }
+
+        /* Import upload area */
+        .upload-area {
+            border: 2px dashed #d1d5db; border-radius: 12px; padding: 40px 20px;
+            text-align: center; cursor: pointer; transition: all 0.2s;
+        }
+        .upload-area:hover { border-color: #3b82f6; background: #f0f7ff; }
+        .upload-area.dragover { border-color: #3b82f6; background: #eff6ff; }
     </style>
 </head>
 <body>
@@ -87,7 +143,7 @@
             <span class="text-lg font-bold text-gray-900">个人用户</span>
             <span class="text-sm text-gray-400 flex items-center">
                 <iconify-icon icon="mdi:account-outline" class="mr-1"></iconify-icon>
-                8
+                <span id="userCount">8</span>
             </span>
             <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">角色固定为「个人角色」，不可更改</span>
         </div>
@@ -96,11 +152,11 @@
                 <iconify-icon icon="mdi:download-outline"></iconify-icon>
                 <span>导出</span>
             </button>
-            <button class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+            <button onclick="openImportModal()" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
                 <iconify-icon icon="mdi:upload-outline"></iconify-icon>
                 <span>导入</span>
             </button>
-            <button onclick="openModal()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+            <button onclick="openAddModal()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
                 <iconify-icon icon="mdi:plus"></iconify-icon>
                 <span>新增用户</span>
             </button>
@@ -115,13 +171,18 @@
             <div class="relative flex-1 max-w-md">
                 <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
                 <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
-                       placeholder="搜索用户（用户名或手机号）" type="text"/>
+                       placeholder="搜索姓名（用户名、手机号或邮箱）" type="text"/>
             </div>
-            <div class="flex items-center space-x-2">
-                <button class="flex items-center space-x-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
-                    <span>全部状态</span>
+            <div class="status-dropdown">
+                <button onclick="toggleStatusDropdown()" class="flex items-center space-x-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                    <span id="statusFilterLabel">全部状态</span>
                     <iconify-icon class="text-gray-400" icon="mdi:chevron-down"></iconify-icon>
                 </button>
+                <div class="status-dropdown-menu" id="statusDropdownMenu">
+                    <div class="status-dropdown-item selected" onclick="selectStatus('全部状态', this)">全部状态</div>
+                    <div class="status-dropdown-item" onclick="selectStatus('启用', this)">启用</div>
+                    <div class="status-dropdown-item" onclick="selectStatus('禁用', this)">禁用</div>
+                </div>
             </div>
         </div>
 
@@ -133,8 +194,8 @@
                         <th class="text-left px-4 py-3 font-medium text-gray-500 w-10">
                             <input type="checkbox" class="custom-checkbox" id="selectAll"/>
                         </th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-500">姓名</th>
                         <th class="text-left px-4 py-3 font-medium text-gray-500">用户名</th>
-                        <th class="text-left px-4 py-3 font-medium text-gray-500">用户姓名</th>
                         <th class="text-left px-4 py-3 font-medium text-gray-500">手机号</th>
                         <th class="text-left px-4 py-3 font-medium text-gray-500">邮箱</th>
                         <th class="text-left px-4 py-3 font-medium text-gray-500">角色</th>
@@ -142,215 +203,7 @@
                         <th class="text-left px-4 py-3 font-medium text-gray-500">操作</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
-                    <tr>
-                        <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs font-semibold">刘</div>
-                                <span class="font-medium text-gray-900">liuwei</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-gray-900">刘伟</td>
-                        <td class="px-4 py-3 text-gray-500">138****1234</td>
-                        <td class="px-4 py-3 text-gray-500">liuwei@example.com</td>
-                        <td class="px-4 py-3">
-                            <span class="text-violet-600 font-medium">个人角色</span>
-                            <span class="tag-personal">固定</span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">编辑</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">删除</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">重置密码</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs font-semibold">陈</div>
-                                <span class="font-medium text-gray-900">chenjing</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-gray-900">陈静</td>
-                        <td class="px-4 py-3 text-gray-500">139****5678</td>
-                        <td class="px-4 py-3 text-gray-500">chenjing@example.com</td>
-                        <td class="px-4 py-3">
-                            <span class="text-violet-600 font-medium">个人角色</span>
-                            <span class="tag-personal">固定</span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">编辑</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">删除</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">重置密码</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs font-semibold">王</div>
-                                <span class="font-medium text-gray-900">wangfang</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-gray-900">王芳</td>
-                        <td class="px-4 py-3 text-gray-500">137****9012</td>
-                        <td class="px-4 py-3 text-gray-500">wangfang@example.com</td>
-                        <td class="px-4 py-3">
-                            <span class="text-violet-600 font-medium">个人角色</span>
-                            <span class="tag-personal">固定</span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">编辑</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">删除</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">重置密码</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs font-semibold">孙</div>
-                                <span class="font-medium text-gray-900">sunlei</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-gray-900">孙磊</td>
-                        <td class="px-4 py-3 text-gray-500">136****3456</td>
-                        <td class="px-4 py-3 text-gray-500">sunlei@example.com</td>
-                        <td class="px-4 py-3">
-                            <span class="text-violet-600 font-medium">个人角色</span>
-                            <span class="tag-personal">固定</span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">编辑</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">删除</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">重置密码</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs font-semibold">周</div>
-                                <span class="font-medium text-gray-900">zhoumin</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-gray-900">周敏</td>
-                        <td class="px-4 py-3 text-gray-500">135****7890</td>
-                        <td class="px-4 py-3 text-gray-500">zhoumin@example.com</td>
-                        <td class="px-4 py-3">
-                            <span class="text-violet-600 font-medium">个人角色</span>
-                            <span class="tag-personal">固定</span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <label class="toggle"><input type="checkbox"/><span class="slider"></span></label>
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">编辑</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">删除</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">重置密码</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs font-semibold">吴</div>
-                                <span class="font-medium text-gray-900">wujie</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-gray-900">吴杰</td>
-                        <td class="px-4 py-3 text-gray-500">133****2345</td>
-                        <td class="px-4 py-3 text-gray-500">wujie@example.com</td>
-                        <td class="px-4 py-3">
-                            <span class="text-violet-600 font-medium">个人角色</span>
-                            <span class="tag-personal">固定</span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">编辑</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">删除</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">重置密码</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs font-semibold">郑</div>
-                                <span class="font-medium text-gray-900">zhengyu</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-gray-900">郑宇</td>
-                        <td class="px-4 py-3 text-gray-500">131****6789</td>
-                        <td class="px-4 py-3 text-gray-500">zhengyu@example.com</td>
-                        <td class="px-4 py-3">
-                            <span class="text-violet-600 font-medium">个人角色</span>
-                            <span class="tag-personal">固定</span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">编辑</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">删除</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">重置密码</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs font-semibold">黄</div>
-                                <span class="font-medium text-gray-900">huangxin</span>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-gray-900">黄鑫</td>
-                        <td class="px-4 py-3 text-gray-500">130****0123</td>
-                        <td class="px-4 py-3 text-gray-500">huangxin@example.com</td>
-                        <td class="px-4 py-3">
-                            <span class="text-violet-600 font-medium">个人角色</span>
-                            <span class="tag-personal">固定</span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <label class="toggle"><input type="checkbox"/><span class="slider"></span></label>
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">编辑</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">删除</button>
-                                <button class="text-gray-400 hover:text-gray-600 text-sm font-medium">重置密码</button>
-                            </div>
-                        </td>
-                    </tr>
+                <tbody class="divide-y divide-gray-100" id="userTableBody">
                 </tbody>
             </table>
         </div>
@@ -358,7 +211,7 @@
         <!-- 分页 -->
         <div class="flex items-center justify-between mt-4">
             <div class="text-sm text-gray-500">
-                共 <span class="font-medium text-gray-700">8</span> 条记录，每页
+                共 <span class="font-medium text-gray-700" id="totalRecords">8</span> 条记录，每页
                 <select class="border border-gray-200 rounded px-2 py-1 text-sm mx-1 focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <option>10</option><option>20</option><option>50</option>
                 </select>
@@ -374,32 +227,39 @@
 
 </div>
 
-<!-- 新增个人用户 Modal -->
-<div class="modal-overlay" id="addModal">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+<!-- Toast 容器 -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- 新增/编辑个人用户 Modal -->
+<div class="modal-overlay" id="userModal">
+    <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-            <h3 class="text-lg font-semibold text-gray-900">新增个人用户</h3>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+            <h3 class="text-lg font-semibold text-gray-900" id="userModalTitle">新增个人用户</h3>
+            <button onclick="closeUserModal()" class="text-gray-400 hover:text-gray-600">
                 <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
             </button>
         </div>
         <div class="px-6 py-5 space-y-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">用户名 <span class="text-red-500">*</span></label>
-                <input type="text" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" placeholder="请输入用户名（登录名）"/>
+                <input type="text" id="formUsername" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" placeholder="请输入用户名（登录名）"/>
+            </div>
+            <div id="passwordField">
+                <label class="block text-sm font-medium text-gray-700 mb-1">密码 <span class="text-red-500">*</span></label>
+                <input type="password" id="formPassword" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" placeholder="请输入密码"/>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">用户姓名 <span class="text-red-500">*</span></label>
-                <input type="text" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" placeholder="请输入用户姓名"/>
+                <label class="block text-sm font-medium text-gray-700 mb-1">姓名 <span class="text-red-500">*</span></label>
+                <input type="text" id="formRealname" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" placeholder="请输入姓名"/>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">手机号</label>
-                    <input type="text" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" placeholder="请输入手机号"/>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">手机号 <span class="text-red-500">*</span></label>
+                    <input type="text" id="formPhone" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" placeholder="请输入手机号"/>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">邮箱</label>
-                    <input type="text" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" placeholder="请输入邮箱"/>
+                    <input type="text" id="formEmail" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" placeholder="选填"/>
                 </div>
             </div>
             <div>
@@ -411,23 +271,338 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">备注</label>
-                <textarea class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" rows="2" placeholder="选填"></textarea>
+                <textarea id="formRemark" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" rows="2" placeholder="选填"></textarea>
             </div>
         </div>
         <div class="flex items-center justify-end space-x-3 px-6 py-4 border-t border-gray-100 bg-gray-50/50">
-            <button onclick="closeModal()" class="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
-            <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">确认创建</button>
+            <button onclick="closeUserModal()" class="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+            <button onclick="submitUserForm()" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700" id="userModalSubmitBtn">确认创建</button>
+        </div>
+    </div>
+</div>
+
+<!-- 重置密码确认 Modal -->
+<div class="modal-overlay" id="resetPwdModal">
+    <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
+        <div class="px-6 py-5">
+            <div class="flex items-center justify-center w-12 h-12 mx-auto rounded-full bg-amber-100 mb-4">
+                <iconify-icon icon="mdi:key-change" class="text-2xl text-amber-600"></iconify-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 text-center mb-2">确认重置密码</h3>
+            <p class="text-sm text-gray-500 text-center">确定要将用户 <span class="font-medium text-gray-700" id="resetPwdUserName"></span> 的密码重置为 <code class="px-1.5 py-0.5 bg-gray-100 rounded text-blue-600 font-mono text-xs">Aa123456</code> 吗？</p>
+        </div>
+        <div class="flex items-center justify-end space-x-3 px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+            <button onclick="closeResetPwdModal()" class="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+            <button onclick="confirmResetPwd()" class="px-4 py-2 text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600">确认重置</button>
+        </div>
+    </div>
+</div>
+
+<!-- 删除确认 Modal -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
+        <div class="px-6 py-5">
+            <div class="flex items-center justify-center w-12 h-12 mx-auto rounded-full bg-red-100 mb-4">
+                <iconify-icon icon="mdi:alert-circle-outline" class="text-2xl text-red-500"></iconify-icon>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 text-center mb-2">确认删除</h3>
+            <p class="text-sm text-gray-500 text-center">确定要删除用户 <span class="font-medium text-gray-700" id="deleteUserName"></span> 吗？</p>
+            <p class="text-xs text-red-500 text-center mt-2 font-medium">⚠️ 删除后不可恢复，请谨慎操作</p>
+        </div>
+        <div class="flex items-center justify-end space-x-3 px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+            <button onclick="closeDeleteModal()" class="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+            <button onclick="confirmDelete()" class="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600">确认删除</button>
+        </div>
+    </div>
+</div>
+
+<!-- 导入文件 Modal -->
+<div class="modal-overlay" id="importModal">
+    <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-900">导入用户</h3>
+            <button onclick="closeImportModal()" class="text-gray-400 hover:text-gray-600">
+                <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+            </button>
+        </div>
+        <div class="px-6 py-5 space-y-4">
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                <iconify-icon icon="mdi:cloud-upload-outline" class="text-4xl text-gray-400 mb-3"></iconify-icon>
+                <p class="text-sm text-gray-600 mb-1">点击或拖拽文件到此区域上传</p>
+                <p class="text-xs text-gray-400">支持 .xlsx、.xls、.csv 格式文件</p>
+            </div>
+            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleFileSelect(event)"/>
+            <div id="selectedFileInfo" class="hidden flex items-center space-x-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+                <iconify-icon icon="mdi:file-excel-outline" class="text-blue-600"></iconify-icon>
+                <span class="text-sm text-blue-700 flex-1" id="fileName"></span>
+                <button onclick="clearFile()" class="text-blue-400 hover:text-blue-600">
+                    <iconify-icon icon="mdi:close" class="text-sm"></iconify-icon>
+                </button>
+            </div>
+            <div class="flex items-start space-x-2 text-xs text-gray-400">
+                <iconify-icon icon="mdi:information-outline" class="text-gray-400 mt-0.5 flex-shrink-0"></iconify-icon>
+                <div>
+                    <p>请先<a href="#" class="text-blue-500 hover:underline">下载导入模板</a>，按模板格式填写后上传。</p>
+                    <p class="mt-1">单次导入不超过 500 条数据。</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center justify-end space-x-3 px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+            <button onclick="closeImportModal()" class="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+            <button onclick="confirmImport()" id="importConfirmBtn" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 opacity-50 cursor-not-allowed" disabled>开始导入</button>
         </div>
     </div>
 </div>
 
 <script>
-function openModal() { document.getElementById('addModal').classList.add('active'); }
-function closeModal() { document.getElementById('addModal').classList.remove('active'); }
+// ========== 用户数据 ==========
+let users = [
+    { id: 1, username: 'liuwei', realname: '刘伟', phone: '138****1234', email: 'liuwei@example.com', enabled: true, surname: '刘' },
+    { id: 2, username: 'chenjing', realname: '陈静', phone: '139****5678', email: 'chenjing@example.com', enabled: true, surname: '陈' },
+    { id: 3, username: 'wangfang', realname: '王芳', phone: '137****9012', email: 'wangfang@example.com', enabled: true, surname: '王' },
+    { id: 4, username: 'sunlei', realname: '孙磊', phone: '136****3456', email: 'sunlei@example.com', enabled: true, surname: '孙' },
+    { id: 5, username: 'zhoumin', realname: '周敏', phone: '135****7890', email: 'zhoumin@example.com', enabled: false, surname: '周' },
+    { id: 6, username: 'wujie', realname: '吴杰', phone: '133****2345', email: 'wujie@example.com', enabled: true, surname: '吴' },
+    { id: 7, username: 'zhengyu', realname: '郑宇', phone: '131****6789', email: 'zhengyu@example.com', enabled: true, surname: '郑' },
+    { id: 8, username: 'huangxin', realname: '黄鑫', phone: '130****0123', email: 'huangxin@example.com', enabled: false, surname: '黄' }
+];
 
+let editingUserId = null;
+let resetPwdUserId = null;
+let deleteUserId = null;
+
+// ========== 渲染表格 ==========
+function renderTable() {
+    const tbody = document.getElementById('userTableBody');
+    tbody.innerHTML = '';
+    users.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
+            <td class="px-4 py-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs font-semibold">${u.surname}</div>
+                    <span class="font-medium text-gray-900">${u.realname}</span>
+                </div>
+            </td>
+            <td class="px-4 py-3 text-gray-900">${u.username}</td>
+            <td class="px-4 py-3 text-gray-500">${u.phone}</td>
+            <td class="px-4 py-3 text-gray-500">${u.email}</td>
+            <td class="px-4 py-3">
+                <span class="text-violet-600 font-medium">个人角色</span>
+                <span class="tag-personal">固定</span>
+            </td>
+            <td class="px-4 py-3">
+                <label class="toggle"><input type="checkbox" ${u.enabled ? 'checked' : ''} onchange="toggleUserStatus(${u.id})"/><span class="slider"></span></label>
+            </td>
+            <td class="px-4 py-3">
+                <div class="flex items-center space-x-2">
+                    <button onclick="openEditModal(${u.id})" class="text-blue-600 hover:text-blue-800 text-sm font-medium">编辑</button>
+                    <button onclick="openDeleteModal(${u.id})" class="text-gray-400 hover:text-gray-600 text-sm font-medium">删除</button>
+                    <button onclick="openResetPwdModal(${u.id})" class="text-gray-400 hover:text-gray-600 text-sm font-medium">重置密码</button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+    document.getElementById('userCount').textContent = users.length;
+    document.getElementById('totalRecords').textContent = users.length;
+}
+
+function toggleUserStatus(id) {
+    const user = users.find(u => u.id === id);
+    if (user) user.enabled = !user.enabled;
+}
+
+// ========== Toast ==========
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icon = type === 'success' ? 'mdi:check-circle' : 'mdi:alert-circle';
+    toast.innerHTML = `<iconify-icon icon="${icon}"></iconify-icon><span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 300);
+    }, 2500);
+}
+
+// ========== 新增/编辑 Modal ==========
+function openAddModal() {
+    editingUserId = null;
+    document.getElementById('userModalTitle').textContent = '新增个人用户';
+    document.getElementById('userModalSubmitBtn').textContent = '确认创建';
+    document.getElementById('passwordField').style.display = '';
+    clearForm();
+    document.getElementById('userModal').classList.add('active');
+}
+
+function openEditModal(id) {
+    const user = users.find(u => u.id === id);
+    if (!user) return;
+    editingUserId = id;
+    document.getElementById('userModalTitle').textContent = '编辑个人用户';
+    document.getElementById('userModalSubmitBtn').textContent = '保存修改';
+    document.getElementById('passwordField').style.display = 'none';
+    document.getElementById('formUsername').value = user.username;
+    document.getElementById('formRealname').value = user.realname;
+    document.getElementById('formPhone').value = user.phone;
+    document.getElementById('formEmail').value = user.email;
+    document.getElementById('formRemark').value = '';
+    document.getElementById('userModal').classList.add('active');
+}
+
+function closeUserModal() {
+    document.getElementById('userModal').classList.remove('active');
+    editingUserId = null;
+}
+
+function clearForm() {
+    document.getElementById('formUsername').value = '';
+    document.getElementById('formPassword').value = '';
+    document.getElementById('formRealname').value = '';
+    document.getElementById('formPhone').value = '';
+    document.getElementById('formEmail').value = '';
+    document.getElementById('formRemark').value = '';
+}
+
+function submitUserForm() {
+    if (editingUserId) {
+        // 编辑保存
+        const user = users.find(u => u.id === editingUserId);
+        if (user) {
+            user.username = document.getElementById('formUsername').value || user.username;
+            user.realname = document.getElementById('formRealname').value || user.realname;
+            user.phone = document.getElementById('formPhone').value || user.phone;
+            user.email = document.getElementById('formEmail').value || user.email;
+            user.surname = user.realname.charAt(0);
+        }
+        closeUserModal();
+        renderTable();
+        showToast('用户信息已更新');
+    } else {
+        // 新增
+        closeUserModal();
+        showToast('用户创建成功');
+    }
+}
+
+// ========== 重置密码 ==========
+function openResetPwdModal(id) {
+    const user = users.find(u => u.id === id);
+    if (!user) return;
+    resetPwdUserId = id;
+    document.getElementById('resetPwdUserName').textContent = user.realname;
+    document.getElementById('resetPwdModal').classList.add('active');
+}
+
+function closeResetPwdModal() {
+    document.getElementById('resetPwdModal').classList.remove('active');
+    resetPwdUserId = null;
+}
+
+function confirmResetPwd() {
+    closeResetPwdModal();
+    showToast('密码已重置为 Aa123456');
+}
+
+// ========== 删除 ==========
+function openDeleteModal(id) {
+    const user = users.find(u => u.id === id);
+    if (!user) return;
+    deleteUserId = id;
+    document.getElementById('deleteUserName').textContent = user.realname;
+    document.getElementById('deleteModal').classList.add('active');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('active');
+    deleteUserId = null;
+}
+
+function confirmDelete() {
+    if (deleteUserId) {
+        users = users.filter(u => u.id !== deleteUserId);
+    }
+    closeDeleteModal();
+    renderTable();
+    showToast('删除成功');
+}
+
+// ========== 状态下拉 ==========
+function toggleStatusDropdown() {
+    document.getElementById('statusDropdownMenu').classList.toggle('active');
+}
+
+function selectStatus(label, el) {
+    document.getElementById('statusFilterLabel').textContent = label;
+    document.querySelectorAll('.status-dropdown-item').forEach(item => item.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('statusDropdownMenu').classList.remove('active');
+}
+
+// 点击外部关闭下拉
+document.addEventListener('click', function(e) {
+    const dropdown = document.querySelector('.status-dropdown');
+    if (!dropdown.contains(e.target)) {
+        document.getElementById('statusDropdownMenu').classList.remove('active');
+    }
+});
+
+// ========== 导入 ==========
+function openImportModal() {
+    document.getElementById('importModal').classList.add('active');
+    clearFile();
+}
+
+function closeImportModal() {
+    document.getElementById('importModal').classList.remove('active');
+}
+
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('selectedFileInfo').classList.remove('hidden');
+        document.getElementById('importConfirmBtn').disabled = false;
+        document.getElementById('importConfirmBtn').classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+}
+
+function clearFile() {
+    document.getElementById('fileInput').value = '';
+    document.getElementById('selectedFileInfo').classList.add('hidden');
+    document.getElementById('importConfirmBtn').disabled = true;
+    document.getElementById('importConfirmBtn').classList.add('opacity-50', 'cursor-not-allowed');
+}
+
+function confirmImport() {
+    closeImportModal();
+    showToast('导入成功');
+}
+
+// 拖拽上传
+const uploadArea = document.getElementById('uploadArea');
+uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+uploadArea.addEventListener('dragleave', () => { uploadArea.classList.remove('dragover'); });
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+        document.getElementById('fileInput').files = e.dataTransfer.files;
+        handleFileSelect({ target: { files: [file] } });
+    }
+});
+
+// ========== 全选 ==========
 document.getElementById('selectAll').addEventListener('change', function() {
     document.querySelectorAll('.member-table tbody .custom-checkbox').forEach(cb => cb.checked = this.checked);
 });
+
+// ========== 初始化 ==========
+renderTable();
 </script>
 </body>
 </html>
