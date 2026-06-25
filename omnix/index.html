@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>OmniX</title>
-    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
-    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js"></script>
+    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js">
+    </script>
+    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js">
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -15,7 +17,8 @@
             padding: 0;
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
             overflow: hidden;
         }
@@ -93,9 +96,16 @@
             padding: 8px 10px 8px;
         }
 
-        .sidebar-nav::-webkit-scrollbar { width: 4px; }
-        .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
-        .sidebar-nav::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 4px; }
+        .sidebar-nav::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 4px;
+        }
 
         /* 菜单分组标题 */
         .nav-group-label {
@@ -111,7 +121,7 @@
             padding-top: 6px;
         }
 
-        /* 菜单项 */
+        /* ── 菜单项基础 ── */
         .nav-item {
             display: flex;
             align-items: center;
@@ -126,6 +136,7 @@
             white-space: nowrap;
             overflow: hidden;
             user-select: none;
+            position: relative;
         }
 
         .nav-item iconify-icon {
@@ -154,6 +165,44 @@
 
         .nav-item.active iconify-icon {
             color: #2563eb;
+        }
+
+        /* ── 待规划菜单项 ── */
+        .nav-item.planning {
+            cursor: default;
+            color: #b0b8c4;
+        }
+
+        .nav-item.planning iconify-icon {
+            color: #c5cdd8;
+        }
+
+        .nav-item.planning:hover {
+            background: transparent;
+            color: #b0b8c4;
+        }
+
+        .nav-item.planning:hover iconify-icon {
+            color: #c5cdd8;
+        }
+
+        .nav-item.planning .planning-badge {
+            display: inline-block;
+            font-size: 8px;
+            font-weight: 600;
+            color: #a0aec0;
+            background: #f1f3f5;
+            padding: 0 6px;
+            border-radius: 3px;
+            line-height: 16px;
+            margin-left: auto;
+            flex-shrink: 0;
+            letter-spacing: 0.3px;
+            border: 1px solid #e9edf0;
+        }
+
+        .nav-item.planning{
+            color: #b0b8c4;
         }
 
         /* 底部用户区 */
@@ -261,181 +310,196 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="layout-shell">
+    <div class="layout-shell">
 
-    <!-- ══════════════════════════════════════
-         左侧固定侧边导航栏  (200px)
-    ══════════════════════════════════════ -->
-    <aside class="sidebar">
+        <!-- ══════════════════════════════════════
+             左侧固定侧边导航栏  (200px)
+        ══════════════════════════════════════ -->
+        <aside class="sidebar">
 
-        <!-- Logo -->
-        <div class="sidebar-logo">
-            <div class="logo-icon">
-                <iconify-icon icon="mdi:robot-confused" style="font-size:18px;color:#fff;"></iconify-icon>
-            </div>
-            <span class="logo-title">OmniX</span>
-            <span class="logo-badge">SVITE</span>
-        </div>
-
-        <!-- 菜单导航 -->
-        <nav class="sidebar-nav" id="sideNav">
-
-
-            <div class="nav-group-label">资源</div>
-
-            <a class="nav-item" data-src="./model-manage.html" onclick="navigate(this)">
-                <iconify-icon icon="mdi:shape-outline"></iconify-icon>
-                <span>模型管理</span>
-            </a>
-            <a class="nav-item" data-src="./rag.html" onclick="navigate(this)">
-                <iconify-icon icon="mdi:book-open-outline"></iconify-icon>
-                <span>RAG</span>
-            </a>
-            <a class="nav-item" data-src="./database.html" onclick="navigate(this)">
-                <iconify-icon icon="mdi:database-outline"></iconify-icon>
-                <span>数据库</span>
-            </a>
-            <a class="nav-item" data-src="./prompt.html" onclick="navigate(this)">
-                <iconify-icon icon="mdi:message-text-outline"></iconify-icon>
-                <span>提示词</span>
-            </a>
-            <a class="nav-item" data-src="./tools.html" onclick="navigate(this)">
-                <iconify-icon icon="mdi:tools"></iconify-icon>
-                <span>工具</span>
-            </a>
-
-            <div class="nav-group-label">Chat运营</div>
-
-            <a class="nav-item" data-src="./pin-config.html" onclick="navigate(this)">
-                <iconify-icon icon="mdi:pin-outline"></iconify-icon>
-                <span>置顶配置</span>
-            </a>
-            <a class="nav-item" data-src="./banner-config.html" onclick="navigate(this)">
-                <iconify-icon icon="mdi:image-outline"></iconify-icon>
-                <span>Banner配置</span>
-            </a>
-            <a class="nav-item" data-src="./agent-content.html" onclick="navigate(this)">
-                <iconify-icon icon="mdi:shape-outline"></iconify-icon>
-                <span>智能体分类</span>
-            </a>
-
-            <div class="nav-group-label">企业管理</div>
-
-            <a class="nav-item"
-               data-src="./qygl/qycy.html"
-               onclick="navigate(this)"
-               id="navAgent">
-                <iconify-icon icon="mdi:robot"></iconify-icon>
-                <span>企业成员</span>
-            </a>
-            <a class="nav-item" data-src="./qygl/gryh.html" onclick="navigate(this)">
-                <iconify-icon icon="mdi:shield-star-outline"></iconify-icon>
-                <span>个人用户</span>
-            </a>
-            <a class="nav-item" data-src="./skill-platform.html" onclick="navigate(this)">
-                <iconify-icon icon="mdi:lightning-bolt-outline"></iconify-icon>
-                <span>部门管理</span>
-            </a>
-            <a class="nav-item" data-src="./mcp.html" onclick="navigate(this)">
-                <iconify-icon icon="mdi:connection"></iconify-icon>
-                <span>角色权限</span>
-            </a>
-            <a class="nav-item" data-src="./mcp.html" onclick="navigate(this)">
-                <iconify-icon icon="mdi:connection"></iconify-icon>
-                <span>菜单管理</span>
-            </a>
-
-
-        <!-- prd文档链接 -->
-            <div class="nav-group-label">版本管理</div>
-
-            <a class="nav-item active"
-               data-src="./版本更新日志.html"
-               onclick="navigate(this)">
-                <iconify-icon icon="mdi:robot-outline"></iconify-icon>
-                <span>版本日志</span>
-            </a>
-
-
-        </nav>
-
-        <!-- 底部用户信息 -->
-        <div class="sidebar-footer">
-            <div class="user-info">
-                <img class="user-avatar"
-                     src="https://modao.cc/agent-py/media/generated_images/2026-05-27/17718e76067f4762a85e4e89249784e8.jpg"
-                     alt="用户头像"/>
-                <div class="user-meta">
-                    <p class="user-name">管理员 孙礼飞</p>
-                    <p class="user-email">slf-31338@zhink.cc</p>
+            <!-- Logo -->
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <iconify-icon icon="mdi:robot-confused" style="font-size:18px;color:#fff;"></iconify-icon>
                 </div>
-                <button class="logout-btn" title="退出登录">
-                    <iconify-icon icon="mdi:logout"></iconify-icon>
-                </button>
+                <span class="logo-title">OmniX</span>
+                <span class="logo-badge">SVITE</span>
             </div>
+
+            <!-- 菜单导航 -->
+            <nav class="sidebar-nav" id="sideNav">
+
+                <!-- ─── 企业智能体 (全部待规划) ─── -->
+                <div class="nav-group-label">企业智能体</div>
+
+                <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:shape-outline"></iconify-icon>
+                    <span>专家管理</span>
+                </a>
+                <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:book-open-outline"></iconify-icon>
+                    <span>智能体广场</span>
+                </a>
+                <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:database-outline"></iconify-icon>
+                    <span>智能体评测</span>
+                </a>
+                <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:message-text-outline"></iconify-icon>
+                    <span>Agent观测</span>
+                </a>
+                <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:tools"></iconify-icon>
+                    <span>智能体云端</span>
+                </a>
+
+
+                <div class="nav-group-label">资源管理</div>
+
+                <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:pin-outline"></iconify-icon>
+                    <span>模型管理</span>
+                </a>
+                <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:image-outline"></iconify-icon>
+                    <span>MCP管理</span>
+                </a>
+                <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:image-outline"></iconify-icon>
+                    <span>技能管理</span>
+                </a>
+                <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:image-outline"></iconify-icon>
+                    <span>专家词库</span>
+                </a>
+                <a class="nav-item planning" data-planning="true" data-src="./agent-content.html" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:shape-outline"></iconify-icon>
+                    <span>企业知识库</span>
+                </a>
+
+                <!-- ─── 企业管理 (正常) ─── -->
+                <div class="nav-group-label">企业管理</div>
+
+                <a class="nav-item" data-src="./qygl/qycy.html" onclick="navigate(this)" id="navAgent">
+                    <iconify-icon icon="mdi:robot"></iconify-icon>
+                    <span>企业成员</span>
+                </a>
+                <a class="nav-item" data-src="./qygl/gryh.html" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:shield-star-outline"></iconify-icon>
+                    <span>个人用户</span>
+                </a>
+                <a class="nav-item" data-src="./skill-platform.html" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:lightning-bolt-outline"></iconify-icon>
+                    <span>部门管理</span>
+                </a>
+                <a class="nav-item" data-src="./mcp.html" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:connection"></iconify-icon>
+                    <span>角色权限</span>
+                </a>
+                <a class="nav-item" data-src="./mcp.html" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:connection"></iconify-icon>
+                    <span>菜单管理</span>
+                </a>
+                <a class="nav-item planning" data-planning="true" data-src="./mcp.html" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:connection"></iconify-icon>
+                    <span>品牌设置</span>
+                </a>
+                <a class="nav-item planning" data-planning="true" data-src="./mcp.html" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:connection"></iconify-icon>
+                    <span>组织架构同步</span>
+                </a>
+
+                <!-- ─── 版本管理 (正常) ─── -->
+                <div class="nav-group-label">版本管理</div>
+
+                <a class="nav-item active" data-src="./版本更新日志.html" onclick="navigate(this)">
+                    <iconify-icon icon="mdi:robot-outline"></iconify-icon>
+                    <span>版本日志</span>
+                </a>
+
+            </nav>
+
+            <!-- 底部用户信息 -->
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <img class="user-avatar"
+                    src="https://modao.cc/agent-py/media/generated_images/2026-05-27/17718e76067f4762a85e4e89249784e8.jpg"
+                    alt="用户头像" />
+                    <div class="user-meta">
+                        <p class="user-name">管理员 孙礼飞</p>
+                        <p class="user-email">slf-31338@zhink.cc</p>
+                    </div>
+                    <button class="logout-btn" title="退出登录">
+                        <iconify-icon icon="mdi:logout"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- ══════════════════════════════════════
+             右侧主内容区域 — 铺满 iframe
+        ══════════════════════════════════════ -->
+        <div class="content-area">
+            <!-- 加载遮罩 -->
+            <div class="iframe-loader" id="iframeLoader">
+                <div class="loader-spinner"></div>
+            </div>
+
+            <!-- 内容 iframe：默认加载版本日志 -->
+            <iframe id="mainFrame" class="content-iframe" src="./版本更新日志.html" title="内容区域">
+            </iframe>
         </div>
 
-    </aside>
-
-    <!-- ══════════════════════════════════════
-         右侧主内容区域 — 铺满 iframe
-    ══════════════════════════════════════ -->
-    <div class="content-area">
-        <!-- 加载遮罩 -->
-        <div class="iframe-loader" id="iframeLoader">
-            <div class="loader-spinner"></div>
-        </div>
-
-        <!-- 内容 iframe：默认加载智能体内容页 -->
-        <iframe
-            id="mainFrame"
-            class="content-iframe"
-            src="./版本更新日志.html"
-            title="内容区域">
-        </iframe>
     </div>
 
-</div>
+    <script>
+        const frame = document.getElementById('mainFrame');
+        const loader = document.getElementById('iframeLoader');
 
-<script>
-    const frame  = document.getElementById('mainFrame');
-    const loader = document.getElementById('iframeLoader');
+        /**
+         * 切换 iframe src，并高亮对应菜单项
+         * 若菜单项标记为 data-planning="true"（待规划），则无任何效果
+         * @param {HTMLElement} el  被点击的 .nav-item
+         */
+        function navigate(el) {
+            // 待规划菜单 —— 点击无任何效果
+            if (el.dataset.planning === 'true') {
+                return;
+            }
 
-    /**
-     * 切换 iframe src，并高亮对应菜单项
-     * @param {HTMLElement} el  被点击的 .nav-item
-     */
-    function navigate(el) {
-        const src = el.dataset.src;
-        if (!src) return;
+            const src = el.dataset.src;
+            if (!src) return;
 
-        // 更新激活态
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        el.classList.add('active');
+            // 更新激活态
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
 
-        // 显示加载遮罩
-        loader.classList.add('visible');
+            // 显示加载遮罩
+            loader.classList.add('visible');
 
-        // 切换 iframe
-        frame.src = src;
-    }
+            // 切换 iframe
+            frame.src = src;
+        }
 
-    // iframe 加载完成后隐藏遮罩
-    frame.addEventListener('load', () => {
-        loader.classList.remove('visible');
-    });
+        // iframe 加载完成后隐藏遮罩
+        frame.addEventListener('load', () => {
+            loader.classList.remove('visible');
+        });
 
-    // 容错：3 秒后强制隐藏遮罩（防止跨域页面不触发 load）
-    frame.addEventListener('error', () => {
-        loader.classList.remove('visible');
-    });
-</script>
+        // 容错：加载出错时隐藏遮罩
+        frame.addEventListener('error', () => {
+            loader.classList.remove('visible');
+        });
+    </script>
 
 </body>
 </html>
