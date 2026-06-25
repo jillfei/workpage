@@ -332,6 +332,28 @@
     <!-- 内容滚动区 -->
     <div class="flex-1 overflow-y-auto custom-scrollbar" style="padding: 28px 32px;">
 
+        <!-- 统计概览 -->
+        <div class="grid grid-cols-4 gap-4 mb-8">
+            <div class="stat-card">
+                <div style="font-size: 12px; color: var(--fg-subtle); margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">总版本数</div>
+                <div style="font-size: 28px; font-weight: 800; color: var(--fg); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.03em;">3</div>
+            </div>
+            <div class="stat-card">
+                <div style="font-size: 12px; color: var(--fg-subtle); margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">新增功能</div>
+                <div style="font-size: 28px; font-weight: 800; color: oklch(0.55 0.18 290); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.03em;">15</div>
+            </div>
+            <div class="stat-card">
+                <div style="font-size: 12px; color: var(--fg-subtle); margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">优化项</div>
+                <div style="font-size: 28px; font-weight: 800; color: oklch(0.55 0.15 155); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.03em;">9</div>
+            </div>
+            <div class="stat-card">
+                <div style="font-size: 12px; color: var(--fg-subtle); margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">当前状态</div>
+                <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                    <span class="pulse-dot" style="width: 8px; height: 8px; background: var(--amber); border-radius: 50%; display: inline-block;"></span>
+                    <span style="font-size: 18px; font-weight: 700; color: var(--amber);">修改中</span>
+                </div>
+            </div>
+        </div>
 
         <!-- 时间线 -->
         <div class="relative">
@@ -385,23 +407,23 @@
                                         <div class="diff-add">
                                             <strong>4.1 部门管理：</strong>部门管理是整个权限体系的组织基础。采用树形结构，支持无限层级，部门之间形成父子关系。
                                         </div>
-                                        <!--div class="diff-add">
-                                            <strong>4.2 角色权限：</strong>角色是权限的集合体，用户通过绑定角色获得对应的菜单访问权限和功能操作权限。本设计支持两级权限粒度：菜单级（可见/不可见）。
-                                        </div-->
                                         <div class="diff-add">
-                                            <strong>4.2 用户管理：</strong>新增归属组织的内部用户管理入口。支持工号、姓名、所属部门、多角色绑定、手机号、邮箱等字段。功能包含单个新增/编辑、批量导入导出、批量启用停用、批量分配角色、批量调岗、重置密码、组合筛选。
+                                            <strong>4.2 角色权限：</strong>角色是权限的集合体，用户通过绑定角色获得对应的菜单访问权限和功能操作权限。本设计支持两级权限粒度：菜单级（可见/不可见）。
                                         </div>
-                                        <!--div class="diff-add">
+                                        <div class="diff-add">
+                                            <strong>4.3 企业成员：</strong>新增归属组织的内部用户管理入口。支持工号、姓名、所属部门、多角色绑定、手机号、邮箱等字段。功能包含单个新增/编辑、批量导入导出、批量启用停用、批量分配角色、批量调岗、重置密码、组合筛选。
+                                        </div>
+                                        <div class="diff-add">
                                             <strong>4.4 个人用户：</strong>新增独立于企业组织架构的外部用户管理模块。个人用户不归属部门，角色固定为「个人角色」不可更改。字段精简（无部门字段），功能与企业成员基本一致但更轻量。
-                                        </div-->
-                                        <!--div class="diff-add">
+                                        </div>
+                                        <div class="diff-add">
                                             <strong>4.5 菜单管理：</strong>菜单管理是权限管控的"资源池"，定义了系统所有可被授权的页面和操作。菜单采用树形结构，支持三级分类（目录 → 菜单 → 按钮），与前端路由和页面元素一一对应。
-                                        </div-->
+                                        </div>
                                     </div>
                                 </div>
 
                                 <!-- 优化项 -->
-                                <!--div>
+                                <div>
                                     <div class="section-label">
                                         <span style="padding: 3px 10px; font-size: 11px; font-weight: 600; border-radius: 6px;" class="tag-optimize">优化</span>
                                         <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">优化项（3项）</span>
@@ -417,7 +439,7 @@
                                             <strong>字段设计完善：</strong>企业成员字段新增「账号类型」字段（默认企业类型），个人用户字段新增「用户名」替代工号作为登录标识，角色字段明确标注为单选固定。
                                         </div>
                                     </div>
-                                </div-->
+                                </div>
 
                                 <!-- 关联文档 -->
                                 <div>
@@ -426,7 +448,213 @@
                                         <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">关联文档</span>
                                     </div>
                                     <div class="flex flex-wrap gap-2">
-                                        <a href="./prd/v2.0 用户权限管理模块-PRD-v3.html" target="_blank" class="doc-link">
+                                        <a href="./prd/v2.0 角色权限管理模块-PRD-v2.html" target="_blank" class="doc-link">
+                                            <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                            <span>角色权限管理模块-PRD-v2.0.html</span>
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== v2.1 ========== -->
+            <div class="version-item mb-6 relative" style="padding-left: 48px;" data-version="v2.1">
+                <div class="timeline-dot"></div>
+
+                <div class="version-card" id="card-v21">
+                    <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="toggleDetail('v21')">
+                        <div class="flex items-center gap-4">
+                            <div>
+                                <div class="flex items-center gap-3">
+                                    <span class="version-badge">v2.1</span>
+                                    <span style="padding: 2px 10px; font-size: 11px; font-weight: 600; border-radius: 20px;" class="status-review">修改中</span>
+                                </div>
+                                <div style="font-size: 13px; color: var(--fg-subtle); margin-top: 4px;">2026-06-24 · 角色权限管理模块 PRD v2.1</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex gap-1.5">
+                                <span style="padding: 3px 10px; font-size: 11px; font-weight: 600; border-radius: 6px;" class="tag-new">新增 5</span>
+                                <span style="padding: 3px 10px; font-size: 11px; font-weight: 600; border-radius: 6px;" class="tag-optimize">优化 3</span>
+                            </div>
+                            <i data-lucide="chevron-down" class="chevron-icon" id="chevron-v21" style="width: 20px; height: 20px;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Change summary -->
+                    <div style="padding: 14px 24px; background: oklch(0.985 0.003 260); border-bottom: 1px solid var(--border-light);">
+                        <div style="font-size: 13px; font-weight: 600; color: var(--fg-muted); margin-bottom: 6px;">📋 版本概述</div>
+                        <p style="font-size: 13px; color: var(--fg-muted); line-height: 1.7; margin: 0;">
+                            本版本为角色权限管理模块的迭代版本，基于 RBAC（Role-Based Access Control）模型设计，
+                            建立统一的权限管控中心。核心新增<strong>企业成员</strong>与<strong>个人用户</strong>双轨用户管理体系，
+                            实现部门树、角色权限、菜单管理的完整闭环，覆盖从组织架构到功能权限的全链路管控。
+                        </p>
+                    </div>
+
+                    <!-- Detailed changes -->
+                    <div class="change-detail" id="detail-v21">
+                        <div style="padding: 20px 24px;">
+                            <div style="display: flex; flex-direction: column; gap: 24px;">
+
+                                <!-- 新增功能 -->
+                                <div>
+                                    <div class="section-label">
+                                        <span style="padding: 3px 10px; font-size: 11px; font-weight: 600; border-radius: 6px;" class="tag-new">新增</span>
+                                        <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">新增功能（5项）</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                                        <div class="diff-add">
+                                            <strong>4.1 部门管理：</strong>部门管理是整个权限体系的组织基础。采用树形结构，支持无限层级，部门之间形成父子关系。
+                                        </div>
+                                        <div class="diff-add">
+                                            <strong>4.2 角色权限：</strong>角色是权限的集合体，用户通过绑定角色获得对应的菜单访问权限和功能操作权限。本设计支持两级权限粒度：菜单级（可见/不可见）。
+                                        </div>
+                                        <div class="diff-add">
+                                            <strong>4.3 企业成员：</strong>新增归属组织的内部用户管理入口。支持工号、姓名、所属部门、多角色绑定、手机号、邮箱等字段。功能包含单个新增/编辑、批量导入导出、批量启用停用、批量分配角色、批量调岗、重置密码、组合筛选。
+                                        </div>
+                                        <div class="diff-add">
+                                            <strong>4.4 个人用户：</strong>新增独立于企业组织架构的外部用户管理模块。个人用户不归属部门，角色固定为「个人角色」不可更改。字段精简（无部门字段），功能与企业成员基本一致但更轻量。
+                                        </div>
+                                        <div class="diff-add">
+                                            <strong>4.5 菜单管理：</strong>菜单管理是权限管控的"资源池"，定义了系统所有可被授权的页面和操作。菜单采用树形结构，支持三级分类（目录 → 菜单 → 按钮），与前端路由和页面元素一一对应。
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 优化项 -->
+                                <div>
+                                    <div class="section-label">
+                                        <span style="padding: 3px 10px; font-size: 11px; font-weight: 600; border-radius: 6px;" class="tag-optimize">优化</span>
+                                        <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">优化项（3项）</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                                        <div class="diff-modify">
+                                            <strong>功能架构总览更新：</strong>在原有部门管理、角色权限、菜单管理基础上，新增「企业成员」和「个人用户」两个子模块，并更新核心关系链路图，展示双轨用户体系的完整数据流。
+                                        </div>
+                                        <div class="diff-modify">
+                                            <strong>交互流程补充：</strong>新增「新增个人用户流程」的完整交互步骤（进入管理页 → 填写信息 → 确认角色自动分配 → 提交保存），与企业成员流程并列展示。
+                                        </div>
+                                        <div class="diff-modify">
+                                            <strong>字段设计完善：</strong>企业成员字段新增「账号类型」字段（默认企业类型），个人用户字段新增「用户名」替代工号作为登录标识，角色字段明确标注为单选固定。
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 关联文档 -->
+                                <div>
+                                    <div class="section-label">
+                                        <i data-lucide="link" style="width: 14px; height: 14px; color: var(--fg-subtle);"></i>
+                                        <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">关联文档</span>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <a href="./prd/v2.0 角色权限管理模块-PRD-v2.html" target="_blank" class="doc-link">
+                                            <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                            <span>角色权限管理模块-PRD-v2.0.html</span>
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== v2.2 ========== -->
+            <div class="version-item mb-6 relative" style="padding-left: 48px;" data-version="v2.2">
+                <div class="timeline-dot"></div>
+
+                <div class="version-card" id="card-v22">
+                    <div style="padding: 16px 24px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="toggleDetail('v22')">
+                        <div class="flex items-center gap-4">
+                            <div>
+                                <div class="flex items-center gap-3">
+                                    <span class="version-badge">v2.2</span>
+                                    <span style="padding: 2px 10px; font-size: 11px; font-weight: 600; border-radius: 20px;" class="status-review">修改中</span>
+                                </div>
+                                <div style="font-size: 13px; color: var(--fg-subtle); margin-top: 4px;">2026-06-24 · 角色权限管理模块 PRD v2.2</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex gap-1.5">
+                                <span style="padding: 3px 10px; font-size: 11px; font-weight: 600; border-radius: 6px;" class="tag-new">新增 5</span>
+                                <span style="padding: 3px 10px; font-size: 11px; font-weight: 600; border-radius: 6px;" class="tag-optimize">优化 3</span>
+                            </div>
+                            <i data-lucide="chevron-down" class="chevron-icon" id="chevron-v22" style="width: 20px; height: 20px;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Change summary -->
+                    <div style="padding: 14px 24px; background: oklch(0.985 0.003 260); border-bottom: 1px solid var(--border-light);">
+                        <div style="font-size: 13px; font-weight: 600; color: var(--fg-muted); margin-bottom: 6px;">📋 版本概述</div>
+                        <p style="font-size: 13px; color: var(--fg-muted); line-height: 1.7; margin: 0;">
+                            本版本为角色权限管理模块的迭代版本，基于 RBAC（Role-Based Access Control）模型设计，
+                            建立统一的权限管控中心。核心新增<strong>企业成员</strong>与<strong>个人用户</strong>双轨用户管理体系，
+                            实现部门树、角色权限、菜单管理的完整闭环，覆盖从组织架构到功能权限的全链路管控。
+                        </p>
+                    </div>
+
+                    <!-- Detailed changes -->
+                    <div class="change-detail" id="detail-v22">
+                        <div style="padding: 20px 24px;">
+                            <div style="display: flex; flex-direction: column; gap: 24px;">
+
+                                <!-- 新增功能 -->
+                                <div>
+                                    <div class="section-label">
+                                        <span style="padding: 3px 10px; font-size: 11px; font-weight: 600; border-radius: 6px;" class="tag-new">新增</span>
+                                        <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">新增功能（5项）</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                                        <div class="diff-add">
+                                            <strong>4.1 部门管理：</strong>部门管理是整个权限体系的组织基础。采用树形结构，支持无限层级，部门之间形成父子关系。
+                                        </div>
+                                        <div class="diff-add">
+                                            <strong>4.2 角色权限：</strong>角色是权限的集合体，用户通过绑定角色获得对应的菜单访问权限和功能操作权限。本设计支持两级权限粒度：菜单级（可见/不可见）。
+                                        </div>
+                                        <div class="diff-add">
+                                            <strong>4.3 企业成员：</strong>新增归属组织的内部用户管理入口。支持工号、姓名、所属部门、多角色绑定、手机号、邮箱等字段。功能包含单个新增/编辑、批量导入导出、批量启用停用、批量分配角色、批量调岗、重置密码、组合筛选。
+                                        </div>
+                                        <div class="diff-add">
+                                            <strong>4.4 个人用户：</strong>新增独立于企业组织架构的外部用户管理模块。个人用户不归属部门，角色固定为「个人角色」不可更改。字段精简（无部门字段），功能与企业成员基本一致但更轻量。
+                                        </div>
+                                        <div class="diff-add">
+                                            <strong>4.5 菜单管理：</strong>菜单管理是权限管控的"资源池"，定义了系统所有可被授权的页面和操作。菜单采用树形结构，支持三级分类（目录 → 菜单 → 按钮），与前端路由和页面元素一一对应。
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 优化项 -->
+                                <div>
+                                    <div class="section-label">
+                                        <span style="padding: 3px 10px; font-size: 11px; font-weight: 600; border-radius: 6px;" class="tag-optimize">优化</span>
+                                        <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">优化项（3项）</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                                        <div class="diff-modify">
+                                            <strong>功能架构总览更新：</strong>在原有部门管理、角色权限、菜单管理基础上，新增「企业成员」和「个人用户」两个子模块，并更新核心关系链路图，展示双轨用户体系的完整数据流。
+                                        </div>
+                                        <div class="diff-modify">
+                                            <strong>交互流程补充：</strong>新增「新增个人用户流程」的完整交互步骤（进入管理页 → 填写信息 → 确认角色自动分配 → 提交保存），与企业成员流程并列展示。
+                                        </div>
+                                        <div class="diff-modify">
+                                            <strong>字段设计完善：</strong>企业成员字段新增「账号类型」字段（默认企业类型），个人用户字段新增「用户名」替代工号作为登录标识，角色字段明确标注为单选固定。
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 关联文档 -->
+                                <div>
+                                    <div class="section-label">
+                                        <i data-lucide="link" style="width: 14px; height: 14px; color: var(--fg-subtle);"></i>
+                                        <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">关联文档</span>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <a href="./prd/v2.0 角色权限管理模块-PRD-v2.html" target="_blank" class="doc-link">
                                             <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
                                             <span>角色权限管理模块-PRD-v2.0.html</span>
                                         </a>
