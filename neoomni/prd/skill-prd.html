@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill 市场 PRD 文档</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.8;
+            color: #374151;
+            background: #f3f4f6;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #fff;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 { font-size: 2rem; margin-bottom: 10px; }
+        .header p { opacity: 0.9; font-size: 1rem; }
+        .content { padding: 40px; }
+        h2 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            margin: 40px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        h3 {
+            color: #374151;
+            font-size: 1.2rem;
+            margin: 30px 0 15px;
+        }
+        h4 {
+            color: #4b5563;
+            font-size: 1rem;
+            margin: 20px 0 10px;
+            padding-left: 10px;
+            border-left: 3px solid #3b82f6;
+        }
+        p { margin-bottom: 15px; }
+        ul, ol { margin: 15px 0 15px 25px; }
+        li { margin-bottom: 8px; }
+        strong { color: #1f2937; }
+        .highlight { background: #fef3c7; padding: 2px 6px; border-radius: 4px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        tr:hover { background: #f9fafb; }
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+            color: #e11d48;
+        }
+        pre {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-size: 0.85rem;
+        }
+        pre code { background: none; padding: 0; color: inherit; }
+        blockquote {
+            border-left: 4px solid #3b82f6;
+            background: #eff6ff;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 30px 0;
+        }
+        .badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+        .section-header {
+            background: #f9fafb;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+        .collapsible {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .collapsible::after {
+            content: '▼';
+            font-size: 0.7em;
+            color: #9ca3af;
+            transition: transform 0.3s ease;
+            margin-left: 8px;
+        }
+        .collapsible.collapsed::after {
+            content: '▶';
+        }
+        .collapsible:hover {
+            color: #3b82f6;
+        }
+        .collapsible:hover::after {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Skill 市场 PRD 文档</h1>
+            <p>版本 1.1 | 2026/06</p>
+        </div>
+        <div class="content">
+            <h2>一、产品概述</h2>
+            <p><strong>产品名称</strong>：技能市场平台</p>
+            <p><strong>产品定位</strong>：企业级技能市场平台，支持企业自有技能市场及第三方技能市场浏览、安装</p>
+            <p><strong>目标用户</strong>：企业内部用户</p>
+            <p><strong>功能概述</strong>：
+                <ol>
+                    <li><strong>企业skill：</strong>支持技能的创建、导入、编辑、发布/下架、更新版本、批量操作及回收站管理。技能市场安装的技能不可编辑，自己创建或导入的技能支持编辑</li>
+                    <li><strong>第三方 Skill 市场无缝接入：</strong>固定获取技能清单中的技能预先加载到服务器，作为技能市场；支持手动从讯飞（<a href="https://skill.xfyun.cn/" target="_blank">https://skill.xfyun.cn/</a>）官方技能库获取最新版本并预装到系统内，提供多维度的分类筛选及一键安装能力。</li>
+                    <li><strong>风险管控：</strong>内置严格的异步风险检测机制。在技能导入与新增环节，系统会自动扫描并拦截包含危险代码（如 eval/exec）等的高风险技能。</li>
+                </ol>
+            </p>
+            
+
+            <hr>
+
+            <h2>二、功能模块</h2>
+
+            <h3>2.1 企业 Skill 模块</h3>
+
+            <h4>界面功能</h4>
+            <ul>
+                <li><strong>模块标题</strong>：显示"企业 skill"，包含全部/市场/自定义切换按钮，默认显示全部</li>
+                <li><strong>搜索框</strong>：支持技能名称关键字搜索</li>
+                <li><strong>批量操作栏</strong>：位于模块右上角，包含全选复选框（支持一键全选当前显示的技能）、批量发布、批量下架、批量删除按钮；选中数量提示（如"已选3个"）</li>
+                <li><strong>技能卡片</strong>：显示圆角方形图标（默认首字母+随机底色）、技能名称、描述、来源标签（官方/自定义）、创建者、更新时间、版本号、状态开关（发布/下架）、使用次数</li>
+                <li><strong>展开/收起</strong>：默认展示第一行技能，支持展开查看更多；展开后如超出5行则右下角显示分页</li>
+                <li><strong>添加技能</strong>：右上角下拉显示创建技能、导入技能</li>
+                <li><strong>回收站入口</strong>：右上角显示回收站（数量）</li>
+                <li><strong>分页</strong>：每页8个，自适应显示，超出8个，底部显示分页</li>
+            </ul>
+
+            <h4>交互功能</h4>
+            <ul>
+                <li><strong>全部/市场/自定义切换</strong>：点击切换显示全部技能或显示来源市场/自定义的技能</li>
+                <li><strong>查看详情</strong>：点击技能卡片打开详情页（新页面，不离开当前页）</li>
+                <li><strong>发布/下架切换</strong>：点击卡片上的开关直接切换状态，无需二次确认</li>
+                <li><strong>删除技能</strong>：鼠标悬浮在卡片上显示删除按钮，点击弹出确认框"确认删除该技能吗？"，确认后从企业skill列表消失并移至回收站</li>
+                <li><strong>批量删除</strong>：弹出确认框"确定删除X个技能吗？"，确认后批量移至回收站</li>
+                <li><strong>展开更多</strong>：技能超过4个时显示「展开」按钮，点击加载更多；分页后支持收起</li>
+                <li><strong>编辑技能</strong>：所有技能，鼠标悬浮显示编辑图标，点击跳转编辑页面（和详情页布局一样，只是可编辑状态）</li>
+                <li><strong>更新技能</strong>：来源为市场的技能，比较本地版本与市场版本，若市场版本号更高，显示更新按钮；点击更新按钮，自动安装最新版，显示更新动画，更新成功后提示"更新成功！"</li>
+                <li><strong>风险检测</strong>：安装时异步检测技能风险，存在风险的技能高亮标记并禁止发布</li>
+            </ul>
+
+            <h3>2.2 Skill 市场模块</h3>
+
+            <p>数据来源 <a href="https://skill.xfyun.cn" target="_blank">skill.xfyun.cn</a>，初次按<a href="https://skill.xfyun.cn/search?q=&sort=downloads&page=0&starredOnly=false" target="_blank">技能清单</a>获取并保存服务器。后续定期更新，更新频率：7天/次，如有新版本则更新保存，没有新版本则不变。</p>
+
+            <h4>Skill获取接口说明</h4>
+            <p>详见 <a href="./skill-api.html">skill市场接口文档</a></p>
+
+            <table>
+                <tr><th>接口能力</th><th>说明</th></tr>
+                <tr><td>技能列表（分页）</td><td>GET /api/web/skills，支持搜索、分类、排序、分页</td></tr>
+                <tr><td>技能详情</td><td>GET /api/web/skills/{namespace}/{slug}</td></tr>
+                <tr><td>版本列表</td><td>GET /api/web/skills/{namespace}/{slug}/versions</td></tr>
+                <tr><td>技能分类</td><td>GET /api/web/labels</td></tr>
+                <tr><td>文件列表</td><td>GET /api/web/skills/{namespace}/{slug}/versions/{version}/files</td></tr>
+                <tr><td>单文件下载</td><td>GET /api/web/skills/{namespace}/{slug}/versions/{version}/file?path={filePath}</td></tr>
+                <tr><td>关键词搜索</td><td>GET /api/web/skills?q={q}</td></tr>
+            </table>
+
+            <h4>界面功能</h4>
+            <ul>
+                <li><strong>搜索筛选区</strong>：包含关键字搜索框</li>
+                <li><strong>分类筛选</strong>：分类包括全部、官方精选、养虾挑战赛、编程、自动化、效率、娱乐、图像、通讯、健康</li>
+                <li><strong>技能卡片</strong>：显示圆角方形图标、分类、名称、官方标签、描述（两行文字，超出显示...）、版本号、更新时间、安装量（鼠标悬浮显示中文提示）</li>
+                <li><strong>状态显示</strong>：
+                    <ul>
+                        <li>未安装：显示安装按钮</li>
+                        <li>已安装已发布：显示已安装标签</li>
+                    </ul>
+                </li>
+                <li><strong>分页</strong>：每页20个，自适应显示，底部显示分页</li>
+                <li><strong>卡片大小</strong>：和企业skill一样大</li>
+            </ul>
+
+            <h4>交互功能</h4>
+            <ul>
+                <li><strong>分类筛选</strong>：点击分类标签筛选对应技能</li>
+                <li><strong>排序切换</strong>：选择排序方式重新排列列表</li>
+                <li><strong>安装技能</strong>：点击安装按钮，显示安装动画，完成后提示"安装成功"，并将技能放入企业skill模块</li>
+                <li><strong>查看详情</strong>：点击卡片跳转详情页（新页面），和企业skill模块的技能详情页一样</li>
+                <li><strong>返回列表</strong>：详情页可返回市场列表页</li>
+            </ul>
+
+            <h3>2.3 技能详情页</h3>
+
+            <h4>界面功能</h4>
+            <ul>
+                <li><strong>返回按钮</strong>：返回列表页/回收站</li>
+                <li><strong>状态标签</strong>：右上角显示
+                    <ul>
+                        <li>企业skill：已发布/已下架标签</li>
+                        <li>市场skill：已安装标签，或安装按钮（未安装时）</li>
+                    </ul>
+                </li>
+                <li><strong>基础信息</strong>：技能图标、名称、描述、版本号</li>
+                <li><strong>来源信息</strong>：来源、创建者、使用次数、更新时间</li>
+                <li><strong>技能文件</strong>：文件列表，点击后右侧预览/源代码框中显示文件内容</li>
+                <li><strong>脚本模块</strong>：显示脚本文件列表（1个或多个），点击可预览</li>
+                <li><strong>参考文档</strong>：显示文档列表（1个或多个），点击可预览</li>
+            </ul>
+
+            <h4>交互功能</h4>
+            <ul>
+                <li><strong>保存技能</strong>：保存技能信息修改</li>
+                <li><strong>预览/源码切换</strong>：技能文件支持预览和源代码两种查看模式</li>
+                <li><strong>安装</strong>：详情页安装按钮点击后显示安装动画，完成后提示安装成功</li>
+            </ul>
+
+            <h3>2.4 技能新增/编辑页面</h3>
+
+            <h4>界面功能</h4>
+            <ul>
+                <li><strong>返回按钮</strong>：返回列表页</li>
+                <li><strong>基础表单</strong>：名称输入框、描述文本框、版本号输入框（文本框可修改）</li>
+                <li><strong>技能文件</strong>：文件列表，点击后右侧预览/源代码框中显示内容，可编辑</li>
+                <li><strong>脚本模块</strong>：显示/新增/上传脚本文件</li>
+                <li><strong>参考文档</strong>：显示/新增/上传参考文档</li>
+                <li><strong>文件操作</strong>：每个文件后面有删除图标，支持删除</li>
+            </ul>
+
+            <h4>交互功能</h4>
+            <ul>
+                <li><strong>上传文件</strong>：拖拽或点击上传脚本/文档文件</li>
+                <li><strong>新建文件</strong>：点击新建脚本/文档文件</li>
+                <li><strong>删除文件</strong>：点击文件后面的删除图标删除文件</li>
+                <li><strong>保存技能</strong>：保存新增/编辑的技能</li>
+            </ul>
+
+            <h3>2.5 回收站</h3>
+            <p><span class="highlight">新窗口打开显示</span></p>
+
+            <h4>界面功能</h4>
+            <ul>
+                <li><strong>页面标题</strong>：显示"技能回收站"</li>
+                <li><strong>退出按钮</strong>：返回技能列表</li>
+                <li><strong>技能计数</strong>：显示共N个已删除技能</li>
+                <li><strong>技能卡片</strong>：布局和企业skill模块的技能卡片一样，图标在左侧，名称和描述在右侧，来源标签在名称后面；显示版本号</li>
+            </ul>
+
+            <h4>交互功能</h4>
+            <ul>
+                <li><strong>悬浮操作</strong>：鼠标悬浮显示还原和彻底删除按钮</li>
+                <li><strong>还原技能</strong>：点击后恢复至企业技能列表</li>
+                <li><strong>彻底删除</strong>：点击后永久删除技能</li>
+                <li><strong>查看详情</strong>：点击卡片查看技能详情，详情页可返回回收站</li>
+            </ul>
+
+            <h3>2.6 导入功能</h3>
+
+            <h4>界面功能</h4>
+            <ul>
+                <li><strong>拖拽窗口</strong>：显示文件拖动窗口，支持将zip文件拖动至窗口上传</li>
+                <li><strong>格式提示</strong>：提示".zip需要包含skill.md文件"</li>
+            </ul>
+
+            <h4>交互功能</h4>
+            <ul>
+                <li><strong>导入成功</strong>：拖拽文件后提示"技能导入成功！"，默认下架</li>
+                <li><strong>风险检测</strong>：同时异步检测技能风险</li>
+                <li><strong>发布提示</strong>：如果在风险监测中，点击发布提示"该技能在风险监测中，请等待检测完成后发布！"</li>
+                <li><strong>风险提示</strong>：如技能存在风险，无法发布并高亮标记：风险（鼠标悬浮显示风险原因）；点击发布提示"该技能存在风险，无法发布！"，可删除</li>
+            </ul>
+
+            <hr>
+
+            <h3>2.7 技能详情</h3>
+
+            <h4>详情页内容</h4>
+            <ul>
+                <li><strong>内容映射</strong>：名称和描述字段，对应接口中的displayName和summary字段；</li>
+                <li><strong>文件</strong>：如下</li>
+                <div class="file-type">
+                <h4>技能文件</h4>
+                <p><code>skill.md</code>（有且只有一个）</p>
+            </div>
+
+            <div class="file-type">
+                <h4>脚本文件后缀清单</h4>
+                <p>".py", ".json", ".yaml", ".yml", ".js", ".mjs"</p>
+            </div>
+
+            <div class="file-type">
+                <h4>参考文档后缀清单</h4>
+                <p>".md", ".txt", ".csv", ".png", ".jpg", ".jpeg", ".svg"</p>
+            </div>
+
+            </ul>
+
+            
+
+            <h2>三、非功能性需求</h2>
+
+            <h3>4.1 性能需求</h3>
+            <ul>
+                <li>列表加载时间不超过2秒</li>
+                <li>分页切换响应及时</li>
+            </ul>
+
+            <h3>4.2 兼容性</h3>
+            <ul>
+                <li>支持主流浏览器：Chrome、Firefox、Safari、Edge</li>
+                <li>响应式布局适配不同屏幕宽度</li>
+            </ul>
+
+            <h3>4.3 交互反馈</h3>
+            <ul>
+                <li>所有操作提供明确的成功/失败提示</li>
+                <li>删除等重要操作需二次确认</li>
+                <li>安装等耗时操作提供加载动画</li>
+            </ul>
+
+            <hr>
+
+            <h2>四、版本记录</h2>
+            <table>
+                <tr><th>版本</th><th>日期</th><th>说明</th></tr>
+                <tr><td>1.0</td><td>2026/05</td><td>初始版本</td></tr>
+                <tr><td>1.1</td><td>2026/05</td><td>将我的改为市场/自定义，去掉skill市场的排序、下载量</td></tr>
+            </table>
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var h2s = document.querySelectorAll('h2');
+        h2s.forEach(function(h2) {
+            h2.classList.add('collapsible');
+            h2.addEventListener('click', function() {
+                this.classList.toggle('collapsed');
+                var next = this.nextElementSibling;
+                while (next && next.tagName !== 'H2') {
+                    if (this.classList.contains('collapsed')) {
+                        next.style.display = 'none';
+                    } else {
+                        next.style.display = '';
+                    }
+                    next = next.nextElementSibling;
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>

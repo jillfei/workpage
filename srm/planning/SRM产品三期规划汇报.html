@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRM标准产品后续版本规划 — 三期路线图</title>
+<style>
+  /* ===== reset & base ===== */
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --purple:#534ab7;--purple-light:#eeedfe;--purple-dark:#3c3489;
+    --blue:#185fa5;--blue-light:#e6f1fb;
+    --green:#0f6e56;--green-light:#eaf3de;
+    --amber:#ba7517;--amber-light:#faeeda;
+    --red:#a32d2d;--red-light:#fcebeb;
+    --gray-900:#2c2c2a;--gray-700:#5f5e5a;--gray-500:#888780;--gray-300:#b4b2a9;
+    --gray-100:#f1efe8;--gray-50:#fafaf8;--white:#fff;
+    --border:#d3d1c7;--border-light:#e8e6df;
+    --sidebar-w:230px;
+  }
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;
+    font-size:14px;line-height:1.7;color:var(--gray-900);background:var(--gray-50);
+    display:flex;min-height:100vh;
+  }
+
+  /* ===== sidebar ===== */
+  .sidebar{
+    width:var(--sidebar-w);min-width:var(--sidebar-w);
+    height:100vh;position:fixed;top:0;left:0;
+    background:var(--white);border-right:0.5px solid var(--border);
+    display:flex;flex-direction:column;z-index:200;
+    overflow-y:auto;
+  }
+  .sidebar-logo{
+    padding:20px 18px 16px;border-bottom:0.5px solid var(--border-light);
+    font-size:15px;font-weight:500;color:var(--gray-900);
+    display:flex;align-items:center;gap:8px;
+  }
+  .sidebar-logo .dot-icon{width:8px;height:8px;border-radius:50%;background:var(--purple)}
+  .sidebar-nav{flex:1;padding:8px 0}
+  .sidebar-nav a{
+    display:flex;align-items:center;gap:10px;padding:10px 18px;
+    font-size:13px;color:var(--gray-700);text-decoration:none;
+    border-left:2px solid transparent;transition:all .15s;
+  }
+  .sidebar-nav a:hover,.sidebar-nav a.active{
+    color:var(--purple);background:var(--purple-light);
+    border-left-color:var(--purple);
+  }
+  .sidebar-nav a .nav-num{
+    width:20px;height:20px;border-radius:50%;
+    background:var(--gray-100);color:var(--gray-500);
+    font-size:11px;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .sidebar-nav a.active .nav-num,.sidebar-nav a:hover .nav-num{
+    background:var(--purple);color:var(--white);
+  }
+  .sidebar-footer{
+    padding:10px 18px 20px;border-top:0.5px solid var(--border-light);
+    font-size:11px;color:var(--gray-500);line-height:1.5;
+  }
+
+  /* ===== main ===== */
+  .main{margin-left:var(--sidebar-w);flex:1;min-width:0}
+
+  /* ===== summary block (above fold) ===== */
+  .summary-block{background:var(--white);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:100}
+  .summary-tabs{display:flex;border-bottom:0.5px solid var(--border-light);padding:0 32px}
+  .summary-tabs .tab-btn{
+    padding:12px 20px;font-size:14px;font-weight:500;color:var(--gray-500);
+    background:none;border:none;border-bottom:2px solid transparent;
+    cursor:pointer;transition:all .15s;
+  }
+  .summary-tabs .tab-btn:hover{color:var(--gray-900)}
+  .summary-tabs .tab-btn.active{color:var(--purple);border-bottom-color:var(--purple)}
+  .summary-panels{padding:24px 32px 28px}
+  .summary-panel{display:none}
+  .summary-panel.active{display:block}
+  .summary-hero{margin-bottom:4px}
+  .summary-hero h2{font-size:16px;font-weight:500;color:var(--gray-900);margin-bottom:6px}
+  .summary-hero .tagline{font-size:13px;color:var(--purple);padding:6px 14px;background:var(--purple-light);border-radius:6px;display:inline-block;margin-bottom:12px}
+  .summary-hero p{font-size:13px;color:var(--gray-700);line-height:1.8}
+  .summary-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:16px}
+  .sm-card{background:var(--gray-50);border-radius:8px;padding:12px 14px;text-align:center}
+  .sm-card .smv{font-size:18px;font-weight:500;color:var(--gray-900)}
+  .sm-card .sml{font-size:11px;color:var(--gray-500);margin-top:2px}
+  .sm-card.hl{background:var(--purple-light)}.sm-card.hl .smv{color:var(--purple)}
+  .sm-card.grn{background:var(--green-light)}.sm-card.grn .smv{color:var(--green)}
+  .summary-cta{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+  .cta-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:500}
+  .cta-pill.purple{background:var(--purple);color:var(--white)}
+  .cta-pill.outline{border:1px solid var(--purple);color:var(--purple);background:var(--white)}
+
+  /* ===== detail block ===== */
+  .detail-block{padding:32px}
+
+  /* ===== content cards ===== */
+  .content-card{background:var(--white);border:0.5px solid var(--border);border-radius:12px;padding:28px 32px;margin-bottom:28px}
+  .content-card .cc-head{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:14px;border-bottom:0.5px solid var(--border-light)}
+  .cc-head .cc-num{width:28px;height:28px;border-radius:50%;background:var(--purple);color:var(--white);font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .cc-head h3{font-size:16px;font-weight:500;color:var(--gray-900)}
+  .cc-head .cc-sub{font-size:12px;color:var(--gray-500);margin-left:auto;text-align:right}
+
+  /* data source cite */
+  .cite{font-size:10px;color:var(--purple);cursor:pointer;border-bottom:1px dotted var(--purple);white-space:nowrap}
+  .cite:hover{color:var(--purple-dark)}
+  .cite-pop{display:none;position:absolute;background:var(--white);border:0.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--gray-700);max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,.08);z-index:300;line-height:1.6}
+  .cite-pop.show{display:block}
+  .cite-pop .cp-title{font-weight:500;color:var(--gray-900);margin-bottom:4px}
+  .cite-wrap{position:relative;display:inline}
+
+  /* tables */
+  .tbl-wrap{overflow-x:auto;border:0.5px solid var(--border);border-radius:10px;margin-bottom:18px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead tr{background:var(--gray-100)}
+  th{padding:10px 14px;text-align:left;font-weight:500;color:var(--gray-700);white-space:nowrap;font-size:12px}
+  td{padding:9px 14px;border-top:0.5px solid var(--border-light);color:var(--gray-900);vertical-align:middle}
+  tr:hover td{background:var(--gray-50)}
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;white-space:nowrap}
+  .tag.p1{background:var(--purple-light);color:var(--purple)}
+  .tag.p2{background:var(--blue-light);color:var(--blue)}
+  .tag.p3{background:var(--green-light);color:var(--green)}
+  .tag.ai{background:var(--purple-light);color:var(--purple)}
+  .tag.must{background:var(--red-light);color:var(--red)}
+  .tag.high{background:var(--red-light);color:var(--red)}
+  .tag.mid{background:var(--amber-light);color:var(--amber)}
+  .tag.low{background:var(--green-light);color:var(--green)}
+  .tag.cite-tag{background:var(--blue-light);color:var(--blue)}
+
+  /* info row */
+  .info-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  .info-box{flex:1;min-width:180px;background:var(--gray-50);border-radius:10px;padding:16px 18px;border-left:3px solid transparent}
+  .info-box.purple{border-left-color:var(--purple)}
+  .info-box.blue{border-left-color:var(--blue)}
+  .info-box.green{border-left-color:var(--green)}
+  .info-box.amber{border-left-color:var(--amber)}
+  .info-box.red{border-left-color:var(--red)}
+  .info-box .ib-title{font-size:11px;color:var(--gray-500);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.3px}
+  .info-box .ib-body{font-size:13px;color:var(--gray-900);line-height:1.7}
+  .info-box .ib-body li{margin-left:16px;margin-bottom:3px}
+
+  /* metrics row */
+  .metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:10px;margin-bottom:18px}
+  .m-card{border-radius:10px;padding:14px 16px;text-align:center}
+  .m-card .mv{font-size:20px;font-weight:500;color:var(--gray-900)}
+  .m-card .ml{font-size:11px;color:var(--gray-500);margin-top:3px}
+  .m-card.purple{background:var(--purple-light)}.m-card.purple .mv{color:var(--purple)}
+  .m-card.green{background:var(--green-light)}.m-card.green .mv{color:var(--green)}
+  .m-card.blue{background:var(--blue-light)}.m-card.blue .mv{color:var(--blue)}
+  .m-card.amber{background:var(--amber-light)}.m-card.amber .mv{color:var(--amber)}
+
+  /* roadmap */
+  .roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+  .phase-card{background:var(--white);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+  .phase-hd{padding:16px 18px 12px}
+  .phase-hd .ph-label{font-size:10px;font-weight:500;letter-spacing:.4px;margin-bottom:4px;text-transform:uppercase}
+  .phase-hd .ph-name{font-size:15px;font-weight:500;margin-bottom:2px;color:var(--gray-900)}
+  .phase-hd .ph-period{font-size:11px;color:var(--gray-500)}
+  .ph1 .phase-hd{background:var(--purple-light)}.ph1 .ph-label{color:var(--purple)}
+  .ph2 .phase-hd{background:var(--blue-light)}.ph2 .ph-label{color:var(--blue)}
+  .ph3 .phase-hd{background:var(--green-light)}.ph3 .ph-label{color:var(--green)}
+  .phase-body{padding:14px 18px}
+  .feat-group{margin-bottom:12px}
+  .feat-group .fg-title{font-size:10px;font-weight:500;color:var(--gray-500);margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px;display:flex;align-items:center;gap:5px}
+  .fg-pill{font-size:9px;padding:1px 5px;border-radius:3px}
+  .fg-pill.ai{background:var(--purple-light);color:var(--purple)}
+  .feat-item{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:var(--gray-900);margin-bottom:4px;line-height:1.5}
+  .feat-item .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+  .dot.ai{background:var(--purple)}.dot.must{background:var(--red)}.dot.base{background:var(--blue)}.dot.adv{background:var(--green)}
+  .phase-kpis{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding-top:12px;border-top:0.5px solid var(--border-light)}
+  .ph1 .phase-kpis .kpi{background:var(--purple-light);color:var(--purple)}
+  .ph2 .phase-kpis .kpi{background:var(--blue-light);color:var(--blue)}
+  .ph3 .phase-kpis .kpi{background:var(--green-light);color:var(--green)}
+  .kpi{font-size:10px;padding:3px 8px;border-radius:4px;font-weight:500}
+  .phase-goal{font-size:11px;color:var(--gray-700);margin-bottom:12px;line-height:1.6;padding:8px 10px;border-radius:6px;background:var(--gray-50);border-left:2px solid var(--border)}
+  .ph1 .phase-goal{border-left-color:var(--purple)}
+
+  /* comp grid */
+  .comp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .comp-card{background:var(--gray-50);border:0.5px solid var(--border-light);border-radius:10px;padding:14px 16px}
+  .comp-card .co-name{font-size:13px;font-weight:500;color:var(--gray-900);margin-bottom:2px}
+  .comp-card .co-tag{font-size:10px;color:var(--gray-500);margin-bottom:8px}
+  .comp-card .co-body{font-size:12px;color:var(--gray-700);line-height:1.6}
+  .comp-card .co-body li{margin-left:14px;margin-bottom:2px}
+
+  /* roi cards */
+  .roi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+  .roi-card{background:var(--white);border:0.5px solid var(--border);border-radius:10px;padding:18px 20px}
+  .roi-card .rc-icon{font-size:24px;margin-bottom:10px}
+  .roi-card h4{font-size:14px;font-weight:500;color:var(--gray-900);margin-bottom:10px}
+  .roi-card .rc-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--border-light);font-size:12px;color:var(--gray-700)}
+  .roi-card .rc-item:last-child{border-bottom:none}
+  .roi-card .rc-val{font-weight:500;color:var(--purple)}
+
+  /* callout */
+  .callout{display:flex;gap:10px;background:var(--purple-light);border:0.5px solid #afa9ec;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--purple-dark);line-height:1.7}
+  .callout .ico{flex-shrink:0;margin-top:1px;font-size:15px}
+
+  /* section divider */
+  .sec-divider{height:0.5px;background:var(--border);margin:10px 0 20px}
+
+  /* footnote */
+  .footnotes{margin-top:24px;padding-top:14px;border-top:0.5px solid var(--border-light)}
+  .footnotes .fn-title{font-size:12px;font-weight:500;color:var(--gray-700);margin-bottom:8px}
+  .footnotes .fn-item{font-size:11px;color:var(--gray-500);margin-bottom:3px;line-height:1.5;display:flex;gap:4px}
+  .footnotes .fn-num{color:var(--purple);font-weight:500;flex-shrink:0}
+
+  /* timeline */
+  .timeline{position:relative;padding-left:24px;margin-bottom:16px}
+  .timeline::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:1px;background:var(--border)}
+  .tl-item{position:relative;margin-bottom:16px}
+  .tl-item::before{content:'';position:absolute;left:-20px;top:4px;width:10px;height:10px;border-radius:50%;border:2px solid var(--white);z-index:1}
+  .tl-item.t1::before{background:var(--purple)}.tl-item.t2::before{background:var(--blue)}.tl-item.t3::before{background:var(--green)}
+  .tl-head{font-size:13px;font-weight:500;color:var(--gray-900);margin-bottom:3px}
+  .tl-body{font-size:12px;color:var(--gray-700);line-height:1.6}
+
+  /* split row */
+  .split-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+
+  /* responsive */
+  @media(max-width:900px){
+    .sidebar{display:none}
+    .main{margin-left:0}
+    .roadmap,.roi-grid,.split-row{grid-template-columns:1fr}
+    .summary-panels{padding:16px}
+    .detail-block{padding:16px}
+    .content-card{padding:20px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar">
+  <div class="sidebar-logo"><span class="dot-icon"></span>SRM产品规划</div>
+  <nav class="sidebar-nav">
+    <a href="#s-conclusion" class="active"><span class="nav-num">1</span>结论先行</a>
+    <a href="#s-status"><span class="nav-num">2</span>现状分析</a>
+    <a href="#s-roadmap"><span class="nav-num">3</span>三期规划</a>
+    <a href="#s-roi"><span class="nav-num">4</span>预期收益</a>
+    <a href="#s-resource"><span class="nav-num">5</span>资源与决策</a>
+  </nav>
+  <div class="sidebar-footer">
+    编制：产品调研团队<br>2026年6月 · 向总经理汇报
+  </div>
+</aside>
+
+<!-- ==================== MAIN ==================== -->
+<div class="main">
+
+  <!-- ========== SUMMARY BLOCK (above fold) ========== -->
+  <div class="summary-block">
+    <div class="summary-tabs">
+      <button class="tab-btn active" onclick="switchTab('situ-plan')">现状 + 规划</button>
+      <button class="tab-btn" onclick="switchTab('roi-res')">收益 + 资源</button>
+    </div>
+
+    <!-- Tab 1: 现状 + 规划 -->
+    <div class="summary-panels">
+      <div class="summary-panel active" id="panel-situ-plan">
+        <div class="summary-hero">
+          <h2>为了解决当前SRM与竞品的功能差距，我们制定了三期迭代规划</h2>
+          <span class="tagline">AI前置切入 · 基础够用 + AI先行 · 一期即超越携客云</span>
+          <p>
+            中国SRM市场2026年预计突破<span style="font-weight:500">205.8亿元</span><span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c1')">[1]</span><span class="cite-pop" id="c1"><span class="cp-title">IDC 2025</span>《中国供应资源管理软件市场份额报告》：2024年市场规模147.3亿元，同比增长18.6%，预计2026年达205.8亿元，年复合增长率18.3%</span></span>，年增速超<span style="font-weight:500">18%</span>。与此同时，甄云、鲸采云等竞品已全面押注AI——甄云<span style="font-weight:500">智能审核</span>效率提升<span style="font-weight:500">80%+</span><span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c2')">[2]</span><span class="cite-pop" id="c2"><span class="cp-title">甄云科技 2026</span>智能审核解决方案：AI驱动采购审核效率提升80%以上，AI供应商风险雷达准确率达93%+，年交易额超3.7万亿元，服务1000+大中型企业</span></span>，鲸采云AI驱动的风险识别帮企业降低采购风险<span style="font-weight:500">60%</span><span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c3')">[3]</span><span class="cite-pop" id="c3"><span class="cp-title">IT之家 2026.06</span>五大主流SRM平台功能与场景适配对比：鲸采云SRM AI赋能+全链路协同，降本35%+，AI风险识别降低采购风险60%，供应商准入从5天压缩至2小时</span></span>。若不在AI赛道快速切入，我们的差异化窗口正在关闭。
+          </p>
+          <div class="summary-metrics">
+            <div class="sm-card"><div class="smv">72亿+</div><div class="sml">2026中国SRM市场规模<span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c4')">[4]</span><span class="cite-pop" id="c4"><span class="cp-title">IDC & 艾瑞咨询</span>联合数据：2024年中国SRM市场规模48.7亿元，预计2026年突破72亿元，年复合增长率21.3%</span></span></div></div>
+            <div class="sm-card hl"><div class="smv">一期4大AI</div><div class="sml">同步首发，超越携客云</div></div>
+            <div class="sm-card"><div class="smv">9项基础</div><div class="sml">一期聚焦成单必备</div></div>
+            <div class="sm-card grn"><div class="smv">80%+</div><div class="sml">AI审核效率提升对标</div></div>
+          </div>
+          <div class="summary-cta">
+            <span class="cta-pill purple">一期：AI先行 · 0~6个月</span>
+            <span class="cta-pill outline">二期：补全深化 · 6~12个月</span>
+            <span class="cta-pill outline">三期：行业深耕 · 12~18个月</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: 收益 + 资源 -->
+      <div class="summary-panel" id="panel-roi-res">
+        <div class="summary-hero">
+          <h2>预期商业收益明确，资源缺口可控</h2>
+          <span class="tagline">缩短打单周期 · 提升赢单率 · 降低交付成本 · 18个月对标甄云</span>
+          <div class="summary-metrics">
+            <div class="sm-card hl"><div class="smv">50%+</div><div class="sml">预计赢单率提升</div></div>
+            <div class="sm-card"><div class="smv">3~5天</div><div class="sml">预计打单周期缩短</div></div>
+            <div class="sm-card grn"><div class="smv">30%</div><div class="sml">定制化实施成本降低</div></div>
+            <div class="sm-card"><div class="smv">8~10人</div><div class="sml">一期研发所需（含AI）</div></div>
+          </div>
+          <div class="summary-cta">
+            <span class="cta-pill purple">Call to Action</span>
+            <span class="cta-pill outline">审批三期Roadmap</span>
+            <span class="cta-pill outline">协调1~2名AI工程师</span>
+            <span class="cta-pill outline">确认推广配合机制</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== DETAIL BLOCK ========== -->
+  <div class="detail-block">
+
+    <!-- ===== 1. 结论先行 ===== -->
+    <div class="content-card" id="s-conclusion">
+      <div class="cc-head">
+        <span class="cc-num">1</span>
+        <h3>结论先行</h3>
+        <span class="cc-sub">1分钟开场白</span>
+      </div>
+      <p style="font-size:14px;color:var(--gray-900);line-height:1.9;margin-bottom:16px">
+        <strong>核心主张：</strong>为了解决当前SRM产品与竞品（甄云、携客云、鲸采云、企企通）的功能差距，并抓住AI驱动采购数字化的市场窗口，我们制定了<strong>三期产品迭代规划</strong>。
+      </p>
+      <p style="font-size:13px;color:var(--gray-700);line-height:1.9;margin-bottom:16px">
+        当前SRM产品存在<strong>14项销售必备功能缺失</strong>，AI能力几乎空白。行业数据显示，中国SRM市场正以<span style="font-weight:500">18%+</span>年增速扩张<span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c1')">[1]</span></span>，而Gartner调研显示<span style="font-weight:500">59%的首席采购官</span>已将生成式AI视为预测性支出与寻源分析的核心工具<span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c5')">[5]</span><span class="cite-pop" id="c5"><span class="cp-title">Gartner 2025</span>首席采购官调研：59%的CPO认为将生成式AI应用于预测性支出和寻源分析非常重要；73%的CPO认为AI不会取代员工，但不使用AI的员工将被取代</span></span>。
+      </p>
+      <p style="font-size:13px;color:var(--gray-700);line-height:1.9">
+        策略调整为<strong>"AI前置切入"</strong>：一期在聚焦9项成单必备基础功能的同时，同步上线<strong>4大AI核心场景</strong>——智能问答、智能审核、合同助手、供应商风控。一期完成后，AI能力即超越携客云，形成立即可用的差异化销售卖点。
+      </p>
+    </div>
+
+    <!-- ===== 2. 现状分析 ===== -->
+    <div class="content-card" id="s-status">
+      <div class="cc-head">
+        <span class="cc-num">2</span>
+        <h3>现状分析：为什么必须做？</h3>
+        <span class="cc-sub">市场动态 · 竞品分析 · 差距与痛点</span>
+      </div>
+
+      <!-- 2.1 市场趋势 -->
+      <h4 style="font-size:14px;font-weight:500;color:var(--gray-900);margin-bottom:12px">2.1 市场与行业趋势</h4>
+      <div class="info-row">
+        <div class="info-box purple">
+          <div class="ib-title">市场规模 <span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c1')">[1]</span></span></div>
+          <div class="ib-body">
+            2024年中国SRM市场<strong>147.3亿元</strong>，2026年预计突破<strong>205.8亿元</strong>，CAGR 18.3%。全球市场2025年达<strong>133.5亿美元</strong>，2030年预计209.1亿美元<span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c6')">[6]</span><span class="cite-pop" id="c6"><span class="cp-title">GII Research 2025</span>全球SRM软件市场报告：2025年规模133.5亿美元，预计2030年增长至209.1亿美元，年复合增长率9%-10%</span></span>。
+          </div>
+        </div>
+        <div class="info-box blue">
+          <div class="ib-title">AI采购趋势 <span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c5')">[5]</span><span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c7')">[7]</span><span class="cite-pop" id="c7"><span class="cp-title">IBM 商业价值研究院</span>数字化采购研究：AI与自动化可将采购任务时间缩短10-20%；定价分析从2天缩短至10分钟；AI优化的采购到付款环节检测虚假发票多50%；NPS提升30-50%</span></span></span></div>
+          <div class="ib-body">
+            Gartner调研：<strong>73% CPO</strong>认为"不用AI的员工将被取代"。IBM研究：AI+自动化使采购任务时间缩短<strong>10-20%</strong>，定价分析从2天→<strong>10分钟</strong>。
+          </div>
+        </div>
+        <div class="info-box green">
+          <div class="ib-title">竞争格局</div>
+          <div class="ib-body">
+            市场形成<strong>五梯队</strong>格局：SAP Ariba（全球35%份额，中国高端14.2%）领跑；甄云（制造深耕，1000+客户）、企企通（供应链金融）、鲸采云（AI原生新锐）位列国内第一梯队。
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 竞品分析 -->
+      <h4 style="font-size:14px;font-weight:500;color:var(--gray-900);margin-bottom:12px">2.2 核心竞品AI能力全景</h4>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>竞品</th><th>市场定位</th><th>核心AI功能</th><th>AI成熟度</th><th>数据亮点</th><th>我们的差距</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>甄云科技</strong></td>
+              <td>中大型制造 · 功能标杆</td>
+              <td>智能审核、智能问答、智能问数、合同助手、供应商风控、智能寻源、商城比价等<strong>13大AI场景</strong></td>
+              <td><span class="tag p1">行业领先</span></td>
+              <td>AI审核效率↑80%+<span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c2')">[2]</span></span>；风险雷达准确率93%+；年交易额3.7万亿</td>
+              <td><span class="tag must">AI几乎空白</span></td>
+            </tr>
+            <tr>
+              <td><strong>鲸采云</strong></td>
+              <td>中大型/中小 · AI原生新锐</td>
+              <td>AI基准价推荐、风险识别、智能比价、全链路AI协同</td>
+              <td><span class="tag p1">AI原生</span></td>
+              <td>降本35%+<span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c3')">[3]</span></span>；风险↓60%；准入5天→2小时</td>
+              <td><span class="tag must">无AI能力</span></td>
+            </tr>
+            <tr>
+              <td><strong>携客云</strong></td>
+              <td>中小客户SaaS · 当前对标</td>
+              <td>知识库、智能问答、智能问数（3项，深度较浅）</td>
+              <td><span class="tag p2">基础阶段</span></td>
+              <td>不支持本地化部署和个性化定制</td>
+              <td><span class="tag mid">一期可超越</span></td>
+            </tr>
+            <tr>
+              <td><strong>企企通</strong></td>
+              <td>中型 · 供应链金融特色</td>
+              <td>基础知识库、智能问答、供应商风险识别</td>
+              <td><span class="tag p2">较保守</span></td>
+              <td>供应链金融差异化，智能审核缺失</td>
+              <td><span class="tag mid">智能审核可超车</span></td>
+            </tr>
+            <tr>
+              <td><strong>SAP Ariba</strong></td>
+              <td>全球跨国 · 市场领导者</td>
+              <td>AI供应商智能匹配、寻源效率↑45%、全球化合规审计</td>
+              <td><span class="tag p1">成熟</span></td>
+              <td>全球35%份额<span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c8')">[8]</span><span class="cite-pop" id="c8"><span class="cp-title">IDC & 艾瑞咨询</span>联合数据：SAP Ariba全球SRM市场份额约35%，中国高端市场维持14.2%稳定份额；AI驱动供应商智能匹配使寻源效率提升45%</span></span>；寻源效率↑45%</td>
+              <td><span class="tag high">长期差距</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="footnotes">
+        <div class="fn-title">数据来源</div>
+        <div class="fn-item"><span class="fn-num">[1]</span>IDC 2025《中国供应资源管理软件市场份额报告》</div>
+        <div class="fn-item"><span class="fn-num">[2]</span>甄云科技智能审核解决方案白皮书 (2026.04)</div>
+        <div class="fn-item"><span class="fn-num">[3]</span>IT之家《2026年五大主流SRM平台功能对比》(2026.06.06)</div>
+        <div class="fn-item"><span class="fn-num">[5]</span>Gartner 2025 首席采购官调研</div>
+        <div class="fn-item"><span class="fn-num">[6]</span>GII Research 全球SRM软件市场报告 (2025)</div>
+        <div class="fn-item"><span class="fn-num">[7]</span>IBM 商业价值研究院《数字化采购转型与战略》</div>
+        <div class="fn-item"><span class="fn-num">[8]</span>IDC & 艾瑞咨询 SRM市场份额联合数据</div>
+      </div>
+
+      <!-- 2.3 功能差距矩阵 -->
+      <h4 style="font-size:14px;font-weight:500;color:var(--gray-900);margin:20px 0 12px">2.3 核心功能差距矩阵（精简版 · 一页展示）</h4>
+      <p style="font-size:12px;color:var(--gray-500);margin-bottom:12px">聚焦销售成单最关键的14项能力对比，直观展示我们与竞品的差距</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th style="width:22%">功能模块</th><th style="width:16%">我们（当前）</th><th style="width:16%">甄云</th><th style="width:16%">携客云</th><th style="width:16%">鲸采云</th><th style="width:14%">一期目标</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>AI智能问答</strong></td><td><span class="tag high">无</span></td><td><span class="tag p1">已上线</span></td><td><span class="tag p2">基础版</span></td><td><span class="tag p1">已上线</span></td><td><span class="tag p1">一期</span></td></tr>
+            <tr><td><strong>AI智能审核</strong></td><td><span class="tag high">无</span></td><td><span class="tag p1">核心卖点</span></td><td><span class="tag mid">部分</span></td><td><span class="tag p1">已上线</span></td><td><span class="tag p1">一期</span></td></tr>
+            <tr><td><strong>AI合同助手</strong></td><td><span class="tag high">无</span></td><td><span class="tag p1">已上线</span></td><td><span class="tag mid">基础</span></td><td><span class="tag p1">已上线</span></td><td><span class="tag p1">一期</span></td></tr>
+            <tr><td><strong>AI供应商风控</strong></td><td><span class="tag high">无</span></td><td><span class="tag p1">93%准确率</span></td><td><span class="tag mid">基础</span></td><td><span class="tag p1">实时预警</span></td><td><span class="tag p1">一期</span></td></tr>
+            <tr style="background:var(--gray-100)"><td colspan="6" style="font-size:11px;color:var(--gray-500);padding:6px 14px">基础业务功能</td></tr>
+            <tr><td>样品试用流程</td><td><span class="tag high">缺失</span></td><td><span class="tag low">有</span></td><td><span class="tag low">有</span></td><td><span class="tag low">有</span></td><td><span class="tag p1">一期</span></td></tr>
+            <tr><td>索赔管理</td><td><span class="tag high">缺失</span></td><td><span class="tag low">有</span></td><td><span class="tag low">有</span></td><td><span class="tag low">有</span></td><td><span class="tag p1">一期</span></td></tr>
+            <tr><td>竞价功能</td><td><span class="tag high">缺失</span></td><td><span class="tag low">有</span></td><td><span class="tag low">有</span></td><td><span class="tag low">有</span></td><td><span class="tag p1">一期</span></td></tr>
+            <tr><td>价格走势查看</td><td><span class="tag high">缺失</span></td><td><span class="tag low">有</span></td><td><span class="tag mid">基础</span></td><td><span class="tag low">有</span></td><td><span class="tag p1">一期</span></td></tr>
+            <tr><td>费用单+对账协同</td><td><span class="tag high">缺失</span></td><td><span class="tag low">有</span></td><td><span class="tag low">有</span></td><td><span class="tag low">有</span></td><td><span class="tag p1">一期</span></td></tr>
+            <tr><td>数据报表+数字大屏</td><td><span class="tag high">缺失</span></td><td><span class="tag low">有</span></td><td><span class="tag mid">基础</span></td><td><span class="tag low">有</span></td><td><span class="tag p1">一期</span></td></tr>
+            <tr><td>供应商移动端</td><td><span class="tag high">缺失</span></td><td><span class="tag low">有</span></td><td><span class="tag low">有</span></td><td><span class="tag low">有</span></td><td><span class="tag p1">一期</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 2.4 业务痛点 -->
+      <h4 style="font-size:14px;font-weight:500;color:var(--gray-900);margin:20px 0 12px">2.4 销售端的真实痛点</h4>
+      <div class="info-row">
+        <div class="info-box red">
+          <div class="ib-title">打单卡点</div>
+          <div class="ib-body"><ul><li>演示时竞品有AI功能，我们只能讲"规划中"</li><li>缺少样品试用、索赔、竞价等制造业刚需功能，客户直接pass</li><li>无数据大屏和报表，老板端演示缺乏冲击力</li></ul></div>
+        </div>
+        <div class="info-box amber">
+          <div class="ib-title">交付压力</div>
+          <div class="ib-body"><ul><li>缺失功能靠定制化补，单项目实施成本高</li><li>标准功能覆盖率不足，难以规模化交付</li><li>无本地化AI能力，有本地部署需求的客户只能放弃</li></ul></div>
+        </div>
+        <div class="info-box blue">
+          <div class="ib-title">市场窗口</div>
+          <div class="ib-body"><ul><li>SRM市场年增18%+，但竞品AI已形成先发优势</li><li>甄云按场景售卖AI的商业模式已跑通</li><li>Gartner：73% CPO认为不用AI将被淘汰——客户期待在升级</li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 3. 三期规划 ===== -->
+    <div class="content-card" id="s-roadmap">
+      <div class="cc-head">
+        <span class="cc-num">3</span>
+        <h3>三期产品路线图</h3>
+        <span class="cc-sub">AI前置切入 · 18个月三阶段迭代</span>
+      </div>
+
+      <div class="roadmap">
+        <!-- 一期 -->
+        <div class="phase-card ph1">
+          <div class="phase-hd">
+            <div class="ph-label">Phase 1 · AI首发</div>
+            <div class="ph-name">基础够用 + AI先行</div>
+            <div class="ph-period">M1 ~ M6 · 0~6个月</div>
+          </div>
+          <div class="phase-body">
+            <p class="phase-goal"><strong>核心目标：</strong>一期完成即具备超越携客云的AI差异化，形成立即可用的销售卖点。精简5项低频基础功能为AI研发腾出资源。</p>
+            <div class="feat-group">
+              <div class="fg-title">AI核心场景 <span class="fg-pill ai">同步首发 4项</span></div>
+              <div class="feat-item"><span class="dot ai"></span><strong>智能问答</strong>：知识库+供应商咨询入口</div>
+              <div class="feat-item"><span class="dot ai"></span><strong>智能审核</strong>：供应商/寻源/财务自动合规审核</div>
+              <div class="feat-item"><span class="dot ai"></span><strong>合同助手</strong>：信息提取/文本比对/风险扫描</div>
+              <div class="feat-item"><span class="dot ai"></span><strong>供应商风控</strong>：工商/司法/舆情实时监控预警</div>
+            </div>
+            <div class="feat-group">
+              <div class="fg-title">销售必备基础 9项</div>
+              <div class="feat-item"><span class="dot must"></span>样品试用 / 索赔管理 / 竞价</div>
+              <div class="feat-item"><span class="dot must"></span>价格走势 / 退货单独立菜单</div>
+              <div class="feat-item"><span class="dot must"></span>费用单+对账协同</div>
+              <div class="feat-item"><span class="dot must"></span>数据报表+数字大屏</div>
+              <div class="feat-item"><span class="dot must"></span>供应商移动端</div>
+            </div>
+            <div class="phase-kpis">
+              <span class="kpi">4大AI首发</span><span class="kpi">超越携客云AI</span><span class="kpi">演示即差异化</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 二期 -->
+        <div class="phase-card ph2">
+          <div class="phase-hd">
+            <div class="ph-label">Phase 2 · 补全深化</div>
+            <div class="ph-name">基础补全 + AI深化</div>
+            <div class="ph-period">M7 ~ M12 · 6~12个月</div>
+          </div>
+          <div class="phase-body">
+            <p class="phase-goal"><strong>核心目标：</strong>补全一期精简功能，上线智能问数+自动化单据，功能完整度对标竞品，启动中型客户标杆建设。</p>
+            <div class="feat-group">
+              <div class="fg-title">AI深化 2项</div>
+              <div class="feat-item"><span class="dot ai"></span><strong>智能问数</strong>：NL查询+个性化看板</div>
+              <div class="feat-item"><span class="dot ai"></span><strong>自动化单据</strong>：询价/合同/订单AI生成</div>
+            </div>
+            <div class="feat-group">
+              <div class="fg-title">基础补全 一期精简项</div>
+              <div class="feat-item"><span class="dot base"></span>商城打通 / 单据流 / 发票协同</div>
+              <div class="feat-item"><span class="dot base"></span>风控套件 / 质检结果查询</div>
+            </div>
+            <div class="feat-group">
+              <div class="fg-title">平台增强</div>
+              <div class="feat-item"><span class="dot base"></span>业务规则定义 / 多语言 / 采购端移动</div>
+            </div>
+            <div class="phase-kpis">
+              <span class="kpi">AI≥6项</span><span class="kpi">功能对标竞品</span><span class="kpi">标杆建设启动</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 三期 -->
+        <div class="phase-card ph3">
+          <div class="phase-hd">
+            <div class="ph-label">Phase 3 · 行业深耕</div>
+            <div class="ph-name">高阶AI + 大客户进阶</div>
+            <div class="ph-period">M13 ~ M18 · 12~18个月</div>
+          </div>
+          <div class="phase-body">
+            <p class="phase-goal"><strong>核心目标：</strong>高阶AI形成完整降本闭环，大客户专属功能上线，打造标杆案例，进军5~10亿营收市场。</p>
+            <div class="feat-group">
+              <div class="fg-title">高阶AI 3项</div>
+              <div class="feat-item"><span class="dot ai"></span><strong>智能寻源比价</strong>：AI推荐+风险比价</div>
+              <div class="feat-item"><span class="dot ai"></span><strong>商城智能比价</strong>：跨渠道自动抓取</div>
+              <div class="feat-item"><span class="dot ai"></span><strong>大宗行情集成</strong>：价格预测+波动提醒</div>
+            </div>
+            <div class="feat-group">
+              <div class="fg-title">大客户专属</div>
+              <div class="feat-item"><span class="dot adv"></span>配额管理 / VMI管理 / 智能招投标</div>
+            </div>
+            <div class="feat-group">
+              <div class="fg-title">行业增值</div>
+              <div class="feat-item"><span class="dot adv"></span>自动对账 / 电子签章 / 数据清洗</div>
+            </div>
+            <div class="phase-kpis">
+              <span class="kpi">AI≥9项</span><span class="kpi">大客户标杆</span><span class="kpi">对标甄云</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 里程碑 -->
+      <h4 style="font-size:14px;font-weight:500;color:var(--gray-900);margin:20px 0 12px">关键里程碑</h4>
+      <div class="timeline">
+        <div class="tl-item t1">
+          <div class="tl-head">M1~M2：基础核心 + AI技术选型</div>
+          <div class="tl-body">供应商管理（样品/索赔）、寻源（竞价/价格走势）、移动端供应商侧启动；AI技术选型完成（大模型/知识库/合同解析），智能问答MVP开发。</div>
+        </div>
+        <div class="tl-item t1">
+          <div class="tl-head">M3~M4：AI四场景陆续上线</div>
+          <div class="tl-body">智能问答、智能审核、合同助手、供应商风控逐步上线；财务协同（费用单/对账）完成；数据报表+数字大屏可演示。</div>
+        </div>
+        <div class="tl-item t1">
+          <div class="tl-head"><strong>M5~M6：一期正式发布</strong></div>
+          <div class="tl-body">v2.0全量发布，供应商移动端全量上线；AI差异化演示物料完备，配合销售团队中小客户推广，验证AI功能市场接受度。</div>
+        </div>
+        <div class="tl-item t2">
+          <div class="tl-head">M7~M9：二期基础补全+AI深化</div>
+          <div class="tl-body">商城打通、单据流、发票协同、风控套件上线；智能问数开发；锁定1~2家中型客户打造标杆。</div>
+        </div>
+        <div class="tl-item t2">
+          <div class="tl-head"><strong>M10~M12：二期发布</strong></div>
+          <div class="tl-body">v3.0发布；自动化单据+多语言+采购端移动全量上线；功能完整度对标竞品，AI能力超越携客云。</div>
+        </div>
+        <div class="tl-item t3">
+          <div class="tl-head">M13~M15：三期高阶AI建设</div>
+          <div class="tl-body">智能寻源比价、商城智能比价、大宗行情集成开发；大客户专属功能（配额/VMI/智能招投标）启动。</div>
+        </div>
+        <div class="tl-item t3">
+          <div class="tl-head"><strong>M16~M18：三期发布</strong></div>
+          <div class="tl-body">v4.0全量发布，AI功能达9大场景，可量化降本ROI；以标杆案例进军5~10亿市场，向甄云功能集看齐。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 4. 预期收益 ===== -->
+    <div class="content-card" id="s-roi">
+      <div class="cc-head">
+        <span class="cc-num">4</span>
+        <h3>预期收益分析（ROI）</h3>
+        <span class="cc-sub">商业价值 · 交付价值 · 产品价值</span>
+      </div>
+
+      <div class="roi-grid">
+        <!-- 商业价值 -->
+        <div class="roi-card" style="border-top:3px solid var(--purple)">
+          <div class="rc-icon" style="color:var(--purple)">💰</div>
+          <h4>商业价值</h4>
+          <div class="rc-item"><span>预计打单周期缩短</span><span class="rc-val">3~5天</span></div>
+          <div class="rc-item"><span>预计赢单率提升</span><span class="rc-val">50%+</span></div>
+          <div class="rc-item"><span>支撑营收目标</span><span class="rc-val">千万级</span></div>
+          <div style="font-size:11px;color:var(--gray-500);margin-top:8px;line-height:1.5">AI功能即销售工具，一期演示即可秀肌肉。参考甄云按场景售卖AI的商业模式，我们可采用"基础版免费+增值AI收费"的分层定价<span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c2')">[2]</span></span>。</div>
+        </div>
+
+        <!-- 交付价值 -->
+        <div class="roi-card" style="border-top:3px solid var(--green)">
+          <div class="rc-icon" style="color:var(--green)">📦</div>
+          <h4>交付价值</h4>
+          <div class="rc-item"><span>标准功能覆盖率提升至</span><span class="rc-val" style="color:var(--green)">85%+</span></div>
+          <div class="rc-item"><span>预计降低单项目定制成本</span><span class="rc-val" style="color:var(--green)">~30%</span></div>
+          <div class="rc-item"><span>交付周期缩短</span><span class="rc-val" style="color:var(--green)">2~4周</span></div>
+          <div style="font-size:11px;color:var(--gray-500);margin-top:8px;line-height:1.5">一期补全9项核心功能后，标准功能覆盖率显著提升。IBM研究显示，标准化采购流程可将转型成功率提高42%<span class="cite-wrap"><span class="cite" onclick="toggleCite(event,'c7')">[7]</span></span>。</div>
+        </div>
+
+        <!-- 产品价值 -->
+        <div class="roi-card" style="border-top:3px solid var(--blue)">
+          <div class="rc-icon" style="color:var(--blue)">🏆</div>
+          <h4>产品价值</h4>
+          <div class="rc-item"><span>一期vs携客云AI</span><span class="rc-val" style="color:var(--blue)">超越</span></div>
+          <div class="rc-item"><span>二期vs竞品功能完整度</span><span class="rc-val" style="color:var(--blue)">平齐</span></div>
+          <div class="rc-item"><span>三期vs甄云功能集</span><span class="rc-val" style="color:var(--blue)">局部领先</span></div>
+          <div style="font-size:11px;color:var(--gray-500);margin-top:8px;line-height:1.5">本地化部署+AI私有数据训练=携客云等纯SaaS竞品无法复制的壁垒。AI审核准确率和风控精准度将优于SaaS竞品。</div>
+        </div>
+      </div>
+
+      <!-- ROI 综合测算 -->
+      <div class="callout">
+        <span class="ico">📊</span>
+        <span>
+          <strong>综合ROI测算：</strong>以一期AI功能上线后支撑10个新签客户测算——若赢单率从30%提升至45%，单客户均价30万，则新增营收约<strong>450万</strong>，可覆盖一期研发投入。若AI功能采用增值模块收费（单场景5~8万/年），10个客户即可产生<strong>50~80万/年</strong>的持续性AI收入。
+        </span>
+      </div>
+    </div>
+
+    <!-- ===== 5. 资源与决策 ===== -->
+    <div class="content-card" id="s-resource">
+      <div class="cc-head">
+        <span class="cc-num">5</span>
+        <h3>资源需求与决策诉求</h3>
+        <span class="cc-sub">落地保障 · 风险应对 · Call to Action</span>
+      </div>
+
+      <!-- 资源盘点 -->
+      <div class="split-row">
+        <div>
+          <h4 style="font-size:14px;font-weight:500;color:var(--gray-900);margin-bottom:10px">资源需求盘点</h4>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>角色</th><th>需要</th><th>目前</th><th>缺口</th></tr></thead>
+              <tbody>
+                <tr><td>产品经理</td><td>2人</td><td>1人</td><td><span class="tag high">1人</span></td></tr>
+                <tr><td>前端开发</td><td>2人</td><td>1人</td><td><span class="tag high">1人</span></td></tr>
+                <tr><td>后端开发</td><td>3人</td><td>2人</td><td><span class="tag high">1人</span></td></tr>
+                <tr><td>移动端开发</td><td>1人</td><td>1人</td><td><span class="tag low">0</span></td></tr>
+                <tr><td>AI工程师</td><td>2人</td><td>0人</td><td><span class="tag high">2人</span></td></tr>
+                <tr><td>测试</td><td>2人</td><td>1人</td><td><span class="tag mid">1人</span></td></tr>
+                <tr style="background:var(--purple-light)"><td><strong>合计</strong></td><td><strong>12人</strong></td><td><strong>6人</strong></td><td><strong style="color:var(--purple)">6人</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h4 style="font-size:14px;font-weight:500;color:var(--gray-900);margin-bottom:10px">风险与降级方案</h4>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>风险</th><th>等级</th><th>降级方案</th></tr></thead>
+              <tbody>
+                <tr><td>AI工程师到位延迟</td><td><span class="tag high">高</span></td><td>一期AI用成熟大模型API（不自研模型），前端/后端工程师可兼任集成工作</td></tr>
+                <tr><td>一期资源不足</td><td><span class="tag high">高</span></td><td><strong>MVP策略：</strong>AI场景从4个减为3个（暂缓合同助手），基础功能从9项减为7项</td></tr>
+                <tr><td>AI准确率不稳定</td><td><span class="tag mid">中</span></td><td>采用"AI建议+人工确认"模式，逐步提升自动化率</td></tr>
+                <tr><td>商城打通商务延期</td><td><span class="tag mid">中</span></td><td>一期启动商务谈判，先做简单聚合入口</td></tr>
+                <tr><td>竞品快速跟进AI</td><td><span class="tag low">低</span></td><td>本地部署+私有数据训练是SaaS无法短期复制的壁垒</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 明确决策 Call to Action -->
+      <h4 style="font-size:14px;font-weight:500;color:var(--gray-900);margin:24px 0 12px">明确决策诉求（Call to Action）</h4>
+      <div class="info-row">
+        <div class="info-box purple">
+          <div class="ib-title">决策一</div>
+          <div class="ib-body"><strong>请领导审批三期规划Roadmap</strong><br>确认AI前置切入策略与三期功能优先级划分。</div>
+        </div>
+        <div class="info-box blue">
+          <div class="ib-title">决策二</div>
+          <div class="ib-body"><strong>请领导批复/协调研发资源</strong><br>一期需要额外补充1~2名AI工程师（或内部转岗），确保AI与基础功能双线并行。</div>
+        </div>
+        <div class="info-box green">
+          <div class="ib-title">决策三</div>
+          <div class="ib-body"><strong>请确认一期上线后推广配合机制</strong><br>销售/实施团队需提前启动AI演示培训，配合产品团队制作AI差异化营销物料。</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <span class="ico">⚡</span>
+        <span>
+          <strong>如果资源不能一次性到位：</strong>降级方案为"MVP先行"——一期AI场景从4个减为3个（暂缓合同助手），基础功能从9项减为7项（暂缓退货单+费用单）；AI研发优先调用成熟大模型API降低工程成本。此方案下AI差异化仍成立，但合同助手的缺失会在制造业场景中损失部分竞争力。建议<strong>优先确保AI工程师到位</strong>。
+        </span>
+      </div>
+    </div>
+
+    <!-- 脚注汇总 -->
+    <div class="content-card" style="background:var(--gray-50)">
+      <div class="cc-head">
+        <span class="cc-num">📎</span>
+        <h3>数据来源与参考文献</h3>
+      </div>
+      <div class="footnotes">
+        <div class="fn-item"><span class="fn-num">[1]</span>IDC 2025《中国供应资源管理软件市场份额报告》— 市场规模147.3亿元(Y2024)，预计2026年达205.8亿元，CAGR 18.3%</div>
+        <div class="fn-item"><span class="fn-num">[2]</span>甄云科技智能审核解决方案 (2026.04) — AI审核效率提升80%+，AI风险雷达准确率93%+，服务1000+大中型企业</div>
+        <div class="fn-item"><span class="fn-num">[3]</span>IT之家《2026年五大主流SRM平台功能与场景适配对比》(2026.06.06) — 鲸采云降本35%+、风险降低60%</div>
+        <div class="fn-item"><span class="fn-num">[4]</span>IDC & 艾瑞咨询联合数据 — 2024年中国SRM市场48.7亿元，2026年突破72亿元，CAGR 21.3%</div>
+        <div class="fn-item"><span class="fn-num">[5]</span>Gartner 2025首席采购官调研 — 73% CPO：不用AI的员工将被取代；59% CPO：生成式AI对寻源分析至关重要</div>
+        <div class="fn-item"><span class="fn-num">[6]</span>GII Research全球SRM软件市场报告 (2025) — 全球规模133.5亿美元(Y2025)，2030年预计209.1亿美元，CAGR 9-10%</div>
+        <div class="fn-item"><span class="fn-num">[7]</span>IBM商业价值研究院《数字化采购转型与战略》— AI使采购任务时间缩短10-20%，定价分析2天→10分钟</div>
+        <div class="fn-item"><span class="fn-num">[8]</span>IDC & 艾瑞咨询联合数据 — SAP Ariba全球SRM市场35%份额，中国高端14.2%；AI寻源效率↑45%</div>
+        <div class="fn-item" style="margin-top:8px;color:var(--gray-500)"><span class="fn-num">*</span>行业趋势参考：亿邦智库《2025数智采购供应链发展报告》(2025.07) — 2024年我国企业物资采购总额188.3万亿元，同比增长7.3%</div>
+      </div>
+    </div>
+
+  </div><!-- /detail-block -->
+</div><!-- /main -->
+
+<script>
+// tab switching in summary block
+function switchTab(tabId) {
+  document.querySelectorAll('.summary-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// citation popup toggle
+function toggleCite(event, id) {
+  event.preventDefault();
+  event.stopPropagation();
+  var pop = document.getElementById(id);
+  var isShowing = pop.classList.contains('show');
+  // close all
+  document.querySelectorAll('.cite-pop').forEach(p => p.classList.remove('show'));
+  if (!isShowing) pop.classList.add('show');
+}
+
+// close popups on outside click
+document.addEventListener('click', function() {
+  document.querySelectorAll('.cite-pop').forEach(p => p.classList.remove('show'));
+});
+
+// sidebar active state on scroll
+var sections = document.querySelectorAll('.content-card[id]');
+var navLinks = document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll', function() {
+  var current = '';
+  sections.forEach(function(sec) {
+    var top = sec.getBoundingClientRect().top;
+    if (top < 200) current = sec.getAttribute('id');
+  });
+  navLinks.forEach(function(link) {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+});
+
+// smooth sidebar nav click
+navLinks.forEach(function(link) {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    var target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+</script>
+
+</body>
+</html>

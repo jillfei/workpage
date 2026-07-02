@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>简易HTML文字编辑器</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ── Toolbar ── */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 24px;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(0,0,0,.08);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .toolbar .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toolbar .logo {
+            position: relative;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #06b6d4);
+            background-size: 200% 200%;
+            animation: gradShift 4s ease infinite;
+            box-shadow:
+                0 0 12px rgba(99,102,241,.4),
+                0 0 30px rgba(168,85,247,.15);
+        }
+        @keyframes gradShift {
+            0%, 100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
+        }
+
+        .toolbar .logo svg {
+            width: 18px;
+            height: 18px;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,.2));
+        }
+
+        .toolbar .brand {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            white-space: nowrap;
+            user-select: none;
+            letter-spacing: .5px;
+        }
+
+        .toolbar .spacer {
+            flex: 1;
+        }
+
+
+        /* ── Toast ── */
+        .toast {
+            font-size: 12px;
+            color: #10b981;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(8px);
+            transition: opacity .35s, transform .35s;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .toast.warn {
+            color: #f59e0b;
+        }
+
+        /* ── Modern Buttons ── */
+        .toolbar button {
+            position: relative;
+            padding: 8px 22px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: transform .18s, box-shadow .25s;
+            z-index: 1;
+        }
+        .toolbar button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            z-index: -1;
+            transition: opacity .3s;
+        }
+        .toolbar button:hover {
+            transform: translateY(-1px);
+        }
+        .toolbar button:active {
+            transform: translateY(0) scale(.97);
+        }
+
+        /* Open — gradient blue-purple */
+        .btn-open {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            box-shadow: 0 4px 14px rgba(99,102,241,.35);
+        }
+        .btn-open:hover {
+            box-shadow: 0 6px 20px rgba(99,102,241,.5);
+        }
+
+        /* Save — gradient emerald */
+        .btn-save {
+            background: linear-gradient(135deg, #10b981, #06b6d4);
+            box-shadow: 0 4px 14px rgba(16,185,129,.35);
+        }
+        .btn-save:hover {
+            box-shadow: 0 6px 20px rgba(16,185,129,.5);
+        }
+
+        /* ── Editor area ── */
+        .editor-wrap {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            overflow: auto;
+            background: #e8eaed;
+        }
+
+        #editorFrame {
+            width: 1600px;
+            min-width: 1600px;
+            height: 100%;
+            border: none;
+            background: #fff;
+            box-shadow: 0 0 12px rgba(0,0,0,.08);
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <div class="logo-wrap">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <!-- pen body -->
+                    <path d="M15.5 3.5l5 5L9 20H4v-5L15.5 3.5z" fill="rgba(255,255,255,.2)" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
+                    <!-- pen tip -->
+                    <path d="M13 6l5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+                    <!-- sparkle -->
+                    <circle cx="7" cy="5" r="1" fill="#fff" opacity=".9">
+                        <animate attributeName="opacity" values=".9;.3;.9" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="19" cy="8" r=".7" fill="#fff" opacity=".6">
+                        <animate attributeName="opacity" values=".6;.2;.6" dur="1.5s" repeatCount="indefinite"/>
+                    </circle>
+                </svg>
+            </div>
+            <span class="brand">HTML编辑器</span>
+        </div>
+        <div class="spacer"></div>
+        <span class="toast" id="toast"></span>
+        <button class="btn-open" onclick="openFile()">📂 打开</button>
+        <button class="btn-save" onclick="saveFile()">💾 保存</button>
+    </div>
+    <div class="editor-wrap">
+        <iframe id="editorFrame"></iframe>
+    </div>
+
+    <script>
+        let currentFile = null;
+        const frame = document.getElementById('editorFrame');
+
+        // 打开文件 — 自动进入编辑模式
+        function openFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.html,.htm';
+            input.onchange = function (e) {
+                currentFile = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    frame.contentDocument.open();
+                    frame.contentDocument.write(event.target.result);
+                    frame.contentDocument.close();
+                    // 自动开启编辑
+                    enableEdit();
+                };
+                reader.readAsText(currentFile, 'utf-8');
+            };
+            input.click();
+        }
+
+        // 开启编辑
+        function enableEdit() {
+            // 等待 iframe 内容就绪
+            const tryEdit = () => {
+                const doc = frame.contentDocument;
+                if (doc && doc.body) {
+                    doc.designMode = 'On';
+                    doc.body.contentEditable = 'true';
+                } else {
+                    setTimeout(tryEdit, 50);
+                }
+            };
+            tryEdit();
+        }
+
+        // 保存文件 — 自动清除 contenteditable 和 designMode 痕迹
+        function saveFile() {
+            if (!currentFile) {
+                showToast('⚠ 请先打开一个HTML文件', true);
+                return;
+            }
+            const doc = frame.contentDocument;
+            // 临时关闭编辑模式以清除浏览器注入的属性
+            doc.designMode = 'Off';
+
+            const clone = doc.documentElement.cloneNode(true);
+            // 递归移除 contenteditable 属性
+            removeAttr(clone, 'contenteditable');
+            // 移除 spellcheck 等编辑相关属性
+            removeAttr(clone, 'spellcheck');
+
+            let content = '<!DOCTYPE html>\n' + clone.outerHTML;
+
+            const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentFile.name;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            // 恢复编辑模式
+            doc.designMode = 'On';
+            showToast('✅ 已保存，请覆盖原文件');
+        }
+
+        // Toast 提示
+        let toastTimer = null;
+        function showToast(msg, warn) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast show' + (warn ? ' warn' : '');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { t.className = 'toast'; }, 3000);
+        }
+
+        // 递归移除指定属性
+        function removeAttr(node, attr) {
+            if (node.removeAttribute) node.removeAttribute(attr);
+            if (node.childNodes) {
+                for (const child of node.childNodes) removeAttr(child, attr);
+            }
+        }
+    </script>
+</body>
+</html>

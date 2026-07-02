@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRD：智能体模块 - 提示词库功能</title>
+  <style>
+    :root {
+      --bg-color: #f5f7fa;
+      --card-bg: #ffffff;
+      --primary: #2563eb;
+      --text-main: #1f2937;
+      --text-sub: #4b5563;
+      --border: #e5e7eb;
+      --hover-bg: #f0f5ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.6;
+      color: var(--text-main);
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 24px;
+    }
+    .prd-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 32px;
+    }
+    h1 {
+      font-size: 28px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 16px;
+      margin-top: 0;
+    }
+    h2 { font-size: 20px; margin: 0; display: flex; align-items: center; }
+    
+    /* 折叠面板样式 */
+    details {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+    details[open] {
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+    }
+    summary {
+      cursor: pointer;
+      padding: 14px 18px;
+      font-weight: 600;
+      background: #f8fafc;
+      list-style: none;
+      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.2s;
+    }
+    summary:hover { background: var(--hover-bg); }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "▶";
+      font-size: 12px;
+      color: var(--text-sub);
+      transition: transform 0.2s;
+    }
+    details[open] summary::after { transform: rotate(90deg); }
+    details[open] summary { border-bottom: 1px solid var(--border); background: #eff6ff; }
+    
+    .details-content { padding: 18px; }
+    
+    /* 表格样式 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      text-align: left;
+    }
+    th { background: #f8fafc; font-weight: 600; color: var(--text-sub); white-space: nowrap; }
+    tr:nth-child(even) { background: #fafafa; }
+    
+    /* 列表与代码 */
+    ul, ol { padding-left: 20px; margin: 8px 0; }
+    li { margin-bottom: 6px; }
+    code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9em;
+      color: #c2410c;
+    }
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .checkbox-list { list-style: none; padding-left: 0; }
+    .checkbox-list li { position: relative; padding-left: 24px; }
+    .checkbox-list li::before {
+      content: "☐";
+      position: absolute;
+      left: 0;
+      top: 2px;
+      font-size: 16px;
+      color: var(--text-sub);
+    }
+    .quote {
+      background: #fefce8;
+      border-left: 4px solid #eab308;
+      padding: 12px 16px;
+      margin: 12px 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 14px;
+    }
+    .btn-group { margin-bottom: 16px; }
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-right: 8px;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn.secondary { background: #e5e7eb; color: var(--text-main); }
+  </style>
+</head>
+<body>
+
+<div class="prd-container">
+  <h1>📄 产品需求文档 (PRD)：智能体模块 - 提示词库功能</h1>
+  
+  <div class="btn-group">
+    <button class="btn" onclick="toggleAll(true)">全部展开</button>
+    <button class="btn secondary" onclick="toggleAll(false)">全部收起</button>
+  </div>
+
+  <!-- 所有 details 均添加 open 属性，默认展开 -->
+  <details open>
+    <summary>📋 文档信息</summary>
+    <div class="details-content">
+      <table>
+        <thead><tr><th>文档版本</th><th>修改日期</th><th>修改人</th><th>修改说明</th></tr></thead>
+        <tbody><tr><td>V1.0</td><td>2026-05-29</td><td>孙礼飞</td><td>初始版本创建</td></tr></tbody>
+      </table>
+    </div>
+  </details>
+
+  <details open>
+    <summary>🎯 1. 需求背景与目标</summary>
+    <div class="details-content">
+      <ul>
+        <li><strong>背景</strong>：当前用户在新增/编辑智能体时，编写高质量指令（Prompt）学习成本高、耗时长。现有"AI 优化"功能仅支持对已有文本进行润色，缺乏快速复用标准化/优质提示词的能力。</li>
+        <li><strong>目标</strong>：在指令模块新增 <code>提示词库</code> 入口，提供模板检索与一键应用功能，降低 Prompt 编写门槛，提升智能体配置效率与一致性。</li>
+        <li><strong>适用范围</strong>：智能体「新增页」与「编辑页」的指令（System Prompt / Instruction）模块。</li>
+      </ul>
+    </div>
+  </details>
+
+  <details open>
+    <summary>📦 2. 功能概述</summary>
+    <div class="details-content">
+      <p>在指令输入区域操作栏右侧，于 <code>AI 优化</code> 按钮左侧新增 <span class="tag">[提示词库]</span> 按钮。点击后唤起模板选择弹窗，支持名称搜索、列表展示、分页排序；点击"应用模板"可将内容注入指令框，并包含内容覆盖二次确认机制。</p>
+      <div style="margin-top: 20px; text-align: center;">
+        <img src="img/prompt_v1.jpg" alt="提示词库功能示意图" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <p style="margin-top: 8px; font-size: 14px; color: #6b7280;">图：提示词库功能界面示意图</p>
+      </div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>🛠 3. 详细功能需求</summary>
+    <div class="details-content">
+      
+      <details open>
+        <summary>3.1 入口与 UI 布局</summary>
+        <div class="details-content">
+          <table>
+            <thead><tr><th>元素</th><th>位置</th><th>交互/样式说明</th></tr></thead>
+            <tbody>
+              <tr><td><code>[提示词库]</code> 按钮</td><td>指令模块操作区右侧，紧贴 <code>AI 优化</code> 按钮左侧</td><td>标准按钮样式，Hover 状态反馈，点击唤起 Modal</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <details open>
+        <summary>3.2 提示词库弹窗（核心交互）</summary>
+        <div class="details-content">
+          <h3>3.2.1 搜索区</h3>
+          <ul>
+            <li><strong>控件</strong>：输入框（输入内容实时触发）</li>
+            <li><strong>逻辑</strong>：支持按 <code>模板名称</code> 进行模糊搜索；清空输入框自动恢复默认列表。</li>
+          </ul>
+
+          <h3>3.2.2 列表展示区</h3>
+          <table>
+            <thead><tr><th>字段</th><th>展示规则</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>模板名称</td><td>完整展示</td><td>支持 Tooltip 悬浮显示全称（若被截断）</td></tr>
+              <tr><td>摘要/Prompt内容</td><td>截断展示（建议：50 字符 + <code>...</code>）</td><td>鼠标 Hover 可显示完整前段内容</td></tr>
+              <tr><td>创建人</td><td>展示姓名</td><td>-</td></tr>
+              <tr><td>更新时间</td><td><code>YYYY-MM-DD HH:mm</code></td><td>默认倒序排序依据</td></tr>
+              <tr><td>操作列</td><td><code>[应用模板]</code> 按钮</td><td>点击触发应用逻辑</td></tr>
+            </tbody>
+          </table>
+
+          <h3>3.2.3 分页与排序</h3>
+          <ul>
+            <li><strong>数据来源</strong>：提示词模块，状态为启用的所有提示词模板。</li>
+            <li><strong>排序规则</strong>：固定按 <code>更新时间</code> 倒序排列（最新在前）。</li>
+            <li><strong>分页规则</strong>：每页固定 10 条。
+              <ul>
+                <li>总数据量 <code>≤ 10</code>：隐藏分页组件。</li>
+                <li>总数据量 <code>> 10</code>：显示标准分页器，支持页码跳转与前后翻页。</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </details>
+
+      <details open>
+        <summary>3.3 交互与业务逻辑</summary>
+        <div class="details-content">
+          <h3>3.3.1 应用模板逻辑</h3>
+          <ol>
+            <li>用户点击某条模板的 <code>[应用模板]</code> 按钮。</li>
+            <li>系统校验智能体指令输入框当前状态：
+              <ul>
+                <li><strong>若为空</strong>：直接将该模板完整 Prompt 内容写入输入框，自动关闭弹窗，光标定位至输入框末尾。</li>
+                <li><strong>若已有内容</strong>：弹出二次确认 Dialog：
+                  <div class="quote">
+                    <strong>提示</strong>："应用新模板将覆盖当前指令内容，是否继续？"<br>
+                    <strong>按钮</strong>：<code>取消</code> | <code>确认</code>
+                  </div>
+                  <ul>
+                    <li>点击 <code>取消</code>：关闭确认框，保留弹窗不关闭，指令框内容不变。</li>
+                    <li>点击 <code>确认</code>：执行覆盖写入，关闭弹窗，光标定位至末尾。</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>写入后，用户可继续在输入框内进行手动增删改，不受限制。</li>
+          </ol>
+        </div>
+      </details>
+
+    </div>
+  </details>
+
+  <details open>
+    <summary>⚠️ 4. 异常状态与边界处理</summary>
+    <div class="details-content">
+      <table>
+        <thead><tr><th>场景</th><th>处理策略</th></tr></thead>
+        <tbody>
+          <tr><td>模板列表请求失败/网络异常</td><td>弹窗内展示全局错误提示（如："加载失败，请重试"），提供刷新按钮</td></tr>
+          <tr><td>搜索无结果</td><td>展示空状态插画 + 文案"未找到匹配的提示词模板，请调整搜索词"</td></tr>
+          <tr><td>应用后超出输入框字符上限</td><td>截断至最大允许长度，并 Toast 提示"内容已应用，超出限制部分已自动截断"</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+</div>
+
+<script>
+  // 全部展开/收起控制脚本
+  function toggleAll(expand) {
+    document.querySelectorAll('details').forEach(d => {
+      d.open = expand;
+    });
+  }
+</script>
+
+</body>
+</html>

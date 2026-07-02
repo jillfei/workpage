@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRM标准产品后续版本规划 — 三期路线图</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;font-size:14px;line-height:1.7;color:#2c2c2a;background:#f8f7f4}
+  a{color:#185fa5;text-decoration:none}
+  .top-nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:0.5px solid #d3d1c7;padding:0 32px;display:flex;align-items:center;gap:24px;height:52px;overflow-x:auto}
+  .top-nav .logo{font-size:15px;font-weight:500;color:#2c2c2a;white-space:nowrap;margin-right:8px}
+  .top-nav a{font-size:13px;color:#5f5e5a;white-space:nowrap;padding:4px 0;border-bottom:2px solid transparent}
+  .top-nav a:hover{color:#185fa5;border-bottom-color:#185fa5}
+  .page{max-width:1400px;margin:0 auto;padding:40px 24px 80px}
+  section{margin-bottom:60px}
+  .hero{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:40px 48px;margin-bottom:48px}
+  .hero .badge{display:inline-block;background:#eeedfe;color:#534ab7;font-size:12px;padding:3px 10px;border-radius:20px;margin-bottom:16px}
+  .hero h1{font-size:26px;font-weight:500;color:#2c2c2a;margin-bottom:10px}
+  .hero .sub{font-size:14px;color:#5f5e5a;margin-bottom:24px;line-height:1.8}
+  .hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+  .hero-meta .item{font-size:13px;color:#888780}
+  .hero-meta .item span{color:#2c2c2a;font-weight:500}
+  h2.sec{font-size:17px;font-weight:500;color:#2c2c2a;margin-bottom:20px;padding-bottom:10px;border-bottom:0.5px solid #d3d1c7;display:flex;align-items:center;gap:10px}
+  h2.sec .num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:#534ab7;color:#fff;border-radius:50%;font-size:12px;flex-shrink:0}
+  h3.sub-sec{font-size:14px;font-weight:500;color:#2c2c2a;margin:20px 0 12px}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:12px;margin-bottom:24px}
+  .m-card{background:#f1efe8;border-radius:8px;padding:16px;text-align:center}
+  .m-card .label{font-size:12px;color:#888780;margin-bottom:6px}
+  .m-card .value{font-size:22px;font-weight:500;color:#2c2c2a}
+  .m-card .hint{font-size:11px;color:#b4b2a9;margin-top:4px}
+  .m-card.ai{background:#eeedfe}
+  .m-card.ai .value{color:#534ab7}
+  .info-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+  .info-box{flex:1;min-width:200px;background:#fff;border:0.5px solid #d3d1c7;border-radius:10px;padding:16px 20px}
+  .info-box.purple{border-left:3px solid #534ab7}
+  .info-box.blue{border-left:3px solid #185fa5}
+  .info-box.green{border-left:3px solid #0f6e56}
+  .info-box.amber{border-left:3px solid #ba7517}
+  .info-box.red{border-left:3px solid #a32d2d}
+  .info-box .title{font-size:12px;color:#888780;margin-bottom:8px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+  .info-box .body{font-size:13px;color:#2c2c2a;line-height:1.7}
+  .info-box .body li{margin-left:16px;margin-bottom:4px}
+  /* strategy banner */
+  .strat-banner{background:#eeedfe;border:1px solid #afa9ec;border-radius:10px;padding:18px 24px;margin-bottom:24px}
+  .strat-banner .strat-title{font-size:13px;font-weight:500;color:#534ab7;margin-bottom:8px}
+  .strat-banner p{font-size:13px;color:#3c3489;line-height:1.8}
+  .strat-banner strong{color:#26215c}
+  /* comparison block */
+  .compare-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+  .compare-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:10px;padding:16px 18px}
+  .compare-card .cc-head{font-size:12px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .compare-card .cc-tag{font-size:11px;padding:2px 7px;border-radius:4px}
+  .cc-old .cc-tag{background:#fcebeb;color:#a32d2d}
+  .cc-new .cc-tag{background:#eeedfe;color:#534ab7}
+  .compare-card li{font-size:12px;color:#5f5e5a;margin-left:16px;margin-bottom:4px;line-height:1.6}
+  /* tbl */
+  .tbl-wrap{overflow-x:auto;border:0.5px solid #d3d1c7;border-radius:10px;margin-bottom:20px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead tr{background:#f1efe8}
+  th{padding:10px 14px;text-align:left;font-weight:500;color:#5f5e5a;white-space:nowrap}
+  td{padding:9px 14px;border-top:0.5px solid #e8e6df;color:#2c2c2a;vertical-align:top}
+  tr:hover td{background:#fafaf8}
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;white-space:nowrap}
+  .tag.p1{background:#eeedfe;color:#534ab7}
+  .tag.p2{background:#eaf3de;color:#3b6d11}
+  .tag.p3{background:#faeeda;color:#854f0b}
+  .tag.ai{background:#eeedfe;color:#534ab7}
+  .tag.must{background:#fcebeb;color:#a32d2d}
+  .tag.opt{background:#f1efe8;color:#5f5e5a}
+  .tag.blue{background:#e6f1fb;color:#185fa5}
+  /* roadmap */
+  .roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+  .phase-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;overflow:hidden}
+  .phase-hd{padding:18px 20px 14px;border-bottom:0.5px solid #d3d1c7}
+  .phase-hd .ph-label{font-size:11px;font-weight:500;letter-spacing:.5px;margin-bottom:6px}
+  .phase-hd .ph-name{font-size:16px;font-weight:500;margin-bottom:4px}
+  .phase-hd .ph-period{font-size:12px;color:#888780}
+  .phase-card.ph1 .phase-hd{background:#eeedfe}.phase-card.ph1 .ph-label{color:#534ab7}
+  .phase-card.ph2 .phase-hd{background:#e6f1fb}.phase-card.ph2 .ph-label{color:#185fa5}
+  .phase-card.ph3 .phase-hd{background:#eaf3de}.phase-card.ph3 .ph-label{color:#3b6d11}
+  .phase-body{padding:16px 20px}
+  .phase-body .goal{font-size:12px;color:#5f5e5a;margin-bottom:14px;line-height:1.6;padding:10px 12px;background:#fafaf8;border-radius:6px;border-left:2px solid #d3d1c7}
+  .phase-card.ph1 .goal{border-left-color:#534ab7;background:#faf9ff}
+  .phase-card.ph2 .goal{border-left-color:#185fa5;background:#f6f9fd}
+  .phase-card.ph3 .goal{border-left-color:#0f6e56;background:#f5faf7}
+  .feat-group{margin-bottom:14px}
+  .feat-group .fg-title{font-size:11px;font-weight:500;color:#888780;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:4px}
+  .fg-title .ai-pill{background:#eeedfe;color:#534ab7;font-size:10px;padding:1px 5px;border-radius:3px}
+  .fg-title .base-pill{background:#e6f1fb;color:#185fa5;font-size:10px;padding:1px 5px;border-radius:3px}
+  .fg-title .adv-pill{background:#eaf3de;color:#3b6d11;font-size:10px;padding:1px 5px;border-radius:3px}
+  .feat-item{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#2c2c2a;margin-bottom:5px;line-height:1.5}
+  .feat-item .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+  .dot.ai{background:#534ab7}
+  .dot.must{background:#a32d2d}
+  .dot.base{background:#185fa5}
+  .dot.adv{background:#0f6e56}
+  .dot.opt{background:#888780}
+  .kpi-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:14px;border-top:0.5px solid #e8e6df}
+  .kpi-chip{background:#f1efe8;border-radius:6px;padding:4px 10px;font-size:11px;color:#5f5e5a}
+  .phase-card.ph1 .kpi-chip{background:#eeedfe;color:#534ab7}
+  .phase-card.ph2 .kpi-chip{background:#e6f1fb;color:#185fa5}
+  .phase-card.ph3 .kpi-chip{background:#eaf3de;color:#3b6d11}
+  /* ai scenario grid */
+  .ai-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px}
+  .ai-card{background:#fff;border:0.5px solid #afa9ec;border-radius:10px;padding:16px 18px}
+  .ai-card .ac-phase{font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;margin-bottom:8px;display:inline-block}
+  .ac-ph1{background:#eeedfe;color:#534ab7}
+  .ac-ph2{background:#e6f1fb;color:#185fa5}
+  .ac-ph3{background:#eaf3de;color:#3b6d11}
+  .ai-card h4{font-size:13px;font-weight:500;margin-bottom:6px;color:#2c2c2a}
+  .ai-card p{font-size:12px;color:#5f5e5a;line-height:1.7}
+  .ai-card .ac-why{font-size:11px;color:#888780;margin-top:8px;padding-top:8px;border-top:0.5px solid #e8e6df}
+  /* timeline */
+  .timeline{position:relative;padding-left:24px}
+  .timeline::before{content:'';position:absolute;left:6px;top:6px;bottom:6px;width:1px;background:#d3d1c7}
+  .tl-item{position:relative;margin-bottom:24px}
+  .tl-item::before{content:'';position:absolute;left:-20px;top:5px;width:10px;height:10px;border-radius:50%;border:2px solid #fff;z-index:1}
+  .tl-item.t1::before{background:#534ab7}
+  .tl-item.t2::before{background:#185fa5}
+  .tl-item.t3::before{background:#0f6e56}
+  .tl-item .t-head{font-size:13px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+  .tl-item .t-body{font-size:12px;color:#5f5e5a;line-height:1.7}
+  /* risk */
+  .risk-level{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+  .risk-high{background:#a32d2d}
+  .risk-mid{background:#ba7517}
+  .risk-low{background:#0f6e56}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:16px;font-size:12px;color:#5f5e5a}
+  .legend-item{display:flex;align-items:center;gap:5px}
+  /* summary */
+  .summary-box{background:#fff;border:1.5px solid #534ab7;border-radius:12px;padding:24px 28px}
+  .summary-box h3{font-size:14px;font-weight:500;color:#534ab7;margin-bottom:12px}
+  .summary-box p{font-size:13px;color:#2c2c2a;line-height:1.9}
+  /* callout */
+  .callout{display:flex;gap:12px;background:#faf9ff;border:0.5px solid #afa9ec;border-radius:8px;padding:14px 16px;margin-bottom:20px;font-size:13px;color:#3c3489;line-height:1.7}
+  .callout .ico{font-size:16px;flex-shrink:0;margin-top:1px}
+  /* competitor row */
+  .comp-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+  .comp-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:10px;padding:14px 16px}
+  .comp-card .co-name{font-size:13px;font-weight:500;margin-bottom:3px}
+  .comp-card .co-tag{font-size:11px;color:#888780;margin-bottom:8px}
+  .comp-card .co-body li{font-size:12px;color:#5f5e5a;margin-left:14px;margin-bottom:3px;line-height:1.6}
+  @media(max-width:768px){
+    .roadmap{grid-template-columns:1fr}
+    .compare-row{grid-template-columns:1fr}
+    .hero{padding:24px}
+    .hero h1{font-size:20px}
+  }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <span class="logo">SRM产品规划</span>
+  <a href="#roadmap">三期路线图</a>
+  <a href="#strategy">战略逻辑</a>
+  <a href="#market">市场定位</a>
+  <a href="#ai">AI场景详解</a>
+  <a href="#timeline">里程碑</a>
+  <a href="#risk">风险资源</a>
+  <a href="#conclusion">总结</a>
+</nav>
+
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="badge">AI前置切入版 · 向总经理汇报</div>
+    <h1>SRM标准产品后续版本三期规划</h1>
+    <p class="sub">
+      基于竞品调研与销售反馈，调整产品进化路线：<strong>一期同步上线核心AI能力</strong>，以AI差异化功能作为快速切入市场的抓手，而非等到二期才发力——改变"先追平再超越"的被动追随策略，转为"基础够用 + AI领先"的主动出击。
+    </p>
+    <div class="hero-meta">
+      <div class="item">编制人员：<span>产品调研团队</span></div>
+      <div class="item">汇报日期：<span>2026年6月</span></div>
+      <div class="item">规划周期：<span>三期 · 约18个月</span></div>
+      <div class="item">核心转变：<span>AI与基础同步落地</span></div>
+    </div>
+  </div>
+
+  <!-- 1. 三期路线图 -->
+  <section id="roadmap">
+    <h2 class="sec"><span class="num">1</span>产品规划路线图</h2>
+
+    <div class="legend">
+      <span class="legend-item"><span class="dot ai" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span> AI核心场景</span>
+      <span class="legend-item"><span class="dot must" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span> 销售必备基础</span>
+      <span class="legend-item"><span class="dot base" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span> 基础增强</span>
+      <span class="legend-item"><span class="dot adv" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span> 高阶行业能力</span>
+    </div>
+
+    <div class="roadmap">
+
+      <!-- 一期 -->
+      <div class="phase-card ph1">
+        <div class="phase-hd">
+          <div class="ph-label">PHASE 1 · AI先行</div>
+          <div class="ph-name">基础够用 + 通过AI打造差异化</div>
+          <div class="ph-period">0 ~ 6 个月</div>
+        </div>
+        <div class="phase-body">
+          <p class="goal">目标：用"刚好够用"的基础功能支撑交付，同步上线5大AI核心场景作为市场切入抓手。一期完成后，AI能力即超越携客云，形成立即可用的差异化销售卖点。</p>
+
+          <div class="feat-group">
+            <div class="fg-title">AI核心场景 <span class="ai-pill">同步首发</span></div>
+            <div class="feat-item"><span class="dot ai"></span><strong>智能问答</strong>：知识库 + 供应商咨询入口，最快上线，所有竞品标配</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>智能审核</strong>：供应商/寻源/财务单据自动合规审核，携客云缺失的功能</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>合同助手</strong>：信息提取/文本比对/风险扫描，制造业高频高价值场景</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>供应商风控</strong>：工商/司法/舆情实时监控预警，结合本地数据更精准</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>智能比价</strong>：AI推荐最优供应商+风险比价+结果总结</div>
+          </div>
+
+          <div class="feat-group">
+            <div class="fg-title">销售必备基础 <span class="base-pill">核心9项</span></div>
+            <div class="feat-item"><span class="dot must"></span>样品试用流程（制造业供应商准入必走）</div>
+            <div class="feat-item"><span class="dot must"></span>竞价功能（低价中选，防串通）</div>
+            <div class="feat-item"><span class="dot must"></span>退货单独立菜单</div>
+            <div class="feat-item"><span class="dot must"></span>费用单 + 对账协同</div>
+            <div class="feat-item"><span class="dot must"></span>数据报表（内置 + 自定义）</div>
+            <div class="feat-item"><span class="dot must"></span>数字大屏（科技感数据中控）</div>
+          </div>
+
+          <div class="kpi-row">
+            <span class="kpi-chip">5大AI首发</span>
+            <span class="kpi-chip">超越携客云AI</span>
+            <span class="kpi-chip">演示即差异化</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 二期 -->
+      <div class="phase-card ph2">
+        <div class="phase-hd">
+          <div class="ph-label">PHASE 2 · 补全深化</div>
+          <div class="ph-name">基础功能补全 + 深化AI应用</div>
+          <div class="ph-period">6 ~ 12 个月</div>
+        </div>
+        <div class="phase-body">
+          <p class="goal">目标：扩大SRM基础能力，同步深化AI能力（智能问数、供应商画像，自动化单据），构建完整产品竞争力，正式向中型客户渗透，开始建设标杆案例。</p>
+
+          <div class="feat-group">
+            <div class="fg-title">AI深化 <span class="ai-pill">核心3项</span></div>
+            <div class="feat-item"><span class="dot ai"></span><strong>智能问数</strong>：自然语言查询数据+个性化看板，移动端接入</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>自动化单据</strong>：询价/合同/订单AI辅助生成，大幅提高人效</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>供应商画像</strong>：基于供应商历史数据，综合分析，给出全维度AI画像</div>
+          </div>
+
+          <div class="feat-group">
+            <div class="fg-title">基础功能补全 <span class="base-pill">二期补全业务</span></div>
+            <div class="feat-item"><span class="dot base"></span>索赔管理（来料不良/逾期/违约全流程）</div>
+            <div class="feat-item"><span class="dot base"></span>单据流（上下游全链路查看）</div>
+            <div class="feat-item"><span class="dot base"></span>竞拍（增加竞拍模式，支持多种采购业务，高价中选）</div>
+            <div class="feat-item"><span class="dot base"></span>供应商隔离（合作邀约，供应商组织划分）</div>
+            <div class="feat-item"><span class="dot base"></span>质检结果查询（ERP同步展示）</div>
+            <div class="feat-item"><span class="dot base"></span>价格走势查看（历史采购价可视化）</div>
+          </div>
+
+          <div class="feat-group">
+            <div class="fg-title">平台能力增强</div>
+            <div class="feat-item"><span class="dot base"></span>业务规则定义（流程自动化配置）</div>
+            <div class="feat-item"><span class="dot base"></span>多语言支持（出口型企业）</div>
+            <div class="feat-item"><span class="dot base"></span>供应商移动基础（通知待办/寻源大厅/协同）</div>
+          </div>
+
+          <div class="kpi-row">
+            <span class="kpi-chip">AI功能总计8项</span>
+            <span class="kpi-chip">功能完整度对标竞品</span>
+            <span class="kpi-chip">中型客户标杆建设</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 三期 -->
+      <div class="phase-card ph3">
+        <div class="phase-hd">
+          <div class="ph-label">PHASE 3 · 行业深耕</div>
+          <div class="ph-name">高阶AI功能 + 大客户进阶功能 + 行业增值功能</div>
+          <div class="ph-period">12 ~ 18 个月</div>
+        </div>
+        <div class="phase-body">
+          <p class="goal">目标：高阶AI（智能寻源/商城比价/大宗行情）+ 行业专属功能，形成行业深耕的标准化产品，打造行业标杆案例，进军5~10亿营收中大型客户，逐步对标甄云。</p>
+
+          <div class="feat-group">
+            <div class="fg-title">高阶AI <span class="ai-pill">3大场景</span></div>
+            <div class="feat-item"><span class="dot ai"></span><strong>智能寻源</strong>：自动化发起采购申请，匹配合适供应商，发起询比价</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>商城智能比价</strong>：跨渠道自动抓取价格，推荐最优渠道</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>大宗行情集成</strong>：接入行情平台，价格预测+波动提醒</div>
+          </div>
+
+          <div class="feat-group">
+            <div class="fg-title">大客户专属</div>
+            <div class="feat-item"><span class="dot adv"></span>项目管理（支持项目管理、需求预测、采购申请推送等）</div>
+            <div class="feat-item"><span class="dot adv"></span>配额管理（多供方按比例分配）</div>
+            <div class="feat-item"><span class="dot adv"></span>智能招投标（辅助评标+围串标分析）</div>
+            <div class="feat-item"><span class="dot adv"></span>条码标签（支持条码及二维码打印、格式编辑）</div>
+          </div>
+
+          <div class="feat-group">
+            <div class="fg-title">行业增值</div>
+            <div class="feat-item"><span class="dot adv"></span>供应商移动端完善（注册、验厂、个人中心、接入AI）</div>
+            <div class="feat-item"><span class="dot adv"></span>商城打通（京东工业/震坤行）</div>
+            <div class="feat-item"><span class="dot adv"></span>电子签章（接入法大大/易签宝）</div>
+            <div class="feat-item"><span class="dot adv"></span>ERP标准化对接（无缝打通金蝶、用友等ERP软件）</div>
+            <div class="feat-item"><span class="dot adv"></span>内部审批流（支持内外部独立审批，配置审批节点，查看审批进度）</div>
+          </div>
+
+          <div class="kpi-row">
+            <span class="kpi-chip">11项AI功能</span>
+            <span class="kpi-chip">大客户标杆案例</span>
+            <span class="kpi-chip">对标甄云功能集</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 一期精简说明 -->
+    <div class="tbl-wrap"><br>
+    </div>
+  </section>
+
+  <!-- 1. 战略逻辑 -->
+  <section id="strategy">
+    <h2 class="sec"><span class="num">1</span>战略调整逻辑</h2>
+
+    <div class="strat-banner">
+      <div class="strat-title">为什么要把AI提前到一期？</div>
+      <p>
+        原方案"先追平竞品基础功能，再做AI差异化"存在一个根本问题：<strong>我们最终追平携客云的时候，竞争格局不会停在原地</strong>。而且中小客户最终对比的不只是功能清单，而是"你比别人好在哪里"。AI能力是当下获客最有力的差异化卖点，也是销售演示中最能抓住老板注意力的内容。
+        <br><br>
+        调研数据显示：甄云卖得最好的是<strong>智能审核</strong>，鲸采云基本所有用户都在用<strong>智能价格分析</strong>（智能问数的轻量版），三家竞品都上线了智能问答。这些功能的共同特点是：<strong>开发成本可控、上线快、演示效果好、用户感知价值高</strong>。
+        <br><br>
+        策略调整为：<strong>一期精简部分优先级低的基础功能，腾出资源同步上线3~5个AI核心场景</strong>，用AI能力驱动销售破冰，用足够的基础功能支撑交付，形成"AI亮点首发 + 基础快速补全"的双轨并进策略。
+      </p>
+    </div>
+
+    <div class="compare-row">
+      <div class="compare-card cc-old">
+        <div class="cc-head" style="color:#a32d2d">原方案 <span class="cc-tag">被动追随</span></div>
+        <ul>
+          <li>一期全力补基础功能（14项），无AI</li>
+          <li>二期才开始做AI差异化</li>
+          <li>6~12个月内产品无差异化卖点</li>
+          <li>追平携客云时，市场机会已失</li>
+          <li>销售演示无亮点，难以打动客户</li>
+          <li>AI研发团队一期无任务，资源浪费</li>
+        </ul>
+      </div>
+      <div class="compare-card cc-new">
+        <div class="cc-head" style="color:#534ab7">新方案 <span class="cc-tag">AI先行</span></div>
+        <ul>
+          <li>一期：精简基础必备（聚焦9项核心）+ AI同步上线（4场景）</li>
+          <li>一期完成即具备超越携客云的差异化</li>
+          <li>AI功能即是销售工具，加速签约</li>
+          <li>二期：AI深化 + 基础补全</li>
+          <li>演示流程：基础够用 + AI秀肌肉</li>
+          <li>研发双线并行，资源利用率更高</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="ico">!</span>
+      <span>一期精简的基础功能并非放弃，而是移至二期作为"基础深化"模块落地。优先级调整依据：聚焦<strong>客户可直接感知的价值</strong>，砍掉中小企业低频使用的配置型功能（如竞拍、寻源规则配置、付款管控等），为AI研发腾出资源。</span>
+    </div>
+  </section>
+
+  <!-- 2. 市场定位 -->
+  <section id="market">
+    <h2 class="sec"><span class="num">2</span>市场定位与竞品分析</h2>
+
+    <div class="metrics">
+      <div class="m-card ai">
+        <div class="label">一期AI场景数</div>
+        <div class="value">4</div>
+        <div class="hint">与竞品同步甚至领先</div>
+      </div>
+      <div class="m-card">
+        <div class="label">一期基础核心功能</div>
+        <div class="value">9</div>
+        <div class="hint">聚焦成单必备，精简低频项</div>
+      </div>
+      <div class="m-card">
+        <div class="label">携客云AI功能数</div>
+        <div class="value">3</div>
+        <div class="hint">知识库/问答/问数，深度较浅</div>
+      </div>
+      <div class="m-card">
+        <div class="label">一期完成后AI超越</div>
+        <div class="value">立即</div>
+        <div class="hint">一期完成即超越携客云AI水位</div>
+      </div>
+    </div>
+
+    <div class="comp-wrap">
+      <div class="comp-card">
+        <div class="co-name">甄云</div>
+        <div class="co-tag">大型客户 · 功能参照标准</div>
+        <div class="co-body">
+          <ul>
+            <li>AI 13大场景，卖得最好：智能审核</li>
+            <li>按场景售卖，不强制全买</li>
+            <li>不支持本地化部署 — 我们的机会</li>
+            <li>三期目标对标对象</li>
+          </ul>
+        </div>
+      </div>
+      <div class="comp-card">
+        <div class="co-name">携客云</div>
+        <div class="co-tag">中小客户 · 当前主要对手</div>
+        <div class="co-body">
+          <ul>
+            <li>AI有知识库、智能问答、智能问数</li>
+            <li>不支持本地化部署</li>
+            <li>不支持个性化定制</li>
+            <li>一期AI上线后即可超越</li>
+          </ul>
+        </div>
+      </div>
+      <div class="comp-card">
+        <div class="co-name">鲸采云</div>
+        <div class="co-tag">中型客户 · 可参考</div>
+        <div class="co-body">
+          <ul>
+            <li>智能价格分析用户覆盖率接近100%</li>
+            <li>几乎所有用户都在用AI分析比价</li>
+            <li>验证了"智能问数"类功能市场接受度高</li>
+          </ul>
+        </div>
+      </div>
+      <div class="comp-card">
+        <div class="co-name">企企通</div>
+        <div class="co-tag">AI布局保守</div>
+        <div class="co-body">
+          <ul>
+            <li>基础知识库+智能问答，无大创新</li>
+            <li>智能审核缺失 — 我们的超车机会</li>
+            <li>AI整体相对保守，容易超越</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-box purple">
+        <div class="title">差异化战略</div>
+        <div class="body">
+          本地化部署 + 个性化定制 + AI领先深度，三点合一形成携客云无法复制的竞争壁垒。AI能力基于本地私有化数据训练，审核准确率和风险感知精准度将优于SaaS竞品。
+        </div>
+      </div>
+      <div class="info-box green">
+        <div class="title">核心销售卖点（新版）</div>
+        <div class="body">
+          <ul>
+            <li>一期演示话术："我们的AI智能审核、合同助手、智能问数已上线，携客云没有"</li>
+            <li>本地部署 + AI = 数据不出厂 + 本地模型训练，安全合规</li>
+            <li>价格优势 + AI赋能 = 性价比最高的SRM选择</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 4. AI场景详解 -->
+  <section id="ai">
+    <h2 class="sec"><span class="num">4</span>一期AI场景深度解析</h2>
+
+    <p style="font-size:13px;color:#5f5e5a;margin-bottom:20px;line-height:1.8">
+      一期选择的5个AI场景，满足三个标准：<strong>开发成本可控（无需大量私有数据积累即可落地）、演示效果强（客户看得懂、感得到）、竞品对比有优势（携客云没有或实现较浅）</strong>。
+    </p>
+
+    <div class="ai-grid">
+      <div class="ai-card">
+        <span class="ac-phase ac-ph1">一期首发</span>
+        <h4>智能问答</h4>
+        <p>基于知识库，提供内部员工问答入口和供应商咨询入口，减少重复沟通。甄云/携客云/企企通均已上线，属于AI标配，开发成本最低、上线最快，是AI落地的"入场券"。</p>
+        <div class="ac-why">竞品对比：三家均有 · 快速跟上即可</div>
+      </div>
+      <div class="ai-card">
+        <span class="ac-phase ac-ph1">一期首发</span>
+        <h4>智能审核</h4>
+        <p>供应商资质/单据/履约/财务全流程AI合规审核，自动识别异常并拦截风险单据。甄云最畅销的功能，企企通没有，是最能打动客户的AI卖点。结合本地部署数据，审核规则可按企业定制，是SaaS产品无法复制的优势。</p>
+        <div class="ac-why">竞品对比：甄云和携客云有，企企通缺失 · 超车企企通的核心</div>
+      </div>
+      <div class="ai-card">
+        <span class="ac-phase ac-ph1">一期首发</span>
+        <h4>合同助手</h4>
+        <p>合同信息智能提取、文本比对（防篡改）、风险条款扫描、智能录入。制造业大宗采购合同频次高、金额大，篡改风险和条款风险是真实痛点。三家竞品均有，但本地化+私有数据下的合同审查更精准。</p>
+        <div class="ac-why">竞品对比：三家均有 · 本地化深度是差异点</div>
+      </div>
+      <div class="ai-card">
+        <span class="ac-phase ac-ph1">一期首发</span>
+        <h4>供应商风控</h4>
+        <p>实时监控供应商工商/司法/舆情/经营风险，自动预警。对接企查查/天眼查等第三方数据，叠加本地历史业务数据（订单/合同/履约）形成内外部双重风控。在询价单、合同创建时自动触发风险扫描。</p>
+        <div class="ac-why">竞品对比：三家均有 · 本地业务数据叠加是壁垒</div>
+      </div>
+    </div>
+
+    <h3 class="sub-sec">全周期AI场景规划（9大场景 · 三期铺开）</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>AI场景</th><th>核心价值</th><th>竞品状态</th><th>我们的差异化</th><th>规划期</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>智能问答</td><td>减少重复沟通，提升响应效率</td><td>三家均有</td><td>供应商侧入口更完整</td><td><span class="tag p1">一期</span></td></tr>
+          <tr><td>智能审核</td><td>全流程合规自动审核，拦截风险</td><td>甄云/携客云有，企企通无</td><td>本地数据训练，规则可定制</td><td><span class="tag p1">一期</span></td></tr>
+          <tr><td>合同助手</td><td>防篡改+风险扫描+自动录入</td><td>三家均有</td><td>本地私有数据+自定义合规规则</td><td><span class="tag p1">一期</span></td></tr>
+          <tr><td>供应商风控</td><td>实时预警，保障供应链稳定</td><td>三家均有</td><td>内外部双重风控，本地业务数据叠加</td><td><span class="tag p1">一期</span></td></tr>
+          <tr><td>智能问数</td><td>自然语言查数，个性化看板</td><td>三家均有（鲸采云近100%用户在用）</td><td>接入私有数据，权限精细化</td><td><span class="tag p2">二期</span></td></tr>
+          <tr><td>自动化单据</td><td>全流程单据AI辅助生成，减少录入</td><td>三家均有</td><td>接入本地ERP/OA，自动化更深</td><td><span class="tag p2">二期</span></td></tr>
+          <tr><td>智能寻源比价</td><td>AI推荐最优供应商+风险比价</td><td>三家均有</td><td>结合供应商历史评分+本地风控数据</td><td><span class="tag p3">三期</span></td></tr>
+          <tr><td>商城智能比价</td><td>跨渠道自动抓取最低价</td><td>甄云/企企通有，携客云无</td><td>接入内部物料库，智能匹配精度更高</td><td><span class="tag p3">三期</span></td></tr>
+          <tr><td>大宗行情集成</td><td>行情接入+AI预测波动提醒</td><td>甄云/企企通有，携客云无</td><td>与内部采购历史数据结合，预测更准</td><td><span class="tag p3">三期</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 5. 里程碑 -->
+  <section id="timeline">
+    <h2 class="sec"><span class="num">5</span>里程碑时间轴</h2>
+
+    <div class="timeline">
+      <div class="tl-item t1">
+        <div class="t-head">M1~M2 · 一期：基础核心 + AI技术选型</div>
+        <div class="t-body">供应商管理（样品/索赔）、寻源（竞价/价格走势）、移动端供应商侧核心功能并行启动；完成AI技术选型（大模型/知识库/合同解析方案），智能问答MVP开发。</div>
+      </div>
+      <div class="tl-item t1">
+        <div class="t-head">M3~M4 · 一期：AI四场景上线</div>
+        <div class="t-body">智能问答、智能审核、合同助手、供应商风控四场景逐步上线；财务协同（费用单/对账）完成；数据报表+数字大屏可演示版就绪。</div>
+      </div>
+      <div class="tl-item t1">
+        <div class="t-head">M5~M6 · 一期发布 + 销售冲刺</div>
+        <div class="t-body">v2.0正式版本发布，供应商移动端全量上线；AI差异化演示物料完备，配合销售团队展开中小客户推广，验证AI功能的市场接受度，积累真实用户反馈。</div>
+      </div>
+      <div class="tl-item t2">
+        <div class="t-head">M7~M9 · 二期：基础补全 + AI深化</div>
+        <div class="t-body">商城打通（京东工业/震坤行）、单据流、发票协同、风控套件逐步上线；智能问数功能开发；重点维护1~2家中型客户，争取标杆签约。</div>
+      </div>
+      <div class="tl-item t2">
+        <div class="t-head">M10~M12 · 二期发布</div>
+        <div class="t-body">自动化单据、多语言、采购端移动全量发布；v3.0发布，功能完整度对标携客云全功能，AI能力超越携客云，正式向中型客户（1亿~5亿）推广。</div>
+      </div>
+      <div class="tl-item t3">
+        <div class="t-head">M13~M15 · 三期：高阶AI建设</div>
+        <div class="t-body">智能寻源比价、商城智能比价、大宗行情集成开发；大客户专属功能（配额/VMI/智能招投标）启动。</div>
+      </div>
+      <div class="tl-item t3">
+        <div class="t-head">M16~M18 · 三期发布</div>
+        <div class="t-body">v4.0全量发布，AI功能达到9大场景；具备可量化采购降本ROI的产品故事；以标杆案例进军5~10亿营收客户市场，向甄云功能集看齐。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 风险与资源 -->
+  <section id="risk">
+    <h2 class="sec"><span class="num">6</span>风险提示与资源建议</h2>
+
+    <div class="tbl-wrap" style="margin-bottom:24px">
+      <table>
+        <thead>
+          <tr><th>风险项</th><th>等级</th><th>影响</th><th>应对建议</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>AI与基础功能并行，研发资源紧张</td>
+            <td><span class="risk-level risk-high"></span>高</td>
+            <td>一期质量下降，AI与基础都做不好</td>
+            <td>精简一期AI场景到4个，优先用成熟第三方大模型API（不自研模型），减少AI底层研发成本</td>
+          </tr>
+          <tr>
+            <td>AI功能准确率不稳定影响演示信心</td>
+            <td><span class="risk-level risk-high"></span>高</td>
+            <td>客户对AI功能产生信任问题</td>
+            <td>早期AI功能设置"AI建议 + 人工确认"模式，降低全自动决策风险；后台持续优化规则</td>
+          </tr>
+          <tr>
+            <td>商城打通商务谈判周期不可控</td>
+            <td><span class="risk-level risk-mid"></span>中</td>
+            <td>二期商城打通延期</td>
+            <td>一期启动即开始商务谈判，不等研发排期；可先做简单聚合入口，后续再深度打通</td>
+          </tr>
+          <tr>
+            <td>中小客户对AI功能付费意愿不明</td>
+            <td><span class="risk-level risk-mid"></span>中</td>
+            <td>AI功能成为展示品，无法变现</td>
+            <td>参考甄云按场景售卖策略；智能问答/问数打包基础版免费，智能审核/合同助手作为增值模块收费</td>
+          </tr>
+          <tr>
+            <td>无大型客户标杆案例</td>
+            <td><span class="risk-level risk-mid"></span>中</td>
+            <td>难以突破中大型客户准入门槛</td>
+            <td>二期锁定1~2家中型客户（1亿~5亿）深度服务，重点打造含AI降本数据的ROI报告</td>
+          </tr>
+          <tr>
+            <td>竞品快速跟进AI能力</td>
+            <td><span class="risk-level risk-low"></span>低</td>
+            <td>AI差异化窗口期缩短</td>
+            <td>本地化部署+私有数据训练是SaaS竞品短期无法复制的壁垒，AI准确度护城河形成</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-row">
+      <div class="info-box purple">
+        <div class="title">研发资源建议</div>
+        <div class="body">
+          <ul>
+            <li>一期：6~8名研发（前后端+移动端），+1~2名AI工程师（接入大模型API为主）</li>
+            <li>AI底层优先使用成熟大模型API（不自研），快速落地；二期再优化精调</li>
+            <li>双线并行：基础功能组 + AI功能组，周会同步进度</li>
+          </ul>
+        </div>
+      </div>
+      <div class="info-box amber">
+        <div class="title">销售策略建议</div>
+        <div class="body">
+          <ul>
+            <li>AI功能分层定价：基础版（问答/问数）打包、增值版（审核/合同/风控）单独收费</li>
+            <li>一期发布后立即制作AI演示剧本，针对"老板"和"采购经理"分别设计演示路径</li>
+            <li>以集团内部实践数据作为背书，增强AI可信度</li>
+          </ul>
+        </div>
+      </div>
+      <div class="info-box green">
+        <div class="title">案例建设策略</div>
+        <div class="body">
+          <ul>
+            <li>一期：选1家小型制造客户作为AI种子客户，全程陪跑，收集真实数据</li>
+            <li>二期：基于种子客户数据，形成"AI审核效率提升X%、合同风险拦截X件"量化报告</li>
+            <li>三期：以ROI报告打开中大型客户市场</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. 总结 -->
+  <section id="conclusion">
+    <h2 class="sec"><span class="num">7</span>总结与建议</h2>
+
+    <div class="summary-box">
+      <h3>产品调研总监核心建议</h3>
+      <p>
+        本次规划调整的核心判断是：<strong>AI不是未来的路，是现在的路</strong>。竞品调研清晰表明，甄云卖得最好的是智能审核，鲸采云几乎100%用户在用智能价格分析——中小客户对AI工具的接受度和付费意愿已经验证。等到一期补完基础功能再做AI，等于把最好的差异化窗口白白让给竞品。
+        <br><br>
+        <strong>一期（0~6个月）：基础够用 + AI先行。</strong>精简5项低频基础功能，腾出资源同步上线4大AI核心场景（智能问答、智能审核、合同助手、供应商风控），保留9项成单必备基础功能。一期完成后，AI能力即超越携客云，拥有立即可用的差异化销售弹药。
+        <br><br>
+        <strong>二期（6~12个月）：基础补全 + AI深化。</strong>补全一期精简项（商城打通、单据流、发票协同等），上线智能问数和自动化单据，整体功能完整度达到可对抗中型客户的水平。
+        <br><br>
+        <strong>三期（12~18个月）：高阶AI + 大客户进阶。</strong>智能寻源比价、商城智能比价、大宗行情形成完整降本闭环，叠加大客户专属功能，进军5~10亿营收市场，逐步对标甄云。
+        <br><br>
+        建议总经理重点批复两点：<strong>①一期研发资源是否可额外补充1~2名AI工程师；②商城打通商务谈判授权是否可以一期启动。</strong>这是影响后续节奏的两个关键决策。
+      </p>
+    </div>
+  </section>
+
+</div>
+
+
+</body></html>

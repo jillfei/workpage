@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>智能体 - OmniGPT</title>
+    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
+    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', 'Microsoft YaHei', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #D1D5DB; }
+        .agent-card:hover .card-actions { opacity: 1; visibility: visible; }
+        .dropdown-menu { display: none; }
+        .more-btn:hover .dropdown-menu { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 overflow-hidden">
+    <div class="flex h-screen w-full">
+        <!-- 左侧导航栏（白底黑字风格） -->
+        <aside class="w-60 bg-white text-gray-800 flex flex-col flex-shrink-0 border-r border-gray-200">
+            <div class="p-6 flex items-center space-x-3">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <iconify-icon class="text-xl text-white" icon="mdi:robot-confused"></iconify-icon>
+                </div>
+                <span class="font-bold text-lg tracking-tight text-gray-900">OmniGPT</span>
+                <span class="px-2 py-0.5 text-[10px] font-medium bg-gray-900 text-white rounded">SVITE研发</span>
+            </div>
+            <nav class="flex-1 overflow-y-auto custom-scrollbar px-3 space-y-1">
+                <div class="text-gray-400 text-xs font-semibold px-3 py-2 uppercase tracking-wider">核心功能</div>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 border border-blue-200" href="./prd/prompt-prd.html" target="_blank">
+                    <div class="flex items-center space-x-3">
+                
+                        <iconify-icon class="text-xl text-gray-500" icon="mdi:robot-outline"></iconify-icon>
+                        <span>Prompt需求prd文档</span>
+                    </div>
+                    <iconify-icon class="text-gray-400" icon="mdi:chevron-down"></iconify-icon>
+                </a>
+                
+                <div class="pt-4 text-gray-400 text-xs font-semibold px-3 py-2 uppercase tracking-wider">资源</div>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+                    <iconify-icon class="text-xl text-gray-500" icon="mdi:brain-outline"></iconify-icon>
+                    <span>模型管理</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+                    <iconify-icon class="text-xl text-gray-500" icon="mdi:book-open-outline"></iconify-icon>
+                    <span>RAG</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+                    <iconify-icon class="text-xl text-gray-500" icon="mdi:database-outline"></iconify-icon>
+                    <span>数据库</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+                    <iconify-icon class="text-xl text-gray-500" icon="mdi:message-text-outline"></iconify-icon>
+                    <span>提示词</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+                    <iconify-icon class="text-xl text-gray-500" icon="mdi:tools"></iconify-icon>
+                    <span>工具</span>
+                </a>
+                
+                <div class="pt-4 text-gray-400 text-xs font-semibold px-3 py-2 uppercase tracking-wider">Chat运营</div>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+                    <iconify-icon class="text-xl text-gray-500" icon="mdi:pin-outline"></iconify-icon>
+                    <span>置顶配置</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+                    <iconify-icon class="text-xl text-gray-500" icon="mdi:image-outline"></iconify-icon>
+                    <span>Banner配置</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+                    <iconify-icon class="text-xl text-gray-500" icon="mdi:shape-outline"></iconify-icon>
+                    <span>智能体分类</span>
+                </a>
+                
+                <div class="pt-4 text-gray-400 text-xs font-semibold px-3 py-2 uppercase tracking-wider">实验室</div>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 border border-blue-200" href="#">
+                    <iconify-icon class="text-xl text-blue-500" icon="mdi:robot"></iconify-icon>
+                    <span class="font-medium">智能体</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+                    <iconify-icon class="text-xl text-gray-500" icon="mdi:shield-star-outline"></iconify-icon>
+                    <span>模型管理(Alpha)</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="./skill.html">
+                    <iconify-icon class="text-xl text-gray-500" icon="mdi:lightning-bolt-outline"></iconify-icon>
+                    <span>技能市场</span>
+                </a>
+                <a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+                    <iconify-icon class="text-xl text-gray-500" icon="mdi:connection"></iconify-icon>
+                    <span>MCP</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <img alt="User Avatar" class="w-8 h-8 rounded-full border border-gray-200" src="https://modao.cc/agent-py/media/generated_images/2026-05-27/17718e76067f4762a85e4e89249784e8.jpg"/>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-sm font-medium text-gray-800 truncate">管理员 周扬</p>
+                        <p class="text-xs text-gray-400 truncate">admin@omnigpt.com</p>
+                    </div>
+                    <iconify-icon class="text-gray-400 hover:text-blue-600 cursor-pointer" icon="mdi:logout"></iconify-icon>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部栏 -->
+            <header class="h-16 bg-white border-b flex items-center justify-between px-8 flex-shrink-0">
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    <span>实验室</span>
+                    <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                    <span class="text-gray-900 font-medium">智能体</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">
+                        <iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
+                        <span>回收站</span>
+                    </button>
+                    <button class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <iconify-icon icon="mdi:plus"></iconify-icon>
+                        <span>创建智能体</span>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- 内容滚动区 -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+                <!-- 筛选栏 -->
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="flex items-center space-x-2 bg-white border border-gray-200 rounded-lg px-3 py-2">
+                        <div class="w-6 h-6 rounded bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-bold">A</div>
+                        <span class="text-sm text-gray-700">AGI小组</span>
+                        <iconify-icon class="text-gray-400 text-sm" icon="mdi:chevron-down"></iconify-icon>
+                    </div>
+                    <div class="relative flex-1 max-w-md">
+                        <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                        <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm" placeholder="搜索智能体" type="text"/>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="flex items-center space-x-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                            <span>全部模式</span>
+                            <iconify-icon class="text-gray-400" icon="mdi:chevron-down"></iconify-icon>
+                        </button>
+                        <button class="flex items-center space-x-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                            <span>全部状态</span>
+                            <iconify-icon class="text-gray-400" icon="mdi:chevron-down"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 智能体列表 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <!-- 智能体卡片1 -->
+                    <div class="agent-card bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-all cursor-pointer relative" onclick="location.href='./agent-edit.html'">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
+                                    <iconify-icon class="text-2xl text-white" icon="mdi:weather-cloudy"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">天气查询</h3>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <span class="px-2 py-0.5 text-[10px] bg-green-50 text-green-600 rounded border border-green-200">标准模式</span>
+                                        <span class="text-xs text-gray-400">Qwen3-30B</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 text-[10px] font-medium bg-green-100 text-green-600 rounded">已发布</span>
+                        </div>
+                        <p class="text-sm text-gray-500 line-clamp-2 mb-4">面向B端场景的专业天气数据服务智能体，支持多轮对话、地理消歧、业务联动与风险预警。</p>
+                        <!-- 悬浮操作按钮 -->
+                        <div class="card-actions opacity-0 invisible transition-all duration-200 flex items-center space-x-2">
+                            <div class="more-btn relative">
+                                <button class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                                    <iconify-icon icon="mdi:dots-horizontal" class="text-gray-600"></iconify-icon>
+                                </button>
+                                <!-- 下拉菜单 -->
+                                <div class="dropdown-menu absolute top-full left-0 mt-2 w-36 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
+                                    <a href="#" class="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                        <iconify-icon icon="mdi:shield-account-outline" class="text-gray-400"></iconify-icon>
+                                        <span>权限管理</span>
+                                    </a>
+                                    <a href="#" class="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                        <iconify-icon icon="mdi:message-text-outline" class="text-gray-400"></iconify-icon>
+                                        <span>对话日志</span>
+                                    </a>
+                                    <a href="#" class="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                        <iconify-icon icon="mdi:comment-text-outline" class="text-gray-400"></iconify-icon>
+                                        <span>会话日志</span>
+                                    </a>
+                                    <a href="#" class="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                        <iconify-icon icon="mdi:clipboard-text-outline" class="text-gray-400"></iconify-icon>
+                                        <span>操作日志</span>
+                                    </a>
+                                    <a href="#" class="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                        <iconify-icon icon="mdi:brain-outline" class="text-gray-400"></iconify-icon>
+                                        <span>记忆</span>
+                                    </a>
+                                    <a href="#" class="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                        <iconify-icon icon="mdi:folder-outline" class="text-gray-400"></iconify-icon>
+                                        <span>文件管理</span>
+                                    </a>
+                                    <div class="border-t border-gray-100 my-1"></div>
+                                    <a href="#" class="flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50">
+                                        <iconify-icon icon="mdi:trash-can-outline" class="text-red-500"></iconify-icon>
+                                        <span>删除</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <button class="flex-1 flex items-center justify-center space-x-1 px-3 py-1.5 text-sm text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <iconify-icon icon="mdi:download-outline"></iconify-icon>
+                                <span>取消发布</span>
+                            </button>
+                            <button class="flex-1 flex items-center justify-center space-x-1 px-3 py-1.5 text-sm text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <iconify-icon icon="mdi:chat-outline"></iconify-icon>
+                                <span>聊天</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-all cursor-pointer group" onclick="location.href='./agent-edit.html'">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-purple-500 flex items-center justify-center">
+                                    <iconify-icon class="text-2xl text-white" icon="mdi:file-document-outline"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">文档助手</h3>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <span class="px-2 py-0.5 text-[10px] bg-blue-50 text-blue-600 rounded border border-blue-200">DAG模式</span>
+                                        <span class="text-xs text-gray-400">GPT-4</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 text-[10px] font-medium bg-yellow-100 text-yellow-600 rounded">草稿</span>
+                        </div>
+                        <p class="text-sm text-gray-500 line-clamp-2 mb-4">智能文档处理助手，支持PDF、Word、Excel等多种格式的文档解析、摘要生成与问答。</p>
+                        <div class="flex items-center justify-between text-xs text-gray-400">
+                            <div class="flex items-center space-x-3">
+                                <span class="flex items-center space-x-1">
+                                    <iconify-icon icon="mdi:account-outline"></iconify-icon>
+                                    <span>李明</span>
+                                </span>
+                                <span class="flex items-center space-x-1">
+                                    <iconify-icon icon="mdi:clock-outline"></iconify-icon>
+                                    <span>2026-05-06</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 智能体卡片3 -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-all cursor-pointer group" onclick="location.href='./agent-edit.html'">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center">
+                                    <iconify-icon class="text-2xl text-white" icon="mdi:code-braces"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">代码助手</h3>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <span class="px-2 py-0.5 text-[10px] bg-purple-50 text-purple-600 rounded border border-purple-200">DAG模式</span>
+                                        <span class="text-xs text-gray-400">Qwen3-30B</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 text-[10px] font-medium bg-green-100 text-green-600 rounded">已发布</span>
+                        </div>
+                        <p class="text-sm text-gray-500 line-clamp-2 mb-4">专业的编程助手，支持代码生成、代码审查、Bug修复、技术文档编写等多种开发场景。</p>
+                        <div class="flex items-center justify-between text-xs text-gray-400">
+                            <div class="flex items-center space-x-3">
+                                <span class="flex items-center space-x-1">
+                                    <iconify-icon icon="mdi:account-outline"></iconify-icon>
+                                    <span>张三</span>
+                                </span>
+                                <span class="flex items-center space-x-1">
+                                    <iconify-icon icon="mdi:clock-outline"></iconify-icon>
+                                    <span>2026-05-05</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 智能体卡片4 -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-all cursor-pointer group" onclick="location.href='./agent-edit.html'">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center">
+                                    <iconify-icon class="text-2xl text-white" icon="mdi:chart-line"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">数据分析</h3>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <span class="px-2 py-0.5 text-[10px] bg-purple-50 text-purple-600 rounded border border-purple-200">DAG模式</span>
+                                        <span class="text-xs text-gray-400">GPT-4</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 text-[10px] font-medium bg-green-100 text-green-600 rounded">已发布</span>
+                        </div>
+                        <p class="text-sm text-gray-500 line-clamp-2 mb-4">智能数据分析助手，支持数据清洗、可视化、统计分析、报表生成等数据科学任务。</p>
+                        <div class="flex items-center justify-between text-xs text-gray-400">
+                            <div class="flex items-center space-x-3">
+                                <span class="flex items-center space-x-1">
+                                    <iconify-icon icon="mdi:account-outline"></iconify-icon>
+                                    <span>王五</span>
+                                </span>
+                                <span class="flex items-center space-x-1">
+                                    <iconify-icon icon="mdi:clock-outline"></iconify-icon>
+                                    <span>2026-05-04</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 智能体卡片5 -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-all cursor-pointer group" onclick="location.href='./agent-edit.html'">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-red-500 flex items-center justify-center">
+                                    <iconify-icon class="text-2xl text-white" icon="mdi:translate"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">翻译助手</h3>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <span class="px-2 py-0.5 text-[10px] bg-green-50 text-green-600 rounded border border-green-200">标准模式</span>
+                                        <span class="text-xs text-gray-400">Qwen3-30B</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 text-[10px] font-medium bg-gray-100 text-gray-500 rounded">已停用</span>
+                        </div>
+                        <p class="text-sm text-gray-500 line-clamp-2 mb-4">多语言翻译助手，支持中英日韩等50+语言的互译，提供专业的术语翻译与本地化服务。</p>
+                        <div class="flex items-center justify-between text-xs text-gray-400">
+                            <div class="flex items-center space-x-3">
+                                <span class="flex items-center space-x-1">
+                                    <iconify-icon icon="mdi:account-outline"></iconify-icon>
+                                    <span>赵六</span>
+                                </span>
+                                <span class="flex items-center space-x-1">
+                                    <iconify-icon icon="mdi:clock-outline"></iconify-icon>
+                                    <span>2026-05-03</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 智能体卡片6 -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-all cursor-pointer group" onclick="location.href='./agent-edit.html'">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-indigo-500 flex items-center justify-center">
+                                    <iconify-icon class="text-2xl text-white" icon="mdi:email-outline"></iconify-icon>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">邮件助手</h3>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <span class="px-2 py-0.5 text-[10px] bg-blue-50 text-blue-600 rounded border border-blue-200">DAG模式</span>
+                                        <span class="text-xs text-gray-400">Claude-3</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 text-[10px] font-medium bg-green-100 text-green-600 rounded">已发布</span>
+                        </div>
+                        <p class="text-sm text-gray-500 line-clamp-2 mb-4">智能邮件处理助手，支持邮件撰写、回复建议、邮件分类、自动跟进等邮件管理功能。</p>
+                        <div class="flex items-center justify-between text-xs text-gray-400">
+                            <div class="flex items-center space-x-3">
+                                <span class="flex items-center space-x-1">
+                                    <iconify-icon icon="mdi:account-outline"></iconify-icon>
+                                    <span>钱七</span>
+                                </span>
+                                <span class="flex items-center space-x-1">
+                                    <iconify-icon icon="mdi:clock-outline"></iconify-icon>
+                                    <span>2026-05-02</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
