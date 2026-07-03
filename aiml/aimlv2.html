@@ -1,0 +1,818 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omni知布 — AI辅助面料研发系统 评估报告</title>
+<style>
+:root{--pri:#2563eb;--pri-l:#eff6ff;--red:#dc2626;--red-l:#fef2f2;--amb:#d97706;--amb-l:#fffbeb;--grn:#059669;--grn-l:#ecfdf5;--g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;--g300:#d1d5db;--g500:#6b7280;--g700:#374151;--g900:#111827;--side:260px;--r:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;color:var(--g900);background:var(--g50);line-height:1.7;font-size:14px}
+.side{position:fixed;top:0;left:0;width:var(--side);height:100vh;background:#fff;border-right:1px solid var(--g200);overflow-y:auto;z-index:100;display:flex;flex-direction:column}
+.side-hd{padding:16px 18px 12px;border-bottom:1px solid var(--g200);flex-shrink:0}
+.side-hd h2{font-size:15px;color:var(--pri)}.side-hd p{font-size:10px;color:var(--g500);margin-top:2px}
+.side-nav{flex:1;overflow-y:auto;padding:8px 0}
+.side-nav a{display:block;padding:6px 18px;font-size:12.5px;color:var(--g700);text-decoration:none;border-left:3px solid transparent;transition:all .12s;cursor:pointer}
+.side-nav a:hover{background:var(--g100)}
+.side-nav a.on{color:var(--pri);background:var(--pri-l);border-left-color:var(--pri);font-weight:600}
+.side-nav a.sub{padding-left:32px;font-size:11.5px;color:var(--g500)}
+.side-nav a.sub.on{color:var(--pri)}
+.side-nav .grp{padding:10px 18px 4px;font-size:10px;color:var(--g500);letter-spacing:.5px;font-weight:600}
+.side-ft{padding:10px 18px;border-top:1px solid var(--g200);flex-shrink:0;font-size:10px;color:var(--g500)}
+.prog-bar{height:3px;background:var(--g200);border-radius:2px;margin-top:4px}
+.prog-fill{height:100%;background:var(--pri);border-radius:2px;transition:width .3s;width:0}
+.main{margin-left:var(--side);padding:24px 40px 80px}
+.sec{margin-bottom:48px;animation:fu .4s ease}
+@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.sec-title{font-size:22px;border-bottom:2px solid var(--pri);padding-bottom:6px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.sec-title .num{font-size:13px;color:var(--pri);background:var(--pri-l);padding:2px 10px;border-radius:12px;font-weight:600}
+h3{font-size:16px;color:var(--g700);margin:24px 0 10px;padding-left:12px;border-left:3px solid var(--pri)}
+h4{font-size:14px;color:var(--g700);margin:16px 0 6px}
+p{margin-bottom:10px}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:16px 0 24px}
+.kpi-c{background:#fff;border:1px solid var(--g200);border-radius:var(--r);padding:16px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:transform .15s,box-shadow .15s}
+.kpi-c:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.kpi-c .n{font-size:26px;font-weight:700;color:var(--pri)}
+.kpi-c .l{font-size:11px;color:var(--g500);margin-top:3px}
+.kpi-c.d .n{color:var(--red)}.kpi-c.s .n{color:var(--grn)}
+.tw{overflow-x:auto;margin:12px 0 20px;border-radius:var(--r);border:1px solid var(--g200)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--g100);color:var(--g700);font-weight:600;padding:9px 12px;text-align:left;border-bottom:2px solid var(--g300);position:sticky;top:0;white-space:nowrap}
+tbody td{padding:8px 12px;border-bottom:1px solid var(--g200);vertical-align:top}
+tbody tr{transition:background .1s}
+tbody tr:hover{background:#eef4ff}
+td.c,th.c{text-align:center}
+td.cost{font-weight:600;color:var(--pri)}
+tr.tot{background:var(--pri-l)!important;font-weight:700}
+tr.tot td{border-top:2px solid var(--pri)}
+tr.hr{background:var(--red-l)}
+tr.hg{background:var(--grn-l)}
+.box{border-radius:var(--r);padding:14px 18px;margin:12px 0 20px;border-left:4px solid;font-size:13.5px;transition:box-shadow .15s}
+.box:hover{box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.box strong{display:block;margin-bottom:3px}
+.box-con{background:var(--pri-l);border-color:var(--pri)}
+.box-warn{background:var(--red-l);border-color:var(--red)}
+.box-tip{background:var(--grn-l);border-color:var(--grn)}
+.box-note{background:var(--amb-l);border-color:var(--amb)}
+.bdg{display:inline-block;font-size:10px;color:#fff;padding:1px 8px;border-radius:10px;font-weight:600;vertical-align:middle}
+.bdg-r{background:var(--red)}.bdg-a{background:var(--amb)}.bdg-g{background:var(--grn)}
+.star{color:var(--amb);letter-spacing:1px}
+.cl-hd{cursor:pointer;display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--g100);border:1px solid var(--g200);border-radius:var(--r);margin:10px 0;user-select:none;transition:background .15s}
+.cl-hd:hover{background:var(--g200)}
+.cl-hd .ar{transition:transform .2s;font-size:11px;color:var(--g500)}
+.cl-hd.open .ar{transform:rotate(90deg)}
+.cl-bd{overflow:hidden;max-height:0;transition:max-height .35s ease}
+.cl-bd.open{max-height:4000px}
+.gn{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0 20px}
+.gn-b{border-radius:var(--r);padding:14px 18px}
+.gn-b.go{background:var(--grn-l);border:1px solid var(--grn)}
+.gn-b.no{background:var(--red-l);border:1px solid var(--red)}
+.gn-b h4{margin:0 0 6px;font-size:14px}
+.gn-b ul{padding-left:16px;font-size:12.5px;margin:0}
+.gn-b li{margin-bottom:3px}
+.tl{position:relative;padding-left:24px;margin:14px 0 20px}
+.tl::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:2px;background:var(--pri)}
+.tl-i{position:relative;margin-bottom:16px}
+.tl-i::before{content:'';position:absolute;left:-21px;top:5px;width:10px;height:10px;background:#fff;border:2px solid var(--pri);border-radius:50%}
+.tl-i h4{margin:0 0 2px;font-size:13px;color:var(--pri)}
+.tl-i p{font-size:12.5px;margin:0;color:var(--g700)}
+a.tk{display:inline-block;font-size:10px;color:var(--pri);background:var(--pri-l);padding:1px 7px;border-radius:4px;text-decoration:none;margin-left:3px;transition:all .12s}
+a.tk:hover{background:var(--pri);color:#fff}
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--g200);margin:16px 0 0}
+.tab{padding:8px 16px;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;color:var(--g500);transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
+.tab:hover{color:var(--g700)}
+.tab.on{color:var(--pri);border-bottom-color:var(--pri);font-weight:600}
+.tab-bd{display:none;padding:16px 0 0}
+.tab-bd.on{display:block;animation:fu .3s ease}
+@media print{.side{display:none}.main{margin-left:0;padding:16px}.sec{page-break-inside:avoid}.cl-bd{max-height:none!important}}
+@media(max-width:860px){.side{display:none}.main{margin-left:0;padding:16px}.kpi{grid-template-columns:1fr 1fr}.gn{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="side"><div class="side-hd"><h2>Omni知布</h2><p>AI辅助面料研发系统 · 功能规划</p></div>
+<div class="side-nav" id="sideNav">
+
+<a href="#exec" class="on" style="font-weight:700;color:var(--pri)">📌 汇报总览</a>
+<a href="#proto">产品功能规划总览</a>
+<a href="#p0">一、P0核心版本</a><a href="#p0f" class="sub">功能拆解</a><a href="#p0s" class="sub">P0汇总</a>
+<a href="#risk">二、技术风险</a><a href="#rm" class="sub">风险矩阵</a><a href="#gn" class="sub">Go/No-Go</a>
+<a href="#road">三、版本规划</a><a href="#bgt">四、总投入预算</a><a href="#tech">五、技术选型</a><a href="#team">六、人员评估</a>
+<a href="#deep">七、深度技术评估</a><a href="#da" class="sub">7.1 多智能体</a><a href="#dc" class="sub">7.2 无限画布</a><a href="#dk" class="sub">7.3 知识图谱</a><a href="#dac" class="sub">7.4 准确率</a><a href="#dm" class="sub">7.5 多模态模型训练</a>
+</div>
+<div class="side-ft"><span id="progTxt">阅读进度 0%</span><div class="prog-bar"><div class="prog-fill" id="progFill"></div></div></div>
+</nav>
+<div class="main">
+
+<!-- ===== 原型状态 ===== -->
+<!-- ===== 汇报总览 ===== -->
+<section class="sec" id="exec">
+<h2 class="sec-title"><span class="num">总览</span>Executive Summary — 汇报总览</h2>
+
+<div class="tabs" id="tabExec">
+<button class="tab on" data-t="exOverview">产品功能规划总览</button>
+<button class="tab" data-t="exP0">P0核心版本</button>
+<button class="tab" data-t="exRisk">技术风险</button>
+<button class="tab" data-t="exRoad">版本规划</button>
+<button class="tab" data-t="exBudget">投入预算</button>
+<button class="tab" data-t="exTech">技术选型</button>
+<button class="tab" data-t="exTeam">人员配置</button>
+<button class="tab" data-t="exDeep">深度技术</button>
+</div>
+
+<!-- 产品功能规划总览 -->
+<div class="tab-bd on" id="exOverview">
+
+<div class="box box-tip" style="font-size:13px"><strong>📋 说明</strong>下表为Omni知布完整功能规划，按功能模块、优先级排序。标注<b style="color:#ec4899">已完成</b>的功能已纳入现有系统，不再重复分析；标注<b style="color:var(--amb)">待完善</b>的功能需在后续版本中补充。</div>
+
+<div class="tw"><table>
+<thead><tr><th>功能模块</th><th>功能</th><th>子功能</th><th class="c">优先级排序</th><th class="c">开发周期</th><th class="c">人力投入</th></tr></thead>
+<tbody>
+<tr><td rowspan="3"><b>面料数字库</b><br><small style="color:var(--g500)">面向销售</small></td><td>面料详情图/面料标签</td><td>—</td><td class="c"><span class="bdg" style="background:#ec4899;color:#fff">✅ 已完成</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>面料营销图生成模块（AIGC）</td><td>成衣展示/面料营销图/营销视频等</td><td class="c"><span class="bdg bdg-g">P4</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>面料电子色卡</td><td>—</td><td class="c"><span class="bdg bdg-g">P4</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td rowspan="2"><b>面料检索识别</b><br><small style="color:var(--g500)">面向销售</small></td><td>面料检索+相似结果展示</td><td>营销图/视频展示（待完善）</td><td class="c"><span class="bdg" style="background:#ec4899;color:#fff">✅ 已完成</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>电子面料分享功能</td><td>—</td><td class="c"><span class="bdg bdg-g">P4</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td rowspan="4"><b>面料研发平台</b><br><small style="color:var(--g500)">面向研发</small></td><td rowspan="3">研发智能体入口<br><small style="color:var(--g500)">无限画布模式</small></td><td>需求开发专家团队：需求分析师/指标工程师/工艺专家/成本分析师/方案架构师/物性仿真师（技术门槛高）</td><td class="c"><span class="bdg bdg-r">P0</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>创新开发专家团队：趋势分析+新材料分析+新技术分析+市场分析+竞品分析师/产品定义师/指标工程师/工艺专家/成本分析师/方案架构师/物性仿真师</td><td class="c"><span class="bdg bdg-a" style="background:var(--pri)">P3</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>来样开发专家团队：来样比对师/智能推荐师</td><td class="c"><span class="bdg bdg-a" style="background:var(--pri)">P3</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>面料研发项目列表</td><td>负责人/阶段/编号/名称/状态/版本等 · 增/删/参数修正/修正记录/项目查找/定稿归档</td><td class="c"><span class="bdg bdg-a" style="background:var(--amb)">P1</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td><b>面料研发库</b><br><small style="color:var(--g500)">面向研发</small></td><td>面料研发项目列表</td><td>负责人/编号/名称等 · 删/分类筛选/详情查看等</td><td class="c"><span class="bdg bdg-a" style="background:var(--amb)">P1</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td rowspan="2"><b>知识治理</b><br><small style="color:var(--g500)">面向研发</small></td><td>面料研发技术库/面料研发知识图谱</td><td>版本管理（修改人/命中率/准确率等）</td><td class="c"><span class="bdg bdg-a" style="background:#7c3aed">P2</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>A/B测试</td><td>—</td><td class="c"><span class="bdg bdg-a" style="background:#7c3aed">P2</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td rowspan="3"><b>模型管理</b><br><small style="color:var(--g500)">面向管理</small></td><td>模型训练优化</td><td>定时触发/人工触发</td><td class="c"><span class="bdg bdg-a" style="background:#7c3aed">P2</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>模型A/B测试</td><td>版本管理/版本回滚</td><td class="c"><span class="bdg bdg-a" style="background:#7c3aed">P2</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>模型训练日志</td><td>—</td><td class="c"><span class="bdg bdg-a" style="background:#7c3aed">P2</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td><b>数据看板</b><br><small style="color:var(--g500)">面向研发管理</small></td><td>活跃研发项目/top5方案可用率/平均研发周期/面料研发库沉淀等</td><td>—</td><td class="c"><span class="bdg bdg-g">P4</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td rowspan="3"><b>系统管理</b><br><small style="color:var(--g500)">面向管理</small></td><td>业务系统对接</td><td>ERP、MES等</td><td class="c"><span class="bdg" style="background:#6b7280">P5</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>组织系统对接</td><td>企微、钉钉、飞书等</td><td class="c"><span class="bdg" style="background:#6b7280">P5</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>权限管理</td><td>菜单管理/角色管理/部门管理/成员管理</td><td class="c"><span class="bdg" style="background:#ec4899;color:#fff">✅ 已完成</span></td><td class="c">—</td><td class="c">—</td></tr>
+</tbody></table></div>
+
+<h3>待开发功能优先级分布</h3>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:14px 0 20px">
+<div style="border-radius:var(--r);padding:14px 16px;background:var(--red-l);border:1px solid var(--red);position:relative">
+<div style="font-size:15px;font-weight:700;color:var(--red);margin-bottom:4px">P0 核心验证</div>
+<div style="font-size:12.5px;color:var(--g700);line-height:1.5">研发智能体入口（需求开发）</div>
+<span style="position:absolute;top:10px;right:12px;font-size:11px;color:var(--g500);background:#fff;padding:1px 8px;border-radius:10px;border:1px solid var(--g200)">1项</span>
+</div>
+<div style="border-radius:var(--r);padding:14px 16px;background:#fffbeb;border:1px solid #f59e0b;position:relative">
+<div style="font-size:15px;font-weight:700;color:#b45309;margin-bottom:4px">P1 基础功能</div>
+<div style="font-size:12.5px;color:var(--g700);line-height:1.5">研发项目列表×2</div>
+<span style="position:absolute;top:10px;right:12px;font-size:11px;color:var(--g500);background:#fff;padding:1px 8px;border-radius:10px;border:1px solid var(--g200)">2项</span>
+</div>
+<div style="border-radius:var(--r);padding:14px 16px;background:#f5f3ff;border:1px solid #7c3aed;position:relative">
+<div style="font-size:15px;font-weight:700;color:#6d28d9;margin-bottom:4px">P2 知识&模型</div>
+<div style="font-size:12.5px;color:var(--g700);line-height:1.5">知识图谱/A/B/训练/日志</div>
+<span style="position:absolute;top:10px;right:12px;font-size:11px;color:var(--g500);background:#fff;padding:1px 8px;border-radius:10px;border:1px solid var(--g200)">5项</span>
+</div>
+<div style="border-radius:var(--r);padding:14px 16px;background:var(--pri-l);border:1px solid var(--pri);position:relative">
+<div style="font-size:15px;font-weight:700;color:var(--pri);margin-bottom:4px">P3 扩展智能体</div>
+<div style="font-size:12.5px;color:var(--g700);line-height:1.5">创新开发+来样开发</div>
+<span style="position:absolute;top:10px;right:12px;font-size:11px;color:var(--g500);background:#fff;padding:1px 8px;border-radius:10px;border:1px solid var(--g200)">4项</span>
+</div>
+<div style="border-radius:var(--r);padding:14px 16px;background:var(--grn-l);border:1px solid var(--grn);position:relative">
+<div style="font-size:15px;font-weight:700;color:var(--grn);margin-bottom:4px">P4 销售增强</div>
+<div style="font-size:12.5px;color:var(--g700);line-height:1.5">AIGC/色卡/分享/看板</div>
+<span style="position:absolute;top:10px;right:12px;font-size:11px;color:var(--g500);background:#fff;padding:1px 8px;border-radius:10px;border:1px solid var(--g200)">4项</span>
+</div>
+<div style="border-radius:var(--r);padding:14px 16px;background:var(--g100);border:1px solid var(--g300);position:relative">
+<div style="font-size:15px;font-weight:700;color:var(--g700);margin-bottom:4px">P5 系统对接</div>
+<div style="font-size:12.5px;color:var(--g700);line-height:1.5">ERP/MES/组织系统</div>
+<span style="position:absolute;top:10px;right:12px;font-size:11px;color:var(--g500);background:#fff;padding:1px 8px;border-radius:10px;border:1px solid var(--g200)">2项</span>
+</div>
+</div>
+
+<div class="box box-note"><strong> 版本映射建议</strong>
+P0 → 需求开发智能体（心脏验证）| P1 → 研发项目列表 | P2 → 知识治理+模型管理 | P3 → 创新/来样智能体 | P4 → 销售侧AIGC+看板 | P5 → 系统对接</div>
+</div>
+
+<!-- P0核心版本 -->
+<div class="tab-bd" id="exP0">
+<div class="kpi">
+<div class="kpi-c"><div class="n">260</div><div class="l">总人天</div></div>
+<div class="kpi-c"><div class="n">12-15周</div><div class="l">开发周期</div></div>
+<div class="kpi-c"><div class="n">6-7人</div><div class="l">团队规模</div></div>
+<div class="kpi-c"><div class="n">64万</div><div class="l">总预算</div></div>
+</div>
+<div class="box box-con"><strong>P0验收标准</strong>工程师输入自然语言需求 → 画布上6个Agent自动协作 → 生成Top5可行方案 → 人工确认 → 打样参数修改回填 → 成果沉淀知识图谱与工艺知识库</div>
+<h4>三大模块</h4>
+<div class="tw"><table>
+<thead><tr><th>模块</th><th class="c">人天</th><th class="c">周期</th><th>团队</th><th>核心交付</th></tr></thead>
+<tbody>
+<tr><td><b>A：无限画布Agent协作界面</b><br><small style="color:var(--g500)">前端核心</small></td><td class="c">47</td><td class="c">4周</td><td>前端×1</td><td>React Flow画布+6种节点+SSE实时同步</td></tr>
+<tr><td><b>B：多智能体开发</b></td><td class="c">107</td><td class="c">6周</td><td>AI×2+后端×1</td><td>LangGraph编排6个Agent+三层幻觉防护</td></tr>
+<tr><td><b>C：研发知识图谱</b><br><small style="color:var(--g500)">数据+知识核心</small></td><td class="c">76</td><td class="c">4周</td><td>后端×1+专家</td><td>5实体Schema+规则库+RAG+1,284案例结构化</td></tr>
+</tbody></table></div>
+<h4>6个Agent</h4>
+<div class="tw"><table>
+<thead><tr><th>Agent</th><th>LLM</th><th class="c">人天</th><th>风险</th></tr></thead>
+<tbody>
+<tr><td>需求接收</td><td>Haiku</td><td class="c">5</td><td><span class="bdg bdg-g">低</span></td></tr>
+<tr class="hr"><td><b>指标拆解</b> <span class="bdg bdg-r">最难</span></td><td>Sonnet</td><td class="c cost">20</td><td><span class="bdg bdg-r">高</span></td></tr>
+<tr><td>技术/成本</td><td>Sonnet</td><td class="c">12</td><td><span class="bdg bdg-a">中高</span></td></tr>
+<tr><td>开发方案</td><td>Opus</td><td class="c">12</td><td><span class="bdg bdg-a">中高</span></td></tr>
+<tr class="hr"><td><b>物性仿真师</b> <span class="bdg bdg-r">技术门槛高</span></td><td>Sonnet</td><td class="c cost">15</td><td><span class="bdg bdg-r">高</span></td></tr>
+<tr><td>质量校验</td><td>Haiku</td><td class="c">5</td><td><span class="bdg bdg-g">低</span></td></tr>
+</tbody></table></div>
+<a class="tk" href="#p0">详见P0功能拆解 →</a>
+</div>
+
+<!-- 技术风险 -->
+<div class="tab-bd" id="exRisk">
+<div class="box box-warn"><strong>🔴 两大致命风险</strong>
+<div style="margin-top:6px"><b>T1 指标拆解Agent准确性不足</b>（概率高/影响致命）→ 应对：P0"半自动"+规则库500+条+置信度&lt;60%强制人工+验收Top5≥60%</div>
+<div><b>T4 LLM幻觉致参数错误</b>（概率中/影响致命）→ 应对：参数硬约束+规则库校验+方案必须经工程师确认</div></div>
+<div class="box box-note"><strong>🟡 三项高风险</strong>
+<div style="margin-top:6px">T2 多智能体延迟过高（全流程46-90秒）→ SSE推送+部分并行(25-50秒)+降级Haiku</div>
+<div>T3 Schema设计偏差 → 专家主导+最小Schema+扩展字段</div>
+<div>T6 规则库构建超期（专家时间有限）→ P0核心规则(禁忌50+约束30)+其余V1补</div></div>
+
+<h4 style="margin:16px 0 10px">P0 Go/No-Go 决策点</h4>
+<p style="color:var(--g500);font-size:13px">P0结束时（第12-15周）必须回答：</p>
+<div class="gn">
+<div class="gn-b go"><h4>✅ Go（继续V1）</h4><ul>
+<li>6个Agent完成一次完整"需求→方案"流程</li>
+<li>Top5至少1个被专家判定"可行"（≥60%）</li>
+<li>画布流畅（60fps，同步&lt;2秒）</li>
+<li>知识图谱支撑RAG检索（延迟&lt;3秒）</li>
+</ul></div>
+<div class="gn-b no"><h4>❌ No-Go（调整方向）</h4><ul>
+<li>指标拆解Top5准确率&lt;30%</li>
+<li>全流程&gt;3分钟且无法优化</li>
+<li>画布频繁断连（&gt;10%失败）</li>
+<li>专家判定"完全不可用"</li>
+</ul></div>
+</div>
+<a class="tk" href="#risk" style="display:block;margin-top:10px">详见风险矩阵 →</a>
+</div>
+
+<!-- 版本规划 -->
+<div class="tab-bd" id="exRoad">
+<div class="tl">
+<div class="tl-i"><h4>P0 — "心脏验证"（12-15周 · 64万）</h4><p>无限画布Agent协作界面 + 多智能体开发 + 研发知识图谱&工艺知识库 · <b>260人天 · 6-7人</b></p></div>
+<div class="tl-i"><h4>V1.0 — "基础可用"（+2月 · 29.5万）</h4><p>P1 研发项目列表×2（面向研发+研发库）· <b>~120人天 · 6人</b></p></div>
+<div class="tl-i"><h4>V1.5 — "知识&模型"（+2月 · 39.9万）</h4><p>P2 知识治理+模型管理（图谱版本管理/A/B测试/训练优化/日志）+ 多模态模型训练 · <b>~155人天 · 7人</b></p></div>
+<div class="tl-i"><h4>V2.0 — "扩展智能体"（+2月 · 36.5万）</h4><p>P3 创新开发+来样开发智能体入口 · <b>~140人天 · 7人</b></p></div>
+<div class="tl-i"><h4>V2.5 — "销售增强"（+2月 · 28.25万）</h4><p>P4 AIGC营销图+电子色卡+面料分享+数据看板 · <b>~110人天 · 5人</b></p></div>
+<div class="tl-i"><h4>V3.0 — "系统对接"（+2月 · 24.25万）</h4><p>P5 ERP/MES+企微/钉钉/飞书对接 · <b>~90人天 · 4人</b></p></div>
+</div>
+<div class="box box-tip"><strong>规划依据</strong>按功能规划总览优先级P1-P5排列，已完成功能（面料详情图/面料标签、面料检索+相似结果展示、权限管理）不再列入。
+<a class="tk" href="#road">详见版本规划 →</a></div>
+</div>
+
+<!-- 投入预算 -->
+<div class="tab-bd" id="exBudget">
+<div class="kpi">
+<div class="kpi-c"><div class="n">~875</div><div class="l">总人天</div></div>
+<div class="kpi-c"><div class="n">~15月</div><div class="l">总周期</div></div>
+<div class="kpi-c"><div class="n">~223万</div><div class="l">总研发成本（¥）</div></div>
+</div>
+<div class="tw"><table>
+<thead><tr><th>阶段</th><th>内容</th><th class="c">人天</th><th class="c">周期</th><th class="c">团队</th><th class="c">阶段总计</th></tr></thead>
+<tbody>
+<tr class="hg"><td><b>P0</b></td><td><b>画布+Agent+图谱&工艺知识库</b></td><td class="c"><b>260</b></td><td class="c"><b>12-15周</b></td><td class="c"><b>6-7人</b></td><td class="c cost"><b>64万</b></td></tr>
+<tr><td>V1.0</td><td>研发项目列表（P1）</td><td class="c">120</td><td class="c">2月</td><td class="c">6人</td><td class="c cost">29.5万</td></tr>
+<tr><td>V1.5</td><td>知识治理+模型管理+多模态模型训练（P2）</td><td class="c">155</td><td class="c">2月</td><td class="c">7人</td><td class="c cost">39.9万</td></tr>
+<tr><td>V2.0</td><td>扩展智能体（P3）</td><td class="c">140</td><td class="c">2月</td><td class="c">7人</td><td class="c cost">36.5万</td></tr>
+<tr><td>V2.5</td><td>销售增强（P4）</td><td class="c">110</td><td class="c">2月</td><td class="c">5人</td><td class="c cost">28.25万</td></tr>
+<tr><td>V3.0</td><td>系统对接（P5）</td><td class="c">90</td><td class="c">2月</td><td class="c">4人</td><td class="c cost">24.25万</td></tr>
+<tr class="tot"><td><b>合计</b></td><td>—</td><td class="c"><b>~875</b></td><td class="c"><b>~15月</b></td><td>—</td><td class="c cost"><b>~223万</b></td></tr>
+</tbody></table></div>
+
+<div class="box box-con"><strong>💰 成本构成</strong>人力成本 <b>196.9万</b>（875人天 × 2,250元/天）+ API调用成本 <b>~10万</b> + 基础设施 <b>16.5万</b>（GPU/服务器/Milvus）= <b>总计 ~223万</b></div>
+
+<div class="cl-hd" onclick="toggle(this)"><span class="ar">▶</span><b>人天测算公式（点击展开）</b></div>
+<div class="cl-bd">
+<div class="box box-con" style="margin-top:12px"><strong>基本公式：人天 = 人数 × 周期(月) × 22天/月</strong>
+其中 22天/月 = 5天/周 × 4.4周/月（标准工作日）</div>
+<div class="tw"><table>
+<thead><tr><th>阶段</th><th>人数</th><th>周期</th><th>计算</th><th class="c">人天</th></tr></thead>
+<tbody>
+<tr><td>P0</td><td>6-7人</td><td>12-15周</td><td>模块拆解累加（A47+B107+C76+产品QA30）</td><td class="c"><b>260</b></td></tr>
+<tr><td>V1.0</td><td>6人</td><td>2月</td><td>6 × 2 × 22</td><td class="c"><b>≈120</b></td></tr>
+<tr><td>V1.5</td><td>7人</td><td>2月</td><td>7 × 2 × 22</td><td class="c"><b>≈155</b></td></tr>
+<tr><td>V2.0</td><td>7人</td><td>2月</td><td>7 × 2 × 22 × 0.9（部分非全职）</td><td class="c"><b>≈140</b></td></tr>
+<tr><td>V2.5</td><td>5人</td><td>2月</td><td>5 × 2 × 22</td><td class="c"><b>≈110</b></td></tr>
+<tr><td>V3.0</td><td>4人</td><td>2月</td><td>4 × 2 × 22</td><td class="c"><b>≈90</b></td></tr>
+<tr class="tot"><td colspan="4"><b>合计：260+120+155+140+110+90</b></td><td class="c"><b>≈875</b></td></tr>
+</tbody></table></div>
+<div class="box box-tip"><strong>说明</strong>P0 因技术复杂度高，采用<b>按功能逐点估算后加总</b>（自下而上）；V1.0~V3.0 采用标准化公式。各模块并行推进，总周期取最长路径。统一人力单价 <b>2,250元/人天</b>（1,500 × 1.5），总人力成本 875 × 2,250 = <b>196.9万</b>。</div>
+</div>
+
+<a class="tk" href="#bgt">详见总投入预算 →</a>
+</div>
+
+<!-- 技术选型 -->
+<div class="tab-bd" id="exTech">
+<div class="tw"><table>
+<thead><tr><th>决策点</th><th>推荐方案</th><th>关键理由</th></tr></thead>
+<tbody>
+<tr><td><b>Agent框架</b></td><td><b>LangGraph</b></td><td>interrupt+checkpoint+LangSmith，生产就绪⭐⭐⭐⭐</td></tr>
+<tr><td><b>前端+画布</b></td><td><b>React+TS + React Flow v12</b></td><td>MIT，25K★，P0节点8-15个远低于瓶颈</td></tr>
+<tr><td><b>LLM</b></td><td><b>Claude 分层</b></td><td>Haiku+Sonnet+Opus分层降本</td></tr>
+<tr><td><b>向量库</b></td><td><b>Milvus（自建）</b></td><td>万级够用，省1-2万/年</td></tr>
+<tr><td><b>图谱存储</b></td><td><b>PG+JSONB</b>(P0) → <b>Neo4j</b>(V1.5)</td><td>先验证Schema后迁移</td></tr>
+<tr><td><b>物性模拟仿真</b></td><td><b>Style3D(凌迪) / CLO</b></td><td>纺织专用面料物理参数体系+Fabric Kit实测标定(~90%精度)，开源方案无此能力</td></tr>
+<tr><td><b>部署</b></td><td><b>阿里云ACK</b></td><td>国内合规、运维成熟</td></tr>
+</tbody></table></div>
+<div class="box box-con"><strong>物性仿真核心结论</strong>CLO 3D 和凌迪 Style3D 的核心壁垒在于纺织专用的面料物理参数体系（悬垂感、拉伸、弯曲、剪切、克重的精确测量和仿真），以及 Fabric Kit 实测标定流程（~90%精度）。开源方案都没有这个能力。</div>
+<div class="box box-note"><strong>物性仿真建议</strong><b>P0阶段</b>：先用 CLO 3D 或凌迪 Style3D 的 API/SDK 集成，快速验证"物性仿真师"Agent 的可行性。<b>V1.5+阶段</b>：验证通过且用量大再评估基于开源物理引擎（如 SOFA）自建。
+<a class="tk" href="#tech">详见技术选型 →</a></div>
+</div>
+
+<!-- 人员配置 -->
+<div class="tab-bd" id="exTeam">
+<div class="tw"><table>
+<thead><tr><th>岗位</th><th class="c">人数</th><th>能力要求</th><th class="c">稀缺度</th><th>建议</th></tr></thead>
+<tbody>
+<tr class="hr"><td><b>面料领域专家</b></td><td class="c"><b>1(兼)</b></td><td><b>纺织工程+研发全流程</b></td><td class="c"><span class="bdg bdg-r">★★★★</span></td><td>内部调配或外部协同</td></tr>
+<tr><td><b>AI/ML Lead</b></td><td class="c">1</td><td>LangGraph+LLM+RAG</td><td class="c"><span class="bdg bdg-a">★★☆</span></td><td>内培或外招</td></tr>
+<tr><td>AI/ML工程师</td><td class="c">1</td><td>Python+FastAPI+Prompt</td><td class="c"><span class="bdg bdg-a">★★☆</span></td><td>内培或外招</td></tr>
+<tr><td>前端工程师</td><td class="c">1</td><td>React+React Flow</td><td class="c"><span class="bdg bdg-a">★★☆</span></td><td>需画布经验</td></tr>
+<tr><td>后端工程师</td><td class="c">1</td><td>FastAPI+PG+SSE</td><td class="c"><span class="bdg bdg-g">★☆☆</span></td><td>常规招聘</td></tr>
+<tr><td>产品经理</td><td class="c">1</td><td>AI产品+行业理解</td><td class="c"><span class="bdg bdg-a">★★☆</span></td><td>理解Agent逻辑</td></tr>
+<tr><td>QA</td><td class="c">1</td><td>AI系统测试</td><td class="c"><span class="bdg bdg-g">★☆☆</span></td><td>常规招聘</td></tr>
+<tr class="hr"><td><b>多模态模型训练工程师</b></td><td class="c"><b>1</b></td><td><b>多模态大模型微调+训练+部署</b></td><td class="c"><span class="bdg bdg-r">★★★★</span></td><td>外招/内培</td></tr>
+</tbody></table></div>
+<div class="box box-warn"><strong> 一大命门</strong><b>① 面料专家</b> — Prompt调优、Schema、验收均依赖，每周≥4天。
+<a class="tk" href="#team">详见人员评估 →</a></div>
+</div>
+
+<!-- 深度技术 -->
+<div class="tab-bd" id="exDeep">
+<h4>多智能体架构：LangGraph 最优</h4>
+<div class="box box-con"><strong>选型理由</strong>interrupt+conditional edges · LangSmith trace · checkpoint · LangChain生态 · 生产就绪⭐⭐⭐⭐
+<a class="tk" href="#da">详见架构对比 →</a></div>
+<h4>推理延迟</h4>
+<div class="tw"><table>
+<thead><tr><th>Agent</th><th class="c">时间</th><th>优化</th></tr></thead>
+<tbody>
+<tr><td>需求接收</td><td class="c">3-5秒</td><td>Haiku+缓存</td></tr>
+<tr><td>指标拆解</td><td class="c">8-15秒</td><td>并行RAG+LLM</td></tr>
+<tr><td>技术/成本</td><td class="c">10-20秒</td><td>确定性Tool</td></tr>
+<tr><td>开发方案</td><td class="c">15-30秒</td><td>限制长度+流式</td></tr>
+<tr><td>物性仿真</td><td class="c">10-20秒</td><td>CLO/Style3D API</td></tr>
+<tr><td><b>串行总计</b></td><td class="c cost">46-90秒</td><td>—</td></tr>
+<tr class="hg"><td><b>优化后</b></td><td class="c"><b>25-50秒</b></td><td>部分并行</td></tr>
+</tbody></table></div>
+<h4>知识图谱：P0 Schema 5实体+8关系</h4>
+<div class="box box-con"><strong>存储策略</strong>PG+JSONB(P0，&lt;10万数据) → Neo4j(V1.5+，&gt;10万数据) · 先验证Schema后迁移
+<a class="tk" href="#dk">详见知识图谱 →</a></div>
+<h4>准确率验证</h4>
+<div class="tw"><table>
+<thead><tr><th>阶段</th><th class="c">目标</th><th>验证方式</th><th>版本</th></tr></thead>
+<tbody>
+<tr class="hg"><td><b>初步验证</b></td><td class="c"><b>Top5≥60%</b></td><td>现有工艺数据~2,098条（20,982×10%）</td><td><b>P0</b></td></tr>
+<tr><td>真实打样验证</td><td class="c">Top5≥70%</td><td>真实打样+专业评估 <span class="bdg bdg-a">周期变长</span></td><td>V1.5+</td></tr>
+<tr><td>持续优化</td><td class="c">Top5≥85%</td><td>真实打样+专业评估 <span class="bdg bdg-a">周期变长</span></td><td>V2.0+</td></tr>
+<tr><td>终极目标</td><td class="c"><b>Top5≥95%</b></td><td>真实打样+专业评估 <span class="bdg bdg-a">周期变长</span></td><td>V3.0+</td></tr>
+</tbody></table></div>
+<div class="box box-warn"><strong>⚠️ 后期验证警示</strong>真实打样+专业评估验证周期显著长于数据验证，需在版本规划中预留充足时间。
+<a class="tk" href="#dac">详见准确率验证 →</a></div>
+<h4>多模态模型训练（V1.5启动）</h4>
+<div class="box box-con"><strong>推荐方案</strong>开源模型微调（Qwen-VL / LLaVA）— 数据自主可控、成本可控、支持持续迭代。若需快速验证可先用云端API微调做POC。
+<a class="tk" href="#dm">详见多模态模型训练 →</a></div>
+</div>
+
+</section>
+<section class="sec" id="proto">
+<h2 class="sec-title"><span class="num">现状</span>产品功能规划总览</h2>
+
+<div class="box box-tip" style="font-size:13px"><strong>📋 说明</strong>下表为Omni知布完整功能规划，按功能模块、优先级排序。标注<b style="color:#ec4899">已完成</b>的功能已纳入现有系统，不再重复分析；标注<b style="color:var(--amb)">待完善</b>的功能需在后续版本中补充。</div>
+
+<div class="tw"><table>
+<thead><tr><th>功能模块</th><th>功能</th><th>子功能</th><th class="c">优先级排序</th><th class="c">开发周期</th><th class="c">人力投入</th></tr></thead>
+<tbody>
+<tr><td rowspan="3"><b>面料数字库</b><br><small style="color:var(--g500)">面向销售</small></td><td>面料详情图/面料标签</td><td>—</td><td class="c"><span class="bdg" style="background:#ec4899;color:#fff">✅ 已完成</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>面料营销图生成模块（AIGC）</td><td>成衣展示/面料营销图/营销视频等</td><td class="c"><span class="bdg bdg-g">P4</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>面料电子色卡</td><td>—</td><td class="c"><span class="bdg bdg-g">P4</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td rowspan="2"><b>面料检索识别</b><br><small style="color:var(--g500)">面向销售</small></td><td>面料检索+相似结果展示</td><td>营销图/视频展示（待完善）</td><td class="c"><span class="bdg" style="background:#ec4899;color:#fff">✅ 已完成</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>电子面料分享功能</td><td>—</td><td class="c"><span class="bdg bdg-g">P4</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td rowspan="4"><b>面料研发平台</b><br><small style="color:var(--g500)">面向研发</small></td><td rowspan="3">研发智能体入口<br><small style="color:var(--g500)">无限画布模式</small></td><td>需求开发专家团队：需求分析师/指标工程师/工艺专家/成本分析师/方案架构师/物性仿真师（技术门槛高）</td><td class="c"><span class="bdg bdg-r">P0</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>创新开发专家团队：趋势分析+新材料分析+新技术分析+市场分析+竞品分析师/产品定义师/指标工程师/工艺专家/成本分析师/方案架构师/物性仿真师</td><td class="c"><span class="bdg bdg-a" style="background:var(--pri)">P3</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>来样开发专家团队：来样比对师/智能推荐师</td><td class="c"><span class="bdg bdg-a" style="background:var(--pri)">P3</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>面料研发项目列表</td><td>负责人/阶段/编号/名称/状态/版本等 · 增/删/参数修正/修正记录/项目查找/定稿归档</td><td class="c"><span class="bdg bdg-a" style="background:var(--amb)">P1</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td><b>面料研发库</b><br><small style="color:var(--g500)">面向研发</small></td><td>面料研发项目列表</td><td>负责人/编号/名称等 · 删/分类筛选/详情查看等</td><td class="c"><span class="bdg bdg-a" style="background:var(--amb)">P1</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td rowspan="2"><b>知识治理</b><br><small style="color:var(--g500)">面向研发</small></td><td>面料研发技术库/面料研发知识图谱</td><td>版本管理（修改人/命中率/准确率等）</td><td class="c"><span class="bdg bdg-a" style="background:#7c3aed">P2</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>A/B测试</td><td>—</td><td class="c"><span class="bdg bdg-a" style="background:#7c3aed">P2</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td rowspan="3"><b>模型管理</b><br><small style="color:var(--g500)">面向管理</small></td><td>模型训练优化</td><td>定时触发/人工触发</td><td class="c"><span class="bdg bdg-a" style="background:#7c3aed">P2</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>模型A/B测试</td><td>版本管理/版本回滚</td><td class="c"><span class="bdg bdg-a" style="background:#7c3aed">P2</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>模型训练日志</td><td>—</td><td class="c"><span class="bdg bdg-a" style="background:#7c3aed">P2</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td><b>数据看板</b><br><small style="color:var(--g500)">面向研发管理</small></td><td>活跃研发项目/top5方案可用率/平均研发周期/面料研发库沉淀等</td><td>—</td><td class="c"><span class="bdg bdg-g">P4</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td rowspan="3"><b>系统管理</b><br><small style="color:var(--g500)">面向管理</small></td><td>业务系统对接</td><td>ERP、MES等</td><td class="c"><span class="bdg" style="background:#6b7280">P5</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>组织系统对接</td><td>企微、钉钉、飞书等</td><td class="c"><span class="bdg" style="background:#6b7280">P5</span></td><td class="c">—</td><td class="c">—</td></tr>
+<tr><td>权限管理</td><td>菜单管理/角色管理/部门管理/成员管理</td><td class="c"><span class="bdg" style="background:#ec4899;color:#fff">✅ 已完成</span></td><td class="c">—</td><td class="c">—</td></tr>
+</tbody></table></div>
+
+<h3>待开发功能优先级分布</h3>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:14px 0 20px">
+<div style="border-radius:var(--r);padding:14px 16px;background:var(--red-l);border:1px solid var(--red);position:relative">
+<div style="font-size:15px;font-weight:700;color:var(--red);margin-bottom:4px">P0 核心验证</div>
+<div style="font-size:12.5px;color:var(--g700);line-height:1.5">研发智能体入口（需求开发）</div>
+<span style="position:absolute;top:10px;right:12px;font-size:11px;color:var(--g500);background:#fff;padding:1px 8px;border-radius:10px;border:1px solid var(--g200)">1项</span>
+</div>
+<div style="border-radius:var(--r);padding:14px 16px;background:#fffbeb;border:1px solid #f59e0b;position:relative">
+<div style="font-size:15px;font-weight:700;color:#b45309;margin-bottom:4px">P1 基础功能</div>
+<div style="font-size:12.5px;color:var(--g700);line-height:1.5">研发项目列表×2</div>
+<span style="position:absolute;top:10px;right:12px;font-size:11px;color:var(--g500);background:#fff;padding:1px 8px;border-radius:10px;border:1px solid var(--g200)">2项</span>
+</div>
+<div style="border-radius:var(--r);padding:14px 16px;background:#f5f3ff;border:1px solid #7c3aed;position:relative">
+<div style="font-size:15px;font-weight:700;color:#6d28d9;margin-bottom:4px">P2 知识&模型</div>
+<div style="font-size:12.5px;color:var(--g700);line-height:1.5">知识图谱/A/B/训练/日志</div>
+<span style="position:absolute;top:10px;right:12px;font-size:11px;color:var(--g500);background:#fff;padding:1px 8px;border-radius:10px;border:1px solid var(--g200)">5项</span>
+</div>
+<div style="border-radius:var(--r);padding:14px 16px;background:var(--pri-l);border:1px solid var(--pri);position:relative">
+<div style="font-size:15px;font-weight:700;color:var(--pri);margin-bottom:4px">P3 扩展智能体</div>
+<div style="font-size:12.5px;color:var(--g700);line-height:1.5">创新开发+来样开发</div>
+<span style="position:absolute;top:10px;right:12px;font-size:11px;color:var(--g500);background:#fff;padding:1px 8px;border-radius:10px;border:1px solid var(--g200)">4项</span>
+</div>
+<div style="border-radius:var(--r);padding:14px 16px;background:var(--grn-l);border:1px solid var(--grn);position:relative">
+<div style="font-size:15px;font-weight:700;color:var(--grn);margin-bottom:4px">P4 销售增强</div>
+<div style="font-size:12.5px;color:var(--g700);line-height:1.5">AIGC/色卡/分享/看板</div>
+<span style="position:absolute;top:10px;right:12px;font-size:11px;color:var(--g500);background:#fff;padding:1px 8px;border-radius:10px;border:1px solid var(--g200)">4项</span>
+</div>
+<div style="border-radius:var(--r);padding:14px 16px;background:var(--g100);border:1px solid var(--g300);position:relative">
+<div style="font-size:15px;font-weight:700;color:var(--g700);margin-bottom:4px">P5 系统对接</div>
+<div style="font-size:12.5px;color:var(--g700);line-height:1.5">ERP/MES/组织系统</div>
+<span style="position:absolute;top:10px;right:12px;font-size:11px;color:var(--g500);background:#fff;padding:1px 8px;border-radius:10px;border:1px solid var(--g200)">2项</span>
+</div>
+</div>
+
+<div class="box box-note"><strong>📌 版本映射建议</strong>
+P0 → 需求开发智能体（心脏验证）| P1 → 研发项目列表 | P2 → 知识治理+模型管理 | P3 → 创新/来样智能体 | P4 → 销售侧AIGC+看板 | P5 → 系统对接</div>
+</section>
+<!-- ===== P0 ===== -->
+<section class="sec" id="p0">
+<h2 class="sec-title"><span class="num">一</span>P0核心版本：无限画布 + 多智能体 + 知识图谱&工艺知识库</h2>
+<div class="kpi">
+<div class="kpi-c"><div class="n">260</div><div class="l">总人天</div></div>
+<div class="kpi-c"><div class="n">12-15周</div><div class="l">开发周期</div></div>
+<div class="kpi-c"><div class="n">6-7人</div><div class="l">团队规模</div></div>
+<div class="kpi-c"><div class="n">64万</div><div class="l">总预算（¥）</div></div>
+</div>
+<div class="box box-con"><strong>P0验收标准</strong>工程师输入自然语言需求 → 画布上6个Agent自动协作 → 生成Top5可行方案 → 人工确认 → 打样参数修改回填 → 成果沉淀知识图谱与工艺知识库</div>
+
+<h3 id="p0f">功能拆解与人天</h3>
+<div class="tabs" id="tabP0">
+<button class="tab on" data-t="modA">模块A：无限画布Agent协作界面（47人天）</button>
+<button class="tab" data-t="modB">模块B：多智能体开发（107人天）</button>
+<button class="tab" data-t="modC">模块C：研发知识图谱（76人天）</button>
+</div>
+
+<div class="tab-bd on" id="modA"><div class="tw"><table>
+<thead><tr><th>#</th><th>功能</th><th class="c">难度</th><th class="c">人天</th><th>技术方案</th></tr></thead>
+<tbody>
+<tr><td>A1</td><td>React Flow画布基础</td><td class="c"><span class="star">★★</span>☆</td><td class="c">5</td><td>React Flow v12 <a class="tk" href="https://reactflow.dev" target="_blank">📎 文档</a></td></tr>
+<tr><td>A2</td><td>6种自定义节点组件</td><td class="c"><span class="star">★★</span>☆</td><td class="c">8</td><td>React组件 <a class="tk" href="https://reactflow.dev/learn/customization/custom-nodes" target="_blank">📎 自定义节点</a></td></tr>
+<tr><td>A3</td><td>节点拖拽创建</td><td class="c"><span class="star">★</span>☆☆</td><td class="c">3</td><td>DnD API</td></tr>
+<tr><td>A4</td><td>连线逻辑与验证</td><td class="c"><span class="star">★★</span>☆</td><td class="c">5</td><td>Edge + 自定义验证</td></tr>
+<tr><td>A5</td><td>Agent状态实时同步</td><td class="c"><span class="star">★★★</span></td><td class="c">8</td><td>SSE <a class="tk" href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events" target="_blank">📎 MDN</a></td></tr>
+<tr><td>A6</td><td>节点编辑面板</td><td class="c"><span class="star">★★</span>☆</td><td class="c">5</td><td>侧边抽屉</td></tr>
+<tr><td>A7</td><td>画布持久化</td><td class="c"><span class="star">★★</span>☆</td><td class="c">4</td><td>JSON + REST</td></tr>
+<tr><td>A8</td><td>dagre自动排列</td><td class="c"><span class="star">★</span>☆☆</td><td class="c">3</td><td>dagre <a class="tk" href="https://github.com/dagreproject/dagre" target="_blank">📎 GitHub</a></td></tr>
+<tr><td>A9</td><td>快捷键优化</td><td class="c"><span class="star">★</span>☆☆</td><td class="c">3</td><td>键盘事件+CSS</td></tr>
+<tr><td>A10</td><td>性能优化</td><td class="c"><span class="star">★★</span>☆</td><td class="c">3</td><td>LOD+visibility</td></tr>
+<tr class="tot"><td colspan="3"><b>A 小计</b></td><td class="c"><b>47</b></td><td>1名前端</td></tr>
+</tbody></table></div></div>
+
+<div class="tab-bd" id="modB"><div class="tw"><table>
+<thead><tr><th>#</th><th>功能</th><th class="c">难度</th><th class="c">人天</th><th>技术方案</th></tr></thead>
+<tbody>
+<tr><td>B1</td><td>LangGraph工作流引擎</td><td class="c"><span class="star">★★★</span></td><td class="c">10</td><td>LangGraph + FastAPI <a class="tk" href="https://docs.langchain.com/oss/python/langgraph/" target="_blank">📎 LangGraph</a> <a class="tk" href="https://fastapi.tiangolo.com" target="_blank">📎 FastAPI</a></td></tr>
+<tr><td>B2</td><td>需求接收Agent</td><td class="c"><span class="star">★★</span>☆</td><td class="c">5</td><td>Claude Haiku <a class="tk" href="https://docs.anthropic.com/en/docs" target="_blank">📎 Claude API</a></td></tr>
+<tr class="hr"><td>B3</td><td><b>指标拆解Agent</b> <span class="bdg bdg-r">最难</span></td><td class="c"><span class="star">★★★★</span></td><td class="c cost">20</td><td>Claude Sonnet + 规则库 + RAG</td></tr>
+<tr><td>B4</td><td>技术/成本Agent</td><td class="c"><span class="star">★★★</span>☆</td><td class="c">12</td><td>Claude Sonnet + 成本Tool</td></tr>
+<tr><td>B5</td><td>开发方案Agent</td><td class="c"><span class="star">★★★</span>☆</td><td class="c">12</td><td>Claude Opus + RAG</td></tr>
+<tr><td>B6</td><td>质量校验Agent</td><td class="c"><span class="star">★★</span>☆</td><td class="c">5</td><td>规则引擎</td></tr>
+<tr class="hr"><td>B7</td><td><b>物性仿真师Agent</b> <span class="bdg bdg-r">技术门槛高</span></td><td class="c"><span class="star">★★★★</span></td><td class="c cost">15</td><td>CLO/Style3D API集成 + 物性参数仿真</td></tr>
+<tr><td>B8</td><td>三层幻觉防护</td><td class="c"><span class="star">★★★</span></td><td class="c">8</td><td>Prompt+Tool+人工</td></tr>
+<tr><td>B9</td><td>SSE状态推送</td><td class="c"><span class="star">★★</span>☆</td><td class="c">5</td><td>FastAPI SSE</td></tr>
+<tr><td>B10</td><td>人工介入(interrupt)</td><td class="c"><span class="star">★★</span>☆</td><td class="c">5</td><td>LangGraph interrupt <a class="tk" href="https://docs.langchain.com/oss/python/langgraph/interrupts" target="_blank">📎 文档</a></td></tr>
+<tr><td>B11</td><td>Agent Tool集成</td><td class="c"><span class="star">★★</span>☆</td><td class="c">10</td><td>LangChain Tool</td></tr>
+<tr class="tot"><td colspan="3"><b>B 小计</b></td><td class="c"><b>107</b></td><td>2名AI + 1名后端</td></tr>
+</tbody></table></div></div>
+
+<div class="tab-bd" id="modC"><div class="tw"><table>
+<thead><tr><th>#</th><th>功能</th><th class="c">难度</th><th class="c">人天</th><th>技术方案</th></tr></thead>
+<tbody>
+<tr><td>C1</td><td>知识图谱Schema</td><td class="c"><span class="star">★★★</span></td><td class="c">8</td><td>PG+JSONB <a class="tk" href="https://www.postgresql.org/docs/current/datatype-json.html" target="_blank">📎</a> → Neo4j <a class="tk" href="https://neo4j.com/docs/" target="_blank">📎</a></td></tr>
+<tr><td>C2</td><td><b>工艺规则库构建</b></td><td class="c"><span class="star">★★★</span></td><td class="c cost">15</td><td>面料专家主导</td></tr>
+<tr><td>C3</td><td>材料性能库</td><td class="c"><span class="star">★★</span>☆</td><td class="c">12</td><td>面料专家主导</td></tr>
+<tr><td>C4</td><td>1,284案例结构化</td><td class="c"><span class="star">★★</span>☆</td><td class="c">10</td><td>脚本+人工校验</td></tr>
+<tr><td>C5</td><td>RAG知识库</td><td class="c"><span class="star">★★</span>☆</td><td class="c">8</td><td>Milvus <a class="tk" href="https://milvus.io/docs" target="_blank">📎</a> + Embedding</td></tr>
+<tr><td>C6</td><td>成果自动沉淀</td><td class="c"><span class="star">★★★</span></td><td class="c">10</td><td>事件驱动</td></tr>
+<tr><td>C7</td><td>图谱可视化</td><td class="c"><span class="star">★★</span>☆</td><td class="c">8</td><td>React Flow复用</td></tr>
+<tr><td>C8</td><td>修正案例补充</td><td class="c"><span class="star">★</span>☆☆</td><td class="c">5</td><td>表单+批量导入</td></tr>
+<tr class="tot"><td colspan="3"><b>C 小计</b></td><td class="c"><b>76</b></td><td>1名后端+面料专家</td></tr>
+</tbody></table></div></div>
+
+<h3 id="p0s">P0汇总</h3>
+<div class="tw"><table>
+<thead><tr><th>模块</th><th class="c">人天</th><th class="c">周期</th><th>团队</th><th class="c">人力成本（¥万）</th></tr></thead>
+<tbody>
+<tr><td>A：无限画布Agent协作界面(前端核心)</td><td class="c">47</td><td class="c">4周</td><td>前端×1</td><td class="c">10.58</td></tr>
+<tr><td>B：多智能体开发</td><td class="c">107</td><td class="c">6周</td><td>AI×2+后端×1</td><td class="c">24.08</td></tr>
+<tr><td>C：研发知识图谱(数据+知识核心)</td><td class="c">76</td><td class="c">4周</td><td>后端×1+专家</td><td class="c">17.1</td></tr>
+<tr><td>产品+QA</td><td class="c">30</td><td class="c">4-6周</td><td>产品×1+QA×1</td><td class="c">6.75</td></tr>
+<tr class="tot"><td><b>P0 合计</b></td><td class="c"><b>260</b></td><td class="c"><b>12-15周</b></td><td><b>6-7人</b></td><td class="c cost"><b>58.5</b></td></tr>
+</tbody></table></div>
+<div class="box box-note"><strong>💰 基础设施</strong>GPU(T4) 3万/首季 + Milvus 0 + LLM ~0.5万/季 = <b>~3.5万</b> → <b>P0总预算：64万</b>（人力58.5万 + API 2万 + 基础设施3.5万）</div>
+</section>
+
+<!-- ===== 风险 ===== -->
+<section class="sec" id="risk">
+<h2 class="sec-title"><span class="num">二</span>P0技术风险</h2>
+<h3 id="rm">风险矩阵</h3>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>风险</th><th class="c">概率</th><th class="c">影响</th><th class="c">级别</th><th>应对方案</th></tr></thead>
+<tbody>
+<tr class="hr"><td><b>T1</b></td><td><b>指标拆解Agent准确性不足</b><br><small>初期Top1仅50-60%</small></td><td class="c">高</td><td class="c">致命</td><td class="c"><span class="bdg bdg-r">🔴</span></td><td>① P0"半自动" ② 规则库500+条 ③ 置信度&lt;60%强制人工 ④ 验收Top5≥60%</td></tr>
+<tr><td><b>T2</b></td><td><b>多智能体延迟过高</b><br><small>全流程46-90秒</small></td><td class="c">中</td><td class="c">高</td><td class="c"><span class="bdg bdg-a">🟡</span></td><td>① SSE推送 ② 部分并行(25-50秒) ③ 降级Haiku</td></tr>
+<tr><td><b>T3</b></td><td><b>Schema设计偏差</b></td><td class="c">中</td><td class="c">高</td><td class="c"><span class="bdg bdg-a">🟡</span></td><td>① 专家主导 ② 最小Schema ③ 扩展字段</td></tr>
+<tr class="hr"><td><b>T4</b></td><td><b>LLM幻觉致参数错误</b><br><small>可能生成不存在的规格</small></td><td class="c">中</td><td class="c">致命</td><td class="c"><span class="bdg bdg-r">🔴</span></td><td>① 参数硬约束 ② 规则库校验 ③ <b>方案必须经工程师确认</b></td></tr>
+<tr><td><b>T5</b></td><td><b>画布同步断连</b></td><td class="c">低</td><td class="c">中</td><td class="c"><span class="bdg bdg-g">🟢</span></td><td>① SSE重连(ping 15s) ② 断连提示</td></tr>
+<tr><td><b>T6</b></td><td><b>规则库构建超期</b><br><small>专家时间有限</small></td><td class="c">高</td><td class="c">高</td><td class="c"><span class="bdg bdg-a">🟡</span></td><td>① P0核心规则(禁忌50+约束30) ② 其余V1补</td></tr>
+</tbody></table></div>
+
+<h3 id="gn">P0 Go/No-Go 决策点</h3>
+<p style="color:var(--g500)">P0结束时（第12-15周）必须回答：</p>
+<div class="gn">
+<div class="gn-b go"><h4>✅ Go（继续V1）</h4><ul>
+<li>6个Agent完成一次完整"需求→方案"流程</li>
+<li>Top5至少1个被专家判定"可行"（≥60%）</li>
+<li>画布流畅（60fps，同步&lt;2秒）</li>
+<li>知识图谱支撑RAG检索（延迟&lt;3秒）</li>
+</ul></div>
+<div class="gn-b no"><h4>❌ No-Go（调整方向）</h4><ul>
+<li>指标拆解Top5准确率&lt;30%</li>
+<li>全流程&gt;3分钟且无法优化</li>
+<li>画布频繁断连（&gt;10%失败）</li>
+<li>专家判定"完全不可用"</li>
+</ul></div>
+</div>
+</section>
+
+<!-- ===== 版本规划 ===== -->
+<section class="sec" id="road">
+<h2 class="sec-title"><span class="num">三</span>P0之后的版本规划</h2>
+
+<div class="box box-tip" style="font-size:13px"><strong>📋 规划依据</strong>以下版本按功能规划总览的优先级（P1-P5）排列，已完成功能（面料详情图/面料标签、面料检索+相似结果展示、权限管理）不再列入。</div>
+
+<div class="tl">
+<div class="tl-i"><h4>P0 — "心脏验证"（12-15周 · 64万）</h4><p>无限画布Agent协作界面 + 多智能体开发 + 研发知识图谱&工艺知识库 · <b>260人天 · 6-7人</b></p></div>
+<div class="tl-i"><h4>V1.0 — "基础可用"（+2月 · 29.5万）</h4><p><b>P1 基础功能</b> · 面料研发项目列表（面向研发：负责人/阶段/编号/名称/状态/版本 · 增删/参数修正/修正记录/项目查找/定稿归档）+ 面料研发库项目列表（负责人/编号/名称 · 删/分类筛选/详情查看）· <b>~120人天 · 6人</b></p></div>
+<div class="tl-i"><h4>V1.5 — "知识&模型"（+2月 · 39.9万）</h4><p><b>P2 知识治理+模型管理</b> · 面料研发技术库/知识图谱版本管理（修改人/命中率/准确率）+ A/B测试 + 模型训练优化（定时/人工触发）+ 模型A/B测试（版本管理/回滚）+ 模型训练日志 + 多模态模型训练 · <b>~155人天 · 7人</b></p></div>
+<div class="tl-i"><h4>V2.0 — "扩展智能体"（+2月 · 36.5万）</h4><p><b>P3 扩展智能体</b> · 创新开发智能体入口（趋势分析+新材料+新技术+市场分析+竞品分析/产品定义师/指标工程师/工艺专家/成本分析师/方案架构师/物性仿真师）+ 来样开发智能体入口（来样比对师/智能推荐师）· <b>~140人天 · 7人</b></p></div>
+<div class="tl-i"><h4>V2.5 — "销售增强"（+2月 · 28.25万）</h4><p><b>P4 销售侧功能</b> · 面料营销图生成模块AIGC（成衣展示/面料营销图/营销视频）+ 面料电子色卡 + 电子面料分享功能 + 数据看板（活跃研发项目/top5方案可用率/平均研发周期/面料研发库沉淀等）· <b>~110人天 · 5人</b></p></div>
+<div class="tl-i"><h4>V3.0 — "系统对接"（+2月 · 24.25万）</h4><p><b>P5 系统对接</b> · 业务系统对接（ERP、MES等）+ 组织系统对接（企微、钉钉、飞书等）· <b>~90人天 · 4人</b></p></div>
+</div>
+</section>
+<!-- ===== 预算 ===== -->
+<section class="sec" id="bgt">
+<h2 class="sec-title"><span class="num">四</span>总投入预算</h2>
+<div class="kpi">
+<div class="kpi-c"><div class="n">~875</div><div class="l">总人天</div></div>
+<div class="kpi-c"><div class="n">~15月</div><div class="l">总周期</div></div>
+<div class="kpi-c"><div class="n">~223万</div><div class="l">总研发成本（¥）</div></div>
+</div>
+<div class="tw"><table>
+<thead><tr><th>阶段</th><th>内容</th><th class="c">人天</th><th class="c">周期</th><th class="c">团队</th><th class="c">人力成本</th><th class="c">API成本</th><th class="c">基础设施</th><th class="c">阶段总计</th><th class="c">累计</th></tr></thead>
+<tbody>
+<tr class="hg"><td><b>P0</b></td><td><b>画布+Agent+图谱&工艺知识库</b></td><td class="c"><b>260</b></td><td class="c"><b>12-15周</b></td><td class="c"><b>6-7人</b></td><td class="c"><b>58.5</b></td><td class="c">2</td><td class="c">3.5</td><td class="c cost"><b>64</b></td><td class="c">64</td></tr>
+<tr><td>V1.0</td><td>研发项目列表（P1）</td><td class="c">120</td><td class="c">2月</td><td class="c">6人</td><td class="c">27.0</td><td class="c">0.5</td><td class="c">2</td><td class="c cost">29.5</td><td class="c">93.5</td></tr>
+<tr><td>V1.5</td><td>知识治理+模型管理+多模态模型训练（P2）</td><td class="c">155</td><td class="c">2月</td><td class="c">7人</td><td class="c">34.9</td><td class="c">3</td><td class="c">2</td><td class="c cost">39.9</td><td class="c">133.4</td></tr>
+<tr><td>V2.0</td><td>扩展智能体（P3）</td><td class="c">140</td><td class="c">2月</td><td class="c">7人</td><td class="c">31.5</td><td class="c">2</td><td class="c">3</td><td class="c cost">36.5</td><td class="c">169.9</td></tr>
+<tr><td>V2.5</td><td>销售增强（P4）</td><td class="c">110</td><td class="c">2月</td><td class="c">5人</td><td class="c">24.75</td><td class="c">1.5</td><td class="c">2</td><td class="c cost">28.25</td><td class="c">198.15</td></tr>
+<tr><td>V3.0</td><td>系统对接（P5）</td><td class="c">90</td><td class="c">2月</td><td class="c">4人</td><td class="c">20.25</td><td class="c">1</td><td class="c">3</td><td class="c cost">24.25</td><td class="c">222.4</td></tr>
+<tr class="tot"><td><b>合计</b></td><td>—</td><td class="c"><b>~875</b></td><td class="c"><b>~15月</b></td><td>—</td><td class="c"><b>196.9</b></td><td class="c"><b>10</b></td><td class="c"><b>16.5</b></td><td class="c cost"><b>~223万</b></td><td>—</td></tr>
+</tbody></table></div>
+
+<div class="box box-con"><strong>💰 成本构成</strong>人力成本 <b>196.9万</b>（875人天 × 2,250元/天）+ API调用成本 <b>~10万</b> + 基础设施 <b>16.5万</b>（GPU/服务器/Milvus）= <b>总计 ~223万</b></div>
+
+<div class="cl-hd" onclick="toggle(this)"><span class="ar">▶</span><b>人天测算公式（点击展开）</b></div>
+<div class="cl-bd">
+
+<h4 style="margin-top:16px">基本公式</h4>
+<div class="box box-con"><strong>人天 = 人数 × 周期(月) × 22天/月</strong>
+其中 22天/月 = 5天/周 × 4.4周/月（标准工作日）</div>
+
+<h4>V1.0 ~ V3.0 标准化测算</h4>
+<div class="tw"><table>
+<thead><tr><th>阶段</th><th>人数</th><th>周期</th><th>计算</th><th class="c">人天</th></tr></thead>
+<tbody>
+<tr><td>V1.0</td><td>6人</td><td>2月</td><td>6 × 2 × 22</td><td class="c"><b>≈120</b></td></tr>
+<tr><td>V1.5</td><td>7人</td><td>2月</td><td>7 × 2 × 22</td><td class="c"><b>≈155</b></td></tr>
+<tr><td>V2.0</td><td>7人</td><td>2月</td><td>7 × 2 × 22 × 0.9（部分非全职）</td><td class="c"><b>≈140</b></td></tr>
+<tr><td>V2.5</td><td>5人</td><td>2月</td><td>5 × 2 × 22</td><td class="c"><b>≈110</b></td></tr>
+<tr><td>V3.0</td><td>4人</td><td>2月</td><td>4 × 2 × 22</td><td class="c"><b>≈90</b></td></tr>
+</tbody></table></div>
+
+<h4>P0 模块拆解法（自下而上）</h4>
+<div class="box box-note"><strong>说明</strong>P0 因技术复杂度高，采用<b>按功能逐点估算后加总</b>的方式，而非简单的 人数×周期。各模块<b>并行推进</b>，总周期取最长路径（12-15周），而非各模块周期之和。</div>
+<div class="tw"><table>
+<thead><tr><th>模块</th><th>人数</th><th>周期</th><th>计算</th><th class="c">人天</th></tr></thead>
+<tbody>
+<tr><td>A：无限画布Agent协作界面</td><td>1前端</td><td>4周</td><td>逐功能估算(A1-A10) + 缓冲</td><td class="c"><b>47</b></td></tr>
+<tr><td>B：多智能体开发</td><td>2AI+1后端</td><td>6周</td><td>逐功能估算(B1-B11) + 缓冲</td><td class="c"><b>107</b></td></tr>
+<tr><td>C：研发知识图谱</td><td>1后端+专家</td><td>4周</td><td>逐功能估算(C1-C8) + 缓冲</td><td class="c"><b>76</b></td></tr>
+<tr><td>产品+QA</td><td>1产品+1QA</td><td>4-6周</td><td>2 × 3月 × 5天</td><td class="c"><b>30</b></td></tr>
+<tr class="tot"><td colspan="4"><b>P0 合计：47 + 107 + 76 + 30</b></td><td class="c"><b>260</b></td></tr>
+</tbody></table></div>
+
+<h4>总计</h4>
+<div class="box box-tip"><strong>260 + 120 + 155 + 140 + 110 + 90 = <b>875 人天</b></strong>
+<br>统一人力单价 <b>2,250元/人天</b>（1,500 × 1.5），总人力成本 875 × 2,250 = <b>196.9万</b>。</div>
+</div>
+
+
+</section>
+<!-- ===== 技术选型 ===== -->
+<section class="sec" id="tech">
+<h2 class="sec-title"><span class="num">五</span>技术选型决策</h2>
+<div class="tw"><table>
+<thead><tr><th>决策点</th><th>推荐</th><th>理由</th><th>备选</th></tr></thead>
+<tbody>
+<tr><td><b>Agent框架</b></td><td><b>LangGraph</b> <a class="tk" href="https://docs.langchain.com/oss/python/langgraph/" target="_blank">📎 文档</a></td><td>interrupt+checkpoint+LangSmith <a class="tk" href="https://smith.langchain.com" target="_blank">📎</a></td><td>CrewAI</td></tr>
+<tr><td><b>前端</b></td><td><b>React+TS</b></td><td>React Flow生态最成熟</td><td>Vue Flow</td></tr>
+<tr><td><b>画布库</b></td><td><b>React Flow v12</b> <a class="tk" href="https://reactflow.dev" target="_blank">📎 官网</a> <a class="tk" href="https://github.com/xyflow/xyflow" target="_blank">📎 25K★</a></td><td>MIT，自定义节点简单</td><td>Fabric.js</td></tr>
+<tr><td><b>向量库</b></td><td><b>Milvus（自建）</b> <a class="tk" href="https://milvus.io/docs" target="_blank">📎 文档</a></td><td>万级够用，省1-2万/年</td><td>Qdrant</td></tr>
+<tr><td><b>LLM</b></td><td><b>Claude 分层</b> <a class="tk" href="https://docs.anthropic.com/en/docs" target="_blank">📎 Claude API</a></td><td>Haiku+Sonnet+Opus分层降本</td><td>GPT-4o</td></tr>
+<tr><td><b>图谱存储</b></td><td><b>PG+JSONB</b>(P0) <a class="tk" href="https://www.postgresql.org/docs/current/datatype-json.html" target="_blank">📎</a> → <b>Neo4j</b>(V1.5) <a class="tk" href="https://neo4j.com/docs/" target="_blank">📎</a></td><td>先验证Schema后迁移</td><td>直接Neo4j</td></tr>
+<tr><td><b>实时通信</b></td><td><b>SSE</b> <a class="tk" href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events" target="_blank">📎 MDN</a></td><td>单向推送够用</td><td>WebSocket</td></tr>
+<tr><td><b>物性模拟仿真</b></td><td><b>Style3D(凌迪)</b> <a class="tk" href="https://www.style3d.com" target="_blank"> 官网</a> / <b>CLO</b> <a class="tk" href="https://www.clo3d.com" target="_blank">📎 官网</a></td><td>面料物理参数仿真（悬垂/拉伸/褶皱/光泽），支持面料物性参数导入与成衣模拟，行业主流</td><td>Marvelous Designer</td></tr>
+<tr><td><b>部署</b></td><td><b>阿里云ACK</b></td><td>国内合规、运维成熟</td><td>腾讯云TKE</td></tr>
+</tbody></table></div>
+
+<div class="box box-con"><strong>核心结论</strong>CLO 3D 和凌迪 Style3D 的核心壁垒在于纺织专用的面料物理参数体系（悬垂感、拉伸、弯曲、剪切、克重的精确测量和仿真），以及 Fabric Kit 实测标定流程（~90%精度）。开源方案都没有这个能力。</div>
+<div class="box box-note"><strong>建议方案</strong><b>P0阶段</b>：先用 CLO 3D 或凌迪 Style3D 的 API/SDK 集成，快速验证"物性仿真师"Agent 的可行性。<b>V1.5+阶段</b>：如果验证通过且用量大，再评估是否基于开源物理引擎（如 SOFA）自建轻量仿真模块，但需要专门的物理引擎工程师。</div>
+</section>
+
+<!-- ===== 人员 ===== -->
+<section class="sec" id="team">
+<h2 class="sec-title"><span class="num">六</span>人员评估</h2>
+<h3>P0核心人才（7-8人）</h3>
+<div class="tw"><table>
+<thead><tr><th>岗位</th><th class="c">人数</th><th>能力要求</th><th class="c">稀缺度</th><th>建议</th></tr></thead>
+<tbody>
+<tr class="hr"><td><b>面料领域专家</b></td><td class="c"><b>1(兼)</b></td><td><b>纺织工程+研发全流程</b></td><td class="c"><span class="bdg bdg-r">★★★★</span></td><td>内部调配或外部协同</td></tr>
+<tr><td><b>AI/ML Lead</b></td><td class="c">1</td><td>LangGraph+LLM+RAG</td><td class="c"><span class="bdg bdg-a">★★☆</span></td><td>内培或外招</td></tr>
+<tr><td>AI/ML工程师</td><td class="c">1</td><td>Python+FastAPI+Prompt</td><td class="c"><span class="bdg bdg-a">★★☆</span></td><td>内培或外招</td></tr>
+<tr><td>前端工程师</td><td class="c">1</td><td>React+React Flow</td><td class="c"><span class="bdg bdg-a">★★☆</span></td><td>需画布经验</td></tr>
+<tr><td>后端工程师</td><td class="c">1</td><td>FastAPI+PG+SSE</td><td class="c"><span class="bdg bdg-g">★☆☆</span></td><td>常规招聘</td></tr>
+<tr><td>产品经理</td><td class="c">1</td><td>AI产品+行业理解</td><td class="c"><span class="bdg bdg-a">★★☆</span></td><td>理解Agent逻辑</td></tr>
+<tr><td>QA</td><td class="c">1</td><td>AI系统测试</td><td class="c"><span class="bdg bdg-g">★☆☆</span></td><td>常规招聘</td></tr>
+<tr class="hr"><td><b>多模态模型训练工程师</b></td><td class="c"><b>1</b></td><td><b>多模态大模型微调+训练+部署</b></td><td class="c"><span class="bdg bdg-r">★★★★</span></td><td>外招/内培</td></tr>
+</tbody></table></div>
+<div class="box box-warn"><strong>🔑 一大命门</strong><b>① 面料专家</b> — Prompt调优、Schema、验收均依赖，每周≥4天</div>
+</section>
+
+<!-- ===== 深度技术 ===== -->
+<section class="sec" id="deep">
+<h2 class="sec-title"><span class="num">七</span>深度技术评估</h2>
+
+<h3 id="da">7.1 多智能体架构</h3>
+<div class="cl-hd" onclick="toggle(this)"><span class="ar">▶</span><b>架构选型对比（点击展开）</b></div>
+<div class="cl-bd"><div class="tw"><table>
+<thead><tr><th>维度</th><th>LangGraph ✅</th><th>CrewAI</th><th>AutoGen</th><th>自研</th></tr></thead>
+<tbody>
+<tr><td><b>状态管理</b></td><td>✅ 内置状态图</td><td>❌ 无原生</td><td>⚠️ 对话历史</td><td>✅ 自定义</td></tr>
+<tr><td><b>条件分支</b></td><td>✅ conditional edges</td><td>⚠️ 仅线性</td><td>⚠️ 有限</td><td>✅ 自定义</td></tr>
+<tr><td><b>人工介入</b></td><td>✅ interrupt <a class="tk" href="https://docs.langchain.com/oss/python/langgraph/interrupts" target="_blank">📎</a></td><td>⚠️ hack</td><td>⚠️ 复杂</td><td>✅ 自定义</td></tr>
+<tr><td><b>可观测性</b></td><td>✅ LangSmith <a class="tk" href="https://smith.langchain.com" target="_blank">📎</a></td><td>⚠️ 基础</td><td>⚠️ 基础</td><td>❌ 自建</td></tr>
+<tr><td><b>持久化</b></td><td>✅ checkpoint</td><td>⚠️ 自行</td><td>⚠️ 自行</td><td>✅ 自定义</td></tr>
+<tr><td><b>生产就绪</b></td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐</td><td>N/A</td></tr>
+</tbody></table></div>
+<div class="box box-con"><strong>📌 LangGraph 最优</strong>interrupt+conditional edges · LangSmith trace · checkpoint · LangChain生态</div>
+</div>
+
+<h4>6个Agent概要</h4>
+<div class="tw"><table>
+<thead><tr><th>Agent</th><th>LLM</th><th>能力</th><th class="c">人天</th><th>风险</th></tr></thead>
+<tbody>
+<tr><td>需求接收</td><td>Haiku</td><td>NL→JSON</td><td class="c">5</td><td><span class="bdg bdg-g">低</span></td></tr>
+<tr class="hr"><td><b>指标拆解</b> <span class="bdg bdg-r">最难</span></td><td>Sonnet</td><td>主观→量化参数</td><td class="c cost">20</td><td><span class="bdg bdg-r">高</span></td></tr>
+<tr><td>技术/成本</td><td>Sonnet</td><td>可行性+测算</td><td class="c">12</td><td><span class="bdg bdg-a">中高</span></td></tr>
+<tr><td>开发方案</td><td>Opus</td><td>多源→Top5</td><td class="c">12</td><td><span class="bdg bdg-a">中高</span></td></tr>
+<tr class="hr"><td><b>物性仿真师</b> <span class="bdg bdg-r">技术门槛高</span></td><td>Sonnet</td><td>CLO/Style3D API调用+物性参数仿真验证</td><td class="c cost">15</td><td><span class="bdg bdg-r">高</span></td></tr>
+<tr><td>质量校验</td><td>Haiku</td><td>幻觉+冲突检测</td><td class="c">5</td><td><span class="bdg bdg-g">低</span></td></tr>
+</tbody></table></div>
+
+<h4>推理延迟</h4>
+<div class="tw"><table>
+<thead><tr><th>Agent</th><th class="c">时间</th><th>优化</th></tr></thead>
+<tbody>
+<tr><td>需求接收</td><td class="c">3-5秒</td><td>Haiku+缓存</td></tr>
+<tr><td>指标拆解</td><td class="c">8-15秒</td><td>并行RAG+LLM</td></tr>
+<tr><td>技术/成本</td><td class="c">10-20秒</td><td>确定性Tool</td></tr>
+<tr><td>开发方案</td><td class="c">15-30秒</td><td>限制长度+流式</td></tr>
+<tr><td>物性仿真</td><td class="c">10-20秒</td><td>CLO/Style3D API</td></tr>
+<tr><td><b>串行总计</b></td><td class="c cost">46-90秒</td><td>—</td></tr>
+<tr class="hg"><td><b>优化后</b></td><td class="c"><b>25-50秒</b></td><td>部分并行</td></tr>
+</tbody></table></div>
+
+<h3 id="dc">7.2 无限画布</h3>
+<div class="cl-hd" onclick="toggle(this)"><span class="ar">▶</span><b>画布技术对比（点击展开）</b></div>
+<div class="cl-bd"><div class="tw"><table>
+<thead><tr><th>维度</th><th>React Flow ✅</th><th>Vue Flow</th><th>自研Canvas</th></tr></thead>
+<tbody>
+<tr><td><b>许可证</b></td><td>MIT</td><td>MIT</td><td>MIT</td></tr>
+<tr><td><b>节点上限</b></td><td>~100</td><td>~100</td><td>~1000+</td></tr>
+<tr><td><b>自定义</b></td><td>✅ React组件</td><td>✅ Vue组件</td><td>⚠️ 自行绘制</td></tr>
+<tr><td><b>50节点</b></td><td>60fps</td><td>60fps</td><td>60fps</td></tr>
+<tr><td><b>效率</b></td><td>高</td><td>高</td><td>低</td></tr>
+<tr><td><b>社区</b></td><td>⭐⭐⭐⭐⭐ 25K★</td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td></tr>
+</tbody></table></div>
+<div class="box box-con"><strong>📌 React Flow v12</strong>P0节点8-15个，远低于瓶颈。MIT。<a class="tk" href="https://reactflow.dev" target="_blank">📎 官网</a> <a class="tk" href="https://github.com/xyflow/xyflow" target="_blank">📎 GitHub</a></div>
+</div>
+
+<h3 id="dk">7.3 知识图谱</h3>
+<h4>P0 Schema：5实体+8关系</h4>
+<div class="tw"><table>
+<thead><tr><th>实体</th><th>属性</th><th class="c">P0量</th></tr></thead>
+<tbody>
+<tr><td><b>面料需求</b></td><td>描述、场景、性能</td><td class="c">从1,284案例</td></tr>
+<tr><td><b>技术参数</b></td><td>参数名、范围</td><td class="c">200+</td></tr>
+<tr><td><b>工艺方案</b></td><td>配方、织造、染整</td><td class="c">1,284</td></tr>
+<tr><td><b>材料</b></td><td>性能、供应商</td><td class="c">350</td></tr>
+<tr><td><b>规则</b></td><td>禁忌/推荐/约束</td><td class="c">230</td></tr>
+</tbody></table></div>
+
+<div class="cl-hd" onclick="toggle(this)"><span class="ar">▶</span><b>存储方案对比（点击展开）</b></div>
+<div class="cl-bd"><div class="tw"><table>
+<thead><tr><th>方案</th><th>优势</th><th>劣势</th><th>场景</th></tr></thead>
+<tbody>
+<tr class="hg"><td><b>PG+JSONB(P0)</b> <a class="tk" href="https://www.postgresql.org/docs/current/datatype-json.html" target="_blank">📎</a></td><td>熟悉、灵活</td><td>多跳一般</td><td><b>P0，&lt;10万</b></td></tr>
+<tr><td><b>Neo4j(V1.5+)</b> <a class="tk" href="https://neo4j.com/docs/" target="_blank">📎</a></td><td>图查询优秀</td><td>学习曲线</td><td>&gt;10万</td></tr>
+</tbody></table></div></div>
+
+<h4>Agent调用图谱三方式</h4>
+<div class="tw"><table>
+<thead><tr><th>方式</th><th>技术</th><th>用途</th><th>版本</th></tr></thead>
+<tbody>
+<tr><td><b>① 精确查询</b></td><td>SQL</td><td>Tool校验</td><td><b>P0</b></td></tr>
+<tr><td><b>② 向量检索</b></td><td>Milvus <a class="tk" href="https://milvus.io/docs" target="_blank">📎</a></td><td>方案推荐</td><td><b>P0</b></td></tr>
+<tr><td><b>③ 图谱推理</b></td><td>多跳</td><td>参数推荐</td><td>V1.5</td></tr>
+</tbody></table></div>
+<div class="box box-con"><strong>🔄 数据飞轮</strong>项目完成→成果入库→案例沉淀+知识库→训练数据池→模型训练(V2.0)→质量↑</div>
+
+<h3 id="dac">7.5 准确率验证</h3>
+
+<div class="box box-con"><strong>初步验证方案</strong>使用现有工艺数据测试集与验证集数据进行验证，目标 <b>Top5≥60%</b>。现有验证集按 20,982条 的10%计算（约2,098条），可作为P0阶段初步验证基准。</div>
+
+<div class="tw"><table>
+<thead><tr><th>阶段</th><th class="c">目标</th><th class="c">验证集规模</th><th>验证方式</th><th>版本</th></tr></thead>
+<tbody>
+<tr class="hg"><td><b>初步验证</b></td><td class="c"><b>Top5≥60%</b></td><td class="c">~2,098条（20,982×10%）</td><td>现有工艺数据测试集+验证集</td><td><b>P0</b></td></tr>
+<tr><td>真实打样验证</td><td class="c">Top5≥70%</td><td class="c">待定</td><td>真实打样+专业评估 <span class="bdg bdg-a">周期变长</span></td><td>V1.5+</td></tr>
+<tr><td>持续优化</td><td class="c">Top5≥85%</td><td class="c">待定</td><td>真实打样+专业评估 <span class="bdg bdg-a">周期变长</span></td><td>V2.0+</td></tr>
+<tr><td>终极目标</td><td class="c"><b>Top5≥95%</b></td><td class="c">待定</td><td>真实打样+专业评估 <span class="bdg bdg-a">周期变长</span></td><td>V3.0+</td></tr>
+</tbody></table></div>
+
+<div class="box box-warn"><strong>⚠️ 后期验证警示</strong>真实打样+专业评估验证周期显著长于数据验证，需在版本规划中预留充足时间。建议P0阶段先以数据验证建立基线，V1.5+再引入打样验证。</div>
+
+<h3 id="dm">7.5 多模态模型训练</h3>
+<p style="color:var(--g500);font-size:13px">多模态模型训练计划于 <b>V1.5</b> 阶段启动，P0阶段不纳入。以下为技术方案调研方向。</p>
+
+<h4>训练目标</h4>
+<div class="box box-con"><strong>核心目标</strong>基于面料研发历史数据（工艺方案、物性参数、打样结果），训练多模态模型提升方案推荐准确率，逐步从 P0 的 Top5≥60% 提升至 V3.0+ 的 Top5≥95%。</div>
+
+<h4>技术方案对比</h4>
+<div class="cl-hd" onclick="toggle(this)"><span class="ar">▶</span><b>多模态训练方案对比（点击展开）</b></div>
+<div class="cl-bd"><div class="tw"><table>
+<thead><tr><th>维度</th><th>开源微调 ✅</th><th>云端API微调</th><th>自研从头训练</th></tr></thead>
+<tbody>
+<tr><td><b>基座模型</b></td><td>Qwen-VL / LLaVA</td><td>Claude/GPT-4o fine-tune</td><td>自建架构</td></tr>
+<tr><td><b>数据需求</b></td><td>千级样本可起步</td><td>百级样本可起步</td><td>万级以上</td></tr>
+<tr><td><b>GPU成本</b></td><td>A100×1-2（自建）</td><td>按量付费</td><td>极高</td></tr>
+<tr><td><b>训练周期</b></td><td>1-2周/轮</td><td>数小时/轮</td><td>数月</td></tr>
+<tr><td><b>可控性</b></td><td>✅ 完全可控</td><td>⚠️ 依赖平台</td><td>✅ 完全可控</td></tr>
+<tr><td><b>适合场景</b></td><td>数据敏感+长期迭代</td><td>快速验证</td><td>超大规模</td></tr>
+<tr><td><b>推荐度</b></td><td>⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐</td></tr>
+</tbody></table></div>
+<div class="box box-con"><strong>📌 推荐方案</strong>V1.5 优先采用<b>开源模型微调</b>（Qwen-VL / LLaVA），数据自主可控，成本可控，支持持续迭代。若需快速验证可先用云端API微调做POC。</div>
+</div>
+
+<h4>数据准备</h4>
+<div class="tw"><table>
+<thead><tr><th>数据类型</th><th>来源</th><th>规模</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td>工艺方案+物性参数</td><td>1,284历史案例</td><td class="c">~1,284条</td><td>训练集主体</td></tr>
+<tr><td>打样结果反馈</td><td>V1.5起积累</td><td class="c">持续积累</td><td>强化学习信号</td></tr>
+<tr><td>面料图片+纹理</td><td>面料数字库</td><td class="c">按需采集</td><td>多模态输入</td></tr>
+<tr><td>专家标注数据</td><td>面料专家</td><td class="c">按需标注</td><td>高质量标注集</td></tr>
+</tbody></table></div>
+
+<div class="box box-note"><strong>⚠️ 数据质量要求</strong>训练数据需经面料专家审核，确保工艺参数准确、打样结果真实。低质量数据会导致模型输出不可靠，影响工程师信任度。</div>
+</section>
+
+<div style="text-align:center;padding:40px 0 16px;color:var(--g500);font-size:12px">— 报告完 —</div>
+</div>
+<script>
+function toggle(el){el.classList.toggle('open');el.nextElementSibling.classList.toggle('open')}
+document.querySelectorAll('.tabs').forEach(function(bar){bar.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){var id=this.getAttribute('data-t');bar.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on')});this.classList.add('on');bar.parentElement.querySelectorAll('.tab-bd').forEach(function(p){p.classList.remove('on')});var tgt=document.getElementById(id);if(tgt)tgt.classList.add('on')})})});
+(function(){var links=document.querySelectorAll('#sideNav a');var items=[];links.forEach(function(a){var h=a.getAttribute('href');if(h&&h[0]==='#'){var el=document.querySelector(h);if(el)items.push({el:el,a:a})}});function tick(){var cur=null,sy=window.scrollY+60;for(var i=0;i<items.length;i++){if(items[i].el.offsetTop<=sy)cur=items[i]}links.forEach(function(a){a.classList.remove('on')});if(cur)cur.a.classList.add('on')}window.addEventListener('scroll',tick,{passive:true});tick()})();
+(function(){var fill=document.getElementById('progFill');var txt=document.getElementById('progTxt');function prog(){var h=document.documentElement;var pct=Math.round((h.scrollTop/(h.scrollHeight-h.clientHeight))*100);pct=Math.min(100,Math.max(0,pct));fill.style.width=pct+'%';txt.textContent='阅读进度 '+pct+'%'}window.addEventListener('scroll',prog,{passive:true});prog()})();
+</script>
+</body>
+</html>

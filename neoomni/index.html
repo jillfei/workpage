@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>技能市场管理平台 - OmniGPT</title>
+<script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
+<script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js"></script>
+<script src="https://modao.cc/agent-py/static/source/js/echarts.min.js"></script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', 'Microsoft YaHei', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #D1D5DB; }
+        .toggle-checkbox:checked { right: 0; border-color: #2563EB; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #2563EB; }
+        .modal-enter { animation: modalFadeIn 0.2s ease-out; }
+        #page-recycle{margin-top:0px}
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .page-transition { animation: pageIn 0.25s ease-out; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .detail-card { min-height: 400px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- 左侧导航栏（白底黑字风格） -->
+<aside class="w-60 bg-white text-gray-800 flex flex-col flex-shrink-0 border-r border-gray-200">
+<div class="p-6 flex items-center space-x-3">
+<div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+<iconify-icon class="text-xl text-white" icon="mdi:robot-confused"></iconify-icon>
+</div>
+<span class="font-bold text-lg tracking-tight text-gray-900">OmniGPT</span>
+</div>
+<nav class="flex-1 overflow-y-auto custom-scrollbar px-3 space-y-1">
+<div class="text-gray-400 text-xs font-semibold px-3 py-2 uppercase tracking-wider">核心功能</div>
+<a class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 font-medium transition-colors" href="./prd/skill-prd.html" target="_blank">
+<iconify-icon class="text-xl text-blue-500" icon="mdi:file-document-outline"></iconify-icon>
+<span>skill市场需求prd文档</span>
+</a>
+<div class="pt-4 text-gray-400 text-xs font-semibold px-3 py-2 uppercase tracking-wider">资源管理</div>
+<div class="space-y-1">
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+<div class="flex items-center space-x-3">
+<iconify-icon class="text-xl text-gray-500" icon="mdi:database-outline"></iconify-icon>
+<span>资源</span>
+</div>
+<iconify-icon class="text-gray-400" icon="mdi:chevron-down"></iconify-icon>
+</a>
+<div class="pl-10 space-y-1 text-sm text-gray-600">
+<a class="block py-1.5 hover:text-blue-600 hover:bg-gray-50 rounded px-2" href="#">模型管理</a>
+<a class="block py-1.5 hover:text-blue-600 hover:bg-gray-50 rounded px-2" href="#">RAG</a>
+<a class="block py-1.5 hover:text-blue-600 hover:bg-gray-50 rounded px-2" href="#">数据库</a>
+<a class="block py-1.5 hover:text-blue-600 hover:bg-gray-50 rounded px-2" href="#">提示词</a>
+<a class="block py-1.5 hover:text-blue-600 hover:bg-gray-50 rounded px-2" href="#">工具</a>
+</div>
+</div>
+<div class="pt-4 text-gray-400 text-xs font-semibold px-3 py-2 uppercase tracking-wider">运营管理</div>
+<a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+<iconify-icon class="text-xl text-gray-500" icon="mdi:chart-box-outline"></iconify-icon>
+<span>Chat运营</span>
+</a>
+<div class="pt-4 text-gray-400 text-xs font-semibold px-3 py-2 uppercase tracking-wider">实验室</div>
+<a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="./agent.html">
+<iconify-icon class="text-xl text-gray-500" icon="mdi:flask-outline"></iconify-icon>
+<span>智能体</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" href="#">
+<iconify-icon class="text-xl text-gray-500" icon="mdi:shield-star-outline"></iconify-icon>
+<span>模型管理(Alpha)</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-blue-50 text-blue-600 border border-blue-200" href="#" onclick="showPage('main')">
+<iconify-icon class="text-xl text-blue-500" icon="mdi:brain-outline"></iconify-icon>
+<span class="font-medium">技能市场</span>
+</a>
+</nav>
+<div class="p-4 border-t border-gray-200">
+<div class="flex items-center space-x-3">
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-gray-200" src="https://modao.cc/agent-py/media/generated_images/2026-05-27/17718e76067f4762a85e4e89249784e8.jpg"/>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm font-medium text-gray-800 truncate">管理员 周扬</p>
+<p class="text-xs text-gray-400 truncate">admin@omnigpt.com</p>
+</div>
+<iconify-icon class="text-gray-400 hover:text-blue-600 cursor-pointer" icon="mdi:logout"></iconify-icon>
+</div>
+</div>
+</aside>
+<!-- 主内容区 -->
+<main class="flex-1 flex flex-col overflow-hidden">
+<!-- 顶部栏 -->
+<header class="h-16 bg-white border-b flex items-center justify-between px-8 flex-shrink-0">
+<div class="flex items-center space-x-2 text-sm text-gray-500">
+<span>实验室</span>
+<iconify-icon icon="mdi:chevron-right"></iconify-icon>
+<span class="text-gray-900 font-medium">技能市场</span>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative">
+<iconify-icon class="text-xl text-gray-400 cursor-pointer hover:text-gray-600" icon="mdi:bell-outline"></iconify-icon>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+</div>
+<div class="h-8 w-px bg-gray-200"></div>
+<div class="flex items-center space-x-2 cursor-pointer group">
+<span class="text-sm font-medium group-hover:text-blue-600">简体中文</span>
+<iconify-icon class="text-lg text-gray-400" icon="mdi:translate"></iconify-icon>
+</div>
+</div>
+</header>
+<!-- 内容滚动区（三个 SPA 页面容器） -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-10" id="content-scroll">
+<!-- ========== 页面1：主页面 ========== -->
+<div class="page-transition" id="page-main">
+<section id="enterprise-skill-section">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center space-x-6">
+<h2 class="text-xl font-bold text-gray-900">企业 Skill</h2>
+<!-- 修改1：企业skill标题后的搜索框 -->
+<div class="relative">
+<iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+<input class="pl-9 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm w-[200px]" id="enterprise-search" oninput="filterEnterprise(enterpriseFilter)" placeholder="搜索技能名称..." type="text"/>
+</div>
+<div class="flex bg-gray-100 p-1 rounded-lg">
+<button class="px-4 py-1.5 text-sm font-medium rounded-md bg-white shadow-sm text-blue-600" id="btn-all-skills" onclick="filterEnterprise('all')">全部</button>
+<button class="px-4 py-1.5 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900" id="btn-my-skills" onclick="filterEnterprise('mine')">市场</button>
+<button class="px-4 py-1.5 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900" id="btn-my-skills" onclick="filterEnterprise('mine2')">自定义</button>
+</div>
+</div>
+<!-- 批量操作栏 (默认隐藏) -->
+<div class="hidden flex items-center space-x-4 bg-blue-50 border border-blue-100 px-4 py-2 rounded-lg animate-fade-in" id="batch-action-bar">
+<div class="flex items-center space-x-2">
+<input class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" id="select-all-checkbox" onchange="toggleSelectAll(this)" type="checkbox"/>
+<label class="text-sm font-medium text-blue-800" for="select-all-checkbox">全选</label>
+</div>
+<span class="text-sm text-blue-600 border-l border-blue-200 pl-4" id="selected-count">已选 0 个</span>
+<div class="flex items-center space-x-2">
+<button class="px-3 py-1 bg-white border border-blue-200 text-blue-600 text-xs font-medium rounded-md hover:bg-blue-100" onclick="batchAction('enable')">批量发布</button>
+<button class="px-3 py-1 bg-white border border-blue-200 text-blue-600 text-xs font-medium rounded-md hover:bg-blue-100" onclick="batchAction('disable')">批量下架</button>
+<button class="px-3 py-1 bg-red-50 border border-red-100 text-red-600 text-xs font-medium rounded-md hover:bg-red-100" onclick="batchAction('delete')">批量删除</button>
+</div>
+</div>
+<div class="flex items-center space-x-3">
+<div class="relative group">
+<button class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors relative" onclick="showPage('recycle')">
+<iconify-icon class="text-2xl" icon="mdi:trash-can-outline"></iconify-icon>
+<span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border border-white" id="trash-count">3</span>
+</button>
+</div>
+<div class="relative">
+<button class="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm" onclick="toggleDropdown('add-skill-dropdown')">
+<iconify-icon icon="mdi:plus"></iconify-icon>
+<span class="font-medium">添加技能</span>
+</button>
+<div class="hidden absolute right-0 mt-2 w-48 bg-white border rounded-xl shadow-xl z-20 py-2" id="add-skill-dropdown">
+<a class="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-gray-700" href="javascript:void(0)" onclick="showDetailPage(null, 'create')">
+<iconify-icon class="text-lg text-blue-500" icon="mdi:pencil-plus-outline"></iconify-icon>
+<span>创建技能</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-2 hover:bg-gray-50 text-gray-700" href="javascript:void(0)" onclick="openImportModal()">
+<iconify-icon class="text-lg text-green-500" icon="mdi:file-import-outline"></iconify-icon>
+<span>导入技能</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- 技能网格 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="enterprise-grid">
+<!-- 动态渲染 -->
+</div>
+<div class="mt-8 flex flex-col items-center space-y-4">
+<!-- 修改2：展开/收起按钮 -->
+<button class="flex items-center space-x-2 text-blue-600 font-medium hover:text-blue-700 transition-colors hidden" id="btn-expand-enterprise" onclick="toggleEnterpriseExpand()">
+<span id="btn-expand-text">展开更多</span>
+<iconify-icon icon="mdi:chevron-down" id="btn-expand-icon"></iconify-icon>
+</button>
+<div class="hidden flex items-center space-x-2" id="enterprise-pagination">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-gray-400 hover:border-blue-500 hover:text-blue-500"><iconify-icon icon="mdi:chevron-left"></iconify-icon></button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-blue-500 bg-blue-50 text-blue-600 font-medium">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-gray-600 hover:border-blue-500">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-gray-600 hover:border-blue-500">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-gray-400 hover:border-blue-500 hover:text-blue-500"><iconify-icon icon="mdi:chevron-right"></iconify-icon></button>
+</div>
+</div>
+</section>
+<hr class="border-gray-200" style="margin-bottom: 20px;"/>
+<!-- Skill 市场模块 -->
+<section id="market-skill-section">
+<div class="flex flex-col space-y-6">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold text-gray-900">Skill 市场</h2>
+</div>
+<!-- 搜索筛选区 -->
+<div class="flex flex-wrap items-center gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+<div class="relative flex-1 min-w-[300px]">
+<iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl" icon="mdi:magnify"></iconify-icon>
+<input class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm" id="market-search" oninput="filterMarket()" placeholder="搜索 skill..." type="text"/>
+</div>
+<div class="flex items-center space-x-2">
+<span class="text-sm text-gray-500 font-medium whitespace-nowrap">分类：</span>
+<div class="flex flex-wrap gap-2" id="category-tags">
+<button class="px-3 py-1.5 text-xs font-medium rounded-full bg-blue-600 text-white shadow-sm" onclick="filterMarketByCategory('全部', this)">全部</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="filterMarketByCategory('官方精选', this)">官方精选</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="filterMarketByCategory('养虾挑战赛', this)">养虾挑战赛</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="filterMarketByCategory('编程', this)">编程</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="filterMarketByCategory('自动化', this)">自动化</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="filterMarketByCategory('效率', this)">效率</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="filterMarketByCategory('娱乐', this)">娱乐</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="filterMarketByCategory('图像', this)">图像</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="filterMarketByCategory('通讯', this)">通讯</button>
+<button class="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200" onclick="filterMarketByCategory('健康', this)">健康</button>
+</div>
+</div>
+<!--div class="flex items-center space-x-2">
+<span class="text-sm text-gray-500 font-medium whitespace-nowrap">排序：</span>
+<select class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20" id="market-sort" onchange="filterMarket()">
+<option value="relevance">相关性</option>
+<option value="downloads">下载量</option>
+<option value="latest">最新</option>
+</select>
+</div>
+</div-->
+<!-- 市场技能列表 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-h-[400px]" id="market-grid">
+<!-- 动态渲染 -->
+</div>
+<!-- 市场分页 -->
+<div class="flex items-center justify-center space-x-2 pt-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-blue-500 hover:text-blue-500 disabled:opacity-50" id="market-prev-btn" onclick="changeMarketPage(marketCurrentPage - 1)">
+<iconify-icon class="text-xl" icon="mdi:chevron-left"></iconify-icon>
+</button>
+<div class="flex items-center space-x-2" id="market-page-numbers">
+<!-- 动态渲染页码 -->
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-blue-500 hover:text-blue-500 disabled:opacity-50" id="market-next-btn" onclick="changeMarketPage(marketCurrentPage + 1)">
+<iconify-icon class="text-xl" icon="mdi:chevron-right"></iconify-icon>
+</button>
+</div>
+</div>
+</section>
+</div>
+<!-- ========== 页面2：详情/编辑/新增页 ========== -->
+<div class="page-transition hidden" id="page-detail">
+<div class="flex gap-8 detail-card">
+<!-- 左侧：表单区 -->
+<div class="w-[420px] flex-shrink-0 space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="text-xl font-bold text-red-600" id="detail-page-title">技能详情</h3>
+        <div class="flex items-center space-x-3">
+            <span class="hidden text-xs font-medium px-3 py-1.5 rounded-full bg-green-100 text-green-600" id="detail-status-tag">已发布</span>
+            <button class="hidden px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-all" id="detail-install-btn" onclick="installSkillFromDetail(this)">
+                <span id="detail-install-text">安装</span>
+            </button>
+            <button class="px-4 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors" id="detail-back-btn" onclick="showPage('main')">返回列表</button>
+        </div>
+</div>
+<!-- 表单字段 -->
+<div class="space-y-5 bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+<!-- 名称 -->
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">名称 <span class="text-red-500">*</span></label>
+<input class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm bg-gray-50" id="detail-name" type="text"/>
+</div>
+<!-- 技能图标 -->
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">技能图标</label>
+<div class="flex items-center space-x-3">
+<div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+<span class="text-base font-bold text-blue-600" id="detail-icon-letter">S</span>
+</div>
+<button class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center hover:bg-gray-200 transition-colors hidden" id="detail-upload-icon-btn">
+<iconify-icon class="text-lg text-gray-500" icon="mdi:camera-plus-outline"></iconify-icon>
+</button>
+</div>
+</div>
+<!-- 描述 -->
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">描述 <span class="text-red-500">*</span></label>
+<textarea class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm bg-gray-50 resize-none" id="detail-desc" rows="3"></textarea>
+</div>
+<!-- 版本号 -->
+<div id="version-field">
+<label class="block text-sm font-medium text-gray-700 mb-1">版本号</label>
+<p class="text-sm text-gray-600" id="detail-version">v1.0.0</p>
+</div>
+<div id="version-input-field" class="hidden">
+<label class="block text-sm font-medium text-gray-700 mb-1">版本号</label>
+<input class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm bg-white" id="detail-version-input" type="text" value="1.0.0"/>
+</div>
+<!-- 来源 -->
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">来源</label>
+<p class="text-sm text-gray-600" id="detail-source">市场</p>
+</div>
+<!-- 创建者 -->
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">创建者</label>
+<p class="text-sm text-gray-600" id="detail-creator">系统管理员</p>
+</div>
+<!-- 使用次数 -->
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">使用次数</label>
+<p class="text-sm text-gray-600" id="detail-usage">0 次</p>
+</div>
+<!-- 更新时间 -->
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">更新时间</label>
+<p class="text-sm text-gray-600" id="detail-updated">2026/01/01</p>
+</div>
+<!-- 技能文件 -->
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">技能文件 <span class="text-red-500">*</span></label>
+<p class="text-xs text-gray-400 mb-2">技能定义文件，用于描述技能的能力和使用方法</p>
+<div class="flex items-center space-x-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 cursor-pointer" onclick="switchPreviewFile('SKILL.md')">
+<iconify-icon class="text-lg text-blue-500" icon="mdi:file-document-outline"></iconify-icon>
+<input class="flex-1 bg-transparent border-none focus:outline-none text-sm text-gray-700 cursor-pointer" id="detail-skill-file" readonly="" type="text" value="SKILL.md">
+</input></div>
+</div>
+<!-- 脚本模块 -->
+<div id="script-module">
+<label class="block text-sm font-medium text-gray-700 mb-1">脚本</label>
+<p class="text-xs text-gray-400 mb-2">技能执行的脚本文件，支持.py, .json, .yaml, .yml, .js, .mjs等格式</p>
+<div class="space-y-2" id="script-files-container">
+<!-- JS动态渲染 -->
+</div>
+<div class="space-y-2" id="script-actions">
+<button class="text-sm text-blue-600 font-medium hover:text-blue-700 flex items-center space-x-1" id="script-add-btn" onclick="addNewScriptFile()">
+<iconify-icon icon="mdi:plus-circle-outline"></iconify-icon>
+<span>+ 新建</span>
+</button>
+<div class="border-2 border-dashed border-gray-200 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all" id="script-upload-area">
+<iconify-icon class="text-2xl text-gray-300" icon="mdi:cloud-upload-outline"></iconify-icon>
+<p class="text-xs text-gray-400 mt-1">点击或拖拽文件到此处上传</p>
+</div>
+<p class="text-xs text-gray-400">支持格式: .py, .json, .yaml, .yml, .js, .mjs</p>
+</div>
+</div>
+<!-- 参考文档模块 -->
+<div id="refdoc-module">
+<label class="block text-sm font-medium text-gray-700 mb-1">参考文档</label>
+<p class="text-xs text-gray-400 mb-2">技能参考文档，支持.md, .txt, .csv, .png, .jpg, .jpeg, .svg等格式</p>
+<div class="space-y-2" id="refdoc-files-container">
+<!-- JS动态渲染 -->
+</div>
+<div class="space-y-2" id="refdoc-actions">
+<button class="text-sm text-blue-600 font-medium hover:text-blue-700 flex items-center space-x-1" id="refdoc-add-btn" onclick="addNewRefdocFile()">
+<iconify-icon icon="mdi:plus-circle-outline"></iconify-icon>
+<span>+ 新建</span>
+</button>
+<div class="border-2 border-dashed border-gray-200 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all" id="refdoc-upload-area">
+<iconify-icon class="text-2xl text-gray-300" icon="mdi:cloud-upload-outline"></iconify-icon>
+<p class="text-xs text-gray-400 mt-1">点击或拖拽文件到此处上传</p>
+</div>
+<p class="text-xs text-gray-400">支持格式: .md, .txt, .csv, .png, .jpg, .jpeg, .svg</p>
+</div>
+</div>
+</div>
+</div>
+<!-- 右侧：文件预览区 -->
+<div class="flex-1 bg-white rounded-xl border border-gray-100 shadow-sm flex flex-col overflow-hidden">
+<div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+<h4 class="text-sm font-bold text-gray-700" id="preview-file-title">SKILL.md</h4>
+<button class="px-4 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors hidden" id="detail-save-btn" onclick="saveDetailSkill()">保存</button>
+</div>
+<div class="flex items-center space-x-1 px-6 pt-3">
+<button class="px-3 py-1 text-xs font-medium rounded bg-blue-600 text-white" id="preview-tab" onclick="switchMdTab('preview')">预览</button>
+<button class="px-3 py-1 text-xs font-medium rounded bg-gray-100 text-gray-500" id="source-tab" onclick="switchMdTab('source')">源代码</button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-6" id="md-preview-content">
+<!-- 动态渲染 -->
+</div>
+</div>
+</div>
+</div>
+<!-- ========== 页面3：回收站页面 ========== -->
+<div class="page-transition hidden" id="page-recycle">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center space-x-2">
+<iconify-icon class="text-2xl text-red-500" icon="mdi:trash-can-outline"></iconify-icon>
+<h2 class="text-xl font-bold text-gray-900">技能回收站</h2>
+</div>
+<button class="px-4 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors" onclick="showPage('main')">退出回收站</button>
+</div>
+<p class="text-sm text-gray-500 mb-4" id="recycle-count">共 3 个已删除技能</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="recycle-grid">
+<!-- 动态渲染 -->
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- 弹窗系统 -->
+<!-- 导入技能弹窗 -->
+<div class="fixed inset-0 z-[60] hidden" id="import-modal">
+<div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeModal('import-modal')"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xl bg-white rounded-2xl shadow-2xl modal-enter overflow-hidden">
+<div class="p-6 border-b flex items-center justify-between">
+<h3 class="text-lg font-bold text-gray-900">导入技能</h3>
+<button class="text-gray-400 hover:text-gray-600" onclick="closeModal('import-modal')">
+<iconify-icon class="text-2xl" icon="mdi:close"></iconify-icon>
+</button>
+</div>
+<div class="p-8">
+<div class="border-2 border-dashed border-gray-200 rounded-2xl p-10 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group" id="upload-area" onclick="simulateUpload()">
+<div class="flex flex-col items-center" id="upload-idle">
+<div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<iconify-icon class="text-4xl text-blue-500" icon="mdi:cloud-upload-outline"></iconify-icon>
+</div>
+<p class="text-lg font-medium text-gray-700">将 ZIP 文件拖拽至此区域</p>
+<p class="text-sm text-gray-400 mt-2">或点击进行本地文件选择</p>
+</div>
+<div class="hidden w-full space-y-4" id="upload-progress">
+<div class="flex items-center justify-between text-sm">
+<span class="font-medium text-blue-600">正在上传 skill_package.zip...</span>
+<span id="progress-percent">0%</span>
+</div>
+<div class="w-full bg-gray-100 rounded-full h-2">
+<div class="bg-blue-600 h-2 rounded-full transition-all duration-300" id="progress-bar" style="width: 0%"></div>
+</div>
+</div>
+<div class="hidden flex flex-col items-center animate-bounce" id="upload-success">
+<iconify-icon class="text-5xl text-green-500 mb-2" icon="mdi:check-circle"></iconify-icon>
+<p class="text-lg font-bold text-green-600">技能导入成功！</p>
+</div>
+</div>
+<div class="mt-6 flex items-start space-x-3 text-sm text-gray-500 bg-gray-50 p-4 rounded-lg">
+<iconify-icon class="text-lg text-blue-500 flex-shrink-0" icon="mdi:information-outline"></iconify-icon>
+<p>
+    1、技能可在<a href="https://modelscope.cn/skills" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">魔塔</a>、 <a href="https://skill.xfyun.cn/" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">SkillHub</a>、  <a href="https://skills.aliyun.com/" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">阿里云</a>等市场获取。<br/>
+    2、.zip需要包含skill.md文件。<br/>
+    3、skill.md 文件需要包含YAML格式的技能名称和描述。<br/>
+    4、系统将自动进行安全性扫描。
+</p>
+</div>
+</div>
+<div class="p-6 bg-gray-50 flex justify-end space-x-3">
+<button class="px-6 py-2 bg-white border border-gray-200 text-gray-600 font-medium rounded-lg hover:bg-gray-50" onclick="closeModal('import-modal')">取消</button>
+<button class="px-8 py-2 bg-gray-300 text-white font-medium rounded-lg cursor-not-allowed" disabled="" id="btn-import-enable" onclick="enableImportedSkill()">发布</button>
+</div>
+</div>
+</div>
+<!-- 确认弹窗 -->
+<div class="fixed inset-0 z-[100] hidden" id="confirm-modal">
+<div class="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white rounded-2xl shadow-2xl modal-enter p-8 text-center">
+<div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+<iconify-icon class="text-4xl" icon="mdi:alert-circle-outline"></iconify-icon>
+</div>
+<h3 class="text-lg font-bold text-gray-900 mb-2" id="confirm-title">确认删除该技能吗？</h3>
+<p class="text-sm text-gray-500 mb-8" id="confirm-desc">此操作将技能移动至回收站，您可以在 30 天内进行还原。</p>
+<div class="flex space-x-3">
+<button class="flex-1 py-2.5 bg-gray-100 text-gray-600 font-semibold rounded-xl hover:bg-gray-200 transition-colors" onclick="closeModal('confirm-modal')">取消</button>
+<button class="flex-1 py-2.5 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-colors shadow-lg shadow-red-200" id="confirm-action-btn">确认</button>
+</div>
+</div>
+</div>
+<!-- 全局提示 (Toast) -->
+<div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] hidden transition-all duration-300 opacity-0 transform translate-y-4" id="toast">
+<div class="bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center space-x-3">
+<iconify-icon class="text-xl text-green-400" icon="mdi:check-circle" id="toast-icon"></iconify-icon>
+<span class="text-sm font-medium" id="toast-msg">操作成功</span>
+</div>
+</div>
+<script>
+    // --- 工具函数 ---
+    const iconColorPalette = [
+        { bg: 'bg-blue-100', text: 'text-blue-600' },
+        { bg: 'bg-green-100', text: 'text-green-600' },
+        { bg: 'bg-purple-100', text: 'text-purple-600' },
+        { bg: 'bg-orange-100', text: 'text-orange-600' },
+        { bg: 'bg-pink-100', text: 'text-pink-600' },
+        { bg: 'bg-cyan-100', text: 'text-cyan-600' },
+        { bg: 'bg-indigo-100', text: 'text-indigo-600' },
+        { bg: 'bg-amber-100', text: 'text-amber-600' }
+    ];
+
+    function getFirstLetter(name) {
+        return name.charAt(0);
+    }
+
+    function getIconColor(index) {
+        return iconColorPalette[index % iconColorPalette.length];
+    }
+
+    // --- 数据定义 ---
+    let enterpriseSkills = [
+        { id: 1, name: "信息检索增强", source: "市场", creator: "系统管理员", status: true, usage: 1280, mine: false, desc: "基于知识库的智能信息检索与问答增强", updated: "2026/01/15", version: "1.2.0", marketVersion: "2.1.0", namespace: "global", slug: "info-retrieval" },
+        { id: 2, name: "网页自动化", source: "市场", creator: "系统管理员", status: true, usage: 856, mine: false, desc: "自动化执行网页操作和数据采集任务", updated: "2026/01/14", version: "2.0.1", marketVersion: "2.0.1", namespace: "global", slug: "web-automation" },
+        { id: 3, name: "PDF文档处理", source: "自定义", creator: "周扬", status: false, usage: 342, mine: true, desc: "PDF文档解析、提取与格式转换处理", updated: "2026/01/12", version: "1.0.5", marketVersion: null, namespace: null, slug: null },
+        { id: 4, name: "数据可视化", source: "市场", creator: "李明", status: true, usage: 621, mine: false, desc: "多维度数据图表生成与可视化展示", updated: "2026/01/10", version: "1.5.0", marketVersion: "1.8.0", namespace: "astroclaw", slug: "data-viz" },
+        { id: 5, name: "代码审查助手", source: "自定义", creator: "张三", status: true, usage: 197, mine: true, desc: "AI驱动的代码质量审查与问题检测", updated: "2026/01/08", version: "2.1.0", marketVersion: null, namespace: null, slug: null },
+        { id: 6, name: "邮件通知服务", source: "市场", creator: "系统管理员", status: false, usage: 45, mine: false, desc: "自动化邮件发送与通知管理服务", updated: "2026/01/05", version: "1.1.0", marketVersion: "1.4.0", namespace: "global", slug: "email-notify" }
+    ];
+
+    let marketSkills = [
+        { id: 101, name: "联网搜索增强", category: "官方精选", status: "未安装", official: true, updated: "2026/02/10", version: "2.1.0", downloads: 15230, installs: 8230 },
+        { id: 102, name: "高德地图服务", category: "养虾挑战赛", status: "已安装已发布", official: true, updated: "2026/02/08", version: "1.5.0", downloads: 8920, installs: 4500 },
+        { id: 103, name: "钉钉消息推送", category: "编程", status: "未安装", official: true, updated: "2026/02/05", version: "1.2.0", downloads: 6540, installs: 3210 },
+        { id: 104, name: "GitHub同步", category: "官方精选", status: "已安装已发布", official: true, updated: "2026/02/03", version: "3.0.0", downloads: 12450, installs: 6780 },
+        { id: 105, name: "飞书文档集成", category: "自动化", status: "未安装", official: true, updated: "2026/01/28", version: "1.8.0", downloads: 7890, installs: 4120 },
+        { id: 106, name: "SQL查询助手", category: "编程", status: "未安装", official: true, updated: "2026/01/25", version: "2.0.0", downloads: 11230, installs: 5890 },
+        { id: 107, name: "邮件自动化", category: "官方精选", status: "未安装", official: true, updated: "2026/01/22", version: "1.6.0", downloads: 9450, installs: 5120 },
+        { id: 108, name: "Slack通知服务", category: "效率", status: "未安装", official: true, updated: "2026/01/20", version: "1.3.0", downloads: 5670, installs: 2890 },
+        { id: 109, name: "百度地图服务", category: "图像", status: "未安装", official: true, updated: "2026/01/18", version: "2.2.0", downloads: 8340, installs: 4560 },
+        { id: 110, name: "飞书审批集成", category: "自动化", status: "未安装", official: true, updated: "2026/01/15", version: "1.4.0", downloads: 6230, installs: 3340 },
+        { id: 111, name: "RAG知识库查询", category: "官方精选", status: "未安装", official: true, updated: "2026/01/12", version: "3.1.0", downloads: 18760, installs: 9560 },
+        { id: 112, name: "图片识别分析", category: "图像", status: "未安装", official: true, updated: "2026/01/10", version: "1.9.0", downloads: 9870, installs: 5340 },
+        { id: 113, name: "Slack消息发送", category: "通讯", status: "未安装", official: true, updated: "2026/01/20", version: "1.1.0", downloads: 4320, installs: 2130 },
+        { id: 114, name: "微信公众号管理", category: "通讯", status: "未安装", official: true, updated: "2026/01/18", version: "2.0.0", downloads: 15670, installs: 7890 },
+        { id: 115, name: "企业微信通知", category: "通讯", status: "未安装", official: true, updated: "2026/01/15", version: "1.7.0", downloads: 7230, installs: 3890 },
+        { id: 116, name: "Jira任务同步", category: "效率", status: "已安装已发布", official: true, updated: "2026/01/10", version: "2.5.0", downloads: 10980, installs: 5890 },
+        { id: 117, name: "Confluence文档", category: "效率", status: "未安装", official: true, updated: "2026/01/08", version: "1.8.0", downloads: 8760, installs: 4670 },
+        { id: 118, name: "阿里云OSS管理", category: "编程", status: "未安装", official: true, updated: "2026/01/05", version: "2.1.0", downloads: 6450, installs: 3560 },
+        { id: 119, name: "MySQL查询工具", category: "编程", status: "未安装", official: true, updated: "2026/01/03", version: "1.4.0", downloads: 9120, installs: 4890 },
+        { id: 120, name: "Redis缓存管理", category: "编程", status: "未安装", official: true, updated: "2026/01/01", version: "1.2.0", downloads: 7890, installs: 4230 }
+    ];
+
+    // 回收站数据
+    let trashSkills = [
+        { id: 901, name: "Webhook服务", source: "自定义", date: "2026/01/22", desc: "Webhook事件的接收、处理和转发服务", version: "2.0.0" },
+        { id: 902, name: "文件转换工具", source: "市场", date: "2026/01/21", desc: "多格式文件互转与批量处理工具，支持 DOC/PDF/TXT/JPG/PNG/MP4 等千种格式的批量转换、重命名等", version: "1.5.0" },
+        { id: 903, name: "定时任务调度", source: "自定义", date: "2026/01/20", desc: "灵活的定时任务编排与调度引擎，支持秒级/周期/日历等多种触发规则，提供故障转移、任务依赖、可视化管理及高可用集群部署。", version: "3.1.0" }
+    ];
+
+    // --- 文件预览数据 ---
+    const fileContents = {
+        'SKILL.md': `---
+name: 天气
+description: 获取天气预报和气温信息
+version: 1.0.0
+---
+
+# 天气技能
+
+获取天气预报和气温信息。使用场景：用户询问天气、温度、降雨、出行建议等。
+
+## 使用方法
+支持通过 wttr.in 查询全球城市天气，无需 API Key。
+
+## 示例
+- "今天北京天气怎么样？"
+- "上海未来三天会下雨吗？"`,
+        'main.py': `import requests
+import json
+
+def get_weather(city):
+    """获取指定城市的天气信息"""
+    url = f"https://wttr.in/{city}?format=%C+%t"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return {"city": city, "weather": response.text}
+    return {"error": "无法获取天气信息"}
+
+def get_forecast(city, days=3):
+    """获取未来几天的天气预报"""
+    url = f"https://wttr.in/{city}?format=j1"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    return {"error": "无法获取天气预报"}`,
+        'utils.js': `/**
+ * 工具函数集
+ */
+function formatWeatherData(data) {
+  if (data.error) return data.error;
+  return \`当前天气: \${data.weather}\`;
+}
+
+function parseForecast(jsonData) {
+  const forecasts = jsonData.weather || [];
+  return forecasts.map(day => ({
+    date: day.date,
+    temp: day.avgtempC,
+    condition: day.hourly[0].weatherDesc[0].value
+  }));
+}
+
+module.exports = { formatWeatherData, parseForecast };`,
+        'README.md': `# 天气技能使用文档
+
+## 概述
+天气技能提供全球城市天气预报查询功能。
+
+## 支持的命令
+- /weather <城市名> - 查询当前天气
+- /forecast <城市名> [天数] - 查询未来天气预报
+
+## 配置
+无需 API Key，直接使用 wttr.in 公共 API。
+
+## 注意事项
+- 城市名支持中文和英文
+- 默认查询未来3天预报`
+    };
+
+    // 脚本文件列表 (示例)
+    let scriptFiles = [
+        { name: 'main.py', editable: false },
+        { name: 'utils.js', editable: false }
+    ];
+
+    // 参考文档文件列表 (示例)
+    let refdocFiles = [
+        { name: 'README.md', editable: false }
+    ];
+
+    let currentPreviewFile = 'SKILL.md';
+
+    // --- 状态变量 ---
+    let enterpriseFilter = 'all';
+    let enterpriseExpanded = false;
+    let marketCurrentPage = 1;
+    let marketPageSize = 20;
+    let marketCategoryFilter = '全部';
+    let marketSearchTerm = '';
+    let marketSort = 'relevance';
+    let selectedSkillIds = new Set();
+
+    // detail mode tracking
+    let detailMode = 'view'; // 'view' | 'edit' | 'create'
+    let detailSkillId = null;
+    let detailFromRecycle = false;
+
+    // --- SPA 页面切换 ---
+    function showPage(page, params) {
+        document.getElementById('page-main').classList.add('hidden');
+        document.getElementById('page-detail').classList.add('hidden');
+        document.getElementById('page-recycle').classList.add('hidden');
+
+        if (page === 'main') {
+            document.getElementById('page-main').classList.remove('hidden');
+            renderEnterprise();
+            renderMarket();
+        } else if (page === 'detail') {
+            document.getElementById('page-detail').classList.remove('hidden');
+        } else if (page === 'recycle') {
+            document.getElementById('page-recycle').classList.remove('hidden');
+            renderRecycleBin();
+        }
+        // scroll back to top
+        document.getElementById('content-scroll').scrollTop = 0;
+    }
+
+    // --- 初始化 ---
+    window.onload = () => {
+        renderEnterprise();
+        renderMarket();
+        updateTrashCount();
+    };
+
+    // ========== 企业 Skill 逻辑 ==========
+    function renderEnterprise() {
+        const grid = document.getElementById('enterprise-grid');
+        grid.innerHTML = '';
+
+        const searchTerm = document.getElementById('enterprise-search').value.trim().toLowerCase();
+
+        let filtered = enterpriseSkills.filter(s => {
+            const matchesFilter = enterpriseFilter === 'all' || s.mine;
+            const matchesSearch = !searchTerm || s.name.toLowerCase().includes(searchTerm);
+            return matchesFilter && matchesSearch;
+        });
+
+        let displayList = enterpriseExpanded ? filtered : filtered.slice(0, 4);
+
+        if (displayList.length === 0) {
+            grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-400">暂无相关技能</div>`;
+            return;
+        }
+
+        displayList.forEach((skill, idx) => {
+            const isChecked = selectedSkillIds.has(skill.id);
+            const card = document.createElement('div');
+            card.className = `group relative bg-white border ${skill.hasRisk ? 'border-red-500 ring-2 ring-red-100' : 'border-gray-200'} rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden`;
+            if (skill.hasRisk) card.classList.add('animate-pulse');
+
+            card.onclick = (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.closest('button') || e.target.closest('.toggle-container') || e.target.closest('.edit-btn-area')) return;
+                showDetailPage(skill.id, 'view');
+            };
+
+            const iconColor = getIconColor(idx);
+            const letter = getFirstLetter(skill.name);
+
+            const editBtnHtml = skill.source === '自定义' ? `
+                <button class="edit-btn-area absolute top-3 right-12 w-7 h-7 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-500 hover:text-white" onclick="event.stopPropagation(); showDetailPage(${skill.id}, 'edit')" title="编辑技能">
+                    <iconify-icon icon="mdi:pencil" class="text-sm"></iconify-icon>
+                </button>
+            ` : '';
+
+            card.innerHTML = `
+                <div class="absolute top-4 left-4 z-10">
+                    <input type="checkbox" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" ${isChecked ? 'checked' : ''} onchange="toggleCardSelect(${skill.id}, this)">
+                </div>
+                ${editBtnHtml}
+                <button class="absolute top-3 right-3 w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 hover:text-white" onclick="event.stopPropagation(); confirmDelete(${skill.id})">
+                    <iconify-icon icon="mdi:close"></iconify-icon>
+                </button>
+                <div class="flex items-start space-x-4 mt-4">
+                    <div class="w-11 h-11 rounded-lg ${iconColor.bg} flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="text-sm font-bold ${iconColor.text}">${letter}</span>
+                    </div>
+                    <div class="flex-1 min-w-0 space-y-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold text-gray-900 truncate">${skill.name}</span>
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded ${skill.source === '市场' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}">${skill.source}</span>
+                        </div>
+                        <p class="text-sm text-gray-500 truncate">${skill.desc}</p>
+                        <div class="flex items-center text-xs text-gray-400 space-x-2">
+                            <iconify-icon icon="mdi:account-outline"></iconify-icon>
+                            <span>${skill.creator}</span>
+                            <span class="text-gray-300">|</span>
+                            <span class="text-gray-400">更新: ${skill.updated}</span>
+                        </div>
+                        <p class="text-xs text-gray-400">v${skill.version}</p>
+                        ${skill.hasRisk ? `<div class="text-[10px] text-red-500 font-bold flex items-center space-x-1"><iconify-icon icon="mdi:alert-circle"></iconify-icon><span>风险：代码中包含危险操作 eval 调用</span></div>` : ''}
+                        <div class="flex items-center justify-between pt-2 border-t border-gray-50">
+                            <div class="flex items-center text-xs text-gray-500">
+                                <iconify-icon icon="mdi:chart-line" class="mr-1"></iconify-icon>
+                                <span>使用 ${skill.usage.toLocaleString()} 次</span>
+                            </div>
+                            <div class="flex items-center">
+                                ${skill.source === '市场' && skill.marketVersion && compareVersions(skill.marketVersion, skill.version) > 0 ? `
+                                    <button class="update-btn mr-2 px-2 py-1 text-[11px] font-medium rounded bg-green-50 text-green-600 border border-green-200 hover:bg-green-500 hover:text-white transition-colors" onclick="event.stopPropagation(); updateFromMarket(${skill.id})">
+                                        <span class="update-text">更新 v${skill.marketVersion}</span>
+                                    </button>
+                                ` : ''}
+                                <div class="toggle-container flex items-center">
+                                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                        <input type="checkbox" name="toggle" id="toggle-${skill.id}" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer" ${skill.status ? 'checked' : ''} onchange="toggleSkillStatus(${skill.id}, this)">
+                                        <label for="toggle-${skill.id}" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        const expandBtn = document.getElementById('btn-expand-enterprise');
+        if (filtered.length <= 4) {
+            expandBtn.classList.add('hidden');
+        } else {
+            expandBtn.classList.remove('hidden');
+            document.getElementById('btn-expand-text').innerText = enterpriseExpanded ? '收起' : '展开更多';
+            document.getElementById('btn-expand-icon').setAttribute('icon', enterpriseExpanded ? 'mdi:chevron-up' : 'mdi:chevron-down');
+        }
+        document.getElementById('enterprise-pagination').classList.add('hidden');
+    }
+
+    function filterEnterprise(type) {
+        enterpriseFilter = type;
+        const btnAll = document.getElementById('btn-all-skills');
+        const btnMy = document.getElementById('btn-my-skills');
+        if (type === 'all') {
+            btnAll.className = "px-4 py-1.5 text-sm font-medium rounded-md bg-white shadow-sm text-blue-600";
+            btnMy.className = "px-4 py-1.5 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900";
+        } else {
+            btnMy.className = "px-4 py-1.5 text-sm font-medium rounded-md bg-white shadow-sm text-blue-600";
+            btnAll.className = "px-4 py-1.5 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900";
+        }
+        renderEnterprise();
+    }
+
+    function toggleEnterpriseExpand() {
+        enterpriseExpanded = !enterpriseExpanded;
+        renderEnterprise();
+    }
+
+    function toggleSkillStatus(id, el) {
+        const skill = enterpriseSkills.find(s => s.id === id);
+        if (skill) {
+            skill.status = el.checked;
+            showToast(skill.status ? '已发布技能' : '已下架技能', 'mdi:check-circle');
+        }
+    }
+
+    function toggleCardSelect(id, el) {
+        if (el.checked) selectedSkillIds.add(id);
+        else selectedSkillIds.delete(id);
+        updateBatchBar();
+    }
+
+    function toggleSelectAll(el) {
+        const searchTerm = document.getElementById('enterprise-search').value.trim().toLowerCase();
+        let filtered = enterpriseSkills.filter(s => {
+            const matchesFilter = enterpriseFilter === 'all' || s.mine;
+            const matchesSearch = !searchTerm || s.name.toLowerCase().includes(searchTerm);
+            return matchesFilter && matchesSearch;
+        });
+        let displayList = enterpriseExpanded ? filtered : filtered.slice(0, 4);
+        displayList.forEach(s => {
+            if (el.checked) selectedSkillIds.add(s.id);
+            else selectedSkillIds.delete(s.id);
+        });
+        renderEnterprise();
+        updateBatchBar();
+    }
+
+    function updateBatchBar() {
+        const bar = document.getElementById('batch-action-bar');
+        const count = document.getElementById('selected-count');
+        if (selectedSkillIds.size > 0) {
+            bar.classList.remove('hidden');
+            count.innerText = `已选 ${selectedSkillIds.size} 个`;
+        } else {
+            bar.classList.add('hidden');
+        }
+    }
+
+    function batchAction(action) {
+        if (action === 'delete') {
+            const count = selectedSkillIds.size;
+            confirmAction(`确定删除 ${count} 个技能吗？`, `这些技能将被移动至回收站。`, () => {
+                enterpriseSkills = enterpriseSkills.filter(s => !selectedSkillIds.has(s.id));
+                selectedSkillIds.clear();
+                updateBatchBar();
+                renderEnterprise();
+                showToast(`已批量删除 ${count} 个技能`, 'mdi:delete-outline');
+            });
+        } else {
+            const status = action === 'enable';
+            enterpriseSkills.forEach(s => {
+                if (selectedSkillIds.has(s.id)) s.status = status;
+            });
+            renderEnterprise();
+            showToast(status ? '已批量发布' : '已批量下架', 'mdi:check-circle');
+        }
+    }
+
+    function confirmDelete(id) {
+        const skill = enterpriseSkills.find(s => s.id === id);
+        confirmAction(`确认删除该技能吗？`, `确认将"${skill.name}"移动至回收站吗？`, () => {
+            trashSkills.unshift({ id: Date.now(), name: skill.name, source: skill.source, date: new Date().toISOString().slice(0,10).replace(/-/g,'/'), desc: skill.desc });
+            enterpriseSkills = enterpriseSkills.filter(s => s.id !== id);
+            selectedSkillIds.delete(id);
+            updateBatchBar();
+            renderEnterprise();
+            updateTrashCount();
+            showToast('技能已移动至回收站', 'mdi:trash-can-outline');
+        });
+    }
+
+    // ========== 市场逻辑 ==========
+    function renderMarket() {
+        const grid = document.getElementById('market-grid');
+        grid.innerHTML = '';
+
+        let filtered = marketSkills.filter(s => {
+            const matchesSearch = s.name.toLowerCase().includes(marketSearchTerm.toLowerCase());
+            const matchesCategory = marketCategoryFilter === '全部' || s.category === marketCategoryFilter;
+            return matchesSearch && matchesCategory;
+        });
+
+        // 排序
+        if (marketSort === 'downloads') {
+            filtered.sort((a, b) => b.downloads - a.downloads);
+        } else if (marketSort === 'latest') {
+            filtered.sort((a, b) => new Date(b.updated) - new Date(a.updated));
+        }
+
+        const start = (marketCurrentPage - 1) * marketPageSize;
+        const displayList = filtered.slice(start, start + marketPageSize);
+
+        if (displayList.length === 0) {
+            grid.innerHTML = `<div class="col-span-full py-20 text-center flex flex-col items-center">
+                <iconify-icon icon="mdi:database-search-outline" class="text-6xl text-gray-200 mb-4"></iconify-icon>
+                <p class="text-gray-400">未找到匹配的技能，换个关键词试试？</p>
+            </div>`;
+        } else {
+            displayList.forEach((skill, idx) => {
+                const card = document.createElement('div');
+                card.className = "group relative bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full cursor-pointer";
+
+                let statusHtml = '';
+                if (skill.status === '未安装') {
+                    statusHtml = `<button class="w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors install-btn" onclick="event.stopPropagation(); installSkillWithAnimation(this, ${skill.id})">安装</button>`;
+                } else if (skill.status === '已安装已发布') {
+                    statusHtml = `<div class="w-full py-2 bg-green-50 text-green-600 rounded-lg text-sm font-bold flex items-center justify-center space-x-1 border border-green-100">
+                        <iconify-icon icon="mdi:check-circle"></iconify-icon><span>已安装</span>
+                    </div>`;
+                } else {
+                    statusHtml = `<div class="w-full py-2 bg-gray-100 text-gray-500 rounded-lg text-sm font-bold flex items-center justify-center space-x-1 border border-gray-200">
+                        <iconify-icon icon="mdi:pause-circle"></iconify-icon><span>已下架</span>
+                    </div>`;
+                }
+
+                const iconColor = getIconColor(idx);
+                const letter = getFirstLetter(skill.name);
+
+                const officialTag = skill.official ? `<span class="px-2 py-0.5 text-[10px] font-bold rounded bg-blue-100 text-blue-600">市场</span>` : '';
+
+                card.onclick = () => showMarketDetail(skill.id);
+
+                card.innerHTML = `
+                    <button class="absolute top-3 right-3 z-10 w-7 h-7 bg-red-50 text-red-400 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 hover:text-white" onclick="event.stopPropagation(); confirmDeleteMarket(${skill.id})" title="删除技能">
+                        <iconify-icon icon="mdi:close" class="text-sm"></iconify-icon>
+                    </button>
+                    <div class="flex-1 space-y-3 mb-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-11 h-11 rounded-lg ${iconColor.bg} flex items-center justify-center flex-shrink-0">
+                                <span class="text-sm font-bold ${iconColor.text}">${letter}</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-[10px] text-gray-400 font-medium">${skill.category}</span>
+                                </div>
+                                <h3 class="font-bold text-gray-900 truncate flex items-center space-x-2">${skill.name}<span class="px-2 py-0.5 text-[10px] font-bold rounded bg-blue-100 text-blue-600">市场</span></h3>
+                                <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed mt-1">提供专业级的${skill.name}服务，支持多维数据分析与自动化处理，极大提升工作效率。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs text-gray-400">更新: ${skill.updated}</span>
+                        <span class="text-xs text-gray-400">v${skill.version}</span>
+                    </div>
+                    <div class="flex items-center justify-between mb-3 text-xs text-gray-400">
+                        <!--span title="下载量"><iconify-icon icon="mdi:download-outline" class="mr-0.5"></iconify-icon>${skill.downloads.toLocaleString()}</span-->
+                        <span title="安装量"><iconify-icon icon="mdi:application-import-outline" class="mr-0.5"></iconify-icon>${skill.installs.toLocaleString()}</span>
+                    </div>
+                    ${statusHtml}
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        renderMarketPagination(filtered.length);
+    }
+
+    function showMarketDetail(id) {
+        const skill = marketSkills.find(s => s.id === id);
+        if (!skill) return;
+        showDetailPage(null, 'market_view', skill);
+    }
+
+    function confirmDeleteMarket(id) {
+        const skill = marketSkills.find(s => s.id === id);
+        if (!skill) return;
+        confirmAction(
+            `请确认是否删除`,
+            `删除后不可恢复。`,
+            () => {
+                marketSkills = marketSkills.filter(s => s.id !== id);
+                renderMarket();
+                showToast('已删除市场技能', 'mdi:delete-outline');
+            }
+        );
+    }
+
+    function renderMarketPagination(total) {
+        const totalPages = Math.ceil(total / marketPageSize);
+        const container = document.getElementById('market-page-numbers');
+        container.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.className = `w-10 h-10 flex items-center justify-center rounded-lg border font-medium transition-all ${marketCurrentPage === i ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-200 hover:border-blue-500'}`;
+            btn.innerText = i;
+            btn.onclick = () => changeMarketPage(i);
+            container.appendChild(btn);
+        }
+
+        document.getElementById('market-prev-btn').disabled = marketCurrentPage === 1;
+        document.getElementById('market-next-btn').disabled = marketCurrentPage === totalPages || totalPages === 0;
+    }
+
+    function changeMarketPage(page) {
+        marketCurrentPage = page;
+        renderMarket();
+    }
+
+    function filterMarket() {
+        marketSearchTerm = document.getElementById('market-search').value;
+        marketSort = document.getElementById('market-sort').value;
+        marketCurrentPage = 1;
+        renderMarket();
+    }
+
+    function filterMarketByCategory(cat, el) {
+        marketCategoryFilter = cat;
+        const btns = document.querySelectorAll('#category-tags button');
+        btns.forEach(b => {
+            b.className = "px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200";
+        });
+        el.className = "px-3 py-1.5 text-xs font-medium rounded-full bg-blue-600 text-white shadow-sm";
+        marketCurrentPage = 1;
+        renderMarket();
+    }
+
+    function installSkill(id) {
+        const skill = marketSkills.find(s => s.id === id);
+        if (skill) {
+            skill.status = '已安装已发布';
+            enterpriseSkills.push({
+                id: Date.now(),
+                name: skill.name,
+                source: '市场',
+                creator: '当前用户',
+                status: true,
+                usage: 0,
+                mine: true,
+                desc: '提供专业级的' + skill.name + '服务',
+                updated: new Date().toISOString().slice(0, 10).replace(/-/g, '/'),
+                version: skill.version
+            });
+            renderMarket();
+            renderEnterprise();
+            showToast('安装成功', 'mdi:check-circle');
+        }
+    }
+
+    // 版本号比较函数
+    function compareVersions(v1, v2) {
+        if (!v1) return -1;
+        if (!v2) return 1;
+        const parts1 = v1.split('.').map(Number);
+        const parts2 = v2.split('.').map(Number);
+        for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+            const p1 = parts1[i] || 0;
+            const p2 = parts2[i] || 0;
+            if (p1 > p2) return 1;
+            if (p1 < p2) return -1;
+        }
+        return 0;
+    }
+
+    // 从市场更新技能
+    function updateFromMarket(id) {
+        const skill = enterpriseSkills.find(s => s.id === id);
+        if (!skill || skill.source !== '市场') return;
+
+        const btn = document.querySelector(`[onclick*="updateFromMarket(${id})"]`);
+        if (btn) {
+            const btnText = btn.querySelector('.update-text') || btn;
+            btnText.innerHTML = '<iconify-icon icon="mdi:loading" class="animate-spin"></iconify-icon>';
+            btn.disabled = true;
+        }
+
+        setTimeout(() => {
+            // 更新版本号
+            skill.version = skill.marketVersion;
+            skill.updated = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+
+            renderEnterprise();
+            showToast('更新成功', 'mdi:check-circle');
+        }, 800);
+    }
+
+    function installSkillWithAnimation(btn, id) {
+        const skill = marketSkills.find(s => s.id === id);
+
+        // 显示加载动画
+        btn.innerHTML = '<iconify-icon icon="mdi:loading" class="animate-spin"></iconify-icon>';
+        btn.disabled = true;
+
+        // 模拟安装过程
+        setTimeout(() => {
+            if (skill) {
+                skill.status = '已安装已发布';
+                enterpriseSkills.push({
+                    id: Date.now(),
+                    name: skill.name,
+                    source: '市场',
+                    creator: '当前用户',
+                    status: true,
+                    usage: 0,
+                    mine: true,
+                    desc: '提供专业级的' + skill.name + '服务',
+                    updated: new Date().toISOString().slice(0, 10).replace(/-/g, '/'),
+                    version: skill.version,
+                    marketVersion: skill.version,
+                    namespace: skill.namespace || 'global',
+                    slug: skill.slug
+                });
+            }
+
+            renderMarket();
+            renderEnterprise();
+            showToast('安装成功', 'mdi:check-circle');
+        }, 800);
+    }
+
+    function installSkillFromDetail(btn) {
+        const skillId = parseInt(btn.dataset.skillId);
+        const skill = marketSkills.find(s => s.id === skillId);
+        const installText = document.getElementById('detail-install-text');
+        const statusTag = document.getElementById('detail-status-tag');
+        const installBtn = document.getElementById('detail-install-btn');
+
+        if (!skill) return;
+
+        // 显示加载动画
+        installText.innerHTML = '<iconify-icon icon="mdi:loading" class="animate-spin"></iconify-icon>';
+        btn.disabled = true;
+
+        // 模拟安装过程
+        setTimeout(() => {
+            skill.status = '已安装已发布';
+            enterpriseSkills.push({
+                id: Date.now(),
+                name: skill.name,
+                source: '市场',
+                creator: '当前用户',
+                status: true,
+                usage: 0,
+                mine: true,
+                desc: '提供专业级的' + skill.name + '服务',
+                updated: new Date().toISOString().slice(0, 10).replace(/-/g, '/'),
+                version: skill.version,
+                marketVersion: skill.version,
+                namespace: skill.namespace || 'global',
+                slug: skill.slug
+            });
+
+            // 更新UI
+            installBtn.classList.add('hidden');
+            statusTag.classList.remove('hidden');
+            statusTag.innerText = '已安装';
+            statusTag.className = 'text-xs font-medium px-3 py-1.5 rounded-full bg-green-100 text-green-600';
+
+            renderMarket();
+            renderEnterprise();
+            showToast('安装成功', 'mdi:check-circle');
+        }, 800);
+    }
+
+    // ========== 弹窗与通用逻辑 ==========
+    function toggleDropdown(id) {
+        const el = document.getElementById(id);
+        el.classList.toggle('hidden');
+    }
+
+    function openModal(id) {
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+    }
+
+    function openImportModal() {
+        document.getElementById('upload-idle').classList.remove('hidden');
+        document.getElementById('upload-progress').classList.add('hidden');
+        document.getElementById('upload-success').classList.add('hidden');
+        document.getElementById('btn-import-enable').classList.add('bg-gray-300', 'cursor-not-allowed');
+        document.getElementById('btn-import-enable').classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        document.getElementById('btn-import-enable').disabled = true;
+        openModal('import-modal');
+    }
+
+    function simulateUpload() {
+        const idle = document.getElementById('upload-idle');
+        const progress = document.getElementById('upload-progress');
+        const bar = document.getElementById('progress-bar');
+        const percent = document.getElementById('progress-percent');
+        const success = document.getElementById('upload-success');
+
+        idle.classList.add('hidden');
+        progress.classList.remove('hidden');
+
+        let p = 0;
+        const interval = setInterval(() => {
+            p += Math.random() * 20;
+            if (p >= 100) {
+                p = 100;
+                clearInterval(interval);
+                progress.classList.add('hidden');
+                success.classList.remove('hidden');
+                const btn = document.getElementById('btn-import-enable');
+                btn.classList.remove('bg-gray-300', 'cursor-not-allowed');
+                btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                btn.disabled = false;
+            }
+            bar.style.width = p + '%';
+            percent.innerText = Math.floor(p) + '%';
+        }, 200);
+    }
+
+    function enableImportedSkill() {
+        showToast('技能正在风险监测中，请等待检测完成后发布！', 'mdi:shield-search');
+        closeModal('import-modal');
+
+        setTimeout(() => {
+            enterpriseSkills.unshift({
+                id: 888,
+                name: "高危脚本助手",
+                source: "自定义",
+                creator: "周扬",
+                status: false,
+                usage: 0,
+                mine: true,
+                hasRisk: true,
+                desc: "脚本执行与自动化任务处理",
+                updated: new Date().toISOString().slice(0, 10).replace(/-/g, '/')
+            });
+            renderEnterprise();
+        }, 2000);
+    }
+
+    function updateTrashCount() {
+        document.getElementById('trash-count').innerText = trashSkills.length;
+        if (document.getElementById('recycle-count')) {
+            document.getElementById('recycle-count').innerText = `共 ${trashSkills.length} 个已删除技能`;
+        }
+    }
+
+    // ========== 文件预览切换逻辑 ==========
+    function switchPreviewFile(fileName) {
+        currentPreviewFile = fileName;
+        const titleEl = document.getElementById('preview-file-title');
+        titleEl.innerText = fileName;
+
+        // Update visual active state on file items
+        document.querySelectorAll('.file-item').forEach(el => {
+            el.classList.remove('bg-blue-50', 'border-blue-300');
+            el.classList.add('bg-gray-50', 'border-gray-200');
+        });
+        const activeEl = document.getElementById('file-item-' + fileName.replace(/\./g, '_'));
+        if (activeEl) {
+            activeEl.classList.remove('bg-gray-50', 'border-gray-200');
+            activeEl.classList.add('bg-blue-50', 'border-blue-300');
+        }
+
+        const isEditable = detailMode === 'edit' || detailMode === 'create';
+        renderPreviewContent(fileName, isEditable);
+    }
+
+    function renderPreviewContent(fileName, editable) {
+        const container = document.getElementById('md-preview-content');
+        const content = fileContents[fileName] || '# 文件内容不可用';
+
+        if (editable) {
+            container.innerHTML = `<textarea class="w-full h-full min-h-[300px] border border-gray-200 rounded-lg p-4 text-sm font-mono bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none" id="preview-textarea">${escapeHtml(content)}</textarea>`;
+        } else {
+            const previewHtml = marked(content);
+            container.innerHTML = previewHtml;
+        }
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function marked(text) {
+        // Simple markdown renderer
+        const lines = text.split('\n');
+        let html = '<div class="prose prose-sm max-w-none">';
+        let inCode = false;
+        let codeContent = '';
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.startsWith('```')) {
+                if (inCode) {
+                    html += `<pre class="bg-gray-50 p-4 rounded-lg text-sm font-mono whitespace-pre-wrap">${escapeHtml(codeContent.trim())}</pre>`;
+                    codeContent = '';
+                    inCode = false;
+                } else {
+                    inCode = true;
+                }
+                continue;
+            }
+            if (inCode) {
+                codeContent += line + '\n';
+                continue;
+            }
+            if (line.startsWith('---')) {
+                html += '<hr class="my-2 border-gray-200"/>';
+            } else if (line.startsWith('## ')) {
+                html += `<h3 class="text-lg font-bold mt-4 mb-2">${line.slice(3)}</h3>`;
+            } else if (line.startsWith('# ')) {
+                html += `<h2 class="text-xl font-bold mt-4 mb-2">${line.slice(2)}</h2>`;
+            } else if (line.startsWith('- ')) {
+                html += `<li class="text-sm text-gray-600 ml-4">${line.slice(2)}</li>`;
+            } else if (line.trim() === '') {
+                html += '<br/>';
+            } else if (line.match(/^[a-zA-Z]/) && line.includes(':')) {
+                html += `<p class="text-sm text-gray-700">${line}</p>`;
+            } else {
+                html += `<p class="text-sm text-gray-700">${line}</p>`;
+            }
+        }
+        if (inCode && codeContent) {
+            html += `<pre class="bg-gray-50 p-4 rounded-lg text-sm font-mono whitespace-pre-wrap">${escapeHtml(codeContent.trim())}</pre>`;
+        }
+        html += '</div>';
+        return html;
+    }
+
+    // ========== 脚本文件管理 ==========
+    function renderScriptFiles() {
+        const container = document.getElementById('script-files-container');
+        container.innerHTML = '';
+        const isEditable = detailMode === 'edit' || detailMode === 'create';
+
+        scriptFiles.forEach((file, idx) => {
+            const div = document.createElement('div');
+            div.className = 'file-item flex items-center space-x-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 cursor-pointer hover:bg-blue-50 transition-colors';
+            div.id = 'file-item-' + file.name.replace(/\./g, '_');
+            div.onclick = () => switchPreviewFile(file.name);
+
+            const deleteBtn = isEditable ? `<button class="text-red-500 hover:text-red-700 flex-shrink-0" onclick="event.stopPropagation(); removeScriptFile(${idx})"><iconify-icon icon="mdi:delete-outline"></iconify-icon></button>` : '';
+
+            div.innerHTML = `
+                <iconify-icon class="text-lg text-blue-500 flex-shrink-0" icon="mdi:file-code-outline"></iconify-icon>
+                <span class="flex-1 text-sm text-gray-700 truncate">${file.name}</span>
+                ${deleteBtn}
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function renderRefdocFiles() {
+        const container = document.getElementById('refdoc-files-container');
+        container.innerHTML = '';
+        const isEditable = detailMode === 'edit' || detailMode === 'create';
+
+        refdocFiles.forEach((file, idx) => {
+            const div = document.createElement('div');
+            div.className = 'file-item flex items-center space-x-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 cursor-pointer hover:bg-blue-50 transition-colors';
+            div.id = 'file-item-' + file.name.replace(/\./g, '_');
+            div.onclick = () => switchPreviewFile(file.name);
+
+            const deleteBtn = isEditable ? `<button class="text-red-500 hover:text-red-700 flex-shrink-0" onclick="event.stopPropagation(); removeRefdocFile(${idx})"><iconify-icon icon="mdi:delete-outline"></iconify-icon></button>` : '';
+
+            div.innerHTML = `
+                <iconify-icon class="text-lg text-blue-500 flex-shrink-0" icon="mdi:file-text-outline"></iconify-icon>
+                <span class="flex-1 text-sm text-gray-700 truncate">${file.name}</span>
+                ${deleteBtn}
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function addNewScriptFile() {
+        const newName = 'new_file.py';
+        scriptFiles.push({ name: newName, editable: true });
+        renderScriptFiles();
+        // Auto switch to the new file
+        switchPreviewFile(newName);
+    }
+
+    function addNewRefdocFile() {
+        const newName = 'new_doc.md';
+        refdocFiles.push({ name: newName, editable: true });
+        renderRefdocFiles();
+        switchPreviewFile(newName);
+    }
+
+    function removeScriptFile(idx) {
+        const file = scriptFiles[idx];
+        scriptFiles.splice(idx, 1);
+        renderScriptFiles();
+        if (currentPreviewFile === file.name) {
+            const firstFile = scriptFiles[0] || { name: 'SKILL.md' };
+            switchPreviewFile(firstFile.name);
+        }
+    }
+
+    function removeRefdocFile(idx) {
+        const file = refdocFiles[idx];
+        refdocFiles.splice(idx, 1);
+        renderRefdocFiles();
+        if (currentPreviewFile === file.name) {
+            switchPreviewFile('SKILL.md');
+        }
+    }
+
+    function setScriptAndDocVisibility(isEditable) {
+        const scriptActions = document.getElementById('script-actions');
+        const refdocActions = document.getElementById('refdoc-actions');
+        if (scriptActions) {
+            scriptActions.classList.toggle('hidden', !isEditable);
+        }
+        if (refdocActions) {
+            refdocActions.classList.toggle('hidden', !isEditable);
+        }
+        renderScriptFiles();
+        renderRefdocFiles();
+    }
+
+    // ========== 详情/编辑/新增页面 ==========
+    function showDetailPage(skillId, mode, marketSkill) {
+        detailMode = mode || 'view';
+        detailSkillId = skillId;
+
+        const title = document.getElementById('detail-page-title');
+        const backBtn = document.getElementById('detail-back-btn');
+        const saveBtn = document.getElementById('detail-save-btn');
+        const nameInput = document.getElementById('detail-name');
+        const descTextarea = document.getElementById('detail-desc');
+        const sourceP = document.getElementById('detail-source');
+        const creatorP = document.getElementById('detail-creator');
+        const usageP = document.getElementById('detail-usage');
+        const updatedP = document.getElementById('detail-updated');
+        const skillFileInput = document.getElementById('detail-skill-file');
+        const iconLetter = document.getElementById('detail-icon-letter');
+        const uploadBtn = document.getElementById('detail-upload-icon-btn');
+
+        // Determine if fields should be editable
+        const isEditable = mode === 'edit' || mode === 'create';
+        const isReadonly = !isEditable;
+
+        // Set field editability
+        nameInput.disabled = isReadonly;
+        nameInput.className = `w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm ${isReadonly ? 'bg-gray-50' : 'bg-white'}`;
+        descTextarea.disabled = isReadonly;
+        descTextarea.className = `w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm resize-none ${isReadonly ? 'bg-gray-50' : 'bg-white'}`;
+        skillFileInput.disabled = isReadonly;
+        skillFileInput.className = `flex-1 bg-transparent border-none focus:outline-none text-sm text-gray-700 ${isReadonly ? '' : ''}`;
+        uploadBtn.classList.toggle('hidden', isReadonly);
+
+        // 版本号字段显示/隐藏
+        document.getElementById('version-field').classList.toggle('hidden', isEditable);
+        document.getElementById('version-input-field').classList.toggle('hidden', !isEditable);
+
+        // Reset preview file to SKILL.md
+        currentPreviewFile = 'SKILL.md';
+        document.getElementById('preview-file-title').innerText = 'SKILL.md';
+
+        // Set script/doc files based on mode
+        if (mode === 'create') {
+            scriptFiles = [
+                { name: 'main.py', editable: false },
+                { name: 'utils.js', editable: false }
+            ];
+            refdocFiles = [
+                { name: 'README.md', editable: false }
+            ];
+        } else if (mode === 'market_view') {
+            scriptFiles = [
+                { name: 'main.py', editable: false },
+                { name: 'utils.js', editable: false }
+            ];
+            refdocFiles = [
+                { name: 'README.md', editable: false }
+            ];
+        } else if (mode === 'edit') {
+            const skill = enterpriseSkills.find(s => s.id === skillId);
+            if (skill) {
+                scriptFiles = [
+                    { name: 'main.py', editable: false },
+                    { name: 'utils.js', editable: false }
+                ];
+                refdocFiles = [
+                    { name: 'README.md', editable: false }
+                ];
+            }
+        } else {
+            // view mode for enterprise skills
+            scriptFiles = [
+                { name: 'main.py', editable: false },
+                { name: 'utils.js', editable: false }
+            ];
+            refdocFiles = [
+                { name: 'README.md', editable: false }
+            ];
+        }
+
+        setScriptAndDocVisibility(isEditable);
+
+        if (mode === 'create') {
+            title.innerText = '创建技能';
+            backBtn.innerText = '返回列表';
+            backBtn.onclick = () => showPage('main');
+            saveBtn.classList.remove('hidden');
+
+            nameInput.value = '';
+            descTextarea.value = '';
+            sourceP.innerText = '自定义';
+            creatorP.innerText = '当前用户';
+            usageP.innerText = '0 次';
+            updatedP.innerText = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+            skillFileInput.value = 'SKILL.md';
+            iconLetter.innerText = '新';
+            document.getElementById('detail-version-input').value = '1.0.0';
+
+            // 创建页面隐藏状态标签和安装按钮
+            document.getElementById('detail-status-tag').classList.add('hidden');
+            document.getElementById('detail-install-btn').classList.add('hidden');
+
+            // Default preview
+            switchPreviewFile('SKILL.md');
+
+            showPage('detail');
+            return;
+        }
+
+        // Show save button only for edit/create mode
+        saveBtn.classList.toggle('hidden', !isEditable);
+
+        let skill = null;
+
+        if (mode === 'market_view' && marketSkill) {
+            title.innerText = marketSkill.name + ' - 技能详情';
+            backBtn.innerText = '返回市场';
+            backBtn.onclick = () => showPage('main');
+            saveBtn.classList.add('hidden');
+
+            nameInput.value = marketSkill.name;
+            descTextarea.value = '提供专业级的' + marketSkill.name + '服务，支持多维数据分析与自动化处理，极大提升工作效率。';
+            sourceP.innerText = marketSkill.official ? '市场' : '第三方';
+            creatorP.innerText = marketSkill.official ? '系统管理员' : '社区贡献者';
+            usageP.innerText = '—';
+            updatedP.innerText = marketSkill.updated;
+            skillFileInput.value = 'SKILL.md';
+            iconLetter.innerText = getFirstLetter(marketSkill.name);
+
+            // 显示市场技能版本号
+            const versionP = document.getElementById('detail-version');
+            if (versionP) {
+                versionP.innerText = 'v' + marketSkill.version;
+            }
+
+            // 显示市场技能状态标签/按钮
+            const statusTag = document.getElementById('detail-status-tag');
+            const installBtn = document.getElementById('detail-install-btn');
+            const statusTagContent = statusTag.parentElement;
+
+            if (marketSkill.status === '未安装') {
+                // 显示安装按钮
+                statusTag.classList.add('hidden');
+                installBtn.classList.remove('hidden');
+                installBtn.dataset.skillId = marketSkill.id;
+            } else {
+                // 显示状态标签
+                statusTag.classList.remove('hidden');
+                installBtn.classList.add('hidden');
+                if (marketSkill.status === '已安装已发布') {
+                    statusTag.innerText = '已安装';
+                    statusTag.className = 'text-xs font-medium px-3 py-1.5 rounded-full bg-green-100 text-green-600';
+                } else if (marketSkill.status === '已安装已下架') {
+                    statusTag.innerText = '已下架';
+                    statusTag.className = 'text-xs font-medium px-3 py-1.5 rounded-full bg-gray-100 text-gray-500';
+                }
+            }
+
+            switchPreviewFile('SKILL.md');
+
+            showPage('detail');
+            return;
+        }
+
+        // Enterprise skill detail / edit
+        if (skillId) {
+            skill = enterpriseSkills.find(s => s.id === skillId);
+        }
+
+        if (!skill) {
+            showToast('未找到技能信息', 'mdi:alert-circle');
+            return;
+        }
+
+        title.innerText = mode === 'edit' ? '编辑技能' : '技能详情';
+        backBtn.innerText = '返回列表';
+        backBtn.onclick = () => showPage('main');
+
+        nameInput.value = skill.name;
+        descTextarea.value = skill.desc;
+        sourceP.innerText = skill.source;
+        creatorP.innerText = skill.creator;
+        usageP.innerText = skill.usage.toLocaleString() + ' 次';
+        updatedP.innerText = skill.updated;
+        skillFileInput.value = 'SKILL.md';
+        iconLetter.innerText = getFirstLetter(skill.name);
+
+        // 显示版本号
+        const versionP = document.getElementById('detail-version');
+        if (versionP) {
+            versionP.innerText = 'v' + skill.version;
+        }
+
+        // 显示状态标签
+        const statusTag = document.getElementById('detail-status-tag');
+        const installBtn = document.getElementById('detail-install-btn');
+        statusTag.classList.remove('hidden');
+        installBtn.classList.add('hidden');
+        if (skill.status) {
+            statusTag.innerText = '已安装';
+            statusTag.className = 'text-xs font-medium px-3 py-1.5 rounded-full bg-green-100 text-green-600';
+        } else {
+            statusTag.innerText = '已下架';
+            statusTag.className = 'text-xs font-medium px-3 py-1.5 rounded-full bg-gray-100 text-gray-500';
+        }
+
+        // 市场视图下隐藏版本输入框
+        if (detailMode === 'market_view') {
+            document.getElementById('version-field').classList.remove('hidden');
+            document.getElementById('version-input-field').classList.add('hidden');
+        }
+
+        switchPreviewFile('SKILL.md');
+
+        showPage('detail');
+    }
+
+    function saveDetailSkill() {
+        showToast('技能保存成功！', 'mdi:check-circle');
+    }
+
+    function switchMdTab(tab) {
+        const preview = document.getElementById('preview-tab');
+        const source = document.getElementById('source-tab');
+        if (tab === 'preview') {
+            preview.className = 'px-3 py-1 text-xs font-medium rounded bg-blue-600 text-white';
+            source.className = 'px-3 py-1 text-xs font-medium rounded bg-gray-100 text-gray-500';
+            // Re-render preview
+            const isEditable = detailMode === 'edit' || detailMode === 'create';
+            renderPreviewContent(currentPreviewFile, isEditable);
+        } else {
+            source.className = 'px-3 py-1 text-xs font-medium rounded bg-blue-600 text-white';
+            preview.className = 'px-3 py-1 text-xs font-medium rounded bg-gray-100 text-gray-500';
+            // Show raw markdown source
+            const mdContainer = document.getElementById('md-preview-content');
+            const content = fileContents[currentPreviewFile] || '# 文件内容不可用';
+            mdContainer.innerHTML = `<pre class="text-sm text-gray-700 whitespace-pre-wrap font-mono p-4">${escapeHtml(content)}</pre>`;
+            return;
+        }
+    }
+
+    // ========== 回收站页面 ==========
+    function renderRecycleBin() {
+        const grid = document.getElementById('recycle-grid');
+        grid.innerHTML = '';
+        updateTrashCount();
+
+        if (trashSkills.length === 0) {
+            grid.innerHTML = `<div class="col-span-full py-20 text-center flex flex-col items-center">
+                <iconify-icon icon="mdi:trash-can-outline" class="text-6xl text-gray-200 mb-4"></iconify-icon>
+                <p class="text-gray-400">回收站是空的</p>
+            </div>`;
+            return;
+        }
+
+        trashSkills.forEach((skill, idx) => {
+            const card = document.createElement('div');
+            const iconColor = getIconColor(idx);
+            const letter = getFirstLetter(skill.name);
+
+            card.className = "group relative bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden flex flex-col h-full";
+
+            card.onclick = () => {
+                showDetailFromRecycle(skill);
+            };
+
+            const sourceTagClass = skill.source === '市场' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500';
+
+            card.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <div class="w-11 h-11 rounded-lg ${iconColor.bg} flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="text-sm font-bold ${iconColor.text}">${letter}</span>
+                    </div>
+                    <div class="flex-1 min-w-0 space-y-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-bold text-gray-900 truncate text-sm">${skill.name}</span>
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded ${sourceTagClass}">${skill.source}</span>
+                        </div>
+                        <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed h-9">${skill.desc}</p>
+                        <p class="text-xs text-gray-400">v${skill.version}</p>
+                        <p class="text-xs text-gray-400">被孙礼飞删除于2026/01/22</p>
+                    </div>
+                </div>
+                <div class="absolute inset-x-0 bottom-0 p-3 bg-white bg-opacity-95 rounded-b-xl flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity border-t border-gray-100">
+                    <button class="flex-1 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors" onclick="event.stopPropagation(); restoreFromRecycle(${skill.id})">还原</button>
+                    <button class="flex-1 py-1.5 bg-red-500 text-white text-xs font-medium rounded-lg hover:bg-red-600 transition-colors" onclick="event.stopPropagation(); permanentDeleteRecycle(${skill.id})">彻底删除</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function showDetailFromRecycle(skill) {
+        detailMode = 'view';
+        detailFromRecycle = true;
+
+        const title = document.getElementById('detail-page-title');
+        const backBtn = document.getElementById('detail-back-btn');
+        const saveBtn = document.getElementById('detail-save-btn');
+        const nameInput = document.getElementById('detail-name');
+        const descTextarea = document.getElementById('detail-desc');
+        const sourceP = document.getElementById('detail-source');
+        const creatorP = document.getElementById('detail-creator');
+        const usageP = document.getElementById('detail-usage');
+        const updatedP = document.getElementById('detail-updated');
+        const skillFileInput = document.getElementById('detail-skill-file');
+        const iconLetter = document.getElementById('detail-icon-letter');
+        const uploadBtn = document.getElementById('detail-upload-icon-btn');
+
+        title.innerText = '技能详情';
+        backBtn.innerText = '返回回收站';
+        backBtn.onclick = () => showPage('recycle');
+        saveBtn.classList.add('hidden');
+        uploadBtn.classList.add('hidden');
+
+        nameInput.value = skill.name;
+        nameInput.disabled = true;
+        nameInput.className = 'w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50';
+        descTextarea.value = skill.desc;
+        descTextarea.disabled = true;
+        descTextarea.className = 'w-full px-3 py-2 border border-gray-200 rounded-lg text-sm resize-none bg-gray-50';
+        sourceP.innerText = skill.source;
+        creatorP.innerText = '—';
+        usageP.innerText = '—';
+        updatedP.innerText = skill.date;
+        skillFileInput.value = 'SKILL.md';
+        skillFileInput.disabled = true;
+        iconLetter.innerText = getFirstLetter(skill.name);
+
+        // Set read-only script/doc files for recycle view
+        detailMode = 'view';
+        scriptFiles = [
+            { name: 'main.py', editable: false },
+            { name: 'utils.js', editable: false }
+        ];
+        refdocFiles = [
+            { name: 'README.md', editable: false }
+        ];
+        setScriptAndDocVisibility(false);
+        currentPreviewFile = 'SKILL.md';
+        document.getElementById('preview-file-title').innerText = 'SKILL.md';
+        switchPreviewFile('SKILL.md');
+
+        showPage('detail');
+    }
+
+    function restoreFromRecycle(id) {
+        const skill = trashSkills.find(s => s.id === id);
+        if (skill) {
+            enterpriseSkills.push({
+                id: Date.now(),
+                name: skill.name,
+                source: skill.source,
+                creator: '周扬',
+                status: true,
+                usage: 0,
+                mine: true,
+                desc: skill.desc || '从回收站还原的技能',
+                updated: new Date().toISOString().slice(0, 10).replace(/-/g, '/')
+            });
+            trashSkills = trashSkills.filter(s => s.id !== id);
+            renderEnterprise();
+            updateTrashCount();
+            renderRecycleBin();
+            showToast('已还原技能', 'mdi:backup-restore');
+        }
+    }
+
+    function permanentDeleteRecycle(id) {
+        confirmAction('确定彻底删除该技能吗？', '此操作不可恢复，该技能将永久丢失。', () => {
+            trashSkills = trashSkills.filter(s => s.id !== id);
+            updateTrashCount();
+            renderRecycleBin();
+            showToast('已彻底删除技能', 'mdi:delete-forever');
+        });
+    }
+
+    // ========== 确认弹窗 ==========
+    function confirmAction(title, desc, callback) {
+        document.getElementById('confirm-title').innerText = title;
+        document.getElementById('confirm-desc').innerText = desc;
+        const btn = document.getElementById('confirm-action-btn');
+        btn.onclick = () => {
+            callback();
+            closeModal('confirm-modal');
+        };
+        openModal('confirm-modal');
+    }
+
+    function showToast(msg, icon = 'mdi:check-circle') {
+        const toast = document.getElementById('toast');
+        const iconEl = document.getElementById('toast-icon');
+        const msgEl = document.getElementById('toast-msg');
+
+        iconEl.setAttribute('icon', icon);
+        msgEl.innerText = msg;
+
+        toast.classList.remove('hidden');
+        setTimeout(() => {
+            toast.classList.remove('opacity-0', 'translate-y-4');
+        }, 10);
+
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4');
+            setTimeout(() => toast.classList.add('hidden'), 300);
+        }, 3000);
+    }
+
+    // 点击外部关闭下拉
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.relative')) {
+            const dd = document.getElementById('add-skill-dropdown');
+            if (dd) dd.classList.add('hidden');
+        }
+    });
+</script>
+</body>
+</html>

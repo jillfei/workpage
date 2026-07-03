@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI辅助面料研发产品 — 市场调研报告（终版）</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --card: #ffffff;
+    --accent: #1a365d;
+    --accent2: #2b6cb0;
+    --accent3: #4299e1;
+    --text: #1a202c;
+    --text2: #4a5568;
+    --border: #e2e8f0;
+    --highlight: #ebf8ff;
+    --warn: #fef3c7;
+    --green: #d1fae5;
+    --red: #fee2e2;
+  }
+  @page { size: A4 landscape; margin: 12mm 15mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #e8e8e8;
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 13px;
+  }
+  .container {
+    margin: 0 auto;
+    padding: 0 24px 0 224px;
+  }
+  /* Full-width page container */
+  .page {
+    width: 100%;
+    background: white;
+    padding: 28px 32px;
+  }
+  .report-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 50%, #4299e1 100%);
+    color: white;
+    padding: 36px 40px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .report-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .report-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; letter-spacing: 1px; }
+  .report-header .subtitle { font-size: 14px; opacity: 0.85; margin-bottom: 16px; }
+  .report-header .meta { font-size: 12px; opacity: 0.65; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px; }
+  /* Sidebar navigation */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100vh;
+    background: #1a202c;
+    color: #e2e8f0;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+  }
+  .sidebar-header {
+    padding: 20px 16px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .sidebar-header .logo {
+    font-size: 11px;
+    font-weight: 700;
+    color: #63b3ed;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .sidebar-header .title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.4;
+  }
+  .sidebar-header .meta-info {
+    font-size: 10px;
+    color: #718096;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+  .sidebar-nav {
+    flex: 1;
+    padding: 12px 0;
+    overflow-y: auto;
+  }
+  .sidebar-nav a {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 9px 16px;
+    color: #a0aec0;
+    text-decoration: none;
+    font-size: 12px;
+    line-height: 1.4;
+    transition: all 0.15s ease;
+    border-left: 3px solid transparent;
+  }
+  .sidebar-nav a:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.05);
+    border-left-color: var(--accent3);
+  }
+  .sidebar-nav a.active {
+    color: #fff;
+    background: rgba(66,153,225,0.12);
+    border-left-color: var(--accent3);
+    font-weight: 600;
+  }
+  .sidebar-nav a.nav-sub {
+    padding-left: 36px;
+    font-size: 11px;
+    color: #718096;
+  }
+  .sidebar-nav a.nav-sub:hover {
+    color: #a0aec0;
+  }
+  .sidebar-nav .nav-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.08);
+    font-size: 10px;
+    font-weight: 700;
+    color: #63b3ed;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .sidebar-nav a.active .nav-num {
+    background: var(--accent3);
+    color: #fff;
+  }
+  .sidebar-footer {
+    padding: 12px 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .sidebar-footer .mvp-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: linear-gradient(135deg, #065f46, #059669);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .section {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 36px;
+    margin-bottom: 14px;
+    break-inside: avoid;
+  }
+  .section h2 {
+    font-size: 18px;
+    color: var(--accent);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section h2 .num {
+    background: var(--accent);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .section h3 {
+    font-size: 15px;
+    color: var(--accent2);
+    margin: 16px 0 8px;
+    padding-left: 10px;
+    border-left: 3px solid var(--accent3);
+  }
+  .section h4 { font-size: 13px; color: var(--text); margin: 12px 0 6px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+  th { background: var(--accent); color: white; padding: 7px 10px; text-align: left; font-weight: 600; font-size: 11px; }
+  td { padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) { background: #f7fafc; }
+  tr:hover { background: var(--highlight); }
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 14px 0; }
+  .kpi-card {
+    background: linear-gradient(135deg, var(--highlight) 0%, #fff 100%);
+    border: 1px solid #bee3f8;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+  .kpi-card .value { font-size: 22px; font-weight: 700; color: var(--accent); line-height: 1.2; }
+  .kpi-card .label { font-size: 11px; color: var(--text2); margin-top: 4px; }
+  .callout {
+    background: var(--highlight);
+    border-left: 3px solid var(--accent3);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    margin: 10px 0;
+    font-size: 12px;
+  }
+  .callout.warn { background: var(--warn); border-left-color: #d69e2e; }
+  .callout.success { background: var(--green); border-left-color: #38a169; }
+  .callout strong { color: var(--accent); }
+  .source { font-size: 10px; color: #718096; margin-top: 3px; padding-left: 6px; border-left: 2px solid #cbd5e0; }
+  .source a { color: var(--accent2); word-break: break-all; }
+  .comp-tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; margin: 1px; }
+  .tag-blue { background: #dbeafe; color: #1e40af; }
+  .tag-green { background: #d1fae5; color: #065f46; }
+  .tag-purple { background: #ede9fe; color: #5b21b6; }
+  .tag-orange { background: #ffedd5; color: #9a3412; }
+  .tag-red { background: #fee2e2; color: #991b1b; }
+  .flow-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
+  .flow-step {
+    background: var(--highlight);
+    border: 1px solid #bee3f8;
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+    font-size: 12px;
+  }
+  .flow-step .step-num {
+    background: var(--accent2);
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    margin: 0 auto 6px;
+    font-weight: 700;
+  }
+  .flow-step strong { display: block; color: var(--accent); margin-bottom: 3px; font-size: 12px; }
+  ul, ol { padding-left: 18px; margin: 6px 0; }
+  li { margin-bottom: 4px; font-size: 12px; }
+  p { margin-bottom: 8px; font-size: 13px; }
+  .report-footer { text-align: center; padding: 20px; color: var(--text2); font-size: 11px; border-top: 1px solid var(--border); margin-top: 16px; }
+  .mvp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: linear-gradient(135deg, #065f46, #059669);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .tier-box {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 8px 0;
+  }
+  .tier-box.t1 { border-left: 4px solid #dc2626; background: #fef2f2; }
+  .tier-box.t2 { border-left: 4px solid #d97706; background: #fffbeb; }
+  .tier-box.t3 { border-left: 4px solid #2563eb; background: #eff6ff; }
+  .tier-box.t4 { border-left: 4px solid #7c3aed; background: #f5f3ff; }
+  .tier-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .tier-box.t1 .tier-label { color: #dc2626; }
+  .tier-box.t2 .tier-label { color: #d97706; }
+  .tier-box.t3 .tier-label { color: #2563eb; }
+  .tier-box.t4 .tier-label { color: #7c3aed; }
+  .comp-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 10px 0;
+  }
+  .comp-card h4 {
+    font-size: 14px;
+    color: var(--accent);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .comp-card .comp-meta {
+    font-size: 11px;
+    color: var(--text2);
+    margin-bottom: 8px;
+  }
+  .data-chain {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  .chain-node {
+    background: var(--highlight);
+    border: 2px solid var(--accent2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    min-width: 120px;
+  }
+  .chain-node strong { display: block; color: var(--accent); font-size: 13px; }
+  .chain-node span { font-size: 11px; color: var(--text2); }
+  .chain-arrow {
+    font-size: 20px;
+    color: var(--accent2);
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+  .insight-box {
+    background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  .insight-box h4 { color: #93c5fd; margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .insight-box p { margin: 0; font-size: 13px; line-height: 1.6; }
+  .gap-map-wrap { overflow-x: auto; margin: 14px 0; text-align: center; }
+  /* Full-width section cards on screen */
+  .section {
+    page-break-inside: avoid;
+    margin: 0 0 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-radius: 8px;
+  }
+  .report-header {
+    page-break-after: avoid;
+    margin: 0 0 20px;
+  }
+  /* Two-column layout for wider landscape format */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  /* Smooth scroll */
+  html { scroll-behavior: smooth; }
+  @media print {
+    body { background: white; }
+    .sidebar { display: none !important; }
+    .container { max-width: none; padding: 0; margin: 0; }
+    .section { break-inside: avoid; border: none; margin-bottom: 8px; box-shadow: none; }
+    .report-header { break-after: avoid; box-shadow: none; }
+    table { font-size: 11px; }
+    .section h2 { font-size: 18px; }
+    .section h3 { font-size: 15px; }
+  }
+  @media (max-width: 1024px) {
+    .sidebar { display: none; }
+    .container { padding: 16px; }
+    .section { box-shadow: none; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .data-chain { flex-direction: column; }
+    .chain-arrow { transform: rotate(90deg); }
+  }
+  @media (max-width: 640px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .report-header { padding: 24px 20px; }
+    .report-header h1 { font-size: 22px; }
+    .section { padding: 16px; }
+  }
+
+  /* ===== Executive Summary Tab Styles ===== */
+  .exec-tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid #e2e8f0; }
+  .exec-tab {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #718096;
+    cursor: pointer;
+    border: none;
+    background: #f7fafc;
+    border-radius: 8px 8px 0 0;
+    margin-right: 2px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .exec-tab:hover { color: #2b6cb0; background: #ebf8ff; }
+  .exec-tab.active { color: #fff; background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%); }
+  .exec-panel { display: none; padding: 24px 0 0; animation: fadeIn 0.3s ease; }
+  .exec-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .exec-highlight {
+    background: linear-gradient(135deg, #f0fff4, #ebf8ff);
+    border-left: 4px solid #38a169;
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 14px 0;
+    font-size: 13px;
+  }
+  .exec-highlight strong { color: #065f46; }
+  .exec-conclusion {
+    background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0 4px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .exec-conclusion h4 { color: #93c5fd; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px; }
+  .exec-metric-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 12px 0; }
+  .exec-metric {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+  .exec-metric .val { font-size: 22px; font-weight: 700; color: #1a365d; line-height: 1.2; }
+  .exec-metric .lbl { font-size: 11px; color: #718096; margin-top: 4px; }
+  .exec-jump-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #4299e1;
+    text-decoration: none;
+    border: 1px solid #bee3f8;
+    border-radius: 4px;
+    padding: 4px 10px;
+    margin: 2px 4px;
+    transition: all 0.15s;
+  }
+  .exec-jump-link:hover { background: #ebf8ff; border-color: #4299e1; }
+  .exec-source {
+    font-size: 10px;
+    color: #4299e1;
+    text-decoration: none;
+    margin-left: 3px;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .exec-source:hover { text-decoration: underline; color: #2b6cb0; }
+  .exec-source-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin: 10px 0 4px;
+    padding: 8px 14px;
+    background: #f7fafc;
+    border-radius: 6px;
+    font-size: 10px;
+    color: #718096;
+  }
+  .exec-source-row strong { color: #4a5568; }
+  .exec-big-num {
+    font-size: 36px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #1a365d, #2b6cb0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  @media (max-width: 768px) {
+    .exec-tabs { flex-wrap: wrap; }
+    .exec-tab { font-size: 11px; padding: 8px 12px; }
+  }
+
+</style>
+</head>
+<body>
+<!-- Sidebar Navigation -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">AI · 面料研发</div>
+    <div class="title">市场调研报告</div>
+    <div class="meta-info">2026-05-31<br>产品战略团队协作</div>
+  </div>
+  <div class="sidebar-nav" id="sidebarNav">
+    <a href="#s1"><span class="nav-num">1</span>Executive Summary</a>
+    <a href="#s2"><span class="nav-num">2</span>市场机会</a>
+    <a href="#s3"><span class="nav-num">3</span>需求验证</a>
+    <a href="#s4"><span class="nav-num">4</span>全价值视角</a>
+    <a href="#s5"><span class="nav-num">5</span>竞品分析</a>
+    <a href="#s6"><span class="nav-num">6</span>行业痛点</a>
+    <a href="#s7"><span class="nav-num">7</span>正凯优势</a>
+    <a href="#s8"><span class="nav-num">8</span>产品策略</a>
+    <a href="#s8-team"><span class="nav-num">8.5</span>团队配置</a>
+    <a href="#s9"><span class="nav-num">9</span>行动计划</a>
+    <a href="#s10"><span class="nav-num">10</span>数据来源</a>
+  </div>
+  <div class="sidebar-footer">
+    <span class="mvp-tag">&#x2605; MVP 需求AI定向研发</span>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- Header -->
+<div class="report-header">
+  <h1>AI辅助面料研发产品<br>市场调研报告</h1>
+  <div class="subtitle">市场规模 · 竞品全景 · 正凯集团数据资产 · 产品竞争力策略</div>
+  <div class="meta">
+    <div><strong>MVP 方向</strong>：需求 AI 定向研发</div>
+    <div>报告日期：2026-05-31 &nbsp;|&nbsp; 产品战略团队协作产出</div>
+  </div>
+</div>
+
+<!-- S1: 核心结论 -->
+<div class="section" id="s1">
+  <h2><span class="num">1</span> Executive Summary — 汇报总览</h2>
+
+  <!-- Tab Navigation -->
+  <div class="exec-tabs" id="execTabs">
+    <button class="exec-tab active" data-tab="tab-market">市场机会</button>
+    <button class="exec-tab" data-tab="tab-demand">需求验证 & 营收预估</button>
+    <button class="exec-tab" data-tab="tab-value">全价值视角</button>
+    <button class="exec-tab" data-tab="tab-compete">竞品分析</button>
+    <button class="exec-tab" data-tab="tab-strategy">正凯优势 & 产品策略</button>
+    <button class="exec-tab" data-tab="tab-team">团队配置</button>
+  </div>
+
+  <!-- ==================== TAB 1: 市场机会 ==================== -->
+  <div class="exec-panel active" id="tab-market">
+    <div class="exec-metric-row">
+      <div class="exec-metric">
+        <div class="val">291.6 亿<a href="https://www.stats.gov.cn/sj/zxfb/202509/t20250929_1961429.html" class="exec-source" target="_blank">[来源]</a></div>
+        <div class="lbl">TAM 纺织业年研发总投入</div>
+      </div>
+      <div class="exec-metric">
+        <div class="val">247.6 亿</div>
+        <div class="lbl">SAM 可服务市场（×84.9%普及率）<a href="https://mp.weixin.qq.com/s?__biz=MjM5Nzc0NDIxNA==&mid=2656697979&idx=1&sn=7006a4d8ede05d48d953be2131bd8c9e" class="exec-source" target="_blank">[来源]</a></div>
+      </div>
+      <div class="exec-metric">
+        <div class="val">21,172 家<a href="https://data.stats.gov.cn/" class="exec-source" target="_blank">[来源]</a></div>
+        <div class="lbl">规上纺织企业 · 均研发预算 138万/年</div>
+      </div>
+      <div class="exec-metric">
+        <div class="val">84.9%<a href="https://mp.weixin.qq.com/s?__biz=MjM5Nzc0NDIxNA==&mid=2656697979&idx=1&sn=7006a4d8ede05d48d953be2131bd8c9e" class="exec-source" target="_blank">[来源]</a></div>
+        <div class="lbl">数字化研发工具普及率（2025.9）</div>
+      </div>
+    </div>
+
+    <div class="exec-source-row">
+      <strong>数据来源：</strong>
+      <span>291.6亿 → <a href="https://www.stats.gov.cn/sj/zxfb/202509/t20250929_1961429.html" target="_blank">国家统计局《2024年全国科技经费投入统计公报》</a></span>
+      <span>21,172家 → <a href="https://data.stats.gov.cn/" target="_blank">国家统计局数据查询平台</a></span>
+      <span>84.9% → <a href="https://mp.weixin.qq.com/s?__biz=MjM5Nzc0NDIxNA==&mid=2656697979&idx=1&sn=7006a4d8ede05d48d953be2131bd8c9e" target="_blank">中国纺织报 · 工信部数字化研发工具普及率（2025.9）</a></span>
+    </div>
+
+    <table>
+      <tr><th>层级</th><th>定义</th><th>推算逻辑</th><th>规模</th><th>来源</th></tr>
+      <tr>
+        <td><strong>TAM</strong></td>
+        <td>总可及市场</td>
+        <td>中国纺织业 R&D 经费（国家统计局 2024 年公报）</td>
+        <td><strong>291.6 亿元/年</strong></td>
+        <td><a href="https://www.stats.gov.cn/sj/zxfb/202509/t20250929_1961429.html" target="_blank">国家统计局公报</a></td>
+      </tr>
+      <tr>
+        <td><strong>SAM</strong></td>
+        <td>可服务市场</td>
+        <td>TAM × 数字化研发设计工具普及率 84.9%（工信部 2025.9）</td>
+        <td><strong>≈ 247.6 亿元/年</strong></td>
+        <td><a href="https://mp.weixin.qq.com/s?__biz=MjM5Nzc0NDIxNA==&mid=2656697979&idx=1&sn=7006a4d8ede05d48d953be2131bd8c9e" target="_blank">中国纺织报</a></td>
+      </tr>
+      <tr>
+        <td><strong>SOM</strong></td>
+        <td>可获取市场</td>
+        <td>模型 B 人力成本替代法：212-423 家企业 × 12-15 万/年</td>
+        <td><strong>2,500-6,300 万元/年</strong>（第3年）</td>
+        <td><a href="#s3-revenue-model">详见第3章 营收模型</a></td>
+      </tr>
+    </table>
+
+    <div class="exec-highlight">
+      <strong>核心判断</strong>：纺织业数字化研发工具渗透率已达 84.9%——基础设施已就绪，AI 工具具备即刻落地的条件。<a href="https://cnga.org.cn/cngahtml/xwzx/zcjd/20250623/1235.html" target="_blank">"十五五"规划</a>明确 2027 年关键业务数字化率 &gt;70%，政策窗口期正好 2 年。<a href="#s3-policy" class="exec-source">[详见第3章 政策分析]</a>
+    </div>
+
+    <div class="exec-conclusion">
+      <h4>结论</h4>
+      市场空间足够大（TAM 291.6 亿 → SAM 247.6 亿），基础设施已成熟（84.9% 数字化工具普及率），政策窗口正在打开（2027 年目标）。<strong style="color:#93c5fd;">现在入场是最佳时机。</strong>
+      <div style="margin-top:8px;font-size:10px;opacity:0.7;">数据来源：<a href="https://www.stats.gov.cn/sj/zxfb/202509/t20250929_1961429.html" target="_blank" style="color:#93c5fd;">国家统计局</a> · <a href="https://mp.weixin.qq.com/s?__biz=MjM5Nzc0NDIxNA==&mid=2656697979&idx=1&sn=7006a4d8ede05d48d953be2131bd8c9e" target="_blank" style="color:#93c5fd;">工信部/中国纺织报</a> · <a href="https://cnga.org.cn/cngahtml/xwzx/zcjd/20250623/1235.html" target="_blank" style="color:#93c5fd;">中国服装协会</a></div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <a href="#s2" class="exec-jump-link">查看完整市场分析 →</a>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 2: 需求验证 & 营收预估 ==================== -->
+  <div class="exec-panel" id="tab-demand">
+    <div class="exec-metric-row">
+      <div class="exec-metric">
+        <div class="val">三重验证<a href="#s3" class="exec-source">[详见第3章]</a></div>
+        <div class="lbl">行业调研 + 国家政策 + 竞品动作</div>
+      </div>
+      <div class="exec-metric">
+        <div class="val">1.2-2.5 亿</div>
+        <div class="lbl">模型A：研发预算替代法（市场空间上限）<a href="#s3-revenue-model" class="exec-source">[营收模型]</a></div>
+      </div>
+      <div class="exec-metric">
+        <div class="val">2,500-6,300 万</div>
+        <div class="lbl">模型B：人力成本替代法（保守落地目标）<a href="#s3-revenue-model" class="exec-source">[营收模型]</a></div>
+      </div>
+      <div class="exec-metric">
+        <div class="val">200-400 家<a href="#s3" class="exec-source">[详见第3章]</a></div>
+        <div class="lbl">目标客户数 · 4大产业集群集中分布</div>
+      </div>
+    </div>
+
+    <div class="exec-source-row">
+      <strong>数据来源：</strong>
+      <span>行业痛点 → <a href="https://mp.weixin.qq.com/s?__biz=MzA3ODgyMDM0MQ==&mid=2653255279&idx=3&sn=9670036d73f2f56151995b6e741335b3" target="_blank">《纺织行业数字化转型专项交流》（2026.5）</a></span>
+      <span>政策驱动 → <a href="https://cnga.org.cn/cngahtml/xwzx/zcjd/20250623/1235.html" target="_blank">工信部《纺织工业数字化转型实施方案》（2025.6）</a></span>
+      <span>竞品验证 → <a href="#s5">详见第5章 竞品分析</a></span>
+      <span>营收模型 → <a href="#s3-revenue-model">详见第3章 营收预估模型</a></span>
+    </div>
+
+    <table>
+      <tr><th>验证维度</th><th>关键信号</th><th>结论</th><th>来源</th></tr>
+      <tr><td>行业痛点</td><td>打样成本高/周期长、信息偏差、缺乏数字化工具（2026.5 专项交流）</td><td style="color:#065f46;font-weight:600">需求真实且紧迫</td><td><a href="https://mp.weixin.qq.com/s?__biz=MzA3ODgyMDM0MQ==&mid=2653255279&idx=3&sn=9670036d73f2f56151995b6e741335b3" target="_blank">专项交流</a></td></tr>
+      <tr><td>政策驱动</td><td>工信部明确 6 项面料研发专项技术（2025.6）</td><td style="color:#065f46;font-weight:600">国家级背书</td><td><a href="https://cnga.org.cn/cngahtml/xwzx/zcjd/20250623/1235.html" target="_blank">工信部文件</a></td></tr>
+      <tr><td>竞品验证</td><td>13 家竞品在面料数字化各环节已有布局和融资</td><td style="color:#b7791f;font-weight:600">赛道已热但未饱和</td><td><a href="#s5">详见第5章</a></td></tr>
+    </table>
+
+    <h4 style="margin-top:16px;">营收预估：双模型交叉验证<a href="#s3-revenue-model" class="exec-source">[详见第3章 完整推算]</a></h4>
+    <table>
+      <tr><th></th><th>模型 A：研发预算替代</th><th>模型 B：人力成本替代</th><th>来源</th></tr>
+      <tr><td>逻辑</td><td>替代数字化研发预算的 0.5%-1%</td><td>替代 1-2 名研发人员年薪的 50%</td><td rowspan="3" style="vertical-align:middle;font-size:11px"><a href="#s3-revenue-model">详见第3章<br>营收预估模型</a></td></tr>
+      <tr><td>关键参数</td><td>247.6 亿 × 0.5%-1%<br>定价 8-20 万/年/企业</td><td>21,172 家 × 1%-2% ≈ 212-423 家<br>定价 12-15 万/年（年薪 50%）</td></tr>
+      <tr style="background:#e8f5e9;"><td><strong>年营收预估</strong></td><td><strong>1.2 - 2.5 亿元</strong>（上限）</td><td><strong>2,500 - 6,300 万元</strong>（保守下限）</td></tr>
+    </table>
+
+    <div class="exec-highlight">
+      <strong>推荐采用模型 B 保守估值</strong>：第 3 年目标 2,500-6,000 万元，对应 200-400 家客户，每家年均 12-15 万元。模型 A 为市场空间上限参考。<a href="#s3-revenue-model" class="exec-source">[详见第3章 营收模型详解]</a>
+    </div>
+
+    <div class="exec-conclusion">
+      <h4>结论</h4>
+      需求经三重交叉验证为真实需求。纺织业年研发投入 291.6 亿 + 数字化渗透仅需 1% 即可实现 2-3 亿可替代成本。以人力成本替代法定价（12-15 万/年），客户 ROI 确定性高（投入 12 万，节省 24-30 万/人力成本），但是产品的价值和为企业带来的营收远远不止这些——<a href="javascript:void(0)" onclick="switchExecTab(2)" style="color:#93c5fd;text-decoration:underline;">详见全价值视角</a>。
+      <div style="margin-top:8px;font-size:10px;opacity:0.7;">数据来源：<a href="https://mp.weixin.qq.com/s?__biz=MzA3ODgyMDM0MQ==&mid=2653255279&idx=3&sn=9670036d73f2f56151995b6e741335b3" target="_blank" style="color:#93c5fd;">行业专项交流（2026.5）</a> · <a href="https://cnga.org.cn/cngahtml/xwzx/zcjd/20250623/1235.html" target="_blank" style="color:#93c5fd;">工信部文件（2025.6）</a> · <a href="https://www.stats.gov.cn/sj/zxfb/202509/t20250929_1961429.html" target="_blank" style="color:#93c5fd;">国家统计局</a></div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <a href="#s3" class="exec-jump-link">查看完整需求验证 →</a>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 3: 全价值视角 ==================== -->
+  <div class="exec-panel" id="tab-value">
+    <p style="font-size:14px;color:#4a5568;margin-bottom:14px;">如果只看"替代研发经费中的软件工具支出"，市场盘子约 10-20 亿/年<a href="#s2" class="exec-source">[详见第2章]</a>。但真实价值体现在<strong>三个递进层次</strong>：</p>
+
+    <table>
+      <tr><th style="width:60px">层级</th><th style="width:160px">价值类型</th><th>价值描述</th><th style="width:130px">可量化维度</th><th style="width:100px">来源</th></tr>
+      <tr style="background:#F0F4FF">
+        <td><strong>L1</strong></td>
+        <td><strong>直接替代价值</strong></td>
+        <td>替代传统研发中的软件、测试、打样支出</td>
+        <td>SAM ≈ 247.6 亿元</td>
+        <td><a href="https://www.stats.gov.cn/sj/zxfb/202509/t20250929_1961429.html" target="_blank">国家统计局</a></td>
+      </tr>
+      <tr style="background:#fef3c7">
+        <td><strong>L2</strong></td>
+        <td><strong>效率加速价值</strong></td>
+        <td>缩短研发周期 → 更快响应客户 → 多接订单、少丢客户<br><span style="font-size:10px;color:#718096;">实证：柯桥产业大脑使订单交付周期缩短 50%；苏豪 AI+3D 设计采用率近 30%，促成 1.4 亿销售；即墨数字化生产效率提升 20%+</span></td>
+        <td>影响数千亿营收规模<br><span style="font-size:10px;color:#718096;">天门服装电商 2024 年销量 6 亿件（+25%）</span></td>
+        <td><a href="#s6">详见第6章 行业痛点</a><br><a href="http://www.kq.gov.cn/art/2025/9/22/art_1488946_59262328.html" target="_blank" style="font-size:10px;">柯桥产业大脑</a> · <a href="https://caijing.chinadaily.com.cn/a/202512/15/WS693fb2c0a310942cc4996ae9.html" target="_blank" style="font-size:10px;">苏豪数字化</a></td>
+      </tr>
+      <tr style="background:#d1fae5">
+        <td><strong>L3</strong></td>
+        <td><strong>创新溢价价值</strong></td>
+        <td>AI 驱动新面料创新 → 差异化产品 → 超额利润<br><span style="font-size:10px;color:#718096;">实证：罗曼罗兰面料均价为同行 6 倍（14.2 美元/米），供货 LVMH/爱马仕；大钇纺织醋酸面料溢价 3-10 倍；康杰服饰高端产品溢价 30%</span></td>
+        <td>利润率结构性提升<br><span style="font-size:10px;color:#718096;">罗曼罗兰利润同比 +25%-30%</span></td>
+        <td><a href="#s4">详见第4章 价值分析</a><br><a href="https://www.sohu.com/a/941008712_261465" target="_blank" style="font-size:10px;">罗曼罗兰案例</a> · <a href="https://www.ctn1986.com/index.php?c=content&a=show&id=121307" target="_blank" style="font-size:10px;">大钇纺织案例</a></td>
+      </tr>
+    </table>
+
+    <div class="exec-highlight">
+      <strong>关键洞察</strong>：L1 是"门票钱"（省成本），L2 是"增长引擎"（多赚钱），L3 是"护城河"（超额利润）。<strong>产品的真正价值不在于替代软件预算，而在于打通"需求→研发→订单"的信息黑洞</strong>，让面料企业从"来样加工"升级为"方案驱动"的利润模式。<a href="#s4" class="exec-source">[详见第4章 全价值分析]</a>
+    </div>
+
+    <div class="exec-highlight" style="background:#e8f0fe;border-left:3px solid #4299e1;">
+      <strong>飞轮效应 — 双重价值</strong>：<strong>短期</strong>看，产品直接驱动营收增长（L1+L2 落地即可见效）；<strong>长期</strong>看，每一次研发交互都在积累独占性行业数据——面料性能参数、工艺路径、客户偏好、创新方向。这些数据持续反哺 AI 模型，形成"更多用户 → 更多数据 → 更准模型 → 更难替代"的正向飞轮。<strong>竞争对手即使用同样的算法，也无法复现数年积累的行业 Know-how 数据</strong>，先发优势随时间指数级放大。当前行业数据壁垒窗口期正在收窄——致景科技已接入近万家企业 70 万台织机，柯桥"AI布"已积累 30 余万条面料数据。<a href="#s4" class="exec-source">[详见第4章 飞轮效应]</a>
+    </div>
+
+    <div class="exec-conclusion">
+      <h4>结论</h4>
+      从 L1 到 L3，价值量指数级放大。AI 辅助面料研发的核心价值<strong style="color:#93c5fd;">不是 SaaS 订阅费，而是成为面料产业的数字化增长引擎</strong>——这正是正凯集团从"面料生产商"升级为"产业科技平台"的战略杠杆。更关键的是，产品具备<strong style="color:#93c5fd;">飞轮效应</strong>：短期兑现营收增长，长期通过数据积累构筑竞争对手难以复制的护城河。
+      <div style="margin-top:8px;font-size:10px;opacity:0.7;">分析依据：<a href="#s4" style="color:#93c5fd;">第4章 全价值视角</a> · <a href="#s6" style="color:#93c5fd;">第6章 行业痛点</a> · <a href="https://www.stats.gov.cn/sj/zxfb/202509/t20250929_1961429.html" target="_blank" style="color:#93c5fd;">国家统计局 R&D 数据</a></div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <a href="#s4" class="exec-jump-link">查看完整价值分析 →</a>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 4: 竞品分析 ==================== -->
+  <div class="exec-panel" id="tab-compete">
+    <div class="exec-metric-row">
+      <div class="exec-metric">
+        <div class="val">13 家<a href="#s5" class="exec-source">[详见第5章]</a></div>
+        <div class="lbl">竞品覆盖 · 四梯队</div>
+      </div>
+      <div class="exec-metric">
+        <div class="val">0</div>
+        <div class="lbl">覆盖"需求→方案→工艺"全链路竞品<a href="#s5" class="exec-source">[竞品热力图]</a></div>
+      </div>
+      <div class="exec-metric">
+        <div class="val">品类空白</div>
+        <div class="lbl">①需求理解 ②方案设计 ③工艺制定<a href="#s5" class="exec-source">[详见第5章]</a></div>
+      </div>
+      <div class="exec-metric">
+        <div class="val">~1亿美元</div>
+        <div class="lbl">Style3D PreB+ 融资 · 赛道已验证<a href="#s5" class="exec-source">[竞品详情]</a></div>
+      </div>
+    </div>
+
+    <div class="exec-source-row">
+      <strong>数据来源：</strong>
+      <span>竞品全景 → <a href="#s5">第5章 竞品分析（13家四梯队详析）</a></span>
+      <span>热力图 → 基于竞品官网、产品文档、公开报道综合整理</span>
+      <span>Style3D融资 → 公开融资信息，详见竞品详情</span>
+      <span>行业痛点验证 → <a href="#s6">第6章 行业痛点</a></span>
+    </div>
+
+    <!-- Embedded heatmap SVG -->
+    <div class="gap-map-wrap">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 530" style="max-width:920px;width:100%;font-family:'PingFang SC','Microsoft YaHei',sans-serif">
+      <defs>
+        <linearGradient id="gapBg2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#fef2f2"/>
+          <stop offset="100%" stop-color="#fff5f5"/>
+        </linearGradient>
+        <linearGradient id="ourBg2" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#065f46"/>
+          <stop offset="100%" stop-color="#059669"/>
+        </linearGradient>
+        <filter id="shadow2" x="-4%" y="-4%" width="108%" height="108%">
+          <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.08"/>
+        </filter>
+      </defs>
+      <rect width="920" height="530" rx="12" fill="#fafaf9"/>
+      <text x="460" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#1a365d">面料研发全价值链 · 竞品覆盖热力图</text>
+      <text x="460" y="48" text-anchor="middle" font-size="11" fill="#718096">色块越深 = 覆盖越完整 · 空白/浅色 = 竞品缺位或薄弱</text>
+
+      <g font-size="11" font-weight="600" fill="#1a365d" text-anchor="middle">
+        <text x="212" y="78">① 需求理解</text>
+        <text x="317" y="78">② 方案设计</text>
+        <text x="422" y="78">③ 工艺制定</text>
+        <text x="527" y="78">④ 打样验证</text>
+        <text x="632" y="78">⑤ 测试分析</text>
+        <text x="737" y="78">⑥ 成本优化</text>
+        <text x="842" y="78">⑦ 量产交付</text>
+      </g>
+      <g font-size="9" fill="#a0aec0" text-anchor="middle">
+        <text x="212" y="92">需求解析·规格化</text>
+        <text x="317" y="92">配方·工艺·方案</text>
+        <text x="422" y="92">工艺单·参数表</text>
+        <text x="527" y="92">打样·试产·迭代</text>
+        <text x="632" y="92">质检·性能测试</text>
+        <text x="737" y="92">原料·加工·能耗</text>
+        <text x="842" y="92">MES·排产·交付</text>
+      </g>
+
+      <g stroke="#e2e8f0" stroke-width="0.5">
+        <line x1="265" y1="68" x2="265" y2="446"/>
+        <line x1="370" y1="68" x2="370" y2="446"/>
+        <line x1="475" y1="68" x2="475" y2="446"/>
+        <line x1="580" y1="68" x2="580" y2="446"/>
+        <line x1="685" y1="68" x2="685" y2="446"/>
+        <line x1="790" y1="68" x2="790" y2="446"/>
+      </g>
+
+      <!-- ROW 0: Our product -->
+      <rect x="158" y="102" width="738" height="48" rx="8" fill="url(#ourBg2)" filter="url(#shadow2)"/>
+      <text x="50" y="130" font-size="12" font-weight="700" fill="#065f46">我们的产品</text>
+      <text x="112" y="130" font-size="9" fill="#059669">★ MVP</text>
+      <g font-size="11" font-weight="600" fill="white" text-anchor="middle">
+        <text x="212" y="130">✅ 核心</text>
+        <text x="317" y="130">✅ 核心</text>
+        <text x="422" y="130">✅ 核心</text>
+        <text x="527" y="130" opacity="0.35" font-size="10">—</text>
+        <text x="632" y="130" opacity="0.35" font-size="10">—</text>
+        <text x="737" y="130" opacity="0.35" font-size="10">—</text>
+        <text x="842" y="130" opacity="0.35" font-size="10">—</text>
+      </g>
+
+      <!-- Gap zone highlight -->
+      <rect x="158" y="160" width="315" height="272" rx="6" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="8,4"/>
+      <text x="315" y="176" text-anchor="middle" font-size="10" font-weight="700" fill="#dc2626">🔴 核心空白地带 — 无竞品覆盖</text>
+
+      <!-- ROW 1: Style3D -->
+      <g><text x="50" y="206" font-size="11" font-weight="600" fill="#1a365d">Style3D</text><text x="112" y="206" font-size="8" fill="#718096">T1</text></g>
+      <rect x="160" y="190" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="265" y="190" width="103" height="32" rx="4" fill="#fff5f5"/>
+      <text x="317" y="210" text-anchor="middle" font-size="9" fill="#a0aec0">3D仿真打样</text>
+      <rect x="370" y="190" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="475" y="190" width="103" height="32" rx="4" fill="#dbeafe"/>
+      <text x="527" y="210" text-anchor="middle" font-size="9" fill="#2563eb">3D仿真</text>
+      <rect x="580" y="190" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="685" y="190" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="790" y="190" width="103" height="32" rx="4" fill="#fee2e2"/>
+
+      <!-- ROW 2: 百布 -->
+      <g><text x="50" y="248" font-size="11" font-weight="600" fill="#1a365d">百布</text><text x="112" y="248" font-size="8" fill="#718096">T1</text></g>
+      <rect x="160" y="232" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="265" y="232" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="370" y="232" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="475" y="232" width="103" height="32" rx="4" fill="#fef3c7"/>
+      <text x="527" y="252" text-anchor="middle" font-size="9" fill="#92400e">AI识别找布</text>
+      <rect x="580" y="232" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="685" y="232" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="790" y="232" width="103" height="32" rx="4" fill="#fff5f5"/>
+      <text x="842" y="252" text-anchor="middle" font-size="9" fill="#a0aec0">交易平台</text>
+
+      <!-- ROW 3: AI布 -->
+      <g><text x="50" y="290" font-size="11" font-weight="600" fill="#1a365d">AI布</text><text x="112" y="290" font-size="8" fill="#718096">T1</text></g>
+      <rect x="160" y="274" width="103" height="32" rx="4" fill="#fff5f5"/>
+      <text x="212" y="294" text-anchor="middle" font-size="9" fill="#a0aec0">花型生成</text>
+      <rect x="265" y="274" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="370" y="274" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="475" y="274" width="103" height="32" rx="4" fill="#fef3c7"/>
+      <text x="527" y="294" text-anchor="middle" font-size="9" fill="#92400e">以图搜布</text>
+      <rect x="580" y="274" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="685" y="274" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="790" y="274" width="103" height="32" rx="4" fill="#fee2e2"/>
+
+      <!-- ROW 4: 环思智慧 -->
+      <g><text x="50" y="332" font-size="11" font-weight="600" fill="#1a365d">环思智慧</text><text x="112" y="332" font-size="8" fill="#718096">T2</text></g>
+      <rect x="160" y="316" width="103" height="32" rx="4" fill="#fff5f5"/>
+      <text x="212" y="336" text-anchor="middle" font-size="9" fill="#a0aec0">基础表单</text>
+      <rect x="265" y="316" width="103" height="32" rx="4" fill="#fff5f5"/>
+      <text x="317" y="336" text-anchor="middle" font-size="9" fill="#a0aec0">基础配方</text>
+      <rect x="370" y="316" width="103" height="32" rx="4" fill="#fef3c7"/>
+      <text x="422" y="336" text-anchor="middle" font-size="9" fill="#92400e">工艺管理</text>
+      <rect x="475" y="316" width="103" height="32" rx="4" fill="#fed7aa"/>
+      <text x="527" y="336" text-anchor="middle" font-size="9" fill="#92400e">打样管理</text>
+      <rect x="580" y="316" width="103" height="32" rx="4" fill="#fef3c7"/>
+      <text x="632" y="336" text-anchor="middle" font-size="9" fill="#92400e">质量管理</text>
+      <rect x="685" y="316" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="790" y="316" width="103" height="32" rx="4" fill="#fed7aa"/>
+      <text x="842" y="336" text-anchor="middle" font-size="9" fill="#92400e">ERP排产</text>
+
+      <!-- ROW 5: 花型AI工具 -->
+      <g><text x="50" y="374" font-size="11" font-weight="600" fill="#1a365d">花型AI工具</text><text x="112" y="374" font-size="8" fill="#718096">T1</text></g>
+      <rect x="160" y="358" width="103" height="32" rx="4" fill="#fef3c7"/>
+      <text x="212" y="378" text-anchor="middle" font-size="9" fill="#92400e">花型/图案</text>
+      <rect x="265" y="358" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="370" y="358" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="475" y="358" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="580" y="358" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="685" y="358" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="790" y="358" width="103" height="32" rx="4" fill="#fee2e2"/>
+
+      <!-- ROW 6: 3D设计软件 -->
+      <g><text x="50" y="416" font-size="11" font-weight="600" fill="#1a365d">3D设计软件</text><text x="112" y="416" font-size="8" fill="#718096">T3</text></g>
+      <rect x="160" y="400" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="265" y="400" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="370" y="400" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="475" y="400" width="103" height="32" rx="4" fill="#dbeafe"/>
+      <text x="527" y="420" text-anchor="middle" font-size="9" fill="#2563eb">3D设计仿真</text>
+      <rect x="580" y="400" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="685" y="400" width="103" height="32" rx="4" fill="#fee2e2"/>
+      <rect x="790" y="400" width="103" height="32" rx="4" fill="#fee2e2"/>
+
+      <!-- Legend -->
+      <g font-size="9" fill="#718096">
+        <rect x="160" y="452" width="14" height="14" rx="3" fill="#fee2e2"/>
+        <text x="178" y="463">空白</text>
+        <rect x="210" y="452" width="14" height="14" rx="3" fill="#fff5f5"/>
+        <text x="228" y="463">轻薄</text>
+        <rect x="260" y="452" width="14" height="14" rx="3" fill="#fef3c7"/>
+        <text x="278" y="463">薄弱</text>
+        <rect x="310" y="452" width="14" height="14" rx="3" fill="#fed7aa"/>
+        <text x="328" y="463">部分</text>
+        <rect x="360" y="452" width="14" height="14" rx="3" fill="#dbeafe"/>
+        <text x="378" y="463">完整</text>
+        <rect x="420" y="452" width="14" height="14" rx="3" fill="url(#ourBg2)"/>
+        <text x="438" y="463">我们 (MVP)</text>
+        <rect x="530" y="450" width="50" height="18" rx="4" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <text x="586" y="463">核心空白</text>
+      </g>
+
+      <!-- Bottom insight bar -->
+      <rect x="20" y="476" width="880" height="36" rx="4" fill="#fef2f2"/>
+      <text x="460" y="498" text-anchor="middle" font-size="10" font-weight="600" fill="#dc2626">结论：环节①②③（需求理解→方案设计→工艺制定）为全竞品矩阵的"真空地带"，不存在任何有效竞争——这是我们的品类定义窗口</text>
+    </svg>
+    </div>
+
+    <div class="exec-conclusion">
+      <h4>结论</h4>
+      <strong style="color:#93c5fd;">全竞品矩阵中，没有一个产品覆盖"需求理解→方案设计→工艺制定"这三个核心环节。</strong>现有竞品集中在打样仿真（④）和交易平台（⑦），价值链最前端的需求-方案-工艺环节为绝对空白。这是一次<strong style="color:#93c5fd;">品类定义级别的机会</strong>——谁先占据这三个环节，谁就定义了"AI 面料研发"这个品类。
+      <div style="margin-top:8px;font-size:10px;opacity:0.7;">分析依据：<a href="#s5" style="color:#93c5fd;">第5章 竞品全景分析</a> · <a href="#s6" style="color:#93c5fd;">第6章 行业痛点</a> · 竞品热力图（基于公开信息综合整理）</div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <a href="#s5" class="exec-jump-link">查看完整竞品分析 →</a>
+      <a href="#s6" class="exec-jump-link">查看行业痛点 →</a>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 5: 正凯优势 & 产品策略 ==================== -->
+  <div class="exec-panel" id="tab-strategy">
+    <div class="exec-metric-row">
+      <div class="exec-metric">
+        <div class="val">386.69 亿<a href="https://www.zhink.cc/index/news/detail.html?id=1960930202750951426" class="exec-source" target="_blank">[来源]</a></div>
+        <div class="lbl">正凯 2024 年营收 · 民企 500 强 #330</div>
+      </div>
+      <div class="exec-metric">
+        <div class="val">全产业链<a href="#s7" class="exec-source">[详见第7章]</a></div>
+        <div class="lbl">纤维→纱线→面料→品牌 全链路覆盖</div>
+      </div>
+      <div class="exec-metric">
+        <div class="val">20,982 条</div>
+        <div class="lbl">面料工艺数据</div>
+      </div>
+      <div class="exec-metric">
+        <div class="val">3 个月<a href="#s9" class="exec-source">[详见第9章]</a></div>
+        <div class="lbl">MVP 周期 · P0→P1 6个月创新引擎</div>
+      </div>
+    </div>
+
+    <div class="exec-source-row">
+      <strong>数据来源：</strong>
+      <span>386.69亿 → <a href="https://www.zhink.cc/index/news/detail.html?id=1960930202750951426" target="_blank">2025中国民营企业500强榜单（正凯集团）</a></span>
+      <span>10.5万条/97大模型 → 正凯内部数字化数据，<a href="#s7">详见第7章</a></span>
+      <span>产品策略 → <a href="#s8">第8章 产品策略</a> · <a href="#s9">第9章 行动计划</a></span>
+    </div>
+
+    <h4>正凯核心优势<a href="#s7" class="exec-source">[详见第7章 完整分析]</a></h4>
+    <table>
+      <tr><th>#</th><th>壁垒</th><th>为什么难以复制</th><th>来源</th></tr>
+      <tr><td>1</td><td><strong>数据壁垒</strong></td><td>30 年全链路工艺数据（纤维→纱线→面料），精确到百分比级别的成分配比，10.5 万标准化物料。高度私有化，外部难以获取</td><td><a href="#s7">第7章 · 正凯数据资产</a></td></tr>
+      <tr><td>2</td><td><strong>场景壁垒</strong></td><td>作为 Mango/Bershka/Ann Taylor 等国际品牌战略供货商，每天处理大量品牌商需求——AI 模型训练和验证的理想场景</td><td><a href="#s7">第7章 · 正凯业务场景</a></td></tr>
+      <tr><td>3</td><td><strong>行业 Know-How</strong></td><td>面料研发涉及纤维学、染整化学、织造工艺等多学科交叉，纯 AI 公司难以快速理解</td><td><a href="#s7">第7章 · 行业壁垒分析</a></td></tr>
+    </table>
+
+    <h4 style="margin-top:16px;">产品演进路径<a href="#s8" class="exec-source">[详见第8章]</a></h4>
+    <div class="flow-steps">
+      <div class="flow-step" style="background:#d1fae5;border-color:#38a169">
+        <div class="step-num" style="background:#065f46">P0</div>
+        <strong>Phase 1 — 需求AI研发分析师</strong>
+        <span style="font-size:11px;color:#065f46">MVP · 3 个月<br>需求→方案→工艺单</span>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">P1</div>
+        <strong>Phase 2 — AI面料创新引擎</strong>
+        <span style="font-size:11px">6 个月<br>+创新研发+行业平台</span>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">P2</div>
+        <strong>Phase 3 — AI面料全链路方案师</strong>
+        <span style="font-size:11px">12 个月<br>+来样逆向工程</span>
+      </div>
+    </div>
+
+    <h4 style="margin-top:16px;">MVP 核心功能（Phase 1）<a href="#s8" class="exec-source">[详见第8章 产品策略]</a></h4>
+    <table>
+      <tr><th>功能</th><th>能力</th><th>技术</th></tr>
+      <tr><td>需求智能解析</td><td>品牌商需求文档/语音 → 结构化需求规格</td><td>LLM + NLP</td></tr>
+      <tr><td>方案智能推荐</td><td>需求规格 → 最优纤维配方+纱线工艺+织造参数</td><td>RAG + 推荐引擎</td></tr>
+      <tr><td>工艺单自动生成</td><td>方案确认 → 完整工艺单（工序参数+质检+成本）</td><td>模板引擎</td></tr>
+      <tr><td>质量预评估</td><td>方案 → 预估色牢度/缩水率/强力等关键指标</td><td>回归预测模型</td></tr>
+      <tr><td>成本估算</td><td>实时计算原料+加工+能耗，与目标价对比</td><td>成本模型</td></tr>
+      <tr><td>研发知识库</td><td>所有方案/工艺/反馈自动沉淀，支持搜索复用</td><td>向量数据库</td></tr>
+    </table>
+
+    <div class="exec-conclusion">
+      <h4>结论</h4>
+      正凯具备<strong style="color:#93c5fd;">数据+场景+Know-How 三重壁垒</strong>，且数字化基础设施（97 大模型 AI 平台 + 70人 IT 团队）远超行业平均。MVP 只需 3 个月即可在正凯内部验证，<strong style="color:#93c5fd;">P1 6 个月即进入"创新引擎"阶段</strong>——这是大多数纯 AI 创业公司无法复制的速度优势。
+      <div style="margin-top:8px;font-size:10px;opacity:0.7;">分析依据：<a href="#s7" style="color:#93c5fd;">第7章 正凯优势详解</a> · <a href="#s8" style="color:#93c5fd;">第8章 产品策略</a> · <a href="#s9" style="color:#93c5fd;">第9章 行动计划</a> · <a href="https://www.zhink.cc/index/news/detail.html?id=1960930202750951426" target="_blank" style="color:#93c5fd;">2025民企500强榜单</a></div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <a href="#s7" class="exec-jump-link">查看正凯完整优势 →</a>
+      <a href="#s8" class="exec-jump-link">查看产品策略详情 →</a>
+      <a href="#s9" class="exec-jump-link">查看行动计划 →</a>
+    </div>
+  </div>
+
+<!-- ==================== TAB 6: 团队配置 ==================== -->
+<div class="exec-panel" id="tab-team">
+  <div class="exec-metric-row">
+    <div class="exec-metric">
+      <div class="val">8-12 人<a href="#s8-team" class="exec-source">[详见第8.5章]</a></div>
+      <div class="lbl">Phase 1 · MVP 阶段团队</div>
+    </div>
+    <div class="exec-metric">
+      <div class="val">15-22 人</div>
+      <div class="lbl">Phase 2 · 产品化阶段团队</div>
+    </div>
+    <div class="exec-metric">
+      <div class="val">350-500 万/年</div>
+      <div class="lbl">Phase 1 人力成本估算</div>
+    </div>
+  </div>
+
+  <div class="exec-source-row">
+    <strong>团队成本</strong>：Phase 1 约 350-500 万/年（杭州/绍兴薪酬） · Phase 2 约 600-900 万/年 · 纺织工程顾问建议正凯内部借调
+  </div>
+
+  <h4 style="margin-top:16px;">核心角色（Phase 1）<a href="#s8-team" class="exec-source">[详见第8.5章 完整配置]</a></h4>
+  <table>
+    <tr><th style="width:50px">优先级</th><th>角色</th><th style="width:40px">人数</th><th>一句话要求</th></tr>
+    <tr>
+      <td style="text-align:center;color:#e53e3e;font-weight:bold;">P0</td>
+      <td>产品经理（面料方向）</td><td>1</td>
+      <td>3 年以上面料研发经验，懂打样/配色/工艺单流程</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;color:#e53e3e;font-weight:bold;">P0</td>
+      <td>技术负责人（全栈偏 AI）</td><td>1</td>
+      <td>5 年+工程经验，熟悉 LLM/RAG/Agent 架构</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;color:#e53e3e;font-weight:bold;">P0</td>
+      <td>纺织工程顾问（兼职/借调）</td><td>1-2</td>
+      <td>10 年+面料研发，从正凯纺织研发部借调</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;color:#d97706;font-weight:bold;">P1</td>
+      <td>后端 ×2 + 前端 ×1 + AI 工程师 ×1</td><td>4</td>
+      <td>Python/RAG/React，有大模型落地经验</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;color:#3182ce;font-weight:bold;">P2</td>
+      <td>UI/UX + 客户成功 + 产品经理（AI 方向）</td><td>3</td>
+      <td>B2B 工具设计经验 + 纺织行业人脉</td>
+    </tr>
+  </table>
+
+  <h4 style="margin-top:16px;">组织架构<a href="#s8-team" class="exec-source">[详见第8.5章]</a></h4>
+  <div style="font-size:11px;line-height:1.7;background:#f7fafc;padding:12px 16px;border-radius:6px;font-family:monospace;white-space:pre;">产品负责人（向集团 VP 汇报）
+├── <strong>产品组（3-4人）</strong>：面料PM + AI PM + UI/UX
+├── <strong>工程组（5-8人）</strong>：技术负责人 + 后端×3 + 前端×2 + AI×2
+├── <strong>行业专家组（1-2人）</strong>：纺织顾问（借调→全职）
+├── <strong>数据组（1人，Phase 2）</strong>：数据工程师
+├── <strong>商务与客户成功（2-4人，Phase 2）</strong>
+└── <strong>QA（1人，Phase 2）</strong></div>
+
+  <div class="exec-highlight" style="margin-top:12px;">
+    <strong>核心原则</strong>：产品横跨<strong>纺织工程 + AI 技术 + 企业服务</strong>三个领域。解决方案是<strong>"双产品经理制"</strong>——面料方向 + AI 方向互补，而非试图找一个人覆盖两端。纺织工程顾问建议从正凯纺织研发部借调资深工程师（每周 2-3 天）。<a href="#s8-team" class="exec-source">[详见第8.5章 完整人员配置]</a>
+  </div>
+
+  <div class="exec-conclusion">
+    <h4>结论</h4>
+    团队配置的关键不是"人越多越好"，而是<strong style="color:#93c5fd;">确保纺织工程 + AI 技术 + 企业服务三个领域的知识在同一团队内高效融合</strong>。Phase 1 以 8-12 人精干团队跑通 MVP，利用正凯内部纺织专家借调降低早期成本；Phase 2 产品化阶段扩展至 15-22 人，补强 CV、数据工程和商务能力。
+    <div style="margin-top:8px;font-size:10px;opacity:0.7;">分析依据：<a href="#s8-team" style="color:#93c5fd;">第8.5章 团队与人员配置建议</a> · <a href="#s8" style="color:#93c5fd;">第8章 产品策略</a> · <a href="#s9" style="color:#93c5fd;">第9章 行动计划</a></div>
+  </div>
+
+  <div style="margin-top:12px;">
+    <a href="#s8-team" class="exec-jump-link">查看完整团队配置 →</a>
+  </div>
+</div>
+
+</div>
+
+<!-- S2: TAM/SAM/SOM -->
+<div class="section" id="s2">
+  <h2><span class="num">2</span> 市场机会 — TAM/SAM/SOM 三层拆解</h2>
+
+  <p>回答领导第一个问题：这个市场有多大？现在是不是好时机？<br>以下采用 TAM → SAM → SOM 三层递进拆解，每一层基于可验证的官方数据。</p>
+
+  <h3>TAM — 总可及市场（Total Addressable Market）</h3>
+  <div class="callout">
+    <strong>定义</strong>：中国纺织业每年投入的研发总经费（含人力、材料、设备、外部服务），代表理论上的市场天花板
+  </div>
+  <table>
+    <tr><th>行业分类</th><th>R&D 经费</th><th>投入强度</th><th>来源</th></tr>
+    <tr><td>纺织业（纺纱→织造→印染→家纺）</td><td><strong>291.6 亿元</strong>（2024 年）</td><td>1.22%</td><td rowspan="3" style="vertical-align:middle"><a href="https://www.stats.gov.cn/sj/zxfb/202509/t20250929_1961429.html" target="_blank">国家统计局《2024年全国科技经费投入统计公报》</a><br><br><a href="https://mp.weixin.qq.com/s?__biz=MjM5Nzc0NDIxNA==&mid=2656684254&idx=1&sn=130cf88d359c920ff89ae7577ca09725" target="_blank">中国纺织报解读</a></td></tr>
+    <tr><td>纺织服装、服饰业（下游应用端）</td><td><strong>113.4 亿元</strong>（2024 年）</td><td>0.89%</td></tr>
+    <tr><td>化学纤维制造业</td><td><strong>202.8 亿元</strong>（2024 年）</td><td>1.74%</td></tr>
+  </table>
+
+  <div style="margin-top:16px;padding:16px 20px;background:var(--highlight);border-radius:8px;border-left:3px solid var(--accent2);">
+    <strong>📐 TAM 推算逻辑</strong>
+    <p style="font-size:12px;line-height:1.8;margin-top:8px;">
+      面料研发直接关联的行业为<strong>纺织业</strong>。纺织服装、服饰业（113.4 亿）为下游应用端，其研发投入更多集中在款式设计、版型优化，不纳入面料研发 TAM 基数。
+    </p>
+    <p style="font-size:12px;line-height:1.8;margin-top:4px;color:var(--text2);">
+      <strong>TAM = 291.6 亿元/年</strong>
+    </p>
+  </div>
+
+  <h3>SAM — 可服务市场（Serviceable Available Market）</h3>
+  <div class="callout">
+    <strong>定义</strong>：AI/数字化工具实际可服务的面料研发市场（需要数字化基础设施 + 付费意愿），是 TAM 中可被本产品触达的 subset
+  </div>
+  <table>
+    <tr><th>筛选层级</th><th>比例 / 数据</th><th>说明</th><th>来源</th></tr>
+    <tr><td><strong>Step 1：TAM 基数</strong></td><td>291.6 亿元</td><td>纺织业 R&D 经费（国家统计局）</td><td>同上</td></tr>
+    <tr><td><strong>Step 2：数字化基础设施就绪</strong></td><td>59.7%</td><td>规上纺织企业关键业务环节全面数字化比例（2024年3月），代表已具备数字化基础、可承接 AI 工具的企业</td><td rowspan="3" style="vertical-align:middle"><a href="https://cnga.org.cn/cngahtml/xwzx/zcjd/20250623/1235.html" target="_blank">中国服装协会一图读懂</a></td></tr>
+    <tr><td><strong>Step 3：数字化研发设计工具普及</strong></td><td>84.9%</td><td>重点工业企业数字化研发设计工具普及率（截至2025年9月），说明工具层面已无门槛，重在"用好" <a href="https://mp.weixin.qq.com/s?__biz=MjM5Nzc0NDIxNA==&mid=2656697979&idx=1&sn=7006a4d8ede05d48d953be2131bd8c9e&chksm=bc448455044d1b1e8719e96b060262501f298ad4c21d98918a8bcb73a598b4264ee139524c8c&scene=27" target="_blank">来源</a></td></tr>
+    <tr><td><strong>Step 4：政策天花板约束</strong></td><td>&gt;70%</td><td>《纺织工业数字化转型实施方案》明确到 2027 年关键业务环节全面数字化比例 &gt;70%（当前 59.7%），为 SAM 提供政策锚定的上限</td></tr>
+  </table>
+
+  <div style="margin-top:16px;padding:16px 20px;background:var(--highlight);border-radius:8px;border-left:3px solid var(--accent2);">
+    <strong> SAM 推算逻辑</strong>
+    <p style="font-size:12px;line-height:1.8;margin-top:8px;">
+      采用<strong>研发工具普及率锚定法</strong>：本产品定位为 AI 辅助面料研发工具，属于"数字化研发设计工具"范畴，采用 <strong>84.9%</strong> 的数字化研发设计工具普及率（截至2025年9月，纺织企业口径）作为 SAM 渗透率基准：
+    </p>
+    <p style="font-size:12px;line-height:1.8;margin-top:4px;color:var(--text2);">
+      <strong>SAM = 291.6 亿 × 84.9%（数字化研发设计工具普及率）≈ 247.6 亿元/年</strong>
+    </p>
+  </div>
+
+</div>
+
+
+<!-- S3: 需求验证调研 -->
+<div class="section" id="s3">
+  <h2><span class="num">3</span> 需求验证 — 这是真需求吗？</h2>
+
+  <p>回答领导第二个问题：是真需求还是伪需求？有人愿意买单吗？<br>以下从行业调研、政策信号、竞品动作三个维度交叉验证。</p>
+
+  <h3>Q1：面料研发的数字化需求是真需求还是伪需求？</h3>
+  <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">从三个维度交叉验证：</p>
+  <table>
+    <tr><th>验证维度</th><th>信号</th><th>结论</th></tr>
+    <tr><td><strong>行业痛点调研</strong></td><td><a href="https://mp.weixin.qq.com/s?__biz=MzA3ODgyMDM0MQ==&mid=2653255279&idx=3&sn=9670036d73f2f56151995b6e741335b3" target="_blank">《纺织行业数字化转型专项交流》</a>（2026年5月）明确指出："企业新品打样成本高、周期长，实体样衣与面料样品耗费大量物料与时间""业务员难以解读潮流趋势概念，设计师与供应商描述存在信息偏差""中小纺织企业普遍缺乏系统化数字化工具"</td><td>&#x1F7E2; 需求真实且紧迫</td></tr>
+    <tr><td><strong>政策驱动</strong></td><td>工信部《纺织工业数字化转型实施方案》（2025年6月）明确列出面料研发 6 项专项技术：织物图像检索、智能配色、坯布瑕疵检测、多模态面料数据库、3D 虚拟打样、织物染色智能配色</td><td>&#x1F7E2; 国家级背书</td></tr>
+    <tr><td><strong>竞品动作</strong></td><td>13 家竞品中，11 家已在面料数字化/研发环节有布局（见竞品全景分析），说明市场已经启动但尚未形成绝对领导者</td><td>&#x1F7E1; 赛道已热但未饱和</td></tr>
+  </table>
+  <div class="callout success">
+    <strong>&#x2714; 综合判断</strong>：面料研发的数字化需求是<strong>真实需求</strong>，且被行业调研、国家政策、竞品动作三重验证。
+  </div>
+
+  <h3>Q2：谁需要这个产品？（目标用户画像）</h3>
+  <div class="three-col">
+    <div class="comp-card">
+      <h4>&#x1F3AD; 核心用户：面料研发工程师</h4>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:6px;"><strong>典型场景</strong>：品牌商下发模糊需求（"要垂感好、手感柔、成本控制在 30 元/米"），需要快速输出可执行的面料方案和工艺单。</p>
+      <p style="font-size:11px;color:var(--text2);">
+        <strong>痛点</strong>：靠经验解读，新手需 3-5 年培养；方案反复打样修改；知识不沉淀。
+      </p>
+      <p style="font-size:11px;color:#065f46;"><strong>需求强度</strong>：★★★★★ 每天高频使用</p>
+    </div>
+    <div class="comp-card">
+      <h4>&#x1F4BC; 决策用户：研发总监/技术副总</h4>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:6px;"><strong>典型场景</strong>：需要评估研发团队的效率、打样成本控制、创新项目的成功率，向管理层汇报。</p>
+      <p style="font-size:11px;color:var(--text2);">
+        <strong>痛点</strong>：研发数据散落在 Excel/文档，缺乏结构化分析；人才流失导致知识断层。
+      </p>
+      <p style="font-size:11px;color:#065f46;"><strong>需求强度</strong>：★★★★ 管理决策刚需</p>
+    </div>
+    <div class="comp-card">
+      <h4>&#x1F91D; 间接用户：品牌商/采购方</h4>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:6px;"><strong>典型场景</strong>：向面料厂提出新面料需求，需要快速获得方案报价和样品，缩短产品上市周期。</p>
+      <p style="font-size:11px;color:var(--text2);">
+        <strong>痛点</strong>：需求传递链条长、信息衰减严重；打样周期 2-4 周，错失市场窗口。
+      </p>
+      <p style="font-size:11px;color:#065f46;"><strong>需求强度</strong>：★★★ 间接受益方</p>
+    </div>
+  </div>
+  <h3 id="s3-policy">️ 政策环境 — 国家级规划锚点</h3>
+  <div class="callout">
+    <strong>两份国家级文件</strong>为本赛道提供了明确的政策背书与天花板测算依据
+  </div>
+
+  <h4 style="margin-top:16px;margin-bottom:8px;font-size:13px;color:var(--accent);">① 《纺织工业数字化转型实施方案》</h4>
+  <p style="font-size:11px;color:var(--text2);margin-bottom:10px;">
+    工业和信息化部等六部门联合印发，工信部联消费〔2025〕139号，2025年6月17日
+  </p>
+  <table>
+    <tr><th style="width:180px">维度</th><th>数据 / 目标</th><th style="width:140px">时间节点</th><th style="width:120px">来源</th></tr>
+    <tr><td>规上企业关键业务环节全面数字化</td><td>当前 <strong>59.7%</strong> → 目标 <strong>>70%</strong></td><td>到 2027 年</td><td rowspan="7" style="vertical-align:middle"><a href="https://cnga.org.cn/cngahtml/xwzx/zcjd/20250623/1235.html" target="_blank">中国服装协会一图读懂</a></td></tr>
+    <tr><td>重点工业企业关键工序数控化率</td><td>当前 <strong>63.7%</strong>（基准）</td><td>—</td></tr>
+    <tr><td>典型数字化场景打造</td><td>≥ <strong>150 个</strong></td><td>到 2027 年</td></tr>
+    <tr><td>数字化转型标杆企业</td><td>≥ <strong>60 家</strong></td><td>到 2027 年</td></tr>
+    <tr><td>典型数字化转型解决方案</td><td>≥ <strong>200 个</strong></td><td>到 2027 年</td></tr>
+    <tr><td>典型集群 / 园区</td><td>≥ <strong>30 个</strong></td><td>到 2027 年</td></tr>
+    <tr><td><strong>面料研发专项</strong></td><td colspan="2">织物图像检索系统 · 智能配色系统 · 坯布瑕疵智能检测 · 多模态面料数据库 · 3D 虚拟打样 · 织物染色智能配色系统</td></tr>
+  </table>
+
+  <h4 style="margin-top:20px;margin-bottom:8px;font-size:13px;color:var(--accent);">② 《"人工智能+制造"专项行动实施意见》</h4>
+  <p style="font-size:11px;color:var(--text2);margin-bottom:10px;">
+    国家数据局等八部门印发，2025年12月25日
+  </p>
+  <table>
+    <tr><th style="width:180px">维度</th><th>数据 / 目标</th><th style="width:140px">时间节点</th><th style="width:120px">来源</th></tr>
+    <tr><td>通用大模型制造业深度应用</td><td><strong>3-5 个</strong></td><td>到 2027 年</td><td rowspan="6" style="vertical-align:middle"><a href="https://www.nda.gov.cn/sjj/zwgk/zcfb/0112/20260107214358696030895_pc.html" target="_blank">国家数据局</a></td></tr>
+    <tr><td>高水平工业智能体</td><td>推出 <strong>1,000 个</strong></td><td>到 2027 年</td></tr>
+    <tr><td>典型应用场景推广</td><td>推广 <strong>500 个</strong></td><td>到 2027 年</td></tr>
+    <tr><td>工业领域高质量数据集</td><td>打造 <strong>100 个</strong></td><td>到 2027 年</td></tr>
+    <tr><td>标杆企业选树</td><td><strong>1,000 家</strong></td><td>到 2027 年</td></tr>
+    <tr><td><strong>新材料 / 面料 AI</strong></td><td colspan="2">新材料"成分-结构-性能"反向设计大模型 · 高通量自动化实验 · 材料行业数据集构建</td></tr>
+  </table>
+
+  <div class="callout" style="margin-top:16px;border-left:3px solid var(--accent2);">
+    <strong>💡 对需求验证的意义</strong>：
+    <ul style="margin-top:6px;font-size:12px;line-height:1.7">
+      <li>两份文件合计投入 <strong>200+ 个数字化转型解决方案</strong> + <strong>1,000 个工业智能体</strong>，说明 AI+制造是国家级别的确定性赛道</li>
+      <li>面料研发的 6 项专项技术（织物图像检索、智能配色、坯布瑕疵检测、多模态数据库、3D 虚拟打样、织物染色智能配色）全部在国家级方案中点名——<strong>政策面已明确方向</strong></li>
+      <li>关键业务环节全面数字化目标从当前 59.7% 提升至 2027 年的 >70%，为 SAM 渗透率提供硬天花板</li>
+    </ul>
+  </div>
+
+  <h3>Q3：需求池子有多大？</h3>
+  <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">回答关键问题：客户有钱买单吗？研发预算从哪来？需求池规模有多大？</p>
+
+  <h4>① 企业基本面与研发投入</h4>
+  <table>
+    <tr><th style="width:180px">指标</th><th>数据</th><th>说明</th><th>来源</th></tr>
+    <tr><td>规模以上纺织企业数量</td><td><strong>21,172 家</strong></td><td>国家统计局统计国内纺织业企业单位数（截至2024年12月）</td><td rowspan="6" style="vertical-align:middle;font-size:11px"><a href="https://data.stats.gov.cn/" target="_blank">国家统计局数据查询平台</a><br><br><a href="https://www.stats.gov.cn/sj/zxfb/202509/t20250929_1961429.html" target="_blank">国家统计局《2024年全国科技经费投入统计公报》</a></td></tr>
+    <tr><td>规上纺织企业营业收入</td><td><strong>23,914.86 亿元</strong></td><td>国家统计局口径（仅纺织业，不含化纤和服装服饰），单家企业平均营收约 <strong>1.12 亿元</strong></td></tr>
+    <tr style="background: #F0F4FF"><td><strong>规上纺织企业利润总额</strong></td><td><strong>854.92 亿元</strong></td><td>国家统计局口径（仅纺织业），单家企业平均利润约 <strong>403 万</strong></td></tr>
+    <tr><td>纺织业 R&D 经费投入总量</td><td><strong>291.6 亿元</strong>（2024年）</td><td>国家统计局《2024年全国科技经费投入统计公报》</td></tr>
+    <tr><td>纺织业 R&D 投入强度</td><td><strong>1.22%</strong></td><td>R&D 经费 291.6 亿 ÷ 营收 23,902 亿（科技统计口径，非全部规上企业）</td></tr>
+    <tr><td>规上企业平均研发预算</td><td><strong>~130-150 万/年</strong></td><td>291.6 亿 ÷ 21,172 家 ≈ 138 万/家（单家均值）</td></tr>
+  </table>
+  <div class="callout">
+    <strong>核心发现</strong>：规上纺织企业利润总额 854.92 亿、平均年研发预算约 <strong>138 万元</strong>，具备充足的付费能力。纺织业每年研发总投入 291.6 亿元，这是数字化研发工具可替代/赋能的直接预算池。
+  </div>
+
+  <h4>② 产业集群集中度 — 需求分布有多集中？</h4>
+  <table>
+    <tr><th>产业集群</th><th>特征</th><th>来源</th></tr>
+    <tr><td><strong>绍兴/柯桥</strong></td><td>中国轻纺城年交易额超 <strong>3,000 亿元</strong>，面料企业高度聚集</td><td><a href="https://www.qfc.cn" target="_blank">中国轻纺城</a></td></tr>
+    <tr><td><strong>广东中大</strong></td><td>全国最大的面辅料集散市场</td><td>行业公开信息</td></tr>
+    <tr><td><strong>江苏盛泽</strong></td><td>化纤面料核心产区，规上企业密集</td><td>行业公开信息</td></tr>
+    <tr><td><strong>福建石狮</strong></td><td>纺织服装产业集群，面料供应链完整</td><td>行业公开信息</td></tr>
+  </table>
+  <div class="callout">
+    <strong>核心发现</strong>：面料企业高度集中在 <strong>4 大产业集群</strong>（柯桥/中大/盛泽/石狮），便于 BD 集中拓展和标杆案例复制。
+  </div>
+
+
+	  <h4 id="s3-revenue-model">③ 营收预估模型</h4>
+	  <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">基于上述需求池数据，从两个独立维度交叉验证产品年营收潜力：</p>
+
+	  <h4>模型 A：研发预算替代法</h4>
+	  <p style="font-size:12px;color:var(--text2);margin-bottom:8px;">逻辑：纺织业每年研发总投入 291.6 亿，其中数字化研发设计工具普及率 84.9%，约 247.6 亿为已数字化的研发预算池。产品替代其中 0.5%-1%，按对标同类研发工具定价。</p>
+	  <table>
+	    <tr><th style="width:220px">参数</th><th>假设值</th><th>依据</th></tr>
+	    <tr><td>纺织业规上企业年研发总投入</td><td><strong>291.6 亿元</strong></td><td>国家统计局《2024年全国科技经费投入统计公报》</td></tr>
+	    <tr><td>数字化研发设计工具普及率</td><td><strong>84.9%</strong></td><td>工信部（截至2025年9月），<a href="https://mp.weixin.qq.com/s?__biz=MjM5Nzc0NDIxNA==&mid=2656697979&idx=1&sn=7006a4d8ede05d48d953be2131bd8c9e&chksm=bc448455044d1b1e8719e96b060262501f298ad4c21d98918a8bcb73a598b4264ee139524c8c&scene=27" target="_blank">来源</a></td></tr>
+	    <tr><td>数字化研发预算池</td><td><strong>≈ 247.6 亿元</strong></td><td>291.6 亿 × 84.9%</td></tr>
+	    <tr><td>产品替代份额（占数字化研发预算比）</td><td><strong>0.5%-1%</strong></td><td>保守→乐观：247.6 亿 × 0.5%-1%</td></tr>
+	    <tr><td>产品定价（年订阅/企业）</td><td><strong>8-20 万元/年</strong></td><td>对标参考：Style3D 商业版非公开定制报价（教育版1-10万/模块/年，<a href="https://tec.suda.edu.cn/ztb/info/1065/1367.htm" target="_blank">苏州大学采购公示</a>）。另可参考CLO 3D个人版$450/年（<a href="https://www.clo3d.com/en/plans/subscription#1" target="_blank">官网定价</a>）作为设计类SaaS价格锚点</td></tr>
+	    <tr style="background:#e8f5e9;"><td><strong>&#x1F4B0; 年营收预估</strong></td><td><strong>1.2 - 2.5 亿元</strong></td><td>247.6 亿 × 0.5% ≈ 1.2 亿；247.6 亿 × 1% ≈ 2.5 亿</td></tr>
+	  </table>
+
+	  <h4>模型 B：人力成本替代法</h4>
+	  <p style="font-size:12px;color:var(--text2);margin-bottom:8px;">逻辑：21,172 家规上纺织企业中推广 1%-2%，产品定价按研发人员年薪的 50% 计算，确保客户 ROI 为正。</p>
+	  <table>
+	    <tr><th style="width:220px">参数</th><th>假设值</th><th>依据</th></tr>
+	    <tr><td>规上纺织企业总数</td><td><strong>21,172 家</strong></td><td>国家统计局（截至2024年12月）</td></tr>
+	    <tr><td>目标企业渗透率</td><td><strong>1%-2%</strong></td><td>保守→乐观：21,172 家 × 1%-2% ≈ 212-423 家</td></tr>
+	    <tr><td>面料研发人员年薪（含五险一金）</td><td><strong>24-30 万元/年</strong></td><td><a href="https://www.liepin.com/zpszmlyfgcs2pe9/xinzi/" target="_blank">猎聘</a>统计梭织面料研发工程师均薪 15,074 元/月，3-5年经验约 18,955 元/月（年薪约 22.7 万）；<a href="https://www.kanzhun.com/baike_jobs/0X192t8~/" target="_blank">看准网</a>全经验段均薪 12,504 元/月（2.7万样本）。五险一金企业缴纳比例约 32-40%，企业年成本约 24-30 万。<a href="https://www.csi.xinchou.cn/xingyezixun/12494.html" target="_blank">2024纺织行业薪酬白皮书</a>显示中级研发（3-8年）年薪 15-24 万</td></tr>
+	    <tr><td>产品定价（年薪的 50%）</td><td><strong>12-15 万元/年</strong></td><td>按替代人力成本的 50% 定价，确保客户 ROI 为正（投入 12-15 万，节省 24-30 万人力成本）</td></tr>
+	    <tr style="background:#e8f5e9;"><td><strong>&#x1F4B0; 年营收预估</strong></td><td><strong>2,500 - 6,300 万元</strong></td><td>212 家 × 12 万 ≈ 2,544 万；423 家 × 15 万 ≈ 6,345 万</td></tr>
+	  </table>
+
+	  <div class="callout success">
+	    <strong>&#x1F4CA; 两模型交叉验证结论</strong><br>
+	    模型 A（研发预算替代法）给出 <strong>1.2-2.5 亿元</strong> 的年营收上限（市场空间视角），模型 B（人力成本替代法）给出 <strong>2,500-6,300 万元</strong> 的保守下限（可落地客户视角）。<br><br>
+	    <strong>建议采用保守估值</strong>：<strong style="font-size:16px;">年营收目标 2,500-6,000 万元</strong>（第 3 年稳定运营期），对应服务约 200-400 家规上企业，每家年均贡献 12-15 万元。<br>
+	    <span style="font-size:11px;color:var(--text2);">注：以上为 SaaS 订阅收入预估，不含定制开发、咨询服务和数据增值收入。模型 A 为市场空间上限参考，实际营收受产品成熟度、销售团队规模、行业数字化意愿等因素影响，建议以模型 B 为落地目标。</span>
+	  </div>
+  <h3>Q4：竞品已经做了什么？验证了什么？</h3>
+  <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">竞品的动作本身就是对需求的验证——没有人会在伪需求上投入真金白银：</p>
+  <table>
+    <tr><th>竞品</th><th>投入动作</th><th>验证的需求信号</th></tr>
+    <tr><td><strong>Style3D</strong></td><td>PreB+ 轮融资近 1 亿美元（2025年），2,000+ 客户</td><td>面料数字化+3D仿真是被验证的需求</td></tr>
+    <tr><td><strong>致景科技（百布）</strong></td><td>200 万+ SKU 面料数据库，AI 面料识别技术</td><td>面料识别和匹配是高频刚需</td></tr>
+    <tr><td><strong>AI布（柯桥轻纺城）</strong></td><td>政府/国企背书，覆盖面料识别+AI花型+虚拟试衣</td><td>以图搜布和花型设计是产业痛点</td></tr>
+  </table>
+  <div class="callout">
+    <strong>关键发现</strong>：所有竞品都在<strong>验证面料研发链条上的某个环节</strong>，但没有人做"需求→方案→工艺单"的全链路 AI 辅助。这说明需求真实，但我们的产品定位是一个<strong>品类级空白</strong>。
+  </div>
+
+  <div class="insight-box">
+    <h4>&#x1F4A1; 需求验证总结</h4>
+    <p>面料研发的数字化需求经<strong style="color:#93c5fd;">三重交叉验证为真实需求</strong>：① 行业调研确认打样成本高、周期长是普遍痛点；② 国家级政策明确面料研发为数字化转型重点方向；③ 13 家竞品在面料研发各环节已有布局和融资。<strong style="color:#93c5fd;">需求池规模（纺织业年 R&D 投入 291.6 亿，数字化渗透 1% 即可创造 2-3 亿可替代成本）足以支撑商业化</strong>。</p>
+  </div>
+</div>
+
+<!-- S4: 全价值视角 — 间接价值分析 -->
+<div class="section" id="s4">
+  <h2><span class="num">4</span> 全价值视角 — 从研发工具到产业增长引擎</h2>
+
+  <div class="callout" style="background:#fef3c7;border-left:3px solid #d97706;">
+    <strong>⚠️ 关键问题</strong>：如果只看"替代研发经费中的软件工具支出"，市场盘子约 10-20 亿/年，对集团公司投资决策吸引力有限。<br>
+    但 AI 辅助面料研发的真实价值远不止"省下几个软件 license 的钱"——它的核心价值在于<strong>驱动面料企业的营收增长与利润结构升级</strong>。
+  </div>
+
+  <h3>🔍 价值分层模型</h3>
+  <p>AI 辅助面料研发产品的经济价值可分为<strong>三层</strong>，愈往外层价值量愈大：</p>
+
+  <table>
+    <tr><th style="width:80px">层级</th><th style="width:180px">价值类型</th><th>价值描述</th><th style="width:150px">受益主体</th><th style="width:130px">可量化维度</th></tr>
+    <tr style="background:#F0F4FF">
+      <td><strong>L1</strong></td>
+      <td><strong>🛠 直接替代价值</strong></td>
+      <td>替代传统研发工具/流程中的软件、外部测试、物理打样等支出</td>
+      <td>面料企业 R&D 部门</td>
+      <td>R&D 经费 × 数字化渗透率<br>≈ 239 亿元 SAM</td>
+    </tr>
+    <tr style="background:#fef3c7">
+      <td><strong>L2</strong></td>
+      <td><strong>⚡ 效率加速价值</strong></td>
+      <td>缩短研发周期 → 更快响应客户需求 → 多接订单、少丢客户</td>
+      <td>面料企业整体经营</td>
+      <td>营收增幅 × 转化率<br>→ 数千亿级影响面</td>
+    </tr>
+    <tr style="background:#d1fae5">
+      <td><strong>L3</strong></td>
+      <td><strong>💎 创新溢价价值</strong></td>
+      <td>AI 驱动的新面料创新 → 差异化产品 → 超额利润</td>
+      <td>面料企业 + 下游品牌</td>
+      <td>新品溢价 × 创新成功率<br>→ 利润率结构性提升</td>
+    </tr>
+  </table>
+
+  <h4 style="margin-top:24px;">L2 效率加速价值 — 实证数据</h4>
+  <table>
+    <tr><th style="width:190px">案例</th><th>关键数据</th><th>来源</th></tr>
+    <tr>
+      <td>绍兴柯桥"织造印染产业大脑"</td>
+      <td>产业链沟通效率提升 50%-80%，订单交付周期缩短 50%；入驻企业 4,400+ 家，累计线上面料交易 7,500 多万米</td>
+      <td><a href="http://www.kq.gov.cn/art/2025/9/22/art_1488946_59262328.html" target="_blank">柯桥区政府</a></td>
+    </tr>
+    <tr>
+      <td>苏豪时尚 AI+3D 数字化</td>
+      <td>设计创意从"周"缩到"日"，最快 3 小时反馈客户；2024 年完成设计 1,400+ 款，客户采用率近 30%，促成销售额超 1.4 亿元</td>
+      <td><a href="https://caijing.chinadaily.com.cn/a/202512/15/WS693fb2c0a310942cc4996ae9.html" target="_blank">中国日报网</a></td>
+    </tr>
+    <tr>
+      <td>湖北天门数字供应链</td>
+      <td>2024 年服装电商销量突破 6 亿件，同比增长超 25%；快递业务量突破 3 亿件，同比增长 63%</td>
+      <td><a href="https://www.ctn1986.com/index.php?c=content&a=show&id=120088" target="_blank">中国纺织报</a></td>
+    </tr>
+    <tr>
+      <td>青岛即墨区数字化</td>
+      <td>11 家企业完成智能工厂/数字化车间认定，生产效率提高 20% 以上；酷特智能实现"7 个工作日交付"大规模定制、零库存</td>
+      <td><a href="https://epaper.guanhai.com.cn/conpaper/qdrb/h5/html5/2025-06/02/content_144590_2242856.htm" target="_blank">青岛日报</a></td>
+    </tr>
+  </table>
+
+  <h4 style="margin-top:20px;">L3 创新溢价价值 — 实证数据</h4>
+  <table>
+    <tr><th style="width:190px">案例</th><th>关键数据</th><th>来源</th></tr>
+    <tr>
+      <td>罗曼罗兰户外新材</td>
+      <td>面料均价约为同行 6 倍（如 14.2 美元/米），研发投入占销售额 7%-15%；供货 LVMH、爱马仕、耐克、阿迪达斯；前三季度利润同比 +25%-30%</td>
+      <td><a href="https://www.sohu.com/a/941008712_261465" target="_blank">21世纪经济报道</a></td>
+    </tr>
+    <tr>
+      <td>大钇纺织醋酸面料</td>
+      <td>醋酸面料售价 40-100 元/米，普通面料仅几元-十几元/米，溢价 3-10 倍；年销售突破亿元，库存控制在 10% 以下</td>
+      <td><a href="https://www.ctn1986.com/index.php?c=content&a=show&id=121307" target="_blank">中国纺织报</a></td>
+    </tr>
+    <tr>
+      <td>聚酯纤维价差（行业现象）</td>
+      <td>同为 100% 聚酯纤维，阿玛尼西装售价 5,250 元 vs 优衣库半身裙 241 元，价差 20+ 倍；功能性复合长丝成本达 2.4 美元/米</td>
+      <td><a href="https://www.36kr.com/p/3628963453977608" target="_blank">36氪</a></td>
+    </tr>
+    <tr>
+      <td>康杰服饰</td>
+      <td>高端产品线实现溢价 30%，出口美国高端产品占比突破 70%</td>
+      <td><a href="https://cnxww.cn/content/646942/55/15193912.html" target="_blank">红网</a></td>
+    </tr>
+  </table>
+
+  <h3 style="margin-top:28px;">飞轮效应 — 从工具到数据护城河</h3>
+  <div class="callout" style="background:#e8f0fe;border-left:3px solid #4299e1;">
+    <strong>核心逻辑</strong>：AI 辅助面料研发产品不仅是效率工具，更是一台<strong>行业数据积累引擎</strong>。每一次研发交互（面料设计、工艺优化、打样反馈、客户选型）都在为模型贡献高质量训练数据，形成"更多用户 → 更多数据 → 更准模型 → 更多用户"的正向飞轮。
+  </div>
+
+  <table style="margin-top:16px;">
+    <tr><th style="width:130px">维度</th><th>短期价值（1-3 年）</th><th>长期价值（3-10 年）</th></tr>
+    <tr>
+      <td><strong>收入模式</strong></td>
+      <td>SaaS 订阅 + 项目交付，直接替代研发成本</td>
+      <td>数据服务 + 模型授权 + 行业标准输出，价值捕获层级跃升</td>
+    </tr>
+    <tr>
+      <td><strong>竞争壁垒</strong></td>
+      <td>产品体验 + 客户关系，可被追赶</td>
+      <td><strong>独占性行业数据资产</strong>——竞争对手即使用同样的算法，也无法复现数年积累的行业 Know-how 数据</td>
+    </tr>
+    <tr>
+      <td><strong>用户粘性</strong></td>
+      <td>效率提升带来的切换成本</td>
+      <td><strong>数据沉淀形成深度绑定</strong>——企业历史研发数据已成为核心资产，脱离平台等于"失忆"</td>
+    </tr>
+    <tr>
+      <td><strong>价值捕获</strong></td>
+      <td>替代研发成本，省 1 元是 1 元</td>
+      <td><strong>定义行业研发标准</strong>——成为面料产业的"研发操作系统"，掌握定价权</td>
+    </tr>
+  </table>
+
+  <h4 style="margin-top:20px;">行业数据壁垒 — 实证</h4>
+  <table>
+    <tr><th style="width:190px">平台/企业</th><th>数据积累规模</th><th>来源</th></tr>
+    <tr>
+      <td>致景科技"飞梭智纺"</td>
+      <td>接入近万家企业、70 万台织机，覆盖超 90% 织机种类；AI 对布机器人异常停机减少 35%，效率提升 30%</td>
+      <td><a href="https://m.36kr.com/p/3282458357949315" target="_blank">36氪</a></td>
+    </tr>
+    <tr>
+      <td>柯桥"AI布"行业大模型</td>
+      <td>30 余万条面料信息、1.8 万项技术成果、1.7 万名产业专家资源；基于 42.1 亿条产业链数据训练</td>
+      <td><a href="http://www.ce.cn/xwzx/gnsz/gdxw/202508/t20250807_2433382.shtml" target="_blank">中国经济网</a></td>
+    </tr>
+    <tr>
+      <td>万事利丝绸 AI 大模型</td>
+      <td>50 万+ 花型数据库、300 余种图像生成算法</td>
+      <td><a href="https://cnga.org.cn/cngahtml/xwzx/hygc/20250716/1327.html" target="_blank">中国服装协会</a></td>
+    </tr>
+    <tr>
+      <td>蝶讯 D.SD 系统</td>
+      <td>覆盖超 100 万名设计师，65% 服装企业使用；AI 设计转化成功率提高至少 50%</td>
+      <td><a href="https://epaper.xkb.com.cn/view/1252283" target="_blank">新快报</a></td>
+    </tr>
+  </table>
+
+  <div class="callout" style="margin-top:20px;background:#fff5f5;border-left:3px solid #e53e3e;">
+    <strong>战略警示</strong>：中国纺联会长孙瑞哲指出，"以数据为要素、算法为中枢、算力为基座，AI 带来的不是简单的技术升级而是产业的系统再造"。当前行业尚未出现真正的垄断性"黑马"，但<strong>数据壁垒的窗口期正在快速收窄</strong>。先入者一旦完成数据飞轮的冷启动，后来者将面临"没数据 → 模型不准 → 没用户 → 更没数据"的死循环。
+  </div>
+
+</div>
+
+
+<!-- S5: 竞品 -->
+<div class="section" id="s5">
+  <h2><span class="num">5</span> 竞品分析 — 13 家竞品全景</h2>
+
+  <h3>四梯队竞品地图</h3>
+  <div class="tier-box t1">
+    <div class="tier-label">&#x1F534; 第一梯队 — 直接竞品（聚焦面料研发环节的 AI/数字化产品）</div>
+    <p><span class="comp-tag tag-red">Style3D Fabric</span> <span class="comp-tag tag-red">百布（AI识别）</span> <span class="comp-tag tag-red">AI布（轻纺城）</span> <span class="comp-tag tag-red">珍妮AI</span> <span class="comp-tag tag-red">Symmpix</span> <span class="comp-tag tag-red">点画AI</span></p>
+  </div>
+  <div class="tier-box t2">
+    <div class="tier-label">&#x1F7E1; 第二梯队 — 间接竞品（纺织产业链数字化平台，含研发模块）</div>
+    <p><span class="comp-tag tag-orange">致景科技（全布/飞梭）</span> <span class="comp-tag tag-orange">环思智慧</span> <span class="comp-tag tag-orange">湛蓝科技</span></p>
+  </div>
+  <div class="tier-box t3">
+    <div class="tier-label">&#x1F535; 第三梯队 — 通用工具（3D仿真/AI设计，可用于面料场景）</div>
+    <p><span class="comp-tag tag-blue">CLO 3D</span> <span class="comp-tag tag-blue">Browzwear</span> <span class="comp-tag tag-blue">Optitex</span></p>
+  </div>
+  <div class="tier-box t4">
+    <div class="tier-label">&#x1F7E3; 第四梯队 — 跨界参照（材料科学 AI，非纺织专用）</div>
+    <p><span class="comp-tag tag-purple">Citrine Informatics</span></p>
+  </div>
+
+  <h3>第一梯队：直接竞品详解</h3>
+
+  <div class="comp-card">
+    <h4><span class="comp-tag tag-red">T1</span> Style3D Fabric（凌迪科技）</h4>
+    <div class="comp-meta">杭州 · 2015年 · PreB+轮近1亿美元（2025年） · 2,000+ 客户 · 员工约300+人</div>
+    <table>
+      <tr><th style="width:120px">维度</th><th>详情</th></tr>
+      <tr><td><strong>产品定位</strong></td><td>面料数字化处理与 3D 仿真设计工具</td></tr>
+      <tr><td><strong>核心能力</strong></td><td>面料物理参数采集 + 表面纹理数字化 + AI 创意/花型生成 + 3D 仿真设计 + AI 视效展示</td></tr>
+      <tr><td><strong>覆盖场景</strong></td><td><span class="comp-tag tag-green">来样（面料数字化还原）</span> <span class="comp-tag tag-green">需求（3D仿真快速打样）</span> <span class="comp-tag tag-blue">创新（AI创意，有限）</span></td></tr>
+      <tr><td><strong>商业模式</strong></td><td>SaaS年订阅制，企业定制报价（非公开标价）；客户覆盖品牌商/成衣厂/面料商，已实现PMF</td></tr>
+      <tr><td><strong>产品定价</strong></td><td>商业版非公开定制报价；教育版1-10万/模块/年（<a href="https://tec.suda.edu.cn/ztb/info/1065/1367.htm" target="_blank">苏州大学采购公示</a>）；企业版按模块数+用户规模议价</td></tr>
+      <tr><td><strong>公司规模</strong></td><td>员工约<strong>300+人</strong>（2025年媒体报道），研发占比超50%（150+人），含十多位博士；杭州总部，哥本哈根/阿姆斯特丹/纽约设有分支；2024年入选国家专精特新"小巨人"</td></tr>
+      <tr><td><strong>年营收/估值</strong></td><td>营收未公开披露；<strong>Pre-B+轮融资近1亿美元</strong>（2025年），累计融资超1.5亿美元（高瓴、顺为、鼎晖、联想等）；2027年新研发中心计划投入使用（总投资10.9亿）</td></tr>
+      <tr><td><strong>核心优势</strong></td><td>柔性仿真引擎全球领先；面料数字化是核心强项；PMF 已确认</td></tr>
+      <tr><td><strong>核心短板</strong></td><td>偏重"设计端"（3D可视化），对"研发端"（工艺参数管理、配方管理、实验管理）覆盖有限；主要服务品牌商/成衣厂，面料厂视角不够深</td></tr>
+      <tr><td><strong>关系判断</strong></td><td><strong>互补而非竞争</strong> — 我们管"研发数据+AI决策"，他们管"3D设计+可视化"，可考虑 API 对接</td></tr>
+    </table>
+    <div class="source">来源：<a href="https://www.style3d.com" target="_blank">style3d.com</a> · <a href="https://www.36kr.com/p/1131780647437441" target="_blank">36氪</a> · <a href="https://www.tidesight.com/news/1364268.html" target="_blank">观潮</a> · <a href="https://tidenews.com.cn/video_detail.html?id=3071051" target="_blank">潮新闻专访</a></div>
+  </div>
+
+  <div class="comp-card">
+    <h4><span class="comp-tag tag-red">T1</span> 百布（致景科技）— AI 面料识别</h4>
+    <div class="comp-meta">广州 · 2013年 · 独角兽 · 估值约130亿元 · 员工500-999人</div>
+    <table>
+      <tr><th style="width:120px">维度</th><th>详情</th></tr>
+      <tr><td><strong>产品定位</strong></td><td>面料 B2B 交易平台 + AI 面料识别</td></tr>
+      <tr><td><strong>核心能力</strong></td><td>AI 面料识别（拍照/扫描→自动识别成分参数）+ 对布机器人 + 300 万+ SKU 面料信息库 + 智能匹配</td></tr>
+      <tr><td><strong>覆盖场景</strong></td><td><span class="comp-tag tag-green">来样（AI识别+面料匹配）</span> <span class="comp-tag tag-blue">需求（交易端需求对接）</span></td></tr>
+      <tr><td><strong>商业模式</strong></td><td><strong>轻资产自营B2B平台</strong>：从一级供应商低价采购→平台加价卖给服装企业（非佣金撮合）；延伸供应链金融+仓储物流增值服务</td></tr>
+      <tr><td><strong>产品定价</strong></td><td>非SaaS收费模式；盈利来自<strong>交易价差</strong>（去除中间环节帮客户节省10-20%采购成本）+ 供应链金融服务费</td></tr>
+      <tr><td><strong>公司规模</strong></td><td>员工<strong>500-999人</strong>；核心团队来自阿里、美团等；已布局新加坡、孟加拉、日本、韩国等海外市场</td></tr>
+      <tr><td><strong>年营收/估值</strong></td><td>2019年全年销售额近<strong>100亿元</strong>（平台GMV，非公司营收）；累计融资超<strong>36.85亿元</strong>（10轮，至E轮2022年）；估值约<strong>130亿元</strong>；投资方含DST Global、老虎环球、中金资本等</td></tr>
+      <tr><td><strong>核心优势</strong></td><td>300万+ SKU 面料数据库行业最全；AI 面料识别技术成熟；平台双边网络效应强</td></tr>
+      <tr><td><strong>核心短板</strong></td><td>本质是<strong>交易平台</strong>，不是研发工具 —"找到布"而非"研发布"；不涉及工艺参数管理、实验管理、配方管理</td></tr>
+      <tr><td><strong>关系判断</strong></td><td><strong>完全不同赛道</strong> — 百布做"找布交易"，我们做"研发布"。可借鉴其 AI 面料识别技术</td></tr>
+    </table>
+    <div class="source">来源：<a href="https://www.ibaibu.com" target="_blank">ibaibu.com</a> · <a href="https://www.36kr.com/p/1043854267219720" target="_blank">36氪</a> · <a href="https://www.zj.tech/" target="_blank">致景科技</a> · <a href="http://www.21jingji.com/article/20230804/herald/0dc32a05ea8e6d04b21c8570ab7fa1c7.html" target="_blank">21世纪经济报道</a></div>
+  </div>
+
+  <div class="comp-card">
+    <h4><span class="comp-tag tag-red">T1</span> AI布（中国轻纺城）</h4>
+    <div class="comp-meta">绍兴柯桥 · 轻纺城集团（600790.SH）旗下 · 上市国企背景</div>
+    <table>
+      <tr><th style="width:120px">维度</th><th>详情</th></tr>
+      <tr><td><strong>产品定位</strong></td><td>纺织产业垂直领域综合智能体（AI Agent），已升级至3.0版本</td></tr>
+      <tr><td><strong>核心能力</strong></td><td>面料识别（以图搜布）+ AI 花型生成 + 虚拟试衣 + AI 数字人 + 7万+面料数字化采集与3D呈现</td></tr>
+      <tr><td><strong>覆盖场景</strong></td><td><span class="comp-tag tag-green">来样（面料识别）</span> <span class="comp-tag tag-blue">需求（花型生成）</span></td></tr>
+      <tr><td><strong>商业模式</strong></td><td><strong>政府/国企背书免费平台</strong>：母公司轻纺城集团（A股上市）资金支撑；依托柯桥轻纺城全球最大面料集散中心流量，不收SaaS费用，定位产业公共服务</td></tr>
+      <tr><td><strong>产品定价</strong></td><td><strong>免费</strong>（政府公共平台属性）；面料成衣化平台合资项目计划投资约<strong>5,000万元</strong></td></tr>
+      <tr><td><strong>公司规模</strong></td><td>母公司<strong>轻纺城集团</strong>为A股主板上市公司（600790），市值约60-80亿；运营方为旗下网络子公司+柯桥区现代纺织产业服务中心联合打造；2026年纺博会首日接待客商5,000人次</td></tr>
+      <tr><td><strong>核心优势</strong></td><td>依托柯桥轻纺城 — 全球最大纺织面料集散中心；覆盖全链条；天然流量入口；国企背景资源雄厚</td></tr>
+      <tr><td><strong>核心短板</strong></td><td>偏向"交易撮合+营销辅助"，研发深度有限；国企背景，产品迭代速度可能慢；免费模式难以吸引顶尖AI人才持续投入</td></tr>
+    </table>
+    <div class="source">来源：<a href="https://ai.qfc.cn" target="_blank">ai.qfc.cn</a> · <a href="https://www.ctn1986.com/index.php?a=show&c=content&id=112609" target="_blank">中国纺织报</a> · <a href="https://data.eastmoney.com/notices/detail/600790/AN202606011823127640.html" target="_blank">轻纺城公告</a></div>
+  </div>
+
+  <div class="comp-card">
+    <h4><span class="comp-tag tag-red">T1</span> 珍妮AI · Symmpix · 点画AI</h4>
+    <div class="comp-meta">AI 花型/图案设计工具，偏重创意端 · 均为早期创业公司</div>
+    <table>
+      <tr><th style="width:120px">产品</th><th>定位</th><th>商业模式与定价</th><th>估值/营收</th><th>公司规模</th></tr>
+      <tr><td><strong>珍妮AI</strong></td><td>面料行业全链路数字化SaaS（样品管理+进销存+AI设计+订单生产+验布）</td><td><strong>个人版 ¥688/年</strong>（1席位）、<strong>企业版 ¥1,980/年</strong>（含5席位，可加购 ¥360/席/年）；应用市场模块一次性付费永久使用；AI功能按算力消耗充值消费；支持私有部署（<a href="https://help.jenny.cn/fabric/pricing.html" target="_blank">官网定价</a>）</td><td>未公开融资（绍兴柯桥，珍妮软件，早期创业）</td><td>早期创业团队（人员规模未公开）</td></tr>
+      <tr><td><strong>Symmpix</strong></td><td>AI+3D纺织数字化解决方案（面料搜索+花型生成+3D虚拟打样+数字产品+虚拟展示）</td><td>Symmde平台：AI面料搜索（<strong>6万+面料数据库</strong>）+ AI花型生成+3D虚拟打样+数字产品创作+虚拟走秀/展厅；SaaS+企业定制（具体定价<strong>未公开</strong>，官网无公开报价页）</td><td>未公开融资（芯华创研旗下，早期创业）</td><td>早期创业团队（芯华创研旗下，人员规模未公开）</td></tr>
+      <tr><td><strong>点画AI</strong></td><td>轻纺行业AI图案设计创作平台（位图转矢量+智能换色/分色+图案多风格变体）</td><td>AI图案设计+智能生成+优化服务；按需付费/SaaS（具体定价<strong>未公开</strong>，官网为SPA应用无公开定价页）</td><td>未公开融资（早期创业）</td><td>早期创业团队（人员规模未公开）</td></tr>
+    </table>
+    <div class="callout" style="margin-top:10px;">
+      <strong>&#x1F4A1; 对我们团队的启示</strong>：这三个产品验证了AI在面料花型/图案设计环节的需求真实存在，但均属于垂直工具型产品（<strong>小团队、轻模式</strong>），不具备向研发全链路扩展的能力。我们的产品定位是"研发操作系统"而非"设计工具"，与它们不构成直接竞争。
+    </div>
+    <div class="source">来源：<a href="https://help.jenny.cn/fabric/pricing.html" target="_blank">珍妮AI定价</a> · <a href="https://ai.jenny.cn" target="_blank">ai.jenny.cn</a> · <a href="https://www.symmpix.com" target="_blank">symmpix.com</a> · <a href="https://dianhuaart.com" target="_blank">dianhuaart.com</a></div>
+  </div>
+
+  <h3>第二梯队：间接竞品</h3>
+
+  <div class="comp-card">
+    <h4><span class="comp-tag tag-orange">T2</span> 环思智慧 — 面料研发管理功能最全的传统 ERP</h4>
+    <div class="comp-meta">绍兴 · 深耕纺织20年+ · 项目制 + SaaS · 员工350-500+人</div>
+    <table>
+      <tr><th style="width:120px">维度</th><th>详情</th></tr>
+      <tr><td><strong>研发相关功能</strong></td><td>打样管理 + 工艺技术管理（配方、处方、工艺参数）+ 描稿/制网/打色管理</td></tr>
+      <tr><td><strong>覆盖场景</strong></td><td><span class="comp-tag tag-green">来样（打样管理+工艺参数）</span> <span class="comp-tag tag-green">需求（工艺配方管理）</span></td></tr>
+      <tr><td><strong>商业模式</strong></td><td><strong>项目制为主 + SaaS为辅</strong>：ERP/MES项目制实施（客单价数十万-数百万）；云平台SaaS年订阅（1-25万/年）；2025年新增合同额已超9,000万</td></tr>
+      <tr><td><strong>产品定价</strong></td><td>制造管理平台约<strong>25万/年</strong>，云平台约<strong>1-2万/年</strong>（<a href="https://marketplace.huaweicloud.com/series/61c56684c37642cd99590d4292a024f1-1-Z" target="_blank">华为云商店</a>公开标价）；MES实施项目单项目可达<strong>40万+</strong>（国机集团苏美达项目成交价43.8万）</td></tr>
+      <tr><td><strong>公司规模</strong></td><td>员工<strong>350-500+人</strong>，研发人员170+人；总部绍兴柯桥，近20个分支机构；服务<strong>5,000+</strong>家纺织企业，含近50家上市公司、150+家纺织500强</td></tr>
+      <tr><td><strong>年营收/估值</strong></td><td>年营收<strong>突破1亿元</strong>（2021年后），2025年预计超<strong>1.5亿元</strong>；2021年完成<strong>亿元级</strong>战略融资（华盖资本领投）；近三年增速30-50%</td></tr>
+      <tr><td><strong>核心优势</strong></td><td>面料研发管理功能最全的传统 ERP 厂商；高度模块化；深耕行业 20 年</td></tr>
+      <tr><td><strong>核心短板</strong></td><td>传统 ERP 架构，AI 能力弱；产品重，实施周期长；不具备 AI 辅助研发能力</td></tr>
+      <tr><td><strong>关系判断</strong></td><td><strong>替代升级</strong> — 环思的打样/工艺管理是传统 ERP 逻辑，我们用 AI 重新定义这个环节</td></tr>
+    </table>
+    <div class="source">来源：<a href="https://www.ebrun.com/20220516/484465.shtml" target="_blank">亿邦动力</a> · <a href="https://marketplace.huaweicloud.com/series/61c56684c37642cd99590d4292a024f1-1-Z" target="_blank">华为云商店</a> · <a href="http://shaoxing.11467.com/info/6250814.htm" target="_blank">企业信息</a></div>
+  </div>
+
+  <div class="comp-card">
+    <h4><span class="comp-tag tag-orange">T2</span> 致景科技 · 湛蓝科技</h4>
+    <table>
+<tr><th style="width:120px">产品</th><th>定位</th><th>商业模式与定价</th><th>估值/营收</th><th>公司规模</th></tr>
+<tr><td><strong>致景科技<br/>(百布/全布/飞梭)</strong></td><td>纺织全产业链数字化平台</td><td><strong>百布</strong>：B2B面料交易平台，"对布机器人"AI找布（最快<strong>2分钟</strong>精准匹配，覆盖70%+市面面料）；<strong>全布</strong>：工业互联网平台（链接<strong>70万+台织机、9,000+织厂</strong>）；<strong>飞梭</strong>：染整超级中控+AI智能配方+APS排产（SaaS，染缸利用率提升5%、打样缩至24小时）；<strong>Fashion Mind</strong>：AI服装设计大模型（2024年发布，设计效率提升100%、成本降40%）；<strong>致景金条</strong>：供应链金融；收费：SaaS订阅（按织机/染缸接入数）+ B2B交易佣金+供应链金融（具体定价<strong>未公开</strong>）；赋能上下游<strong>5万+企业</strong></td><td>估值约<strong>130亿元</strong>（独角兽）；2019年GMV近百亿；累计融资<strong>36.85亿+</strong></td><td>广州；<strong>500-999人</strong>（研发人员占1/3+）；布局新加坡、孟加拉等海外市场</td></tr>
+<tr><td><strong>湛蓝科技</strong></td><td>面料行业数字化标准制定者 + SCRM/ERP</td><td><strong>电子色卡数字化标准</strong>（行业首创，"面料数字身份证"）+ 面料ERP + 面料SCRM + 服装ERP + 服装SCRM（"前店后厂"闭环）；核心技术：AI面料DNA识别+颜色指纹锁色+数字面料库；2025年与中国电信合作发布<strong>广州面料行业大模型</strong>（<a href="https://www.iyiou.com/news/202512191117608" target="_blank">亿欧</a>）；AI+B2B平台+SaaS模式；试点数据：设计效率提升约<strong>40%</strong>、库存压力下降近<strong>30%</strong>、找布从7天缩至<strong>秒级</strong>（<a href="https://m.bjnews.com.cn/detail/1761814813129261.html" target="_blank">新京报</a>）；定价<strong>未公开</strong></td><td>早期/成长期；融资和营收未公开</td><td>广州；未公开（初创/成长期）</td></tr>
+    </table>
+    <div class="callout" style="margin-top:10px;">
+      <strong>&#x1F4A1; 对我们团队的启示</strong>：第二梯队竞品验证了<strong>纺织产业互联网是资本认可的赛道</strong>（致景科技估值130亿）。但它们核心在"交易+生产调度"，不在"研发"。我们做研发端AI辅助，是对产业链上游的空白填补。湛蓝科技的电子色卡标准化思路值得借鉴——我们也可以推动面料研发数据的标准化。
+    </div>
+    <div class="source">来源：<a href="https://www.ctn1986.com/index.php?a=show&c=content&id=115577" target="_blank">中国纺织报-致景</a> · <a href="https://www.iyiou.com/news/202512191117608" target="_blank">亿欧-湛蓝</a> · <a href="https://m.bjnews.com.cn/detail/1761814813129261.html" target="_blank">新京报-湛蓝</a></div>
+  </div>
+
+  <h3>第三/四梯队：通用工具与跨界参照</h3>
+
+  <div class="comp-card">
+    <h4><span class="comp-tag tag-blue">T3</span> CLO 3D · Browzwear · Optitex</h4>
+    <p style="margin-bottom:12px;">全球三大 3D 服装设计软件，面料仿真能力强，但定位"服装设计端"而非"面料研发端"。与我们的产品<strong>不构成直接竞争</strong>，可在 3D 可视化环节形成互补。</p>
+    <table>
+<tr><th style="width:120px">产品</th><th>定位</th><th>商业模式与定价</th><th>公司规模</th><th>估值/营收</th></tr>
+<tr><td><strong>CLO 3D</strong></td><td>3D服装设计仿真（韩国）</td><td>SaaS订阅：个人版<strong>$450/年</strong>（<a href="https://www.clo3d.com/en/plans/subscription#1" target="_blank">官网定价</a>），企业版定制报价；客户含Nike·H&M·Hugo Boss·Levi's等</td><td>未公开（总部首尔，纽约分部）</td><td>2024年12月<strong>C轮融资$3,500万</strong>（<a href="https://www.kedglobal.com/us/korean-startups/newsView/ked202412160008" target="_blank">KED Global</a>）；营收及估值<strong>未公开披露</strong></td></tr>
+<tr><td><strong>Browzwear</strong></td><td>3D服装设计+商品化（新加坡）</td><td>SaaS订阅+企业定制：Freelancer <strong>$75/月</strong>（$750/年）、Freelancer Plus <strong>$150/月</strong>（$1,500/年）、Teams <strong>$3,950/用户/年</strong>（最多3用户）、Enterprise <strong>定制报价</strong>（~$8,000-10,000+/座，含Lotta·云渲染·专属SLA）（<a href="https://browzwear.com/pricing-plans" target="_blank">官网定价</a>）</td><td><strong>187人</strong>（2024年），工程师18人、销售4人、市场5人</td><td><strong>2024年营收$22.1M</strong>（同比增长90%），<strong>650家客户</strong>；<strong>零外部融资</strong>（自给自足）</td></tr>
+<tr><td><strong>Optitex</strong></td><td>2D/3D服装CAD（以色列）</td><td>永久授权+订阅混合；30,000+用户</td><td><strong>~118-142人</strong>（2024年），总部纽约（以色列创立）；FOG Software Group旗下</td><td>年营收估计<strong>$10-30M</strong>（Kona Equity约$2,980万）；2016年EFI以<strong>$5,280万</strong>收购（<a href="https://pitchbook.com/profiles/company/122216-50" target="_blank">PitchBook</a>），2020年转售FOG Software（Constellation Software）；2024年与NedGraphics战略合并</td></tr>
+    </table>
+    <div class="callout" style="margin-top:10px;">
+      <strong>&#x1F4A1; 对我们团队的启示</strong>：① Browzwear以<strong>187人团队做到$22M营收</strong>（人均产出约$118K），且零外部融资，证明服装数字化工具可以实现高效自给自足；② CLO 3D 2024年获<strong>$3,500万C轮融资</strong>，验证了3D服装数字化赛道的资本认可度；③ 三家公司均成立20年以上，说明该赛道客户粘性高、替换成本大；④ 它们的定价模式（个人版低价获客+企业版定制收费）值得参考。
+    </div>
+    <div class="source">来源：<a href="https://www.clo3d.com" target="_blank">clo3d.com</a> · <a href="https://browzwear.com" target="_blank">browzwear.com</a> · <a href="https://optitex.com" target="_blank">optitex.com</a> · <a href="https://getlatka.com/companies/browzwear" target="_blank">GetLatka-Browzwear</a> · <a href="https://www.kedglobal.com/us/korean-startups/newsView/ked202412160008" target="_blank">KED Global-CLO</a> · <a href="https://pitchbook.com/profiles/company/122216-50" target="_blank">PitchBook-Optitex</a></div>
+  </div>
+
+  <div class="comp-card">
+    <h4><span class="comp-tag tag-purple">T4</span> Citrine Informatics — 最佳方法论参照系</h4>
+    <div class="comp-meta">美国加州 · 2013年 · 融资$73.7M · ARR ~$12.1M · 员工68-71人</div>
+    <p>AI 驱动的材料和化学品开发平台，核心能力是"AI 辅助配方研发 + 实验管理"。Citrine 的平台把"捕捉企业知识、定义目标属性、运行大量虚拟实验、聚焦最有希望候选"串成流程，这与面料研发里的"配方设计→实验验证→数据反馈→AI 优化"高度同构。</p>
+    <table>
+      <tr><th style="width:120px">维度</th><th>详情</th></tr>
+      <tr><td><strong>商业模式</strong></td><td>Enterprise SaaS 年订阅；服务材料/化工头部企业（BASF、LANXESS等）</td></tr>
+      <tr><td><strong>产品定价</strong></td><td>非公开企业定制报价（推测年合同$100K-500K+级别）</td></tr>
+      <tr><td><strong>公司规模</strong></td><td><strong>68-71人</strong>（2024年），估值约<strong>$36.3M</strong>；累计融资$73.7M（PitchBook数据），投资方34家</td></tr>
+      <tr><td><strong>年营收</strong></td><td><strong>ARR ~$12.1M</strong>（2024年，GetLatka数据），人均产出约$175K</td></tr>
+    </table>
+    <div class="callout" style="margin-top:10px;">
+      <strong>&#x1F4A1; 对我们团队的启示</strong>：① Citrine以<strong>不到70人团队做到$12M+ ARR</strong>，证明材料研发AI工具的商业模式已跑通；② 其"捕捉企业知识→虚拟实验→聚焦候选"的产品逻辑可直接迁移到面料研发场景；③ $73.7M融资对应$12.1M ARR，估值$36.3M约3x ARR——对我们也是一种估值锚点参考。
+    </div>
+    <div class="source">来源：<a href="https://citrine.io" target="_blank">citrine.io</a> · <a href="https://getlatka.com/companies/Citrine_Informatics" target="_blank">GetLatka</a> · <a href="https://pitchbook.com/profiles/company/85331-80" target="_blank">PitchBook</a></div>
+  </div>
+
+  <h3>竞品功能对比矩阵</h3>
+  <table>
+    <tr>
+      <th>功能维度</th>
+      <th style="background:#065f46">我们的产品</th>
+      <th>Style3D</th>
+      <th>百布</th>
+      <th>AI布</th>
+      <th>环思</th>
+      <th>CLO 3D</th>
+      <th>Citrine</th>
+    </tr>
+    <tr><td><strong>需求→方案自动生成</strong></td><td style="background:#d1fae5;font-weight:700">&#x2705; 核心</td><td>&#x274C;</td><td>&#x274C;</td><td>&#x274C;</td><td>&#x26A0;&#xFE0F; 基础</td><td>&#x274C;</td><td>&#x274C;</td></tr>
+    <tr><td><strong>来样分析（逆向工程）</strong></td><td style="background:#d1fae5;font-weight:700">&#x2705; 核心</td><td>&#x26A0;&#xFE0F; 数字化</td><td>&#x2705; AI识别</td><td>&#x2705; 以图搜布</td><td>&#x2705; 打样管理</td><td>&#x274C;</td><td>&#x274C;</td></tr>
+    <tr><td><strong>成分/工艺参数管理</strong></td><td style="background:#d1fae5;font-weight:700">&#x2705; 核心</td><td>&#x274C;</td><td>&#x274C;</td><td>&#x274C;</td><td>&#x2705; 工艺管理</td><td>&#x274C;</td><td>&#x2705; 材料配方</td></tr>
+    <tr><td><strong>创新研发（新材料/新工艺）</strong></td><td style="background:#d1fae5;font-weight:700">&#x2705; 核心</td><td>&#x26A0;&#xFE0F; 有限</td><td>&#x274C;</td><td>&#x274C;</td><td>&#x274C;</td><td>&#x274C;</td><td>&#x2705; AI材料发现</td></tr>
+    <tr><td><strong>AI 花型/图案生成</strong></td><td>&#x26A0;&#xFE0F; 辅助</td><td>&#x2705;</td><td>&#x274C;</td><td>&#x2705;</td><td>&#x274C;</td><td>&#x274C;</td><td>&#x274C;</td></tr>
+    <tr><td><strong>面料数据库/知识库</strong></td><td style="background:#d1fae5;font-weight:700">&#x2705; 核心</td><td>&#x2705;</td><td>&#x2705; 300万+</td><td>&#x26A0;&#xFE0F;</td><td>&#x26A0;&#xFE0F; 基础</td><td>&#x2705; 预设库</td><td>&#x2705;</td></tr>
+    <tr><td><strong>实验管理与数据分析</strong></td><td style="background:#d1fae5;font-weight:700">&#x2705; 核心</td><td>&#x274C;</td><td>&#x274C;</td><td>&#x274C;</td><td>&#x26A0;&#xFE0F; 质量管理</td><td>&#x274C;</td><td>&#x2705; 核心</td></tr>
+    <tr><td><strong>AI 辅助决策/推荐</strong></td><td style="background:#d1fae5;font-weight:700">&#x2705; 核心</td><td>&#x26A0;&#xFE0F; Agent初期</td><td>&#x26A0;&#xFE0F; 匹配</td><td>&#x26A0;&#xFE0F; 问答</td><td>&#x274C;</td><td>&#x274C;</td><td>&#x2705; 核心</td></tr>
+    <tr><td><strong>3D 仿真/可视化</strong></td><td>&#x274C; 非核心</td><td style="background:#dbeafe;font-weight:700">&#x2705; 核心</td><td>&#x274C;</td><td>&#x26A0;&#xFE0F; 虚拟试衣</td><td>&#x274C;</td><td style="background:#dbeafe;font-weight:700">&#x2705; 核心</td><td>&#x274C;</td></tr>
+  </table>
+
+  <div class="callout">
+    <strong>矩阵解读</strong>：绿色列（我们的产品）是唯一在"需求→方案自动生成"、"成分/工艺参数管理"、"创新研发"、"实验管理"、"AI辅助决策"五个研发核心维度都有覆盖的产品。这是一个<strong>品类定义者</strong>的位置。
+  </div>
+
+  <h3>竞品空白地带图 — 面料研发全价值链覆盖热力图</h3>
+  <p style="font-size:14px;color:var(--text2);margin-bottom:16px">横轴为面料研发价值链的 7 个核心环节，纵轴为主要竞品。色块深浅表示该竞品在对应环节的覆盖深度。<strong style="color:#dc2626">红色虚线框</strong>标注的是当前无竞品覆盖的核心空白地带。</p>
+
+  <div class="gap-map-wrap">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 530" style="max-width:920px;width:100%;font-family:'PingFang SC','Microsoft YaHei',sans-serif">
+    <defs>
+      <linearGradient id="gapBg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#fef2f2"/>
+        <stop offset="100%" stop-color="#fff5f5"/>
+      </linearGradient>
+      <linearGradient id="ourBg" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#065f46"/>
+        <stop offset="100%" stop-color="#059669"/>
+      </linearGradient>
+      <filter id="shadow1" x="-4%" y="-4%" width="108%" height="108%">
+        <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.08"/>
+      </filter>
+    </defs>
+
+    <!-- Background -->
+    <rect width="920" height="530" rx="12" fill="#fafaf9"/>
+
+    <!-- Title -->
+    <text x="460" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#1a365d">面料研发全价值链 · 竞品覆盖热力图</text>
+    <text x="460" y="48" text-anchor="middle" font-size="11" fill="#718096">色块越深 = 覆盖越完整 · 空白/浅色 = 竞品缺位或薄弱</text>
+
+    <!-- Column headers (value chain stages) -->
+    <!-- Columns: x=160, each 105px wide, 7 columns -->
+    <g font-size="11" font-weight="600" fill="#1a365d" text-anchor="middle">
+      <text x="212" y="78">① 需求理解</text>
+      <text x="317" y="78">② 方案设计</text>
+      <text x="422" y="78">③ 工艺制定</text>
+      <text x="527" y="78">④ 打样验证</text>
+      <text x="632" y="78">⑤ 测试分析</text>
+      <text x="737" y="78">⑥ 成本优化</text>
+      <text x="842" y="78">⑦ 量产交付</text>
+    </g>
+    <!-- Sub headers -->
+    <g font-size="9" fill="#a0aec0" text-anchor="middle">
+      <text x="212" y="92">需求解析·规格化</text>
+      <text x="317" y="92">配方·工艺·方案</text>
+      <text x="422" y="92">工艺单·参数表</text>
+      <text x="527" y="92">打样·试产·迭代</text>
+      <text x="632" y="92">质检·性能测试</text>
+      <text x="737" y="92">原料·加工·能耗</text>
+      <text x="842" y="92">MES·排产·交付</text>
+    </g>
+
+    <!-- Column separators -->
+    <g stroke="#e2e8f0" stroke-width="0.5">
+      <line x1="265" y1="68" x2="265" y2="446"/>
+      <line x1="370" y1="68" x2="370" y2="446"/>
+      <line x1="475" y1="68" x2="475" y2="446"/>
+      <line x1="580" y1="68" x2="580" y2="446"/>
+      <line x1="685" y1="68" x2="685" y2="446"/>
+      <line x1="790" y1="68" x2="790" y2="446"/>
+    </g>
+
+    <!-- ROW 0: Our product (highlighted) -->
+    <rect x="158" y="102" width="738" height="48" rx="8" fill="url(#ourBg)" filter="url(#shadow1)"/>
+    <text x="50" y="130" font-size="12" font-weight="700" fill="#065f46">我们的产品</text>
+    <text x="112" y="130" font-size="9" fill="#059669">★ MVP</text>
+    <g font-size="11" font-weight="600" fill="white" text-anchor="middle">
+      <text x="212" y="130">✅ 核心</text>
+      <text x="317" y="130">✅ 核心</text>
+      <text x="422" y="130">✅ 核心</text>
+      <text x="527" y="130" opacity="0.35" font-size="10">—</text>
+      <text x="632" y="130" opacity="0.35" font-size="10">—</text>
+      <text x="737" y="130" opacity="0.35" font-size="10">—</text>
+      <text x="842" y="130" opacity="0.35" font-size="10">—</text>
+    </g>
+
+    <!-- GAP ZONE highlight: columns 1-3 (需求→方案→工艺) across competitors below -->
+    <rect x="158" y="160" width="315" height="272" rx="6" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="8,4"/>
+    <text x="315" y="176" text-anchor="middle" font-size="10" font-weight="700" fill="#dc2626">🔴 核心空白地带 — 无竞品覆盖</text>
+
+    <!-- ROW 1: Style3D -->
+    <g>
+      <text x="50" y="206" font-size="11" font-weight="600" fill="#1a365d">Style3D</text>
+      <text x="112" y="206" font-size="8" fill="#718096">T1</text>
+    </g>
+    <rect x="160" y="190" width="103" height="32" rx="4" fill="#fee2e2"/><!-- empty -->
+    <rect x="265" y="190" width="103" height="32" rx="4" fill="#fff5f5"/><!-- very light -->
+    <text x="317" y="210" text-anchor="middle" font-size="9" fill="#a0aec0">3D仿真打样</text>
+    <rect x="370" y="190" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="475" y="190" width="103" height="32" rx="4" fill="#dbeafe"/><!-- 3D sim -->
+    <text x="527" y="210" text-anchor="middle" font-size="9" fill="#2563eb">3D仿真</text>
+    <rect x="580" y="190" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="685" y="190" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="790" y="190" width="103" height="32" rx="4" fill="#fee2e2"/>
+
+    <!-- ROW 2: 百布 -->
+    <g>
+      <text x="50" y="248" font-size="11" font-weight="600" fill="#1a365d">百布</text>
+      <text x="112" y="248" font-size="8" fill="#718096">T1</text>
+    </g>
+    <rect x="160" y="232" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="265" y="232" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="370" y="232" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="475" y="232" width="103" height="32" rx="4" fill="#fef3c7"/><!-- AI识别 -->
+    <text x="527" y="252" text-anchor="middle" font-size="9" fill="#92400e">AI识别找布</text>
+    <rect x="580" y="232" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="685" y="232" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="790" y="232" width="103" height="32" rx="4" fill="#fff5f5"/>
+    <text x="842" y="252" text-anchor="middle" font-size="9" fill="#a0aec0">交易平台</text>
+
+    <!-- ROW 3: AI布 -->
+    <g>
+      <text x="50" y="290" font-size="11" font-weight="600" fill="#1a365d">AI布</text>
+      <text x="112" y="290" font-size="8" fill="#718096">T1</text>
+    </g>
+    <rect x="160" y="274" width="103" height="32" rx="4" fill="#fff5f5"/>
+    <text x="212" y="294" text-anchor="middle" font-size="9" fill="#a0aec0">花型生成</text>
+    <rect x="265" y="274" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="370" y="274" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="475" y="274" width="103" height="32" rx="4" fill="#fef3c7"/>
+    <text x="527" y="294" text-anchor="middle" font-size="9" fill="#92400e">以图搜布</text>
+    <rect x="580" y="274" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="685" y="274" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="790" y="274" width="103" height="32" rx="4" fill="#fee2e2"/>
+
+    <!-- ROW 4: 环思智慧 -->
+    <g>
+      <text x="50" y="332" font-size="11" font-weight="600" fill="#1a365d">环思智慧</text>
+      <text x="112" y="332" font-size="8" fill="#718096">T2</text>
+    </g>
+    <rect x="160" y="316" width="103" height="32" rx="4" fill="#fff5f5"/>
+    <text x="212" y="336" text-anchor="middle" font-size="9" fill="#a0aec0">基础表单</text>
+    <rect x="265" y="316" width="103" height="32" rx="4" fill="#fff5f5"/>
+    <text x="317" y="336" text-anchor="middle" font-size="9" fill="#a0aec0">基础配方</text>
+    <rect x="370" y="316" width="103" height="32" rx="4" fill="#fef3c7"/>
+    <text x="422" y="336" text-anchor="middle" font-size="9" fill="#92400e">工艺管理</text>
+    <rect x="475" y="316" width="103" height="32" rx="4" fill="#fed7aa"/>
+    <text x="527" y="336" text-anchor="middle" font-size="9" fill="#92400e">打样管理</text>
+    <rect x="580" y="316" width="103" height="32" rx="4" fill="#fef3c7"/>
+    <text x="632" y="336" text-anchor="middle" font-size="9" fill="#92400e">质量管理</text>
+    <rect x="685" y="316" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="790" y="316" width="103" height="32" rx="4" fill="#fed7aa"/>
+    <text x="842" y="336" text-anchor="middle" font-size="9" fill="#92400e">ERP排产</text>
+
+    <!-- ROW 6: 珍妮AI/Symmpix/点画AI -->
+    <g>
+      <text x="50" y="374" font-size="11" font-weight="600" fill="#1a365d">花型AI工具</text>
+      <text x="112" y="374" font-size="8" fill="#718096">T1</text>
+    </g>
+    <rect x="160" y="358" width="103" height="32" rx="4" fill="#fef3c7"/>
+    <text x="212" y="378" text-anchor="middle" font-size="9" fill="#92400e">花型/图案</text>
+    <rect x="265" y="358" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="370" y="358" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="475" y="358" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="580" y="358" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="685" y="358" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="790" y="358" width="103" height="32" rx="4" fill="#fee2e2"/>
+
+    <!-- ROW 7: CLO3D/Browzwear -->
+    <g>
+      <text x="50" y="416" font-size="11" font-weight="600" fill="#1a365d">3D设计软件</text>
+      <text x="112" y="416" font-size="8" fill="#718096">T3</text>
+    </g>
+    <rect x="160" y="400" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="265" y="400" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="370" y="400" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="475" y="400" width="103" height="32" rx="4" fill="#dbeafe"/>
+    <text x="527" y="420" text-anchor="middle" font-size="9" fill="#2563eb">3D仿真核心</text>
+    <rect x="580" y="400" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="685" y="400" width="103" height="32" rx="4" fill="#fee2e2"/>
+    <rect x="790" y="400" width="103" height="32" rx="4" fill="#fee2e2"/>
+
+    <!-- Legend -->
+    <g transform="translate(160, 452)">
+      <text x="0" y="12" font-size="10" font-weight="600" fill="#1a365d">图例：</text>
+      <rect x="50" y="2" width="20" height="14" rx="3" fill="#dbeafe"/><text x="76" y="13" font-size="9" fill="#4a5568">完整覆盖</text>
+      <rect x="140" y="2" width="20" height="14" rx="3" fill="#fed7aa"/><text x="166" y="13" font-size="9" fill="#4a5568">部分覆盖</text>
+      <rect x="230" y="2" width="20" height="14" rx="3" fill="#fef3c7"/><text x="256" y="13" font-size="9" fill="#4a5568">薄弱/边缘</text>
+      <rect x="330" y="2" width="20" height="14" rx="3" fill="#fee2e2"/><text x="356" y="13" font-size="9" fill="#4a5568">空白</text>
+      <rect x="400" y="1" width="22" height="16" rx="3" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4,2"/><text x="428" y="13" font-size="9" fill="#dc2626" font-weight="600">核心空白区</text>
+      <rect x="520" y="2" width="20" height="14" rx="3" fill="url(#ourBg)"/><text x="546" y="13" font-size="9" fill="#065f46" font-weight="600">我们的产品</text>
+    </g>
+
+    <!-- Annotation arrow pointing to gap -->
+    <g>
+      <line x1="315" y1="446" x2="315" y2="458" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+    </g>
+
+    <!-- Bottom insight -->
+    <rect x="20" y="476" width="880" height="36" rx="4" fill="#fef2f2"/>
+    <text x="460" y="498" text-anchor="middle" font-size="10" font-weight="600" fill="#dc2626">结论：环节①②③（需求理解→方案设计→工艺制定）是品类级空白，正是我们 MVP 的核心切入点</text>
+
+  </svg>
+  </div>
+
+  <div class="callout" style="border-left-color:#dc2626;background:#fef2f2">
+    <strong style="color:#dc2626">空白地带解读</strong>：
+    <ul style="margin:8px 0 0;padding-left:18px;font-size:13px;line-height:2">
+      <li><strong>环节①需求理解</strong>：7 家竞品中 <strong>0 家</strong>覆盖。品牌商需求全靠人工经验解读，这是 AI 价值最高的环节</li>
+      <li><strong>环节②方案设计</strong>：仅 Citrine 在材料科学层有配方 AI（非纺织专用），其余 <strong>全部空白</strong></li>
+      <li><strong>环节③工艺制定</strong>：仅环思有传统 ERP 工艺管理（人工录入），无 AI 辅助。Citrine 有实验设计能力但不在纺织场景</li>
+      <li><strong>竞品聚集在④⑦两端</strong>：Style3D/3D 软件集中在"打样仿真"，百布集中在"交易交付"——<strong>中间的研发决策环节无人问津</strong></li>
+    </ul>
+  </div>
+</div>
+
+<!-- S6: 行业痛点 -->
+<div class="section" id="s6">
+  <h2><span class="num">6</span> 行业痛点 — 我们的机会窗口</h2>
+
+  <h3>面料研发四大核心痛点</h3>
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="step-num">1</div>
+      <strong>需求理解靠经验</strong>
+      品牌商需求模糊（"要垂感好、手感柔"），研发工程师靠经验解读，新手工程师需 3-5 年才能独立接单
+    </div>
+    <div class="flow-step">
+      <div class="step-num">2</div>
+      <strong>打样次数多、周期长</strong>
+      平均打样 3-5 次，每次 2-4 周。一次打样成本 2,000-5,000 元，失败打样浪费严重
+    </div>
+    <div class="flow-step">
+      <div class="step-num">3</div>
+      <strong>知识不沉淀</strong>
+      资深工程师离职带走核心配方/工艺经验，企业"重新发明轮子"
+    </div>
+    <div class="flow-step">
+      <div class="step-num">4</div>
+      <strong>创新靠碰运气</strong>
+      新纤维/新工艺探索缺乏数据支撑，创新成功率低（行业平均 &lt;20%）
+    </div>
+  </div>
+
+  <h3>八大市场空白机会</h3>
+  <table>
+    <tr><th>#</th><th>空白领域</th><th>现状</th><th>机会窗口</th></tr>
+    <tr><td>1</td><td><strong>需求→方案 AI 自动生成</strong></td><td>完全空白，人工经验驱动</td><td>&#x1F534; 紧迫</td></tr>
+    <tr><td>2</td><td>来样逆向工程 AI 化</td><td>人工分析，2-3 天/样</td><td>&#x1F534; 紧迫</td></tr>
+    <tr><td>3</td><td>面料研发知识库</td><td>无结构化产品，数据散落在 Excel/文档</td><td>&#x1F7E1; 重要</td></tr>
+    <tr><td>4</td><td>研发实验管理 + AI 分析</td><td>传统 LIMS 仅做记录，无 AI 分析</td><td>&#x1F7E1; 重要</td></tr>
+    <tr><td>5</td><td>工艺参数智能优化</td><td>完全空白</td><td>&#x1F7E2; 中期</td></tr>
+    <tr><td>6</td><td>新纤维/新材料 AI 发现</td><td>Citrine 在材料科学层做，纺织应用层空白</td><td>&#x1F7E2; 中期</td></tr>
+    <tr><td>7</td><td>面料成本实时预测</td><td>人工估算，偏差 10-20%</td><td>&#x1F7E1; 重要</td></tr>
+    <tr><td>8</td><td>面料研发全流程协同平台</td><td>碎片化工具，无端到端方案</td><td>&#x1F534; 紧迫</td></tr>
+  </table>
+
+  <div class="insight-box">
+    <h4>&#x1F3AF; 结构性判断</h4>
+    <p>面料研发 AI 不是"已有赛道的激烈竞争"，而是<strong style="color:#93c5fd;">品类级的市场空白</strong>。当前没有任何产品在做"需求→方案→工艺单"的全链路 AI 辅助。Style3D 做设计端，百布做交易端，环思做 ERP 端——面料研发的核心环节（理解需求→制定方案→输出工艺）至今仍是人工驱动。</p>
+  </div>
+</div>
+
+<!-- S7: 正凯集团 -->
+<div class="section" id="s7">
+  <h2><span class="num">7</span> 正凯优势 — 我们凭什么能做成？</h2>
+
+  <h3>集团概览</h3>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="value">386.69 亿</div>
+      <div class="label">2024年营收（约53.74亿美元）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="value">#330</div>
+      <div class="label">中国民营企业500强（2025）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="value">七大板块</div>
+      <div class="label">PET·化工·纺织·科技·置业·基金·贸易</div>
+    </div>
+    <div class="kpi-card">
+      <div class="value">101 个</div>
+      <div class="label">数字化项目（4年落地，47个自研）</div>
+    </div>
+  </div>
+  <div class="source">来源：<a href="https://www.zhink.cc/" target="_blank">正凯集团官网</a> · <a href="https://www.fortunechina.com/china500/1693" target="_blank">财富中国500强</a></div>
+
+  <h3>纺织全产业链布局</h3>
+  <div class="data-chain">
+    <div class="chain-node">
+      <strong>正凯化纤</strong>
+      <span>差别化纤维<br>有色涤纶丝</span>
+    </div>
+    <div class="chain-arrow">&#x27A1;</div>
+    <div class="chain-node">
+      <strong>山东正凯</strong>
+      <span>高端功能性纱线<br>25万锭+20万锭智慧工厂</span>
+    </div>
+    <div class="chain-arrow">&#x27A1;</div>
+    <div class="chain-node">
+      <strong>正凯纺织</strong>
+      <span>弹力女装面料<br>六大系列 · 远销欧美中东</span>
+    </div>
+    <div class="chain-arrow">&#x27A1;</div>
+    <div class="chain-node" style="border-color:#065f46;background:#d1fae5">
+      <strong style="color:#065f46">下游品牌</strong>
+      <span>Mango · Bershka · Ann Taylor · DKNY<br>国际品牌战略供应商</span>
+    </div>
+  </div>
+
+  <h3>正凯纺织 — 六大面料产品系列</h3>
+  <table>
+    <tr><th>系列</th><th>纤维成分</th><th>克重范围</th><th>经典产品（成分精确到%）</th><th>应用</th></tr>
+    <tr><td><strong>TR弹力经典</strong></td><td>T/R/SP 涤粘混纺弹力</td><td>160-450 g/㎡</td><td>12平纹弹：T63 R33 SP4，230g/㎡，74×68根/英寸</td><td>四季套装/休闲装/裤装</td></tr>
+    <tr><td><strong>TR弹力+天然</strong></td><td>TR + 棉/毛/丝/麻</td><td>160-400 g/㎡</td><td>9003 TR天丝毛：T68 R23 TEL3 W3 SP3，320g/㎡</td><td>套装/大衣/裤子</td></tr>
+    <tr><td><strong>TR弹力+生态</strong></td><td>TR + 再生涤纶/天丝/莫代尔/竹/醋酸</td><td>180-380 g/㎡</td><td>8112再生双层：RET40 T34 R20 SP6，310g/㎡</td><td>春夏季女士套装</td></tr>
+    <tr><td><strong>TR弹力+功能</strong></td><td>TR + 吸湿排汗/保暖/抗菌/阻燃等功能纤维</td><td>160-450 g/㎡</td><td>9080石墨烯：石墨烯T35 T40 R20 SP5，440g/㎡</td><td>功能性服装</td></tr>
+    <tr><td><strong>长短纤交织仿麻</strong></td><td>差别化涤纶+粘胶竹节纱+锦纶</td><td>180-280 g/㎡</td><td>8646水晶麻：T48 R43 N6 SP3，210g/㎡</td><td>春夏季裙装/裤装</td></tr>
+    <tr><td><strong>绿色低碳色纺</strong></td><td>原液着色纤维色纺纱</td><td>160-400 g/㎡</td><td>8725色纺绉格：T67 R30 SP3，160g/㎡</td><td>四季女士套装</td></tr>
+  </table>
+  <div class="source">来源：<a href="https://www.zhinktex.cc/" target="_blank">正凯纺织官网</a> · <a href="https://www.zhinktex.cc/products/" target="_blank">产品页面</a></div>
+
+  <h3>数据资产清单</h3>
+  <table>
+    <tr><th>数据类型</th><th>具体内容</th><th>来源系统</th><th>AI价值</th></tr>
+    <tr><td><strong>&#x2B50; 纤维配方数据</strong></td><td>六大系列数十款产品的纤维成分配比，精确到百分比</td><td>产品研发部门/PLM</td><td>训练"成分→性能"映射模型</td></tr>
+    <tr><td><strong>&#x2B50; 织造工艺参数</strong></td><td>经纬密度、织物组织、织机参数（速度/张力/开口量）</td><td>MES（正凯纺织智慧工厂）</td><td>织造参数→面料物理性能预测</td></tr>
+    <tr><td><strong>&#x2B50; 质量检测数据</strong></td><td>色牢度/缩水率/起毛起球/强力/克重/密度/幅宽</td><td>LIMS/质量在线检测</td><td>"工艺→质量"预测模型</td></tr>
+    <tr><td><strong>来样分析数据</strong></td><td>客户来样的成分分析/结构拆解/性能对标记录</td><td>研发实验室</td><td>逆向工程"来样→配方/工艺"推荐</td></tr>
+    <tr><td><strong>面料工艺数据</strong></td><td>20,982 条（未清洗）</td><td>环思系统</td><td>有一定的数据基础，清洗后使用</td></tr>
+    <tr><td><strong>成本数据</strong></td><td>原料/加工/能耗成本（偏差已控制在 2% 以内）</td><td>ERP+业财一体化</td><td>成本优化 AI 模型</td></tr>
+  </table>
+
+  <h3>数字化成熟度评估</h3>
+  <table>
+    <tr><th>维度</th><th>评估</th><th>说明</th></tr>
+    <tr><td><strong>数据基础设施</strong></td><td>&#x1F7E2; 远超行业平均</td><td>MDM + ERP + MES 已打通，"三个一体化"战略推进中</td></tr>
+    <tr><td><strong>AI 战略认知</strong></td><td>&#x1F7E2; 高</td><td>自研 Neo Omni AI 平台（集成 97 个大模型）、AI 门户已上线</td></tr>
+    <tr><td><strong>智能制造成果</strong></td><td>&#x1F7E2; 行业领先</td><td>万锭用工 35 人、生产效率提升 25%、动力成本下降 60%</td></tr>
+    <tr><td><strong>历史数据积累</strong></td><td>&#x1F7E1; 中等</td><td>2021 年数字化战略前的历史数据可能未系统化留存</td></tr>
+  </table>
+
+  <div class="insight-box">
+    <h4>&#x1F48E; 正凯数据资产的核心价值</h4>
+    <p>正凯是一个<strong style="color:#93c5fd;">被低估的数据金矿</strong>。386 亿营收、从纤维到面料的全产业链覆盖、10.5 万标准化物料、97 个大模型集成的 AI 平台——这为 AI 面料研发产品提供了<strong style="color:#93c5fd;">从冷启动数据到 AI 基础设施的完整支撑</strong>。六大面料系列精确到百分比级别的成分配比，正是训练"需求→方案"AI 模型的理想数据集。</p>
+  </div>
+</div>
+
+<!-- S8: 产品竞争力策略 -->
+<div class="section" id="s8">
+  <h2><span class="num">8</span> 产品策略 — MVP 定义与实施路径</h2>
+
+  <h3>MVP 定义：需求 AI 定向研发</h3>
+
+  <div class="callout success">
+    <strong>为什么选择"需求研发"作为 MVP 而非"来样研发"？</strong><br>
+    &#x2B50; <strong>核心原因：硬件门槛与验证成本</strong> — "来样研发"需先经物理检测（成分/结构/工艺反推），依赖实验室设备与人工经验，MVP 验证成本高、周期长；"需求研发"为纯软件/算法模式，可快速低成本迭代。<br>
+    &#x2705; <strong>离订单转化最近</strong> — 品牌商每日下发大量"概念需求"，需求→方案→报价是面料厂最高频工作，直接决定接单率。<br>
+    &#x2705; <strong>ROI 直观可量化</strong> — 需求匹配准确度提升可直接减少无效打样（行业平均 5-7 次/款，目标降至 2-3 次），研发周期缩短 50%+，降本增效立竿见影。<br>
+    &#x2705; <strong>正凯数据天然匹配</strong> — 正凯现有"六大系列 × 精确配方数据"无需额外采集，天然支撑"需求→方案"系统打造。<br>
+    &#x2705; <strong>竞品格局空白</strong> — 现有竞品多聚焦 3D 设计或供应链管理，"AI 需求解析与方案生成"尚属蓝海，正凯具备先发优势。<br>
+    &#x1F504; <strong>演进路径</strong>：MVP 跑通"需求研发"后，可平滑拓展至"来样分析"（对接检测数据）与"创新研发"（AI 自主配方），逐步构建全链路壁垒。
+  </div>
+
+  <h3>产品演进路径</h3>
+  <div class="flow-steps">
+    <div class="flow-step" style="background:#d1fae5;border-color:#38a169">
+      <div class="step-num" style="background:#065f46">P0</div>
+      <strong>Phase 1 — 需求AI研发分析师</strong>
+      <span style="font-size:12px;color:#065f46">MVP · 3 个月<br>需求→方案→工艺单</span>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">P1</div>
+      <strong>Phase 2 — AI面料创新引擎</strong>
+      <span style="font-size:12px">6 个月<br>+创新研发+行业平台</span>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">P2</div>
+      <strong>Phase 3 — AI面料全链路方案师</strong>
+      <span style="font-size:12px">12 个月<br>+来样逆向工程</span>
+    </div>
+  </div>
+
+  <h3>Phase 1 核心功能（MVP）</h3>
+  <table>
+    <tr><th>功能模块</th><th>具体能力</th><th>技术实现</th><th>数据来源</th></tr>
+    <tr><td><strong>&#x2705; 需求智能解析</strong></td><td>品牌商需求文档/语音 → 结构化需求规格（成分、克重、手感、功能要求）</td><td>LLM + NLP 意图提取</td><td>历史需求文档</td></tr>
+    <tr><td><strong>&#x2705; 方案智能推荐</strong></td><td>基于需求规格 → 推荐最优纤维配方+纱线工艺+织造参数</td><td>RAG + 配方推荐引擎</td><td>正凯六大系列配方+工艺数据</td></tr>
+    <tr><td><strong>&#x2705; 工艺单自动生成</strong></td><td>方案确认后 → 自动生成完整工艺单（含各工序参数、质检标准、成本估算）</td><td>模板引擎 + Function Calling</td><td>正凯标准工艺单模板</td></tr>
+    <tr><td><strong>&#x2705; 质量预评估</strong></td><td>方案输出时 → 预估成品的关键质量指标（色牢度/缩水率/强力等）</td><td>回归预测模型</td><td>历史质检数据</td></tr>
+    <tr><td><strong>&#x2705; 成本估算</strong></td><td>实时计算方案成本（原料+加工+能耗），与目标价格对比</td><td>成本模型 + 实时价格接口</td><td>正凯 ERP 成本数据</td></tr>
+    <tr><td><strong>&#x2705; 研发知识库</strong></td><td>所有方案/工艺/反馈自动沉淀为结构化知识库，支持搜索和复用</td><td>向量数据库 + 知识图谱</td><td>全量研发数据</td></tr>
+  </table>
+
+  <h3>技术路线</h3>
+  <table>
+    <tr><th>层级</th><th>技术选型</th><th>说明</th></tr>
+    <tr><td><strong>大模型层</strong></td><td>LLM（GPT-4o/Claude/Qwen）+ RAG</td><td>利用正凯已有的 Neo Omni AI 平台（集成 97 个大模型）</td></tr>
+    <tr><td><strong>知识库层</strong></td><td>向量数据库（Milvus/Qdrant）+ 知识图谱</td><td>10.5 万标准化物料 + 配方/工艺/质检数据构建</td></tr>
+    <tr><td><strong>推荐引擎</strong></td><td>配方推荐 + 工艺优化 + 质量预测 + 成本优化</td><td>借鉴 Citrine 的"AI 辅助实验设计"方法论</td></tr>
+    <tr><td><strong>交互层</strong></td><td>Web App + API/SDK</td><td>支持对话式交互和系统集成</td></tr>
+  </table>
+
+  <h3>商业模式与定价</h3>
+  <table>
+    <tr><th>版本</th><th>目标客户</th><th>年费</th><th>核心功能</th></tr>
+    <tr><td><strong>基础版</strong></td><td>小型面料厂（年产值 &lt; 5 亿）</td><td>5-10 万</td><td>需求解析 + 方案推荐 + 工艺单生成</td></tr>
+    <tr><td><strong>专业版</strong></td><td>中型面料企业（5-50 亿）</td><td>15-30 万</td><td>基础版 + 质量预测 + 成本优化 + 研发知识库</td></tr>
+    <tr><td><strong>企业版</strong></td><td>大型纺织集团（&gt; 50 亿）</td><td>50-200 万</td><td>专业版 + 来样逆向 + 创新研发 + 私有化部署</td></tr>
+  </table>
+  <div class="source">定价参照：Style3D SaaS 订阅 · 环思项目制数十万+年费 · Citrine 企业级定价</div>
+
+  <h3>三大竞争壁垒</h3>
+  <table>
+    <tr><th>#</th><th>壁垒类型</th><th>具体内容</th></tr>
+    <tr><td>1</td><td><strong>数据壁垒</strong></td><td>正凯 30 年全链路工艺数据（纤维→纱线→面料），精确到百分比级别的成分配比，10.5 万标准化物料。这些数据极度稀缺且高度企业私有化</td></tr>
+    <tr><td>2</td><td><strong>场景壁垒</strong></td><td>正凯作为品牌战略供货商，每天处理大量品牌商需求，是 AI 模型训练和验证的理想场景</td></tr>
+    <tr><td>3</td><td><strong>行业 Know-How</strong></td><td>面料研发涉及纤维学、染整化学、织造工艺等多学科交叉，纯 AI 公司难以快速理解</td></tr>
+  </table>
+
+  <h3>Go-to-Market 四阶段</h3>
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="step-num">1</div>
+      <strong>内部验证（0-3 月）</strong>
+      在正凯纺织研发部门部署 MVP，用真实品牌商需求验证"需求→方案"模型准确率
+    </div>
+    <div class="flow-step">
+      <div class="step-num">2</div>
+      <strong>标杆客户（3-6 月）</strong>
+      邀请 3-5 家柯桥/绍兴面料企业试点，建立行业口碑
+    </div>
+    <div class="flow-step">
+      <div class="step-num">3</div>
+      <strong>区域推广（6-12 月）</strong>
+      以绍兴/柯桥产业集群为核心，通过行业展会（Intertextile 面辅料展）+口碑推广
+    </div>
+    <div class="flow-step">
+      <div class="step-num">4</div>
+      <strong>全国扩展（12-24 月）</strong>
+      拓展至广东（中大布匹市场）、江苏（盛泽）、福建（石狮）等主要纺织集群
+    </div>
+  </div>
+</div>
+
+<!-- S8.5: 团队与人员配置 -->
+<div class="section" id="s8-team">
+  <h2><span class="num">8.5</span> 团队与人员配置建议</h2>
+
+  <div class="callout">
+    <strong>核心原则</strong>：AI 辅助面料研发产品横跨<strong>纺织工程 + AI 技术 + 企业服务</strong>三个领域，团队配置的关键不是"人越多越好"，而是<strong>确保三个领域的知识能在同一团队内高效融合</strong>。任何一个领域的缺失都会导致产品无法落地。
+  </div>
+
+  <h3>Phase 1 团队（MVP 阶段 · 0-6 个月 · 8-12 人）</h3>
+  <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">目标：完成 MVP 开发，在正凯内部跑通"需求解析 → 方案推荐 → 工艺单生成"闭环。</p>
+
+  <table>
+    <tr><th style="width:50px">#</th><th style="width:140px">角色</th><th style="width:60px">人数</th><th>核心能力要求</th><th>职责</th></tr>
+    <tr>
+      <td>1</td><td><strong>产品经理（面料方向）</strong></td><td>1</td>
+      <td>3 年以上面料研发/纺织工程经验，熟悉打样、配色、工艺单流程；具备基本的 AI/数字化产品认知</td>
+      <td>定义需求优先级、设计功能逻辑、对接正凯研发部门、管理行业知识库</td>
+    </tr>
+    <tr>
+      <td>2</td><td><strong>产品经理（AI 方向）</strong></td><td>1</td>
+      <td>2 年以上 AI/大模型产品经验，熟悉 prompt engineering、RAG、模型评估方法</td>
+      <td>AI 功能设计、模型选型评估、数据标注规范、准确率验证体系</td>
+    </tr>
+    <tr>
+      <td>3</td><td><strong>技术负责人（全栈偏 AI）</strong></td><td>1</td>
+      <td>5 年以上工程经验，熟悉 LLM/RAG/Agent 架构，有企业级 SaaS 交付经验</td>
+      <td>技术架构设计、代码 review、关键技术决策、对外技术对接</td>
+    </tr>
+    <tr>
+      <td>4</td><td><strong>后端工程师</strong></td><td>2</td>
+      <td>Python/Node.js，熟悉向量数据库（Milvus/Pinecone）、RAG pipeline、API 设计</td>
+      <td>知识库系统、推荐引擎、工艺单生成 API、数据管道</td>
+    </tr>
+    <tr>
+      <td>5</td><td><strong>前端工程师</strong></td><td>1</td>
+      <td>React/Vue，有数据可视化经验，能处理面料图片渲染与交互</td>
+      <td>Web 端产品界面、面料参数配置面板、工艺单预览与导出</td>
+    </tr>
+    <tr>
+      <td>6</td><td><strong>AI/算法工程师</strong></td><td>1</td>
+      <td>NLP + 多模态模型调优，熟悉 RAG、fine-tuning、模型部署</td>
+      <td>大模型 prompt 优化、面料知识 RAG 构建、模型评估与迭代</td>
+    </tr>
+    <tr>
+      <td>7</td><td><strong>纺织工程顾问（兼职/借调）</strong></td><td>1-2</td>
+      <td>10 年以上面料研发经验，精通原料配伍、织造工艺、染整后整理</td>
+      <td>行业知识校验、配方逻辑审核、工艺参数验证、培训 AI 团队行业知识</td>
+    </tr>
+    <tr>
+      <td>8</td><td><strong>UI/UX 设计师</strong></td><td>1</td>
+      <td>B2B 工具类产品设计经验，理解工业软件交互逻辑</td>
+      <td>产品界面设计、工艺单可视化设计、用户测试</td>
+    </tr>
+    <tr>
+      <td>9</td><td><strong>客户成功/商务（纺织行业）</strong></td><td>1</td>
+      <td>纺织行业人脉与客户资源，能独立拜访面料企业研发负责人</td>
+      <td>标杆客户拓展、需求采集、用户反馈闭环、行业会议露出</td>
+    </tr>
+  </table>
+
+  <div class="exec-source-row" style="margin-top:12px;">
+    <strong>Phase 1 人力成本估算</strong>：按 8-10 人全职 + 1-2 人兼职，年度人力成本约 <strong>350-500 万元</strong>（杭州/绍兴薪酬水平，含社保公积金）。其中纺织工程顾问可采用正凯内部借调方式，降低现金支出。
+  </div>
+
+  <h3 style="margin-top:28px;">Phase 2 团队（产品化阶段 · 6-18 个月 · 15-22 人）</h3>
+  <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">目标：产品化打磨，拓展外部客户，补充创新研发工程模块与数据飞轮能力。</p>
+
+  <table>
+    <tr><th style="width:50px">#</th><th style="width:140px">新增角色</th><th style="width:60px">新增人数</th><th>核心能力要求</th><th>职责</th></tr>
+    <tr>
+      <td>1</td><td><strong>后端工程师</strong></td><td>+1</td>
+      <td>微服务架构、数据安全合规、多租户 SaaS 架构</td>
+      <td>多租户系统、权限管理、数据隔离、API 商业化</td>
+    </tr>
+    <tr>
+      <td>2</td><td><strong>AI/算法工程师（CV 方向）</strong></td><td>+1</td>
+      <td>纺织面料图像识别、面料物理性能预测模型</td>
+      <td>来样面料图像识别与分析、面料物理参数 AI 预测、视觉检索</td>
+    </tr>
+    <tr>
+      <td>3</td><td><strong>数据工程师</strong></td><td>+1</td>
+      <td>数据管道建设、ETL、数据标注平台管理</td>
+      <td>行业数据采集与清洗、数据标注流程管理、数据飞轮基础设施</td>
+    </tr>
+    <tr>
+      <td>4</td><td><strong>测试/QA 工程师</strong></td><td>+1</td>
+      <td>自动化测试、AI 模型效果评估、工业软件测试经验</td>
+      <td>功能测试、模型输出质量评估、回归测试体系</td>
+    </tr>
+    <tr>
+      <td>5</td><td><strong>客户成功经理</strong></td><td>+2</td>
+      <td>纺织产业链从业经验，能培训客户使用产品、处理落地问题</td>
+      <td>客户 onboarding、培训、续费管理、产品反馈采集</td>
+    </tr>
+    <tr>
+      <td>6</td><td><strong>商务拓展（BD）</strong></td><td>+1-2</td>
+      <td>纺织产业集群客户资源（柯桥/盛泽/中大/石狮）</td>
+      <td>渠道建设、行业展会、行业协会关系、KA 客户签约</td>
+    </tr>
+    <tr>
+      <td>7</td><td><strong>面料行业专家（全职）</strong></td><td>+1</td>
+      <td>15 年以上面料研发全流程经验，有团队管理经验</td>
+      <td>行业知识体系建设、产品方向校准、行业白皮书/标准输出</td>
+    </tr>
+  </table>
+
+  <div class="exec-source-row" style="margin-top:12px;">
+    <strong>Phase 2 人力成本估算</strong>：总团队 15-22 人，年度人力成本约 <strong>600-900 万元</strong>。客户成功和 BD 团队的投入应与营收增长挂钩，按人均贡献 200-300 万 ARR 设置考核线。
+  </div>
+
+  <h3 style="margin-top:28px;">关键角色优先级与招聘建议</h3>
+  <table>
+    <tr><th style="width:60px">优先级</th><th>角色</th><th>建议</th></tr>
+    <tr>
+      <td style="text-align:center;color:#e53e3e;font-weight:bold;">P0</td>
+      <td>产品经理（面料方向）+ 技术负责人 + 纺织工程顾问</td>
+      <td><strong>最先到位</strong>。没有面料行业知识的产品经理，产品方向必然会跑偏。技术负责人建议从正凯集团内部或杭州 AI 创业圈招聘。纺织工程顾问建议从正凯纺织研发部借调 1 名资深工程师（每周投入 2-3 天）。</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;color:#d97706;font-weight:bold;">P1</td>
+      <td>后端 ×2 + 前端 ×1 + AI 工程师 ×1</td>
+      <td>MVP 开发的执行主力。后端优先招有 RAG/知识库经验的 Python 工程师。AI 工程师优先招有大模型落地经验（非纯 research 背景）的候选人。</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;color:#3182ce;font-weight:bold;">P2</td>
+      <td>UI/UX + 客户成功 + 产品经理（AI 方向）</td>
+      <td>MVP 后期（第 3-4 月）到位即可。客户成功在内部试用阶段同步介入，提前建立客户关系。</td>
+    </tr>
+    <tr>
+      <td style="text-align:center;color:#718096;font-weight:bold;">P3</td>
+      <td>CV 工程师 + 数据工程师 + BD + QA</td>
+      <td>Phase 2 启动前到位。CV 和数据工程师是来样识别与数据飞轮的前置投入。</td>
+    </tr>
+  </table>
+
+  <h3 style="margin-top:28px;">团队组织架构建议</h3>
+  <div class="callout" style="background:#f7fafc;">
+    <pre style="font-size:12px;line-height:1.8;margin:0;white-space:pre;">
+产品负责人（1人，向集团 VP 汇报）
+│
+├── <strong>产品组（3-4人）</strong>
+│   ├── 产品经理·面料方向（1人）── 行业知识库管理
+│   ├── 产品经理·AI 方向（1人）── 模型评估与数据标注
+│   └── UI/UX 设计师（1人）
+│
+├── <strong>工程组（5-8人）</strong>
+│   ├── 技术负责人（1人）── 架构 + 技术决策
+│   ├── 后端工程师（2-3人）── RAG/API/多租户
+│   ├── 前端工程师（1-2人）── Web + 可视化
+│   ├── AI 工程师·NLP（1人）── 大模型 + 知识检索
+│   └── AI 工程师·CV（1人，Phase 2）── 面料图像识别
+│
+├── <strong>行业专家组（1-2人）</strong>
+│   ├── 纺织工程顾问（兼职/借调，Phase 1）
+│   └── 面料行业专家（全职，Phase 2）
+│
+├── <strong>数据组（1人，Phase 2）</strong>
+│   └── 数据工程师（1人）── 数据管道 + 标注平台
+│
+├── <strong>商务与客户成功组（2-4人，Phase 2 扩展）</strong>
+│   ├── 客户成功经理（1-2人）
+│   └── BD/商务拓展（1-2人）
+│
+└── <strong>QA（1人，Phase 2）</strong>
+    └── 测试工程师（1人）
+    </pre>
+  </div>
+
+  <div class="callout" style="margin-top:20px;background:#fff5f5;border-left:3px solid #e53e3e;">
+    <strong>关键风险提示</strong>：
+    <ul style="margin:8px 0 0 16px;font-size:12px;">
+      <li><strong>行业 + AI 复合人才稀缺</strong>：既懂面料研发又懂 AI 的人才市场上几乎不存在。解决方案是"双产品经理制"——面料方向 + AI 方向互补，而非试图找一个人覆盖两端。</li>
+      <li><strong>纺织工程顾问的稳定性</strong>：兼职/借调模式在 Phase 1 可行，但进入 Phase 2 需要全职行业专家。建议在 Phase 1 过程中从正凯纺织研发部物色 1-2 名对数字化有兴趣的资深工程师，培养为全职行业专家。</li>
+      <li><strong>技术人才竞争激烈</strong>：杭州 AI 人才市场薪资溢价严重。建议利用正凯集团"传统行业 + AI 落地"的差异化定位吸引对产业 AI 有兴趣的候选人——这类人更看重"做的事有产业价值"而非纯薪资。</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- S9: 行动清单 -->
+<div class="section" id="s9">
+  <h2><span class="num">9</span> 行动计划 — 资源、ROI 与风险</h2>
+
+  <h3>&#x2705; 行动清单</h3>
+  <table>
+    <tr><th>#</th><th>行动</th><th>负责方</th><th>时间窗</th></tr>
+    <tr><td>1</td><td>实地调研正凯纺织研发部门，确认 PLM/LIMS 系统部署情况</td><td>产品经理 + 技术负责人</td><td>第 1-2 周</td></tr>
+    <tr><td>2</td><td>获取正凯六大系列配方数据和历史需求文档（脱敏处理）</td><td>产品经理 + 正凯研发部</td><td>第 2-4 周</td></tr>
+    <tr><td>3</td><td>搭建 MVP 原型（需求解析 + 方案推荐 + 工艺单生成）</td><td>AI 工程团队</td><td>第 3-8 周</td></tr>
+    <tr><td>4</td><td>在正凯纺织内部试用，收集 50+ 真实需求验证准确率</td><td>产品经理 + 正凯研发部</td><td>第 8-12 周</td></tr>
+    <tr><td>5</td><td>根据反馈迭代，补充创新研发工程模块（P2）</td><td>AI 工程团队</td><td>第 13-24 周</td></tr>
+    <tr><td>6</td><td>启动标杆客户试点（柯桥/绍兴 3-5 家面料企业）</td><td>商务 + 产品经理</td><td>第 12-24 周</td></tr>
+  </table>
+
+  <h3>&#x26A0;&#xFE0F; 风险提示</h3>
+  <table>
+    <tr><th>风险</th><th>等级</th><th>应对</th></tr>
+    <tr><td><strong>PLM/LIMS 系统缺失</strong></td><td>&#x1F534; 高</td><td>若未部署，需帮助正凯建设，会增加 2-3 个月时间</td></tr>
+    <tr><td><strong>配方数据保密性</strong></td><td>&#x1F534; 高</td><td>采用联邦学习/数据脱敏等技术方案，打消数据共享顾虑</td></tr>
+    <tr><td><strong>纺织+AI 复合人才稀缺</strong></td><td>&#x1F7E1; 中</td><td>正凯内部纺织专家 + 外部 AI 团队联合组建</td></tr>
+    <tr><td><strong>Style3D 向研发端扩展</strong></td><td>&#x1F7E1; 中</td><td>先发优势 + 数据壁垒 + 优先建立品类认知</td></tr>
+    <tr><td><strong>历史数据质量</strong></td><td>&#x1F7E1; 中</td><td>2021 年前的数据可能未系统化，需评估可用性</td></tr>
+    <tr><td><strong>客户付费意愿</strong></td><td>&#x1F7E2; 低</td><td>正凯内部验证可量化 ROI，标杆客户降低信任门槛</td></tr>
+  </table>
+
+  <h3>Non-goals（明确不做什么）</h3>
+  <div class="callout warn">
+    <strong>MVP 阶段明确不做：</strong><br>
+    &#x274C; 不做面料 B2B 交易平台（百布的赛道）<br>
+    &#x274C; 不做 3D 服装设计工具（Style3D/CLO 3D 的赛道）<br>
+    &#x274C; 不做生产 MES/ERP 系统（环思的赛道）<br>
+    &#x274C; 不做 AI 花型/图案生成工具（珍妮AI/点画的赛道）<br>
+    &#x274C; 不做通用纺织产业互联网平台
+  </div>
+</div>
+
+<!-- S10: 数据来源 -->
+<div class="section" id="s10">
+  <h2><span class="num">10</span> 数据来源（附录）</h2>
+
+  <h3>市场数据来源</h3>
+  <table>
+    <tr><th>#</th><th>来源</th><th>链接</th></tr>
+    <tr><td>M1</td><td>国家统计局、科技部、财政部《2024年全国科技经费投入统计公报》（2025年9月发布）— 纺织业 R&D 291.6 亿、纺织服装服饰业 R&D 113.4 亿（2024年分行业数据）</td><td><a href="https://www.stats.gov.cn/sj/zxfb/202509/t20250929_1961429.html" target="_blank">国家统计局原始公报</a>；<a href="https://mp.weixin.qq.com/s?__biz=MjM5Nzc0NDIxNA==&mid=2656684254&idx=1&sn=130cf88d359c920ff89ae7577ca09725" target="_blank">中国纺织报解读</a></td></tr>
+    <tr><td>M2</td><td>中国纺织建设规划院 2024 行业报告 — 纺织业关键业务环节全面数字化率 59.7%、生产设备数字化率 55.6%（截至2024年3月）；工信部重点工业企业数字化研发设计工具普及率 82%（截至2024年底）</td><td><a href="https://www.ctpic.com.cn/" target="_blank">ctpic.com.cn</a>；<a href="https://epaper.gmw.cn/zhdsb/html/2025-07/09/nw.D110000zhdsb_20250709_1-18.htm" target="_blank">光明日报解读</a>；<a href="https://www.miit.gov.cn/xwfb/mtbd/twbd/art/2025/art_b6a6ae7673f942efb3932b460239d8aa.html" target="_blank">工信部原文</a></td></tr>
+    <tr><td>M3</td><td>工信部等六部门《纺织工业数字化转型实施方案》（2025年6月）— 2027年关键业务环节数字化 >70%、面料研发6项专项技术</td><td><a href="https://cnga.org.cn/cngahtml/xwzx/zcjd/20250623/1235.html" target="_blank">中国服装协会一图读懂</a></td></tr>
+    <tr><td>M4</td><td>国家数据局等八部门《"人工智能+制造"专项行动实施意见》（2025年12月）— 1000个工业智能体、500个典型场景</td><td><a href="https://www.nda.gov.cn/sjj/zwgk/zcfb/0112/20260107214358696030895_pc.html" target="_blank">国家数据局</a></td></tr>
+  </table>
+
+  <h3>需求验证数据来源</h3>
+  <table>
+    <tr><th>#</th><th>来源</th><th>链接</th></tr>
+    <tr><td>D1</td><td>《纺织行业数字化转型专项交流》（2026年5月13日）— 打样成本高、周期长、信息偏差、缺乏数字化工具</td><td><a href="https://mp.weixin.qq.com/s?__biz=MzA3ODgyMDM0MQ==&mid=2653255279&idx=3&sn=9670036d73f2f56151995b6e741335b3" target="_blank">微信公众号</a></td></tr>
+    <tr><td>D2</td><td>国家统计局《2024年全国科技经费投入统计公报》— 纺织业 R&D 经费 291.6 亿元、投入强度 1.22%</td><td><a href="https://www.stats.gov.cn/sj/zxfb/202509/t20250929_1961429.html" target="_blank">stats.gov.cn</a></td></tr>
+    <tr><td>D3</td><td>国家统计局数据查询平台 — 纺织业规上企业单位数 21,172 家（截至2024年12月）</td><td><a href="https://data.stats.gov.cn/" target="_blank">data.stats.gov.cn</a></td></tr>
+    <tr><td>D4</td><td>中国轻纺城 — 年交易额超 3,000 亿元</td><td><a href="https://www.qfc.cn" target="_blank">qfc.cn</a></td></tr>
+  </table>
+
+  <h3>竞品数据来源</h3>
+  <table>
+    <tr><th>#</th><th>来源</th><th>链接</th></tr>
+    <tr><td>C1</td><td>Style3D 凌迪科技 — 百度百科/36氪/观潮</td><td><a href="https://www.36kr.com/p/1131780647437441" target="_blank">36kr.com</a></td></tr>
+    <tr><td>C2</td><td>百布/致景科技 — 百度百科/36氪/致景官网</td><td><a href="https://www.zj.tech/" target="_blank">zj.tech</a></td></tr>
+    <tr><td>C3</td><td>AI布 — 中国轻纺城</td><td><a href="https://ai.qfc.cn" target="_blank">ai.qfc.cn</a></td></tr>
+    <tr><td>C4</td><td>珍妮AI 设计中心</td><td><a href="https://ai.jenny.cn" target="_blank">ai.jenny.cn</a></td></tr>
+    <tr><td>C5</td><td>Symmpix — Tessellation/CENTRESTAGE</td><td><a href="https://www.symmpix.com" target="_blank">symmpix.com</a></td></tr>
+        <tr><td>C8</td><td>环思智慧 — 砍柴网/万商云集/选软件网</td><td><a href="http://www.ikanchai.com/article/20210208/407609.shtml" target="_blank">ikanchai.com</a></td></tr>
+    <tr><td>C9</td><td>湛蓝科技 — 亿欧</td><td><a href="https://www.iyiou.com/news/202510301112978" target="_blank">iyiou.com</a></td></tr>
+    <tr><td>C10</td><td>CLO 3D / Browzwear / Optitex — 各官网</td><td><a href="https://www.clo3d.com" target="_blank">clo3d.com</a></td></tr>
+    <tr><td>C11</td><td>Citrine Informatics — 官网/Getlatka/Keltie</td><td><a href="https://citrine.io" target="_blank">citrine.io</a></td></tr>
+  </table>
+
+  <h3>正凯集团数据来源</h3>
+  <table>
+    <tr><th>#</th><th>来源</th><th>链接</th></tr>
+    <tr><td>Z1</td><td>正凯集团官网</td><td><a href="https://www.zhink.cc/" target="_blank">zhink.cc</a></td></tr>
+    <tr><td>Z2</td><td>正凯纺织官网（六大系列面料）</td><td><a href="https://www.zhinktex.cc/" target="_blank">zhinktex.cc</a></td></tr>
+    <tr><td>Z3</td><td>正凯化纤官网</td><td><a href="https://www.zhinkcf.cc/about.html" target="_blank">zhinkcf.cc</a></td></tr>
+    <tr><td>Z4</td><td>山东正凯官网</td><td><a href="https://www.zhinkxc.cc/about.html" target="_blank">zhinkxc.cc</a></td></tr>
+    <tr><td>Z5</td><td>正凯集团营收/民企500强排名</td><td><a href="https://www.zhink.cc/index/news/detail.html?id=1960930202750951426" target="_blank">zhink.cc 新闻</a></td></tr>
+    <tr><td>Z6</td><td>《财富》中国500强</td><td><a href="https://www.fortunechina.com/china500/1693" target="_blank">fortunechina.com</a></td></tr>
+    <tr><td>Z7</td><td>正凯数字化转型报道（搜狐）</td><td><a href="https://www.sohu.com/a/946792982_121124373" target="_blank">sohu.com</a></td></tr>
+    <tr><td>Z8</td><td>山东正凯智慧工厂案例（卡奥斯）</td><td><a href="https://www.cosmoplat.com/case/?id=1471315347037515778" target="_blank">cosmoplat.com</a></td></tr>
+    <tr><td>Z9</td><td>中国纺织信息中心 — 正凯研发体系</td><td><a href="https://www.ctic.org.cn/web/6/202512/1396.html" target="_blank">ctic.org.cn</a></td></tr>
+    <tr><td>Z10</td><td>企查查/启信宝 — 正凯工商信息</td><td><a href="https://www.qcc.com/firm/f25dc2a1fedcefa65ed2892681b8190e.html" target="_blank">qcc.com</a></td></tr>
+    <tr><td>Z11</td><td>山东正凯纱线展主推产品</td><td><a href="https://news.sohu.com/a/993780553_121123804" target="_blank">sohu.com</a></td></tr>
+    <tr><td>Z12</td><td>正凯集团百度百科</td><td><a href="https://baike.baidu.com/item/浙江正凯集团有限公司/19984478" target="_blank">baike.baidu.com</a></td></tr>
+    <tr><td>Z13</td><td>天眼查 — 正凯纺织客户/出口信息（Mango/Bershka/Ann Taylor/DKNY）</td><td><a href="https://www.tianyancha.com/brand/be860782718" target="_blank">tianyancha.com</a></td></tr>
+  </table>
+</div>
+
+<!-- Footer -->
+<div class="report-footer">
+  <p><strong>AI辅助面料研发产品 — 市场调研报告（终版）</strong></p>
+  <p>产品战略团队协作产出 · 2026-06-01</p>
+  <p style="margin-top:8px;font-size:12px;color:#a0aec0">本报告由产品战略团队 AI 协作生成，重要决策请由产品负责人审定。</p>
+</div>
+
+</div>
+
+<script>
+(function() {
+  // IntersectionObserver: highlight sidebar nav link when section enters viewport
+  const sections = document.querySelectorAll('.section[id]');
+  const navLinks = document.querySelectorAll('#sidebarNav a');
+
+  if (!sections.length || !navLinks.length) return;
+
+  // Map section id -> nav link
+  const linkMap = {};
+  navLinks.forEach(function(link) {
+    const href = link.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      linkMap[href.substring(1)] = link;
+    }
+  });
+
+  let currentActive = null;
+
+  function setActive(id) {
+    if (currentActive === id) return;
+    navLinks.forEach(function(l) { l.classList.remove('active'); });
+    if (linkMap[id]) {
+      linkMap[id].classList.add('active');
+      // Scroll nav link into view within sidebar if needed
+      linkMap[id].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+    currentActive = id;
+  }
+
+  // Use IntersectionObserver with rootMargin to trigger near top of viewport
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        setActive(entry.target.id);
+      }
+    });
+  }, {
+    rootMargin: '-10% 0px -70% 0px',
+    threshold: 0
+  });
+
+  sections.forEach(function(section) {
+    observer.observe(section);
+  });
+
+  // Also set active on click for immediate feedback
+  navLinks.forEach(function(link) {
+    link.addEventListener('click', function() {
+      const href = this.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        setActive(href.substring(1));
+      }
+    });
+  });
+
+  // Set initial active state
+  if (sections[0]) setActive(sections[0].id);
+})();
+</script>
+
+<script>
+(function() {
+  var tabs = document.querySelectorAll('#execTabs .exec-tab');
+  var panels = document.querySelectorAll('.exec-panel');
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var target = this.getAttribute('data-tab');
+      tabs.forEach(function(t) { t.classList.remove('active'); });
+      panels.forEach(function(p) { p.classList.remove('active'); });
+      this.classList.add('active');
+      var panel = document.getElementById(target);
+      if (panel) panel.classList.add('active');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
