@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>专家词库</title>
+    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js">
+    </script>
+    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js">
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+        .page-wrap {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #d1d5db;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-enabled {
+            background: #D1FAE5;
+            color: #059669;
+        }
+        .tag-disabled {
+            background: #F3F4F6;
+            color: #6B7280;
+        }
+        .tag-deleted {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        .tag-category {
+            background: #EEF2FF;
+            color: #4F46E5;
+        }
+        .tag-category-disabled {
+            background: #F3F4F6;
+            color: #9CA3AF;
+        }
+        .tag-market {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .entry-card {
+            transition: all 0.2s;
+        }
+        .entry-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: #D1D5DB;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        .toggle-switch input:checked+.toggle-slider {
+            background: #059669;
+        }
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(20px);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.hidden {
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+            animation: fadeIn 0.25s ease;
+        }
+        .toast.hidden {
+            display: none;
+        }
+        .toast-success {
+            background: #D1FAE5;
+            color: #059669;
+            border: 1px solid #A7F3D0;
+        }
+        .toast-error {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+        }
+        .icon-option {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .icon-option:hover {
+            border-color: #A5B4FC;
+            background: #EEF2FF;
+        }
+        .icon-option.selected {
+            border-color: #4F46E5;
+            background: #EEF2FF;
+        }
+
+        .rte-toolbar {
+            display: flex;
+            gap: 4px;
+            padding: 8px 12px;
+            border-bottom: 1px solid #E5E7EB;
+            background: #FAFAFA;
+            border-radius: 8px 8px 0 0;
+        }
+        .rte-btn {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #6B7280;
+            font-size: 14px;
+        }
+        .rte-btn:hover {
+            background: #E5E7EB;
+        }
+        .rte-content {
+            min-height: 120px;
+            padding: 12px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #374151;
+            outline: none;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+        .detail-label {
+            font-size: 12px;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .detail-value {
+            font-size: 14px;
+            color: #1F2937;
+            line-height: 1.7;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .status-dot.enabled {
+            background: #059669;
+        }
+        .status-dot.disabled {
+            background: #9CA3AF;
+        }
+
+        .entry-card .card-hover-actions {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        .entry-card:hover .card-hover-actions {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .recycle-badge {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            background: #EF4444;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 18px;
+            text-align: center;
+            border-radius: 9px;
+        }
+
+        .detail-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+        .detail-modal-content {
+            background: #fff;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 720px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .category-checkbox-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+            padding: 10px 0 4px 0;
+        }
+        .category-checkbox-grid label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #1F2937;
+            cursor: pointer;
+            user-select: none;
+            padding: 4px 0;
+        }
+        .category-checkbox-grid input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4F46E5;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .no-category-hint {
+            color: #9CA3AF;
+            font-size: 13px;
+            padding: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+
+        <!-- 顶部栏 -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
+            <div class="flex items-center space-x-2 text-sm text-gray-500" id="breadcrumb-area">
+                <span>资源管理</span>
+                <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                <span class="text-gray-900 font-medium">专家词库</span>
+            </div>
+            <div class="flex items-center space-x-3" id="header-actions">
+                <div id="header-list-actions" class="flex items-center space-x-3">
+                    <button onclick="showView('recycle')" class="relative flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                        <iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
+                        <span>回收站</span>
+                        <span class="recycle-badge" id="recycle-badge" style="display:none;">0</span>
+                    </button>
+                    <button onclick="openAddEntry()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                        <iconify-icon icon="mdi:plus"></iconify-icon>
+                        <span>新增词条</span>
+                    </button>
+                </div>
+                <div id="header-recycle-actions" class="hidden flex items-center space-x-3">
+                    <button onclick="showView('list')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                        <iconify-icon icon="mdi:arrow-left"></iconify-icon>
+                        <span>返回列表</span>
+                    </button>
+                    <button onclick="batchRestore()" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm" id="btn-batch-restore" disabled>
+                        <iconify-icon icon="mdi:restore"></iconify-icon>
+                        <span>恢复选中</span>
+                    </button>
+                    <button onclick="batchPermanentDelete()" class="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm" id="btn-batch-perm-delete" disabled>
+                        <iconify-icon icon="mdi:trash-can"></iconify-icon>
+                        <span>彻底删除</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 内容滚动区 -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+            <!-- 列表视图 -->
+            <div id="view-list">
+                <!-- 筛选栏 -->
+                <div class="flex items-center space-x-4 mb-6 flex-wrap gap-y-2">
+                    <div class="relative flex-1 max-w-md">
+                        <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                        <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+                        placeholder="搜索词条名称..." type="text" id="search-input" oninput="filterEntries()" />
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="relative">
+                            <select class="appearance-none pl-3 pr-8 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer min-w-[140px]" id="category-filter" onchange="filterEntries()">
+                                <option value="">全部类别</option>
+                            </select>
+                            <iconify-icon class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" icon="mdi:chevron-down"></iconify-icon>
+                        </div>
+                        <div class="relative">
+                            <select class="appearance-none pl-3 pr-8 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer" id="status-filter" onchange="filterEntries()">
+                                <option value="">全部状态</option>
+                                <option value="enabled">启用</option>
+                                <option value="disabled">禁用</option>
+                            </select>
+                            <iconify-icon class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" icon="mdi:chevron-down"></iconify-icon>
+                        </div>
+                        <button onclick="openModal('categoryModal')" class="flex items-center justify-center w-9 h-9 bg-white border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50" title="专家词库类别">
+                            <iconify-icon icon="mdi:cog-outline"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 词条卡片网格 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="entry-grid">
+                </div>
+
+                <!-- 空状态 -->
+                <div id="empty-state" class="hidden flex-col items-center justify-center py-20 text-center">
+                    <iconify-icon icon="mdi:book-open-page-variant-outline" class="text-6xl text-gray-300 mb-4"></iconify-icon>
+                    <p class="text-gray-500 text-lg mb-2">暂无词条</p>
+                    <p class="text-gray-400 text-sm mb-6">点击「新增词条」开始创建</p>
+                    <button onclick="openAddEntry()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">新增词条</button>
+                </div>
+            </div>
+
+            <!-- 回收站视图 -->
+            <div id="view-recycle" class="hidden">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="relative flex-1 max-w-md">
+                        <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                        <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+                        placeholder="搜索已删除词条..." type="text" id="recycle-search" oninput="filterRecycle()" />
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <iconify-icon icon="mdi:trash-can-outline" class="text-red-500"></iconify-icon>
+                        <span>共 <strong id="recycle-count" class="text-gray-900">0</strong> 个已删除词条</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label class="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" id="recycle-select-all" onchange="toggleRecycleSelectAll()" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                            <span>全选</span>
+                        </label>
+                        <span class="text-xs text-gray-400" id="recycle-selected-count">已选 0 项</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="recycle-grid">
+                </div>
+
+                <div id="recycle-empty" class="hidden flex-col items-center justify-center py-20 text-center">
+                    <iconify-icon icon="mdi:trash-can-outline" class="text-6xl text-gray-300 mb-4"></iconify-icon>
+                    <p class="text-gray-500 text-lg">回收站为空</p>
+                    <p class="text-gray-400 text-sm">没有已删除的词条</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 新增/编辑词条弹窗 -->
+    <div id="addModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('addModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-2xl">
+                <h3 class="text-lg font-bold text-gray-900" id="modal-title">新增词条</h3>
+                <button onclick="closeModal('addModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="entry-name" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入术语名称" maxlength="50" oninput="validateName()" />
+                    <p class="text-xs mt-1" id="name-hint"><span class="text-gray-400">同一类别下不可重名，最大 50 字符</span></p>
+                </div>
+
+                <!-- 分类多选（只显示启用类别，不显示状态标签） -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别 <span class="text-red-500">*</span> <span class="text-gray-400 font-normal text-xs">(可多选)</span></label>
+                    <div id="category-checkbox-group" class="category-checkbox-grid">
+                        <!-- 由 JS 渲染 -->
+                    </div>
+                    <p class="text-xs mt-1 text-gray-400" id="category-hint">请至少选择一个类别</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">图标 <span class="text-gray-400 font-normal">(可选)</span></label>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-xl" id="icon-preview"></div>
+                        <button onclick="toggleIconPicker()" class="px-3 py-1.5 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100">选择图标</button>
+                        <button onclick="uploadIcon()" class="px-3 py-1.5 text-sm text-green-600 bg-green-50 rounded-lg hover:bg-green-100">上传图标</button>
+                        <button onclick="clearIcon()" class="px-3 py-1.5 text-sm text-gray-500 bg-gray-50 rounded-lg hover:bg-gray-100">清除</button>
+                        <input type="file" id="icon-file-input" accept="image/*" class="hidden" onchange="handleIconUpload(event)" />
+                    </div>
+                    <div id="icon-picker-panel" class="hidden bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <div class="icon-grid" id="icon-grid"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">简介 <span class="text-red-500">*</span></label>
+                    <textarea id="entry-intro" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm resize-none" rows="3" placeholder="请简要描述该术语的含义..." maxlength="200" oninput="updateIntroCount(this)"></textarea>
+                    <p class="text-xs mt-1"><span id="intro-count" class="text-gray-400">0</span><span class="text-gray-400">/200</span></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">详情 <span class="text-red-500">*</span></label>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="rte-toolbar">
+                            <div class="rte-btn" title="加粗"><b>B</b></div>
+                            <div class="rte-btn" title="斜体"><i>I</i></div>
+                            <div class="rte-btn" title="下划线"><u>U</u></div>
+                            <div class="rte-btn" title="列表"></div>
+                            <div class="rte-btn" title="代码块">&lt;/&gt;</div>
+                            <div class="rte-btn" title="链接">🔗</div>
+                            <div class="rte-btn" title="图片">🖼</div>
+                        </div>
+                        <div class="rte-content" contenteditable="true" id="entry-detail"></div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">状态</label>
+                        <p class="text-xs text-gray-400 mt-0.5">关闭后该词条对业务人员不可见</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="entry-status" checked />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 sticky bottom-0 bg-white rounded-b-2xl">
+                <button onclick="closeModal('addModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="saveEntry()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 专家词库类别弹窗 -->
+    <div id="categoryModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('categoryModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[80vh] overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">专家词库类别</h3>
+                <button onclick="closeModal('categoryModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                            <th class="px-6 py-3 text-left font-semibold">类别名称</th>
+                            <th class="px-6 py-3 text-left font-semibold">排序号</th>
+                            <th class="px-6 py-3 text-left font-semibold">状态</th>
+                            <th class="px-6 py-3 text-left font-semibold">关联词条数</th>
+                            <th class="px-6 py-3 text-right font-semibold">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="category-table-body"></tbody>
+                </table>
+            </div>
+            <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100">
+                <button onclick="openAddCategory()" class="flex items-center gap-2 px-4 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100">
+                    <iconify-icon icon="mdi:plus"></iconify-icon><span>新增类别</span>
+                </button>
+                <button onclick="closeModal('categoryModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增类别弹窗 -->
+    <div id="addCategoryModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('addCategoryModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900" id="category-modal-title">新增类别</h3>
+                <button onclick="closeModal('addCategoryModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="cat-name" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入类别名称" maxlength="20" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">排序号</label>
+                    <input type="number" id="cat-sort" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="数字越小越靠前，默认 0" value="0" />
+                </div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">状态</label>
+                        <p class="text-xs text-gray-400 mt-0.5">禁用后不在新增词条的类别下拉中展示</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cat-status" checked />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('addCategoryModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="saveCategory()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认删除弹窗 -->
+    <div id="deleteConfirmModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('deleteConfirmModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+            <div class="px-6 py-8 text-center">
+                <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                    <iconify-icon icon="mdi:alert-circle-outline" class="text-3xl text-red-500"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">确认删除</h3>
+                <p class="text-sm text-gray-500" id="delete-confirm-msg"></p>
+            </div>
+            <div class="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('deleteConfirmModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="confirmDelete()" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 彻底删除确认弹窗 -->
+    <div id="permanentDeleteModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('permanentDeleteModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+            <div class="px-6 py-8 text-center">
+                <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                    <iconify-icon icon="mdi:alert-outline" class="text-3xl text-red-600"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">⚠️ 彻底删除</h3>
+                <p class="text-sm text-gray-500">此操作不可恢复，词条将被永久删除。</p>
+            </div>
+            <div class="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('permanentDeleteModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="confirmPermanentDelete()" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700">确认彻底删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 词条详情弹窗 -->
+    <div id="detailModal" class="detail-modal-overlay hidden" onclick="closeDetailModal()">
+        <div class="detail-modal-content" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between p-5 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0" id="detail-icon"></div>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h2 class="text-lg font-bold text-gray-900" id="detail-name"></h2>
+                            <span class="tag tag-enabled" id="detail-status-tag"><span class="status-dot enabled"></span>启用</span>
+                            <span id="detail-category-tags" class="flex gap-1 flex-wrap"></span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-0.5" id="detail-intro"></p>
+                    </div>
+                </div>
+                <button onclick="closeDetailModal()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="p-5">
+                <div class="flex items-center gap-4 text-xs text-gray-400 mb-5 flex-wrap">
+                    <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline"></iconify-icon> 创建人：<span id="detail-creator"></span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon> 创建时间：<span id="detail-created-at"></span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-edit-outline"></iconify-icon> 更新于 <span id="detail-updated-at"></span></span>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-5">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                        <iconify-icon icon="mdi:text-long" class="text-blue-500"></iconify-icon>
+                        详细内容
+                    </h3>
+                    <div class="prose prose-sm max-w-none text-gray-600 leading-relaxed" id="detail-content">
+                        <p class="text-gray-400 italic">暂无详细内容</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-100">
+                <button onclick="closeDetailModal()" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">关闭</button>
+                <button onclick="openEditFromDetail()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center gap-1.5">
+                    <iconify-icon icon="mdi:pencil-outline" class="text-sm"></iconify-icon>
+                    编辑
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script>
+        // ═══════════════════════════════════════════════
+        // 数据模型
+        // ═══════════════════════════════════════════════
+        let categories = [
+            { id: 1, name: '技术术语', sort: 1, status: 'enabled' },
+            { id: 2, name: '业务概念', sort: 2, status: 'enabled' },
+            { id: 3, name: '行业标准', sort: 3, status: 'enabled' },
+            { id: 4, name: '缩写说明', sort: 4, status: 'enabled' },
+            { id: 5, name: '产品名词', sort: 5, status: 'disabled' }
+        ];
+
+        function calcCategoryCounts() {
+            categories.forEach(c => c.count = 0);
+            entries.forEach(e => {
+                if (e.categoryIds) {
+                    e.categoryIds.forEach(cid => {
+                        const cat = categories.find(c => c.id === cid);
+                        if (cat) cat.count = (cat.count || 0) + 1;
+                    });
+                }
+            });
+        }
+
+        let entries = [{
+            id: 1,
+            name: 'RBAC',
+            icon: '⚙️',
+            categoryIds: [1],
+            categories: ['技术术语'],
+            intro: '基于角色的访问控制模型，通过角色分配权限，实现细粒度的访问管理。',
+            detail: '<p><b>RBAC</b>（Role-Based Access Control）是一种广泛使用的权限管理模型。</p><ul><li>用户通过角色获得权限</li><li>支持角色继承和互斥</li><li>适用于企业级系统</li></ul>',
+            status: 'enabled',
+            createdBy: '王博士',
+            createdAt: '2026-07-01 10:00',
+            updatedBy: '王博士',
+            updatedAt: '2026-07-05 14:30',
+            usageCount: 1280
+        }, {
+            id: 2,
+            name: 'ROI',
+            icon: '📊',
+            categoryIds: [4],
+            categories: ['缩写说明'],
+            intro: '投资回报率，衡量投资收益效率的核心财务指标。',
+            detail: '<p><b>ROI</b> = (收益 - 成本) / 成本 × 100%</p><p>是评估项目投资价值的常用指标。</p>',
+            status: 'enabled',
+            createdBy: '李工',
+            createdAt: '2026-06-28 09:00',
+            updatedBy: '李工',
+            updatedAt: '2026-07-04 09:15',
+            usageCount: 856
+        }, {
+            id: 3,
+            name: 'SaaS',
+            icon: '📦',
+            categoryIds: [3],
+            categories: ['行业标准'],
+            intro: '软件即服务，通过云端提供软件应用，用户按需订阅使用。',
+            detail: '',
+            status: 'disabled',
+            createdBy: '王博士',
+            createdAt: '2026-06-25 14:00',
+            updatedBy: '王博士',
+            updatedAt: '2026-07-03 16:42',
+            usageCount: 432
+        }, {
+            id: 4,
+            name: '微服务架构',
+            icon: '🔧',
+            categoryIds: [1],
+            categories: ['技术术语'],
+            intro: '将应用程序拆分为一组小型、独立部署的服务，每个服务运行在自己的进程中。',
+            detail: '<p>微服务架构的核心特点：</p><ul><li>服务独立部署</li><li>去中心化数据管理</li><li>容错设计</li><li>基础设施自动化</li></ul>',
+            status: 'enabled',
+            createdBy: '张工',
+            createdAt: '2026-07-02 11:00',
+            updatedBy: '张工',
+            updatedAt: '2026-07-05 08:20',
+            usageCount: 654
+        }, {
+            id: 5,
+            name: 'KPI',
+            icon: '📈',
+            categoryIds: [2, 4],
+            categories: ['业务概念', '缩写说明'],
+            intro: '关键绩效指标，用于衡量组织、部门或个人工作成效的量化指标。',
+            detail: '',
+            status: 'enabled',
+            createdBy: '李工',
+            createdAt: '2026-06-30 16:30',
+            updatedBy: '李工',
+            updatedAt: '2026-07-02 10:00',
+            usageCount: 1024
+        }, {
+            id: 6,
+            name: 'API 网关',
+            icon: '🌐',
+            categoryIds: [1],
+            categories: ['技术术语'],
+            intro: '微服务架构中的统一入口，负责请求路由、认证、限流等功能。',
+            detail: '<p>API 网关是微服务架构的关键组件，主要职责包括：</p><ul><li>请求路由与转发</li><li>身份认证与授权</li><li>流量控制与限流</li><li>日志与监控</li></ul>',
+            status: 'enabled',
+            createdBy: '张工',
+            createdAt: '2026-07-03 09:00',
+            updatedBy: '张工',
+            updatedAt: '2026-07-04 15:30',
+            usageCount: 378
+        }, {
+            id: 7,
+            name: 'SLA',
+            icon: '📋',
+            categoryIds: [4],
+            categories: ['缩写说明'],
+            intro: '服务级别协议，定义服务提供商与客户之间的服务质量标准。',
+            detail: '',
+            status: 'enabled',
+            createdBy: '王博士',
+            createdAt: '2026-06-20 08:00',
+            updatedBy: '王博士',
+            updatedAt: '2026-07-01 12:00',
+            usageCount: 567
+        }, {
+            id: 8,
+            name: '数字化转型',
+            icon: '💡',
+            categoryIds: [2],
+            categories: ['业务概念'],
+            intro: '利用数字技术重塑业务流程、组织文化和客户体验的战略过程。',
+            detail: '<p>数字化转型涵盖三个层面：</p><ol><li><b>技术层</b>：云计算、大数据、AI 等技术应用</li><li><b>业务层</b>：业务流程再造与优化</li><li><b>组织层</b>：文化变革与能力提升</li></ol>',
+            status: 'enabled',
+            createdBy: '李工',
+            createdAt: '2026-06-15 10:00',
+            updatedBy: '李工',
+            updatedAt: '2026-06-28 14:00',
+            usageCount: 2103
+        }, {
+            id: 9,
+            name: '容器编排',
+            icon: '🐳',
+            categoryIds: [1],
+            categories: ['技术术语'],
+            intro: '自动化部署、扩展和管理容器化应用的技术，如 Kubernetes。',
+            detail: '',
+            status: 'enabled',
+            createdBy: '张工',
+            createdAt: '2026-07-04 14:00',
+            updatedBy: '张工',
+            updatedAt: '2026-07-05 11:00',
+            usageCount: 445
+        }, {
+            id: 10,
+            name: 'DevOps',
+            icon: '🚀',
+            categoryIds: [1, 2],
+            categories: ['技术术语', '业务概念'],
+            intro: '开发与运维的深度融合，通过自动化流程提升软件交付效率。',
+            detail: '<p>DevOps 核心实践：</p><ul><li>持续集成/持续交付（CI/CD）</li><li>基础设施即代码</li><li>监控与日志聚合</li><li>协作文化</li></ul>',
+            status: 'enabled',
+            createdBy: '王博士',
+            createdAt: '2026-07-06 09:00',
+            updatedBy: '王博士',
+            updatedAt: '2026-07-06 14:20',
+            usageCount: 892
+        }];
+
+        calcCategoryCounts();
+
+        let deletedEntries = [{
+            id: 101,
+            name: '旧版SaaS定义',
+            icon: '📦',
+            categoryIds: [3],
+            categories: ['行业标准'],
+            intro: '已废弃的SaaS描述，仅供参考。',
+            deletedBy: '王博士',
+            deletedAt: '2026-07-02 10:20'
+        }];
+
+        let currentView = 'list';
+        let editingEntryId = null;
+        let deleteTargetIds = [];
+        let recycleDeleteTargetIds = [];
+        let selectedIcon = '📖';
+        let iconPickerOpen = false;
+        const iconList = ['', '⚙️', '📊', '📦', '🔧', '📈', '🌐', '📋', '💡', '🐳', '🚀', '🔍', '🏷️', '🔑', '⚡', '🔗', '📱', '💻', '🤖', '🛠️'];
+
+        // ═══════════════════════════════════════════════
+        // 视图切换
+        // ══════════════════════════════════════════════
+        function showView(view) {
+            currentView = view;
+            document.getElementById('view-list').classList.toggle('hidden', view !== 'list');
+            document.getElementById('view-recycle').classList.toggle('hidden', view !== 'recycle');
+            document.getElementById('header-list-actions').classList.toggle('hidden', view !== 'list');
+            document.getElementById('header-recycle-actions').classList.toggle('hidden', view !== 'recycle');
+
+            const bc = document.getElementById('breadcrumb-area');
+            if (view === 'list') {
+                bc.innerHTML =
+                    '<span>资源管理</span><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">专家词库</span>';
+            } else if (view === 'recycle') {
+                bc.innerHTML =
+                    '<a href="#" onclick="showView(\'list\')" class="hover:text-blue-600">专家词库</a><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">回收站</span>';
+            }
+
+            if (view === 'list') { renderEntryGrid();
+                updateCategoryFilter(); }
+            if (view === 'recycle') renderRecycleGrid();
+        }
+
+        function updateRecycleBadge() {
+            const badge = document.getElementById('recycle-badge');
+            const count = deletedEntries.length;
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = '';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        // 渲染词条卡片
+        // ═══════════════════════════════════════════════
+        function getFilteredEntries() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const catFilter = document.getElementById('category-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            return entries.filter(e => {
+                if (search && !e.name.toLowerCase().includes(search) && !e.intro.toLowerCase().includes(search))
+                    return false;
+                if (catFilter) {
+                    const cid = parseInt(catFilter);
+                    if (!e.categoryIds || !e.categoryIds.includes(cid)) return false;
+                }
+                if (statusFilter && e.status !== statusFilter) return false;
+                return true;
+            });
+        }
+
+        function renderCategoryTags(categoryIds) {
+            if (!categoryIds || categoryIds.length === 0) return '';
+            return categoryIds.map(cid => {
+                const cat = categories.find(c => c.id === cid);
+                if (!cat) return '';
+                const cls = cat.status === 'enabled' ? 'tag-category' : 'tag-category-disabled';
+                return `<span class="tag ${cls}">${cat.name}</span>`;
+            }).join(' ');
+        }
+
+        function renderEntryGrid() {
+            const filtered = getFilteredEntries();
+            const grid = document.getElementById('entry-grid');
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('empty-state').classList.add('flex');
+                return;
+            }
+
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('empty-state').classList.remove('flex');
+
+            grid.innerHTML = filtered.map(e => {
+                const isEnabled = e.status === 'enabled';
+                const catTags = renderCategoryTags(e.categoryIds);
+                return `
+                <div class="entry-card bg-white rounded-xl border border-gray-200 p-5 cursor-pointer relative" onclick="openDetail(${e.id})">
+                    <div class="card-hover-actions absolute top-3 right-3 flex items-center gap-1" onclick="event.stopPropagation()">
+                        <button onclick="openEdit(${e.id})" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="编辑">
+                            <iconify-icon icon="mdi:pencil-outline" class="text-base"></iconify-icon>
+                        </button>
+                        <button onclick="openDeleteConfirm([${e.id}])" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="删除">
+                            <iconify-icon icon="mdi:trash-can-outline" class="text-base"></iconify-icon>
+                        </button>
+                    </div>
+                    <div class="flex items-start gap-3 mb-3">
+                        <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${renderIconHtml(e.icon, 'w-9 h-9')}</div>
+                        <div class="flex-1 min-w-0 pr-12">
+                            <h3 class="font-semibold text-gray-900 text-base truncate">${e.name}</h3>
+                            <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                                <span class="tag ${isEnabled ? 'tag-enabled' : 'tag-disabled'}"><span class="status-dot ${isEnabled ? 'enabled' : 'disabled'}"></span>${isEnabled ? '启用' : '禁用'}</span>
+                                ${catTags}
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4 line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${e.intro}</p>
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div class="flex items-center gap-2 text-xs text-gray-400">
+                            <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline" class="text-sm"></iconify-icon> ${e.updatedBy}</span>
+                            <span class="text-gray-300">|</span>
+                            <span>更新: ${e.updatedAt.split(' ')[0]}</span>
+                        </div>
+                        <label class="toggle-switch" onclick="event.stopPropagation()">
+                            <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="toggleEntryStatus(${e.id})"/>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function filterEntries() { renderEntryGrid(); }
+
+        // ═══════════════════════════════════════════════
+        // 渲染回收站卡片
+        // ═══════════════════════════════════════════════
+        function renderRecycleGrid() {
+            const search = document.getElementById('recycle-search').value.toLowerCase();
+            const filtered = deletedEntries.filter(e => !search || e.name.toLowerCase().includes(search));
+            const grid = document.getElementById('recycle-grid');
+            document.getElementById('recycle-count').textContent = deletedEntries.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                document.getElementById('recycle-empty').classList.remove('hidden');
+                document.getElementById('recycle-empty').classList.add('flex');
+                return;
+            }
+
+            document.getElementById('recycle-empty').classList.add('hidden');
+            document.getElementById('recycle-empty').classList.remove('flex');
+
+            grid.innerHTML = filtered.map(e => {
+                const isSelected = recycleDeleteTargetIds.includes(e.id);
+                const catTags = renderCategoryTags(e.categoryIds);
+                return `
+                <div class="entry-card bg-white rounded-xl border ${isSelected ? 'border-red-300 ring-2 ring-red-100' : 'border-gray-200'} p-5 relative">
+                    <div class="absolute top-4 right-4">
+                        <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleRecycleSelect(${e.id})" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                    </div>
+                    <div class="flex items-start gap-3 mb-3">
+                        <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${renderIconHtml(e.icon, 'w-9 h-9')}</div>
+                        <div class="flex-1 min-w-0 pr-6">
+                            <h3 class="font-semibold text-gray-900 text-base truncate">${e.name}</h3>
+                            <div class="flex flex-wrap gap-1 mt-1">${catTags}</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4 line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${e.intro}</p>
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100 text-xs text-gray-400">
+                        <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline" class="text-sm"></iconify-icon> ${e.deletedBy}</span>
+                        <span>${e.deletedAt}</span>
+                    </div>
+                    <div class="flex items-center gap-2 mt-3">
+                        <button onclick="restoreEntry(${e.id})" class="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                            <iconify-icon icon="mdi:restore"></iconify-icon>
+                            <span>还原</span>
+                        </button>
+                        <button onclick="openPermanentDelete([${e.id}])" class="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                            <iconify-icon icon="mdi:trash-can"></iconify-icon>
+                            <span>彻底删除</span>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+
+            updateRecycleSelectedCount();
+        }
+
+        function filterRecycle() { renderRecycleGrid(); }
+
+        // ═══════════════════════════════════════════════
+        // 回收站选择操作
+        // ═══════════════════════════════════════════════
+        function toggleRecycleSelect(id) {
+            const idx = recycleDeleteTargetIds.indexOf(id);
+            if (idx > -1) recycleDeleteTargetIds.splice(idx, 1);
+            else recycleDeleteTargetIds.push(id);
+            renderRecycleGrid();
+        }
+
+        function toggleRecycleSelectAll() {
+            const checked = document.getElementById('recycle-select-all').checked;
+            const search = document.getElementById('recycle-search').value.toLowerCase();
+            const filtered = deletedEntries.filter(e => !search || e.name.toLowerCase().includes(search));
+            if (checked) {
+                filtered.forEach(e => { if (!recycleDeleteTargetIds.includes(e.id)) recycleDeleteTargetIds.push(e.id); });
+            } else {
+                filtered.forEach(e => { const idx = recycleDeleteTargetIds.indexOf(e.id); if (idx > -1) recycleDeleteTargetIds
+                        .splice(idx, 1); });
+            }
+            renderRecycleGrid();
+        }
+
+        function updateRecycleSelectedCount() {
+            document.getElementById('recycle-selected-count').textContent = `已选 ${recycleDeleteTargetIds.length} 项`;
+            document.getElementById('btn-batch-restore').disabled = recycleDeleteTargetIds.length === 0;
+            document.getElementById('btn-batch-perm-delete').disabled = recycleDeleteTargetIds.length === 0;
+        }
+
+        // ═══════════════════════════════════════════════
+        // 状态切换
+        // ═══════════════════════════════════════════════
+        function toggleEntryStatus(id) {
+            const e = entries.find(x => x.id === id);
+            if (e) {
+                e.status = e.status === 'enabled' ? 'disabled' : 'enabled';
+                e.updatedAt = new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-');
+                renderEntryGrid();
+                showToast(e.status === 'enabled' ? '启用成功' : '禁用成功', 'success');
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        // 类别筛选（只显示启用类别）
+        // ═══════════════════════════════════════════════
+        function updateCategoryFilter() {
+            const sel = document.getElementById('category-filter');
+            const current = sel.value;
+            sel.innerHTML = '<option value="">全部类别</option>';
+            const sorted = [...categories].filter(c => c.status === 'enabled').sort((a, b) => a.sort - b.sort);
+            sorted.forEach(c => {
+                sel.innerHTML += `<option value="${c.id}" ${current == c.id ? 'selected' : ''}>${c.name}</option>`;
+            });
+        }
+
+        // ═══════════════════════════════════════════════
+        // 多选分类渲染（新增/编辑弹窗，只显示启用类别，不显示状态标签）
+        // ═══════════════════════════════════════════════
+        function renderCategoryCheckboxes(selectedIds) {
+            const container = document.getElementById('category-checkbox-group');
+            const sorted = [...categories].filter(c => c.status === 'enabled').sort((a, b) => a.sort - b.sort);
+            if (sorted.length === 0) {
+                container.innerHTML = '<div class="no-category-hint">暂无可用的启用类别，请先在「专家词库类别」中创建并启用。</div>';
+                return;
+            }
+            container.innerHTML = sorted.map(c => {
+                const checked = selectedIds && selectedIds.includes(c.id) ? 'checked' : '';
+                return `<label>
+                            <input type="checkbox" value="${c.id}" ${checked} onchange="onCategoryCheckChange()" />
+                            ${c.name}
+                        </label>`;
+            }).join('');
+            updateCategoryHint();
+        }
+
+        function onCategoryCheckChange() {
+            updateCategoryHint();
+        }
+
+        function updateCategoryHint() {
+            const checks = document.querySelectorAll('#category-checkbox-group input[type="checkbox"]:checked');
+            const hint = document.getElementById('category-hint');
+            if (checks.length === 0) {
+                hint.innerHTML = '<span class="text-red-500">请至少选择一个类别</span>';
+            } else {
+                const names = Array.from(checks).map(cb => {
+                    const label = cb.closest('label');
+                    return label ? label.textContent.trim() : '';
+                });
+                hint.innerHTML = `<span class="text-green-600">✓ 已选 ${checks.length} 个：${names.join('、')}</span>`;
+            }
+        }
+
+        function getSelectedCategoryIds() {
+            const checks = document.querySelectorAll('#category-checkbox-group input[type="checkbox"]:checked');
+            return Array.from(checks).map(cb => parseInt(cb.value));
+        }
+
+        // ═══════════════════════════════════════════════
+        // 详情视图
+        // ═══════════════════════════════════════════════
+        function openDetail(id) {
+            const e = entries.find(x => x.id === id);
+            if (!e) return;
+            editingEntryId = id;
+
+            document.getElementById('detail-icon').innerHTML = renderIconHtml(e.icon, 'w-10 h-10');
+            document.getElementById('detail-name').textContent = e.name;
+            document.getElementById('detail-intro').textContent = e.intro;
+            document.getElementById('detail-creator').textContent = e.createdBy;
+            document.getElementById('detail-created-at').textContent = e.createdAt;
+            document.getElementById('detail-updated-at').textContent = e.updatedAt;
+
+            const tagEl = document.getElementById('detail-status-tag');
+            if (e.status === 'enabled') {
+                tagEl.className = 'tag tag-enabled';
+                tagEl.innerHTML = '<span class="status-dot enabled"></span>启用';
+            } else {
+                tagEl.className = 'tag tag-disabled';
+                tagEl.innerHTML = '<span class="status-dot disabled"></span>禁用';
+            }
+
+            const catTagsContainer = document.getElementById('detail-category-tags');
+            if (e.categoryIds && e.categoryIds.length > 0) {
+                catTagsContainer.innerHTML = e.categoryIds.map(cid => {
+                    const cat = categories.find(c => c.id === cid);
+                    if (!cat) return '';
+                    const cls = cat.status === 'enabled' ? 'tag-category' : 'tag-category-disabled';
+                    return `<span class="tag ${cls}">${cat.name}</span>`;
+                }).join('');
+            } else {
+                catTagsContainer.innerHTML = '';
+            }
+
+            const contentEl = document.getElementById('detail-content');
+            contentEl.innerHTML = (e.detail && e.detail.trim()) ? e.detail : '<p class="text-gray-400 italic">暂无详细内容</p>';
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        function openEditFromDetail() { if (editingEntryId) { closeDetailModal();
+                openEdit(editingEntryId); } }
+
+        // ═══════════════════════════════════════════════
+        // 新增/编辑词条
+        // ═══════════════════════════════════════════════
+        function openAddEntry() {
+            editingEntryId = null;
+            document.getElementById('modal-title').textContent = '新增词条';
+            document.getElementById('entry-name').value = '';
+            document.getElementById('entry-intro').value = '';
+            document.getElementById('entry-detail').innerHTML = '';
+            document.getElementById('entry-status').checked = true;
+            document.getElementById('intro-count').textContent = '0';
+            document.getElementById('name-hint').innerHTML = '<span class="text-gray-400">同一类别下不可重名，最大 50 字符</span>';
+            selectedIcon = '';
+            renderIconPreview();
+            renderCategoryCheckboxes([]);
+            openModal('addModal');
+        }
+
+        function openEdit(id) {
+            const e = entries.find(x => x.id === id);
+            if (!e) return;
+            editingEntryId = id;
+            document.getElementById('modal-title').textContent = '编辑词条 - ' + e.name;
+            document.getElementById('entry-name').value = e.name;
+            document.getElementById('entry-intro').value = e.intro;
+            document.getElementById('entry-detail').innerHTML = e.detail || '';
+            document.getElementById('entry-status').checked = e.status === 'enabled';
+            document.getElementById('intro-count').textContent = e.intro.length;
+            document.getElementById('name-hint').innerHTML = '<span class="text-gray-400">同一类别下不可重名，最大 50 字符</span>';
+            selectedIcon = e.icon || '';
+            renderIconPreview();
+            // 只传递启用的类别ID（已禁用的不会显示，但数据保留）
+            const enabledIds = (e.categoryIds || []).filter(cid => {
+                const cat = categories.find(c => c.id === cid);
+                return cat && cat.status === 'enabled';
+            });
+            renderCategoryCheckboxes(enabledIds);
+            openModal('addModal');
+        }
+
+        function validateName() {
+            const name = document.getElementById('entry-name').value.trim();
+            if (!name) { document.getElementById('name-hint').innerHTML = '<span class="text-red-500">名称不能为空</span>'; return false; }
+            if (name.length > 50) { document.getElementById('name-hint').innerHTML =
+                    '<span class="text-red-500">名称不能超过 50 字符</span>'; return false; }
+            const selectedIds = getSelectedCategoryIds();
+            if (selectedIds.length === 0) {
+                document.getElementById('name-hint').innerHTML = '<span class="text-red-500">请先选择类别</span>';
+                return false;
+            }
+            const conflict = entries.find(e => {
+                if (e.id === editingEntryId) return false;
+                if (e.name !== name) return false;
+                if (!e.categoryIds || !selectedIds) return false;
+                return e.categoryIds.some(cid => selectedIds.includes(cid));
+            });
+            if (conflict) {
+                document.getElementById('name-hint').innerHTML = '<span class="text-red-500">该名称在已选类别中存在重名</span>';
+                return false;
+            }
+            document.getElementById('name-hint').innerHTML = '<span class="text-green-600">✓ 名称可用</span>';
+            return true;
+        }
+
+        function updateIntroCount(el) {
+            const count = el.value.length;
+            const counter = document.getElementById('intro-count');
+            counter.textContent = count;
+            counter.className = count > 200 ? 'text-red-500 font-medium' : count > 180 ? 'text-orange-500' : 'text-gray-400';
+        }
+
+        function toggleIconPicker() {
+            iconPickerOpen = !iconPickerOpen;
+            document.getElementById('icon-picker-panel').classList.toggle('hidden', !iconPickerOpen);
+            if (iconPickerOpen) renderIconGrid();
+        }
+
+        function renderIconGrid() {
+            document.getElementById('icon-grid').innerHTML = iconList.map(icon =>
+                `<div class="icon-option ${selectedIcon === icon ? 'selected' : ''}" onclick="pickIcon('${icon}')">${icon}</div>`
+            ).join('');
+        }
+
+        function pickIcon(icon) { selectedIcon = icon;
+            renderIconPreview();
+            renderIconGrid(); }
+
+        function clearIcon() { selectedIcon = '';
+            renderIconPreview(); if (iconPickerOpen) renderIconGrid(); }
+
+        function renderIconPreview() {
+            const el = document.getElementById('icon-preview');
+            if (selectedIcon && selectedIcon.startsWith('data:image/')) {
+                el.innerHTML = '<img src="' + selectedIcon + '" class="w-8 h-8 rounded object-cover"/>';
+            } else {
+                el.innerHTML = selectedIcon || '📖';
+            }
+        }
+
+        function uploadIcon() {
+            document.getElementById('icon-file-input').click();
+        }
+
+        function handleIconUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { showToast('请上传图片文件', 'error'); return; }
+            if (file.size > 2 * 1024 * 1024) { showToast('图片不能超过 2MB', 'error'); return; }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                selectedIcon = e.target.result;
+                renderIconPreview();
+                showToast('图标上传成功', 'success');
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function renderIconHtml(icon, sizeClass) {
+            if (icon && icon.startsWith('data:image/')) {
+                return '<img src="' + icon + '" class="' + sizeClass + ' rounded object-cover"/>';
+            }
+            return icon || '📖';
+        }
+
+        function saveEntry() {
+            const name = document.getElementById('entry-name').value.trim();
+            const categoryIds = getSelectedCategoryIds();
+            const intro = document.getElementById('entry-intro').value.trim();
+            const detail = document.getElementById('entry-detail').innerHTML;
+            const status = document.getElementById('entry-status').checked ? 'enabled' : 'disabled';
+
+            if (!name) { showToast('请输入词条名称', 'error'); return; }
+            if (categoryIds.length === 0) { showToast('请至少选择一个类别', 'error'); return; }
+            if (!intro) { showToast('请输入简介', 'error'); return; }
+            if (intro.length > 200) { showToast('简介不能超过 200 字符', 'error'); return; }
+
+            // 重名检查（只针对启用类别，但为了安全，检查所有已选类别）
+            const conflict = entries.find(e => {
+                if (e.id === editingEntryId) return false;
+                if (e.name !== name) return false;
+                if (!e.categoryIds || !categoryIds) return false;
+                return e.categoryIds.some(cid => categoryIds.includes(cid));
+            });
+            if (conflict) { showToast('该名称在已选类别中存在重名', 'error'); return; }
+
+            const catNames = categoryIds.map(cid => {
+                const cat = categories.find(c => c.id === cid);
+                return cat ? cat.name : '';
+            }).filter(Boolean);
+
+            const now = new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\//g, '-');
+
+            if (editingEntryId) {
+                const e = entries.find(x => x.id === editingEntryId);
+                if (e) {
+                    // 更新分类计数：移除旧分类计数（只减启用的，但旧的可能有禁用的，我们只减存在的）
+                    if (e.categoryIds) {
+                        e.categoryIds.forEach(cid => {
+                            const cat = categories.find(c => c.id === cid);
+                            if (cat && cat.count > 0) cat.count--;
+                        });
+                    }
+                    e.name = name;
+                    e.icon = selectedIcon;
+                    // 合并原有禁用的类别（保留未在界面显示的禁用类别）
+                    const oldDisabledIds = (e.categoryIds || []).filter(cid => {
+                        const cat = categories.find(c => c.id === cid);
+                        return cat && cat.status === 'disabled';
+                    });
+                    const newIds = [...new Set([...categoryIds, ...oldDisabledIds])];
+                    e.categoryIds = newIds;
+                    e.categories = newIds.map(cid => {
+                        const cat = categories.find(c => c.id === cid);
+                        return cat ? cat.name : '';
+                    }).filter(Boolean);
+                    e.intro = intro;
+                    e.detail = detail;
+                    e.status = status;
+                    e.updatedBy = '孙礼飞';
+                    e.updatedAt = now;
+                    // 增加新分类计数（只对启用的增加）
+                    categoryIds.forEach(cid => {
+                        const cat = categories.find(c => c.id === cid);
+                        if (cat && cat.status === 'enabled') cat.count = (cat.count || 0) + 1;
+                    });
+                }
+                showToast('编辑成功', 'success');
+            } else {
+                const newEntry = {
+                    id: Date.now(),
+                    name,
+                    icon: selectedIcon,
+                    categoryIds: categoryIds,
+                    categories: catNames,
+                    intro,
+                    detail,
+                    status,
+                    createdBy: '孙礼飞',
+                    createdAt: now,
+                    updatedBy: '孙礼飞',
+                    updatedAt: now,
+                    usageCount: 0
+                };
+                entries.unshift(newEntry);
+                categoryIds.forEach(cid => {
+                    const cat = categories.find(c => c.id === cid);
+                    if (cat && cat.status === 'enabled') cat.count = (cat.count || 0) + 1;
+                });
+                showToast('创建成功', 'success');
+            }
+
+            closeModal('addModal');
+            renderEntryGrid();
+            updateCategoryFilter();
+        }
+
+        // ══════════════════════════════════════════════
+        // 删除操作
+        // ═══════════════════════════════════════════════
+        function openDeleteConfirm(ids) {
+            deleteTargetIds = [...ids];
+            if (ids.length === 1) {
+                const e = entries.find(x => x.id === ids[0]);
+                document.getElementById('delete-confirm-msg').textContent = `确认删除词条「${e ? e.name : ''}」？删除后可在回收站恢复。`;
+            } else {
+                document.getElementById('delete-confirm-msg').textContent =
+                    `确认删除选中的 ${ids.length} 个词条？删除后可在回收站恢复。`;
+            }
+            openModal('deleteConfirmModal');
+        }
+
+        function confirmDelete() {
+            deleteTargetIds.forEach(id => {
+                const idx = entries.findIndex(e => e.id === id);
+                if (idx > -1) {
+                    const deleted = entries.splice(idx, 1)[0];
+                    if (deleted.categoryIds) {
+                        deleted.categoryIds.forEach(cid => {
+                            const cat = categories.find(c => c.id === cid);
+                            if (cat && cat.count > 0) cat.count--;
+                        });
+                    }
+                    deletedEntries.push({
+                        id: deleted.id,
+                        name: deleted.name,
+                        icon: deleted.icon,
+                        categoryIds: deleted.categoryIds || [],
+                        categories: deleted.categories || [],
+                        intro: deleted.intro,
+                        deletedBy: '孙礼飞',
+                        deletedAt: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit',
+                            day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-')
+                    });
+                }
+            });
+            deleteTargetIds = [];
+            closeModal('deleteConfirmModal');
+            renderEntryGrid();
+            updateRecycleBadge();
+            showToast('删除成功', 'success');
+        }
+
+        // ══════════════════════════════════════════════
+        // 回收站操作
+        // ═══════════════════════════════════════════════
+        function restoreEntry(id) {
+            const idx = deletedEntries.findIndex(e => e.id === id);
+            if (idx > -1) {
+                const restored = deletedEntries.splice(idx, 1)[0];
+                // 检查冲突：同名词条且分类有交集（只考虑启用类别，因为禁用类别不会显示，但冲突检查仍考虑全部）
+                const conflict = entries.find(e => {
+                    if (e.name !== restored.name) return false;
+                    if (!e.categoryIds || !restored.categoryIds) return false;
+                    return e.categoryIds.some(cid => restored.categoryIds.includes(cid));
+                });
+                if (conflict) {
+                    showToast(`已存在同名词条「${restored.name}」在相同分类中，请先处理冲突`, 'error');
+                    deletedEntries.splice(idx, 0, restored);
+                    return;
+                }
+                const catNames = restored.categoryIds ? restored.categoryIds.map(cid => {
+                    const cat = categories.find(c => c.id === cid);
+                    return cat ? cat.name : '';
+                }).filter(Boolean) : [];
+                entries.push({
+                    id: restored.id,
+                    name: restored.name,
+                    icon: restored.icon,
+                    categoryIds: restored.categoryIds || [],
+                    categories: catNames,
+                    intro: restored.intro,
+                    detail: '',
+                    status: 'enabled',
+                    createdBy: restored.deletedBy,
+                    createdAt: restored.deletedAt,
+                    updatedBy: '孙礼飞',
+                    updatedAt: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit',
+                        day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-'),
+                    usageCount: 0
+                });
+                if (restored.categoryIds) {
+                    restored.categoryIds.forEach(cid => {
+                        const cat = categories.find(c => c.id === cid);
+                        if (cat && cat.status === 'enabled') cat.count = (cat.count || 0) + 1;
+                    });
+                }
+            }
+            renderRecycleGrid();
+            updateRecycleBadge();
+            showToast('恢复成功', 'success');
+        }
+
+        function batchRestore() { if (recycleDeleteTargetIds.length === 0) return;
+            [...recycleDeleteTargetIds].forEach(id => restoreEntry(id));
+            recycleDeleteTargetIds = []; }
+
+        function openPermanentDelete(ids) {
+            recycleDeleteTargetIds = [...ids];
+            openModal('permanentDeleteModal');
+        }
+
+        function batchPermanentDelete() { if (recycleDeleteTargetIds.length === 0) return;
+            openPermanentDelete(recycleDeleteTargetIds); }
+
+        function confirmPermanentDelete() {
+            recycleDeleteTargetIds.forEach(id => {
+                const idx = deletedEntries.findIndex(e => e.id === id);
+                if (idx > -1) deletedEntries.splice(idx, 1);
+            });
+            recycleDeleteTargetIds = [];
+            closeModal('permanentDeleteModal');
+            renderRecycleGrid();
+            updateRecycleBadge();
+            showToast('已彻底删除', 'success');
+        }
+
+        // ══════════════════════════════════════════════
+        // 专家词库类别
+        // ═══════════════════════════════════════════════
+        let editingCategoryId = null;
+
+        function renderCategoryTable() {
+            calcCategoryCounts();
+            const sorted = [...categories].sort((a, b) => a.sort - b.sort);
+            document.getElementById('category-table-body').innerHTML = sorted.map(c => `
+                        <tr class="border-b border-gray-50 hover:bg-gray-50">
+                            <td class="px-6 py-3 font-medium text-gray-900">${c.name}</td>
+                            <td class="px-6 py-3 text-gray-500">${c.sort}</td>
+                            <td class="px-6 py-3"><span class="tag ${c.status === 'enabled' ? 'tag-enabled' : 'tag-disabled'}"><span class="status-dot ${c.status === 'enabled' ? 'enabled' : 'disabled'}"></span>${c.status === 'enabled' ? '启用' : '禁用'}</span></td>
+                            <td class="px-6 py-3 text-gray-500">${c.count || 0}</td>
+                            <td class="px-6 py-3 text-right">
+                                <button onclick="openEditCategory(${c.id})" class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>
+                                <button onclick="deleteCategory(${c.id})" class="text-red-500 hover:text-red-700 text-xs">删除</button>
+                            </td>
+                        </tr>`).join('');
+        }
+
+        function openAddCategory() {
+            editingCategoryId = null;
+            document.getElementById('category-modal-title').textContent = '新增类别';
+            document.getElementById('cat-name').value = '';
+            document.getElementById('cat-sort').value = '0';
+            document.getElementById('cat-status').checked = true;
+            openModal('addCategoryModal');
+        }
+
+        function openEditCategory(id) {
+            const c = categories.find(x => x.id === id);
+            if (!c) return;
+            editingCategoryId = id;
+            document.getElementById('category-modal-title').textContent = '编辑类别 - ' + c.name;
+            document.getElementById('cat-name').value = c.name;
+            document.getElementById('cat-sort').value = c.sort;
+            document.getElementById('cat-status').checked = c.status === 'enabled';
+            openModal('addCategoryModal');
+        }
+
+        function saveCategory() {
+            const name = document.getElementById('cat-name').value.trim();
+            const sort = parseInt(document.getElementById('cat-sort').value) || 0;
+            const status = document.getElementById('cat-status').checked ? 'enabled' : 'disabled';
+            if (!name) { showToast('请输入类别名称', 'error'); return; }
+            if (name.length > 20) { showToast('类别名称不能超过 20 字符', 'error'); return; }
+            const conflict = categories.find(c => c.name === name && c.id !== editingCategoryId);
+            if (conflict) { showToast('类别名称已存在', 'error'); return; }
+            if (editingCategoryId) {
+                const c = categories.find(x => x.id === editingCategoryId);
+                if (c) { c.name = name;
+                    c.sort = sort;
+                    c.status = status; }
+                showToast('编辑成功', 'success');
+            } else {
+                categories.push({ id: Date.now(), name, sort, status, count: 0 });
+                showToast('创建成功', 'success');
+            }
+            closeModal('addCategoryModal');
+            renderCategoryTable();
+            updateCategoryFilter();
+            if (!document.getElementById('addModal').classList.contains('hidden')) {
+                const selected = getSelectedCategoryIds();
+                renderCategoryCheckboxes(selected);
+            }
+        }
+
+        function deleteCategory(id) {
+            const c = categories.find(x => x.id === id);
+            if (!c) return;
+            const count = entries.filter(e => e.categoryIds && e.categoryIds.includes(id)).length;
+            if (count > 0) {
+                showToast(`该类别下还有 ${count} 个词条，请先迁移或删除词条`, 'error');
+                return;
+            }
+            categories = categories.filter(x => x.id !== id);
+            renderCategoryTable();
+            updateCategoryFilter();
+            if (!document.getElementById('addModal').classList.contains('hidden')) {
+                const selected = getSelectedCategoryIds();
+                renderCategoryCheckboxes(selected);
+            }
+            showToast('删除成功', 'success');
+        }
+
+        // ═══════════════════════════════════════════════
+        // Modal / Toast
+        // ═══════════════════════════════════════════════
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            if (id === 'categoryModal') renderCategoryTable();
+            if (id === 'addModal') {
+                const selected = editingEntryId ? (entries.find(e => e.id === editingEntryId)?.categoryIds || []) : [];
+                // 只传递启用的类别ID用于显示
+                const enabledIds = selected.filter(cid => {
+                    const cat = categories.find(c => c.id === cid);
+                    return cat && cat.status === 'enabled';
+                });
+                renderCategoryCheckboxes(enabledIds);
+            }
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function showToast(msg, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast toast-${type}`;
+            toast.classList.remove('hidden');
+            setTimeout(() => { toast.classList.add('hidden'); }, 2500);
+        }
+
+        // ═══════════════════════════════════════════════
+        // 初始化
+        // ═══════════════════════════════════════════════
+        renderEntryGrid();
+        updateCategoryFilter();
+        updateRecycleBadge();
+
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
