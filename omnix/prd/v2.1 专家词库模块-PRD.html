@@ -408,12 +408,12 @@
     <li>
       <a href="#sec5" data-target="sec5" class="">五、子模块详细设计</a>
       <ul class="nav-sub">
-        <li><a href="#sec5-1" data-target="sec5-1" class="">5.1 专家词库</a></li>
+        <li><a href="#sec5-1" data-target="sec5-1" class="active">5.1 专家词库</a></li>
         <li><a href="#sec5-2" data-target="sec5-2" class="">5.2 专家词库类别</a></li>
       </ul>
     </li>
     <li><a href="#sec6" data-target="sec6" class="">六、关键交互流程</a></li>
-    <li><a href="#sec7" data-target="sec7" class="active">七、边界与异常情况</a></li>
+    <li><a href="#sec7" data-target="sec7" class="">七、边界与异常情况</a></li>
   </ul>
 </nav>
 
@@ -456,8 +456,8 @@
         <p>术语检索响应 &lt; 500ms；词条创建到发布 &lt; 3 分钟；术语覆盖核心业务场景 90%+。</p>
       </div>
       <div class="card">
-        <h4>目标用户</h4>
-        <p>领域专家 / 知识管理员负责词条维护；业务人员通过检索查阅术语含义。</p>
+        <h4>数据初始化</h4>
+        <p>将<a target="_blank" href="https://ao.aiolaola.com/experts">agency-agents</a>专家库中216位专家初始化导入系统，包括专家词条、专家类别。</p>
       </div>
     </div>
   </div>
@@ -602,7 +602,7 @@
       <tr>
         <td>类别</td>
         <td>下拉选择</td>
-        <td>✅</td>
+        <td>—</td>
         <td>从已有类别中选择，一个词条仅归属一个类别。类别来源由「专家词库类别」维护</td>
       </tr>
       <tr>
@@ -700,19 +700,13 @@
         <td>7</td>
         <td>图标选择器</td>
         <td><span class="tag tag-p1">P1</span></td>
-        <td>新增/编辑词条时，可从系统内置图标库中选择图标作为词条的视觉标识</td>
+        <td>新增/编辑词条时，可从系统内置图标库中选择图标作为词条的视觉标识，也可以上传图标</td>
       </tr>
       <tr>
         <td>8</td>
-        <td>批量导入/导出</td>
-        <td><span class="tag tag-p2">P2</span></td>
-        <td>支持通过 Excel 批量导入词条，支持导出词条列表为 Excel</td>
-      </tr>
-      <tr>
-        <td>9</td>
         <td>全文搜索</td>
         <td><span class="tag tag-p2">P2</span></td>
-        <td>搜索范围扩展到简介和详情内容，不仅限于名称</td>
+        <td>搜索范围扩展到简介，不仅限于名称</td>
       </tr>
     </tbody></table>
 
@@ -772,7 +766,7 @@
         <td>4</td>
         <td>删除类别</td>
         <td><span class="tag tag-p0">P0</span></td>
-        <td>删除类别前校验：若该类别下存在关联词条，需提示用户先迁移或清空关联词条，不允许直接删除有数据的类别</td>
+        <td>删除类别前校验：若该类别下存在关联词条，需提示：类别「代码生成」下还有 1 个关联词条，删除后这些词条将同步删除分类。确认删除？</td>
       </tr>
       <tr>
         <td>5</td>
@@ -853,14 +847,14 @@
       </tr>
       <tr>
         <td>3</td>
-        <td>新增词条时无可用类别</td>
-        <td>类别下拉为空，提示「请先在类别管理中创建类别」并提供跳转链接</td>
+        <td>创建词条时无类别</td>
+        <td>提示「请先在类别管理中创建类别」</td>
         <td>引导用户先创建类别</td>
       </tr>
       <tr>
         <td>4</td>
         <td>删除有词条关联的类别</td>
-        <td>禁止删除，提示「该类别下还有 N 个词条，请先迁移或删除词条」</td>
+        <td>可以删除，提示「类别「代码生成」下还有 1 个关联词条，删除后这些词条将同步删除分类。确认删除？」</td>
         <td>展示关联词条数量</td>
       </tr>
       <tr>
@@ -872,7 +866,7 @@
       <tr>
         <td>6</td>
         <td>恢复回收站词条时原类别已删除</td>
-        <td>提示「原类别「{类别名}」已被删除，请选择新类别后恢复」</td>
+        <td>无类别数据</td>
         <td>恢复时可选择新类别</td>
       </tr>
       <tr>

@@ -492,11 +492,11 @@
 
                 <!-- 分类多选（只显示启用类别，不显示状态标签） -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">类别 <span class="text-red-500">*</span> <span class="text-gray-400 font-normal text-xs">(可多选)</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别 <span class="text-gray-400 font-normal text-xs">(可多选)</span></label>
                     <div id="category-checkbox-group" class="category-checkbox-grid">
                         <!-- 由 JS 渲染 -->
                     </div>
-                    <p class="text-xs mt-1 text-gray-400" id="category-hint">请至少选择一个类别</p>
+                    <p class="text-xs mt-1 text-gray-400" id="category-hint"></p>
                 </div>
 
                 <div>
@@ -1151,7 +1151,7 @@
             const checks = document.querySelectorAll('#category-checkbox-group input[type="checkbox"]:checked');
             const hint = document.getElementById('category-hint');
             if (checks.length === 0) {
-                hint.innerHTML = '<span class="text-red-500">请至少选择一个类别</span>';
+                hint.innerHTML = '<span class="text-red-500"></span>';
             } else {
                 const names = Array.from(checks).map(cb => {
                     const label = cb.closest('label');
@@ -1348,7 +1348,7 @@
             const status = document.getElementById('entry-status').checked ? 'enabled' : 'disabled';
 
             if (!name) { showToast('请输入词条名称', 'error'); return; }
-            if (categoryIds.length === 0) { showToast('请至少选择一个类别', 'error'); return; }
+            if (categoryIds.length === 0) { showToast('', 'error'); return; }
             if (!intro) { showToast('请输入简介', 'error'); return; }
             if (intro.length > 200) { showToast('简介不能超过 200 字符', 'error'); return; }
 
