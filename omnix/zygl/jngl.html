@@ -376,7 +376,54 @@
             transition: all 0.2s;
         }
         .recycle-card:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        .recycle-hover-actions {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            display: flex;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 2;
+        }
+        .recycle-card:hover .recycle-hover-actions {
+            opacity: 1;
+        }
+        .recycle-hover-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .recycle-hover-btn.restore {
+            background: #EEF2FF;
+            color: #4F46E5;
+            border-color: #C7D2FE;
+        }
+        .recycle-hover-btn.restore:hover {
+            background: #4F46E5;
+            color: #fff;
+            border-color: #4F46E5;
+        }
+        .recycle-hover-btn.delete {
+            background: #FEF2F2;
+            color: #DC2626;
+            border-color: #FECACA;
+        }
+        .recycle-hover-btn.delete:hover {
+            background: #DC2626;
+            color: #fff;
+            border-color: #DC2626;
         }
 
         .recycle-badge-wrap {
@@ -451,7 +498,6 @@
             opacity: 1;
         }
 
-        /* ─── 图标样式（保留UI，面板由用户自定义） ─── */
         .icon-preview-wrap {
             display: flex;
             align-items: center;
@@ -573,6 +619,53 @@
         .category-checkbox-group input[type="checkbox"]:checked {
             border-color: #4f46e5;
         }
+
+        /* ─── 回收站新增样式 ─── */
+        .recycle-checkbox {
+            width: 17px;
+            height: 17px;
+            accent-color: #4f46e5;
+            border-radius: 4px;
+            border: 1.5px solid #d1d5db;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: all 0.15s;
+        }
+        .recycle-checkbox:hover {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+        .recycle-checkbox:checked {
+            border-color: #4f46e5;
+            background-color: #4f46e5;
+        }
+        #recycle-select-all {
+            width: 17px;
+            height: 17px;
+            accent-color: #4f46e5;
+            cursor: pointer;
+        }
+        .recycle-selected-count {
+            font-weight: 600;
+            color: #4f46e5;
+        }
+        .recycle-stats-divider {
+            color: #e5e7eb;
+            user-select: none;
+        }
+        .recycle-header-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 13px;
+            color: #4b5563;
+        }
+        .recycle-header-label:hover {
+            color: #1f2937;
+        }
     </style>
 </head>
 <body>
@@ -612,11 +705,11 @@
                         <iconify-icon icon="mdi:download-outline"></iconify-icon>
                         <span>导出技能</span>
                     </button>
-                    <button onclick="showToast('保存成功','success')" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                    <button id="btn-save-detail" onclick="showToast('保存成功','success')" class="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
                         <iconify-icon icon="mdi:content-save"></iconify-icon>
                         <span>保存</span>
                     </button>
-                    <button id="btn-publish" onclick="publishSkill()" class="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
+                    <button id="btn-publish-detail" onclick="publishSkill()" class="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
                         <iconify-icon icon="mdi:rocket-launch-outline"></iconify-icon>
                         <span>保存并发布</span>
                     </button>
@@ -700,7 +793,7 @@
                         <div class="flex-1">
                             <div class="flex items-center gap-3 mb-1">
                                 <h2 class="text-xl font-bold text-gray-900" id="detail-name">代码审查助手</h2>
-                                <button onclick="openEditModal()" class="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-colors" title="编辑技能">
+                                <button id="detail-edit-btn" onclick="openEditModal()" class="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-colors" title="编辑技能">
                                     <iconify-icon icon="mdi:pencil-outline" class="text-lg"></iconify-icon>
                                 </button>
                                 <span class="tag tag-published" id="detail-status-tag"><span class="status-dot published"></span>已发布</span>
@@ -719,7 +812,7 @@
                     <div class="w-72 bg-white rounded-xl border border-gray-200 flex flex-col flex-shrink-0">
                         <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                             <span class="text-sm font-semibold text-gray-700">文件</span>
-                            <div class="flex items-center gap-1">
+                            <div class="flex items-center gap-1" id="btnFile">
                                 <button onclick="createNewFile()" class="p-1.5 rounded hover:bg-gray-100 text-gray-500" title="新建文件">
                                     <iconify-icon icon="mdi:file-plus-outline" class="text-base"></iconify-icon>
                                 </button>
@@ -782,19 +875,27 @@
                 </div>
             </div>
 
-            <!-- ─── 回收站视图 ─── -->
+            <!-- ─── 回收站视图（已修改） ─── -->
             <div id="view-recycle" class="hidden">
                 <div class="flex items-center space-x-4 mb-6">
                     <div class="relative flex-1 max-w-md">
                         <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
-                        <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm" placeholder="搜索已删除技能..." type="text" />
+                        <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm" placeholder="搜索已删除技能..." type="text" id="recycle-search-input" oninput="filterRecycleSkills()" />
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex items-center justify-between">
-                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                <!-- 回收站顶部信息栏：新增全选 + 已选计数 -->
+                <div class="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex items-center justify-between flex-wrap gap-3">
+                    <div class="flex items-center gap-4 text-sm text-gray-600 flex-wrap">
                         <iconify-icon icon="mdi:trash-can-outline" class="text-red-500"></iconify-icon>
-                        <span>共 <strong id="recycle-count" class="text-gray-900">3</strong> 个已删除技能</span>
+                        <span>共 <strong id="recycle-count" class="text-gray-900">0</strong> 个已删除技能</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400">
+						<label class="recycle-header-label" title="全选/取消全选">
+						    <input type="checkbox" id="recycle-select-all" onchange="toggleAllRecycle()" />
+						    <span>全选</span>
+                        <span>已选 <strong id="recycle-selected-count" class="recycle-selected-count">0</strong> 项</span>
+						</label>
                     </div>
                 </div>
 
@@ -841,7 +942,7 @@
                     <p class="text-xs text-gray-400 mt-1">请至少选择一个类别</p>
                 </div>
 
-                <!-- 图标（保留UI，面板由用户自定义） -->
+                <!-- 图标 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">图标 <span class="text-gray-400 font-normal">(可选)</span></label>
                     <div class="icon-preview-wrap">
@@ -913,7 +1014,7 @@
                     <p class="text-xs text-gray-400 mt-1">请至少选择一个类别</p>
                 </div>
 
-                <!-- 图标（保留UI，面板由用户自定义） -->
+                <!-- 图标 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">图标 <span class="text-gray-400 font-normal">(可选)</span></label>
                     <div class="icon-preview-wrap">
@@ -983,8 +1084,16 @@
                         <iconify-icon icon="mdi:cloud-upload-outline" class="text-4xl text-gray-400 mb-3"></iconify-icon>
                         <p class="text-sm text-gray-600 font-medium mb-1">拖拽文件到此处，或点击选择文件</p>
                         <p class="text-xs text-gray-400">仅支持 .zip 格式，文件大小不超过 20MB;</p>
-                        <p class="text-xs text-gray-400">.zip 需要包含 SKILL.md 文件；.md 文件需要包含 YAML 格式的技能名称和描述。系统将自动进行安全性扫描。</p>
                     </div>
+					<div class="mt-6 flex items-start space-x-3 text-sm text-gray-500 bg-gray-50 p-4 rounded-lg">
+						<iconify-icon class="text-lg text-blue-500 flex-shrink-0" icon="mdi:information-outline"></iconify-icon>
+						<p>
+							1、技能可在<a href="https://modelscope.cn/skills" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">魔塔</a>、 <a href="https://skill.xfyun.cn/" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">SkillHub</a>、  <a href="https://skills.aliyun.com/" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">阿里云</a>等市场获取。<br/>
+							2、.zip需要包含skill.md文件。<br/>
+							3、skill.md 文件需要包含YAML格式的技能名称和描述。<br/>
+							4、系统将自动进行安全性扫描。
+						</p>
+					</div>
                     <input type="file" id="import-file-input" accept=".zip" class="hidden" onchange="handleImportFileSelect(this)" />
                     <div id="import-file-info" class="hidden mt-3 flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-3 py-2">
                         <iconify-icon icon="mdi:file-zip-outline" class="text-blue-500"></iconify-icon>
@@ -1021,66 +1130,7 @@
                         </tr>
                     </thead>
                     <tbody id="category-table-body">
-                        <tr class="border-b border-gray-50 hover:bg-gray-50">
-                            <td class="px-6 py-3 font-medium text-gray-900">代码生成</td>
-                            <td class="px-6 py-3 text-gray-500">1</td>
-                            <td class="px-6 py-3"><span class="tag tag-published"><span class="status-dot published"></span>发布</span></td>
-                            <td class="px-6 py-3 text-gray-500">3</td>
-                            <td class="px-6 py-3 text-right">
-                                <button class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>
-                                <button class="text-red-500 hover:text-red-700 text-xs">删除</button>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-50 hover:bg-gray-50">
-                            <td class="px-6 py-3 font-medium text-gray-900">数据分析</td>
-                            <td class="px-6 py-3 text-gray-500">2</td>
-                            <td class="px-6 py-3"><span class="tag tag-published"><span class="status-dot published"></span>发布</span></td>
-                            <td class="px-6 py-3 text-gray-500">2</td>
-                            <td class="px-6 py-3 text-right">
-                                <button class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>
-                                <button class="text-red-500 hover:text-red-700 text-xs">删除</button>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-50 hover:bg-gray-50">
-                            <td class="px-6 py-3 font-medium text-gray-900">文档处理</td>
-                            <td class="px-6 py-3 text-gray-500">3</td>
-                            <td class="px-6 py-3"><span class="tag tag-published"><span class="status-dot published"></span>发布</span></td>
-                            <td class="px-6 py-3 text-gray-500">1</td>
-                            <td class="px-6 py-3 text-right">
-                                <button class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>
-                                <button class="text-red-500 hover:text-red-700 text-xs">删除</button>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-50 hover:bg-gray-50">
-                            <td class="px-6 py-3 font-medium text-gray-900">自动化流程</td>
-                            <td class="px-6 py-3 text-gray-500">4</td>
-                            <td class="px-6 py-3"><span class="tag tag-published"><span class="status-dot published"></span>发布</span></td>
-                            <td class="px-6 py-3 text-gray-500">0</td>
-                            <td class="px-6 py-3 text-right">
-                                <button class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>
-                                <button class="text-red-500 hover:text-red-700 text-xs">删除</button>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-gray-50 hover:bg-gray-50">
-                            <td class="px-6 py-3 font-medium text-gray-900">知识检索</td>
-                            <td class="px-6 py-3 text-gray-500">5</td>
-                            <td class="px-6 py-3"><span class="tag tag-draft"><span class="status-dot draft"></span>禁用</span></td>
-                            <td class="px-6 py-3 text-gray-500">1</td>
-                            <td class="px-6 py-3 text-right">
-                                <button class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>
-                                <button class="text-red-500 hover:text-red-700 text-xs">删除</button>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-3 font-medium text-gray-900">创意写作</td>
-                            <td class="px-6 py-3 text-gray-500">6</td>
-                            <td class="px-6 py-3"><span class="tag tag-published"><span class="status-dot published"></span>发布</span></td>
-                            <td class="px-6 py-3 text-gray-500">0</td>
-                            <td class="px-6 py-3 text-right">
-                                <button class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>
-                                <button class="text-red-500 hover:text-red-700 text-xs">删除</button>
-                            </td>
-                        </tr>
+                        <!-- 由 renderCategoryTable() 动态渲染 -->
                     </tbody>
                 </table>
             </div>
@@ -1090,6 +1140,48 @@
                     <span>新增类别</span>
                 </button>
                 <button onclick="closeModal('categoryModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════ 新增/编辑类别弹窗 ═════ -->
+    <div id="categoryFormModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('categoryFormModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900" id="category-form-title">新增类别</h3>
+                <button onclick="closeModal('categoryFormModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                <input type="hidden" id="category-edit-id" value="">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">类别名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="category-name-input" placeholder="请输入类别名称" maxlength="20"
+                        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">排序号</label>
+                    <input type="number" id="category-sort-input" placeholder="数字越小越靠前" min="1" max="999"
+                        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="category-status" value="published" checked class="accent-indigo-600">
+                            <span class="text-sm text-gray-700">启用</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="category-status" value="disabled" class="accent-indigo-600">
+                            <span class="text-sm text-gray-700">禁用</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('categoryFormModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="saveCategory()" class="px-5 py-2 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">保存</button>
             </div>
         </div>
     </div>
@@ -1119,7 +1211,7 @@
                     <iconify-icon icon="mdi:alert-outline" class="text-3xl text-red-600"></iconify-icon>
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 mb-2">⚠️ 彻底删除</h3>
-                <p class="text-sm text-gray-500">此操作不可恢复，技能及其所有文件将被永久删除。</p>
+                <p class="text-sm text-gray-500" id="permanent-delete-msg">此操作不可恢复，技能及其所有文件将被永久删除。</p>
             </div>
             <div class="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
                 <button onclick="closeModal('permanentDeleteModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
@@ -1181,11 +1273,11 @@
         ];
 
         let deletedSkills = [
-            { id: 101, name: 'Webhook服务', icon: 'W', category: '自定义', desc: 'Webhook事件的接收、处理和转发服务', status: 'published',
+            { id: 101, name: 'Webhook服务', icon: '🔧', category: '知识检索', desc: 'Webhook事件的接收、处理和转发服务', status: 'published',
                 deletedBy: '孙礼飞', deletedAt: '2026-01-22' },
-            { id: 102, name: '文件转换工具', icon: '文', category: '市场', desc: '多格式文件互转与批量处理工具，支持DOC/PDF/TXT/JPG/PNG/MP4等千种格式',
+            { id: 102, name: '文件转换工具', icon: '📝', category: '文档处理', desc: '多格式文件互转与批量处理工具，支持DOC/PDF/TXT/JPG/PNG/MP4等千种格式',
                 status: 'published', deletedBy: '孙礼飞', deletedAt: '2026-01-22' },
-            { id: 103, name: '定时任务调度', icon: '定', category: '自定义', desc: '灵活的定时任务编排与调度引擎，支持秒级/周期/日历等多种触发规则',
+            { id: 103, name: '定时任务调度', icon: '⚙', category: '数据分析', desc: '灵活的定时任务编排与调度引擎，支持秒级/周期/日历等多种触发规则',
                 status: 'published', deletedBy: '孙礼飞', deletedAt: '2026-01-22' }
         ];
 
@@ -1195,33 +1287,29 @@
         let selectedCategoryFilter = '';
         let selectedStatusFilter = '';
 
-        // 图标状态（新建 / 编辑）
+        // ─── 回收站选中状态管理 ───
+        let selectedRecycleIds = new Set();
+
+        // 图标状态
         let createIconData = '🤖';
         let createIconType = 'emoji';
         let editIconData = '🤖';
         let editIconType = 'emoji';
+        let detailMode = 'view';
 
         // ═══════════════════════════════════════════════
         // 用户自定义图标面板入口
         // ═══════════════════════════════════════════════
-        // 覆盖此函数以实现您自己的图标选择面板
-        // 参数 mode: 'create' 或 'edit'
         function openCustomIconPicker(mode) {
-            // 示例：打开一个自定义面板
-            // 您可以通过 mode 判断当前操作的是新建还是编辑
             showToast('请实现自定义图标选择面板（mode: ' + mode + '）', 'success');
-            // 在这里调用您的自定义图标面板逻辑
-            // 选择完成后，请调用 setCreateIcon(icon) 或 setEditIcon(icon)
         }
 
-        // 供自定义面板调用的设置函数（新建）
         function setCreateIcon(icon) {
             createIconData = icon;
             createIconType = 'emoji';
             updateCreateIconPreview();
         }
 
-        // 供自定义面板调用的设置函数（编辑）
         function setEditIcon(icon) {
             editIconData = icon;
             editIconType = 'emoji';
@@ -1252,6 +1340,8 @@
             } else if (view === 'recycle') {
                 bc.innerHTML =
                     '<a href="#" onclick="showView(\'list\')" class="hover:text-blue-600">技能管理</a><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">回收站</span>';
+                // 切换到回收站时重置选中状态
+                selectedRecycleIds.clear();
             }
 
             if (view === 'list') renderSkillGrid();
@@ -1282,9 +1372,6 @@
 
             grid.innerHTML = filtered.map(s => {
                 const enabled = s.enabled !== false;
-                const enabledTag = enabled ?
-                    '' :
-                    '';
                 const iconHtml = (typeof s.icon === 'string' && s.icon.startsWith('data:image')) ?
                     `<img src="${s.icon}" class="w-full h-full object-cover rounded-lg" alt="icon" />` :
                     s.icon;
@@ -1297,7 +1384,7 @@
                             <span onclick="event.stopPropagation();exportSkill(${s.id})" class="card-action-btn" title="导出">
                                 <iconify-icon icon="mdi:download-outline" class="text-base"></iconify-icon>
                             </span>
-                            <span onclick="event.stopPropagation();openDetail(${s.id})" class="card-action-btn" title="编辑">
+                            <span onclick="event.stopPropagation();openDetail(${s.id}, 'edit')" class="card-action-btn" title="编辑">
                                 <iconify-icon icon="mdi:pencil-outline" class="text-base"></iconify-icon>
                             </span>
                             <span onclick="event.stopPropagation();openDeleteConfirm(${s.id})" class="card-action-btn danger" title="删除">
@@ -1306,10 +1393,9 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2 mb-2.5 flex-wrap">
-                        ${enabledTag}
                         <span class="tag tag-category">${s.category}</span>
                     </div>
-                    <p class="text-xs text-gray-500 mb-3 leading-relaxed line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${s.desc}</p>
+                    <p class="text-xs text-gray-500 mb-3 leading-relaxed line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height: calc(14px * 1.5 * 2); ">${s.desc}</p>
                     <div class="flex items-center justify-between pt-3 border-t border-gray-100">
                         <div class="flex items-center gap-3 text-xs text-gray-400 min-w-0">
                             <span class="flex items-center gap-1 truncate"><iconify-icon icon="mdi:account-outline"></iconify-icon>${s.createdBy}</span>
@@ -1339,68 +1425,212 @@
         }
 
         // ═══════════════════════════════════════════════
-        // 渲染回收站卡片
+        // 渲染回收站卡片（已修改：复选框 + 移除独立操作按钮）
         // ═══════════════════════════════════════════════
-        function updateRecycleBadge() {
-            const badge = document.getElementById('recycle-badge');
-            if (!badge) return;
-            const count = deletedSkills.length;
-            badge.textContent = count;
-            if (count > 0) {
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        }
-
         function renderRecycleGrid() {
             const grid = document.getElementById('recycle-grid');
-            document.getElementById('recycle-count').textContent = deletedSkills.length;
+            const search = document.getElementById('recycle-search-input')?.value?.toLowerCase() || '';
+            const filtered = deletedSkills.filter(s =>
+                s.name.toLowerCase().includes(search)
+            );
+
+            document.getElementById('recycle-count').textContent = filtered.length;
             updateRecycleBadge();
 
-            if (deletedSkills.length === 0) {
+            // 清除无效的选中ID（如果技能已被恢复或彻底删除）
+            const validIds = new Set(filtered.map(s => s.id));
+            for (const id of selectedRecycleIds) {
+                if (!validIds.has(id)) {
+                    selectedRecycleIds.delete(id);
+                }
+            }
+
+            if (filtered.length === 0) {
                 grid.innerHTML = '';
                 document.getElementById('recycle-empty').classList.remove('hidden');
                 document.getElementById('recycle-empty').classList.add('flex');
+                // 全选取消选中
+                const selectAll = document.getElementById('recycle-select-all');
+                if (selectAll) selectAll.checked = false;
+                updateRecycleSelectionUI();
                 return;
             }
 
             document.getElementById('recycle-empty').classList.add('hidden');
             document.getElementById('recycle-empty').classList.remove('flex');
 
-            grid.innerHTML = deletedSkills.map(s => {
-                const iconBg = s.icon.length === 1 ? 'bg-blue-100 text-blue-600' :
-                    'bg-gradient-to-br from-blue-50 to-indigo-50';
+            grid.innerHTML = filtered.map(s => {
+                const iconHtml = (typeof s.icon === 'string' && s.icon.startsWith('data:image')) ?
+                    `<img src="${s.icon}" class="w-full h-full object-cover rounded-lg" alt="icon" />` :
+                    s.icon;
+                const checked = selectedRecycleIds.has(s.id) ? 'checked' : '';
                 return `
-                <div class="recycle-card bg-white rounded-xl border border-gray-200 p-5">
-                    <div class="flex items-start justify-between mb-3">
-                        <div class="w-11 h-11 rounded-lg ${iconBg} flex items-center justify-center text-xl font-bold">${s.icon}</div>
-                        <span class="tag tag-draft">已删除</span>
+                <div class="recycle-card bg-white rounded-xl border border-gray-200 p-5 relative">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${iconHtml}</div>
+                        <h3 class="font-semibold text-gray-900 truncate flex-1">${s.name}</h3>
+                        <input type="checkbox" class="recycle-checkbox" data-id="${s.id}" ${checked} onchange="updateRecycleSelection()" />
                     </div>
-                    <h3 class="font-semibold text-gray-900 mb-1 truncate">${s.name}</h3>
-                    <p class="text-xs text-gray-400 mb-3 line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${s.desc}</p>
-                    <div class="flex items-center justify-between text-xs text-gray-400 mb-4">
+                    <div class="flex items-center gap-2 mb-2.5 flex-wrap">
                         <span class="tag tag-category">${s.category}</span>
-                        <span>${s.deletedBy} · ${s.deletedAt}</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="restoreSkill(${s.id})" class="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-                            <iconify-icon icon="mdi:restore"></iconify-icon>
-                            <span>还原</span>
+                    <p class="text-xs text-gray-500 mb-3 leading-relaxed line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height: calc(14px * 1.5 * 2);">${s.desc}</p>
+                    <div class="flex items-center gap-3 pt-3 border-t border-gray-100 text-xs text-gray-400">
+                        <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline"></iconify-icon>${s.deletedBy}</span>
+                        <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon>删除: ${s.deletedAt.split(' ')[0]}</span>
+                    </div>
+                    <div class="recycle-hover-actions">
+                        <button class="recycle-hover-btn restore" onclick="event.stopPropagation();restoreSkill(${s.id})" title="恢复技能">
+                            <iconify-icon icon="mdi:restore" style="font-size:14px"></iconify-icon>恢复
                         </button>
-                        <button onclick="openPermanentDelete(${s.id})" class="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
-                            <iconify-icon icon="mdi:trash-can"></iconify-icon>
-                            <span>彻底删除</span>
+                        <button class="recycle-hover-btn delete" onclick="event.stopPropagation();openPermanentDelete(${s.id})" title="彻底删除">
+                            <iconify-icon icon="mdi:trash-can-outline" style="font-size:14px"></iconify-icon>彻底删除
                         </button>
                     </div>
                 </div>`;
             }).join('');
+
+            // 更新全选状态
+            updateRecycleSelectionUI();
+            updateSelectAllState();
+        }
+
+        // ═══════════════════════════════════════════════
+        // 回收站选中状态管理
+        // ═══════════════════════════════════════════════
+        function updateRecycleSelection() {
+            const checkboxes = document.querySelectorAll('.recycle-checkbox');
+            let checkedCount = 0;
+            checkboxes.forEach(cb => {
+                const id = parseInt(cb.dataset.id);
+                if (cb.checked) {
+                    selectedRecycleIds.add(id);
+                    checkedCount++;
+                } else {
+                    selectedRecycleIds.delete(id);
+                }
+            });
+            updateRecycleSelectionUI();
+            updateSelectAllState();
+        }
+
+        function updateRecycleSelectionUI() {
+            const count = selectedRecycleIds.size;
+            document.getElementById('recycle-selected-count').textContent = count;
+        }
+
+        function updateSelectAllState() {
+            const checkboxes = document.querySelectorAll('.recycle-checkbox');
+            const selectAll = document.getElementById('recycle-select-all');
+            if (!selectAll) return;
+            if (checkboxes.length === 0) {
+                selectAll.checked = false;
+                return;
+            }
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            selectAll.checked = allChecked;
+        }
+
+        function toggleAllRecycle() {
+            const checked = document.getElementById('recycle-select-all').checked;
+            const checkboxes = document.querySelectorAll('.recycle-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = checked;
+                const id = parseInt(cb.dataset.id);
+                if (checked) {
+                    selectedRecycleIds.add(id);
+                } else {
+                    selectedRecycleIds.delete(id);
+                }
+            });
+            updateRecycleSelectionUI();
+        }
+
+        // 回收站搜索过滤
+        function filterRecycleSkills() {
+            renderRecycleGrid();
+        }
+
+        // ═══════════════════════════════════════════════
+        // 回收站批量操作（只作用于选中的技能）
+        // ═══════════════════════════════════════════════
+        function batchRestore() {
+            if (selectedRecycleIds.size === 0) {
+                showToast('请先选择要恢复的技能', 'error');
+                return;
+            }
+            const idsToRestore = Array.from(selectedRecycleIds);
+            let restoredCount = 0;
+            idsToRestore.forEach(id => {
+                const idx = deletedSkills.findIndex(s => s.id === id);
+                if (idx > -1) {
+                    const restored = deletedSkills.splice(idx, 1)[0];
+                    delete restored.deletedBy;
+                    delete restored.deletedAt;
+                    skills.push(restored);
+                    restoredCount++;
+                }
+            });
+            selectedRecycleIds.clear();
+            renderRecycleGrid();
+            if (restoredCount > 0) {
+                showToast(`已恢复 ${restoredCount} 个技能`, 'success');
+            } else {
+                showToast('没有可恢复的技能', 'error');
+            }
+        }
+
+        function batchPermanentDelete() {
+            if (selectedRecycleIds.size === 0) {
+                showToast('请先选择要彻底删除的技能', 'error');
+                return;
+            }
+            const count = selectedRecycleIds.size;
+            document.getElementById('permanent-delete-msg').textContent =
+                `此操作不可恢复，将彻底删除选中的 ${count} 个技能及其所有文件。`;
+            deleteTargetId = 'batch';
+            openModal('permanentDeleteModal');
+        }
+
+        function confirmPermanentDelete() {
+            if (deleteTargetId === 'batch') {
+                const idsToDelete = Array.from(selectedRecycleIds);
+                let deletedCount = 0;
+                idsToDelete.forEach(id => {
+                    const idx = deletedSkills.findIndex(s => s.id === id);
+                    if (idx > -1) {
+                        deletedSkills.splice(idx, 1);
+                        deletedCount++;
+                    }
+                });
+                selectedRecycleIds.clear();
+                deleteTargetId = null;
+                closeModal('permanentDeleteModal');
+                renderRecycleGrid();
+                if (deletedCount > 0) {
+                    showToast(`已彻底删除 ${deletedCount} 个技能`, 'success');
+                }
+            } else if (deleteTargetId) {
+                // 单个彻底删除（兼容旧逻辑，但卡片中已无独立删除按钮，保留以防万一）
+                const idx = deletedSkills.findIndex(s => s.id === deleteTargetId);
+                if (idx > -1) {
+                    deletedSkills.splice(idx, 1);
+                    selectedRecycleIds.delete(deleteTargetId);
+                }
+                deleteTargetId = null;
+                closeModal('permanentDeleteModal');
+                renderRecycleGrid();
+                showToast('已彻底删除', 'success');
+            } else {
+                closeModal('permanentDeleteModal');
+            }
         }
 
         // ═══════════════════════════════════════════════
         // 文件树
         // ═══════════════════════════════════════════════
         function renderFileTree(files, indent = 0) {
+            const dotsHide = detailMode === 'view' ? ' style="display:none"' : '';
             return files.map((f, i) => {
                 const paddingLeft = 12 + indent * 24;
                 if (f.type === 'folder') {
@@ -1410,7 +1640,7 @@
                             <span class="ft-icon">📁</span>
                             <span class="ft-name font-medium text-gray-700">${f.name}/</span>
                             <span class="ft-meta">${f.children ? f.children.length : 0} 个文件</span>
-                            <span class="ft-dots" onclick="event.stopPropagation();showFileMenu(this, 'folder', '${f.name.replace(/'/g, "\\'")}')">⋯</span>
+                            <span class="ft-dots"${dotsHide} onclick="event.stopPropagation();showFileMenu(this, 'folder', '${f.name.replace(/'/g, "\\'")}')">⋯</span>
                         </div>
                         <div class="folder-children">
                             ${f.children ? renderFileTree(f.children, indent + 1) : ''}
@@ -1424,7 +1654,7 @@
                         <span class="ft-icon">📄</span>
                         <span class="ft-name ${nameClass}">${f.name}</span>
                         <span class="ft-meta">${f.size || ''}</span>
-                        <span class="ft-dots" onclick="event.stopPropagation();showFileMenu(this, '${isProtected ? 'protected' : 'file'}', '${f.name.replace(/'/g, "\\'")}')">⋯</span>
+                        <span class="ft-dots"${dotsHide} onclick="event.stopPropagation();showFileMenu(this, '${isProtected ? 'protected' : 'file'}', '${f.name.replace(/'/g, "\\'")}')">⋯</span>
                     </div>`;
                 }
             }).join('');
@@ -1500,7 +1730,8 @@
         // ═══════════════════════════════════════════════
         // 详情操作
         // ═══════════════════════════════════════════════
-        function openDetail(id) {
+        function openDetail(id, mode) {
+            detailMode = mode || 'view';
             currentSkill = skills.find(s => s.id === id);
             if (!currentSkill) return;
 
@@ -1523,7 +1754,7 @@
             tagEl.className = `tag ${st.cls}`;
             tagEl.innerHTML = `<span class="status-dot ${st.dot}"></span>${st.label}`;
 
-            const btnPublish = document.getElementById('btn-publish');
+            const btnPublish = document.getElementById('btn-publish-detail');
             if (currentSkill.status === 'draft') {
                 btnPublish.innerHTML = '<iconify-icon icon="mdi:rocket-launch-outline"></iconify-icon><span>发布</span>';
                 btnPublish.className =
@@ -1537,6 +1768,15 @@
                 btnPublish.className =
                     'flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm';
             }
+
+            const editBtn = document.getElementById('detail-edit-btn');
+            const saveBtn = document.getElementById('btn-save-detail');
+            const publishBtn = document.getElementById('btn-publish-detail');
+            const fileBtn = document.getElementById('btnFile');
+            if (editBtn) editBtn.style.display = detailMode === 'edit' ? '' : 'none';
+            if (saveBtn) saveBtn.style.display = detailMode === 'edit' ? '' : 'none';
+            if (publishBtn) publishBtn.style.display = detailMode === 'edit' ? '' : 'none';
+            if (fileBtn) fileBtn.style.display = detailMode === 'edit' ? '' : 'none';
 
             document.getElementById('file-tree').innerHTML = renderFileTree(currentSkill.files);
             showView('detail');
@@ -1557,7 +1797,7 @@
                 currentSkill.enabled = true;
                 showToast('发布成功', 'success');
             }
-            openDetail(currentSkill.id);
+            openDetail(currentSkill.id, 'edit');
         }
 
         // ═══════════════════════════════════════════════
@@ -1723,7 +1963,7 @@
                 icon: createIconData,
                 category: selectedCategories[0],
                 desc: desc || '暂无描述',
-                status: 'draft',
+                status: 'disabled',
                 enabled: false,
                 createdBy: '孙礼飞',
                 updatedBy: '孙礼飞',
@@ -1745,6 +1985,8 @@
             document.querySelectorAll('#create-category-group input[type="checkbox"]').forEach(cb => {
                 cb.checked = cb.value === '代码生成';
             });
+
+            openDetail(newSkill.id, 'edit');
         }
 
         // ═══════════════════════════════════════════════
@@ -1796,7 +2038,7 @@
                 day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-');
 
             closeModal('editModal');
-            openDetail(currentSkill.id);
+            openDetail(currentSkill.id, 'edit');
             renderSkillGrid();
             showToast('技能更新成功', 'success');
         }
@@ -1891,19 +2133,16 @@
 
         function openPermanentDelete(id) {
             deleteTargetId = id;
+            const skill = deletedSkills.find(s => s.id === id);
+            document.getElementById('permanent-delete-msg').textContent =
+                `此操作不可恢复，将永久删除技能「${skill ? skill.name : ''}」及其所有文件。`;
             openModal('permanentDeleteModal');
         }
 
-        function confirmPermanentDelete() {
-            if (deleteTargetId) {
-                deletedSkills = deletedSkills.filter(s => s.id !== deleteTargetId);
-                deleteTargetId = null;
-            }
-            closeModal('permanentDeleteModal');
-            renderRecycleGrid();
-            showToast('已彻底删除', 'success');
-        }
+        // confirmPermanentDelete 已在上方批量操作中定义，这里覆盖为完整版本
+        // 上面已定义 confirmPermanentDelete，但为了兼容单个删除，我们保留上面的实现
 
+        // 恢复单个技能（卡片中已无独立恢复按钮，但保留函数以防外部调用）
         function restoreSkill(id) {
             const idx = deletedSkills.findIndex(s => s.id === id);
             if (idx > -1) {
@@ -1911,14 +2150,14 @@
                 delete restored.deletedBy;
                 delete restored.deletedAt;
                 skills.push(restored);
+                selectedRecycleIds.delete(id);
             }
             renderRecycleGrid();
             showToast('恢复成功', 'success');
         }
 
-        function batchRestore() { showToast('已恢复选中技能', 'success'); }
-
-        function batchPermanentDelete() { openModal('permanentDeleteModal'); }
+        // 兼容旧的批量操作（已由新实现覆盖）
+        // batchRestore 和 batchPermanentDelete 已在上方重新定义
 
         // ═══════════════════════════════════════════════
         // 文件操作占位
@@ -1939,7 +2178,151 @@
 
         function exportSkill(id) { showToast('导出成功', 'success'); }
 
-        function addCategory() { showToast('新增类别功能', 'success'); }
+        // ═══════════════════════════════════════════════
+        // 类别管理 CRUD
+        // ═══════════════════════════════════════════════
+        let categories = [
+            { id: 1, name: '代码生成', sort: 1, status: 'published' },
+            { id: 2, name: '数据分析', sort: 2, status: 'published' },
+            { id: 3, name: '文档处理', sort: 3, status: 'published' },
+            { id: 4, name: '自动化流程', sort: 4, status: 'published' },
+            { id: 5, name: '知识检索', sort: 5, status: 'disabled' },
+            { id: 6, name: '创意写作', sort: 6, status: 'published' }
+        ];
+        let categoryDeleteId = null;
+        let categoryNextId = 7;
+
+        function getCategorySkillCount(catName) {
+            return skills.filter(s => s.category === catName).length;
+        }
+
+        function renderCategoryTable() {
+            const tbody = document.getElementById('category-table-body');
+            if (!tbody) return;
+            const sorted = [...categories].sort((a, b) => a.sort - b.sort);
+            tbody.innerHTML = sorted.map((cat, idx) => {
+                const statusClass = cat.status === 'published' ? 'tag-published' : 'tag-draft';
+                const statusDot = cat.status === 'published' ? 'published' : 'draft';
+                const statusText = cat.status === 'published' ? '启用' : '禁用';
+                const skillCount = getCategorySkillCount(cat.name);
+                const isLast = idx === sorted.length - 1;
+                return `<tr class="${isLast ? '' : 'border-b border-gray-50'} hover:bg-gray-50">
+                    <td class="px-6 py-3 font-medium text-gray-900">${cat.name}</td>
+                    <td class="px-6 py-3 text-gray-500">${cat.sort}</td>
+                    <td class="px-6 py-3"><span class="tag ${statusClass}"><span class="status-dot ${statusDot}"></span>${statusText}</span></td>
+                    <td class="px-6 py-3 text-gray-500">${skillCount}</td>
+                    <td class="px-6 py-3 text-right">
+                        <button onclick="editCategory(${cat.id})" class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>
+                        <button onclick="deleteCategory(${cat.id})" class="text-red-500 hover:text-red-700 text-xs">删除</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function addCategory() {
+            document.getElementById('category-form-title').textContent = '新增类别';
+            document.getElementById('category-edit-id').value = '';
+            document.getElementById('category-name-input').value = '';
+            document.getElementById('category-sort-input').value = '';
+            document.querySelector('input[name="category-status"][value="published"]').checked = true;
+            openModal('categoryFormModal');
+            setTimeout(() => document.getElementById('category-name-input').focus(), 100);
+        }
+
+        function editCategory(id) {
+            const cat = categories.find(c => c.id === id);
+            if (!cat) return;
+            document.getElementById('category-form-title').textContent = '编辑类别';
+            document.getElementById('category-edit-id').value = id;
+            document.getElementById('category-name-input').value = cat.name;
+            document.getElementById('category-sort-input').value = cat.sort;
+            const radio = document.querySelector(`input[name="category-status"][value="${cat.status}"]`);
+            if (radio) radio.checked = true;
+            openModal('categoryFormModal');
+            setTimeout(() => document.getElementById('category-name-input').focus(), 100);
+        }
+
+        function saveCategory() {
+            const editId = document.getElementById('category-edit-id').value;
+            const name = document.getElementById('category-name-input').value.trim();
+            const sort = document.getElementById('category-sort-input').value;
+            const status = document.querySelector('input[name="category-status"]:checked').value;
+
+            if (!name) {
+                showToast('请输入类别名称', 'error');
+                document.getElementById('category-name-input').focus();
+                return;
+            }
+
+            // 检查名称重复（排除自身）
+            const duplicate = categories.find(c => c.name === name && c.id !== Number(editId));
+            if (duplicate) {
+                showToast('类别名称已存在', 'error');
+                document.getElementById('category-name-input').focus();
+                return;
+            }
+
+            if (editId) {
+                // 编辑模式
+                const cat = categories.find(c => c.id === Number(editId));
+                if (cat) {
+                    cat.name = name;
+                    cat.sort = sort ? Number(sort) : cat.sort;
+                    cat.status = status;
+                }
+                showToast('类别已更新', 'success');
+            } else {
+                // 新增模式
+                const maxSort = categories.length > 0 ? Math.max(...categories.map(c => c.sort)) : 0;
+                categories.push({
+                    id: categoryNextId++,
+                    name: name,
+                    sort: sort ? Number(sort) : maxSort + 1,
+                    status: status
+                });
+                showToast('类别已添加', 'success');
+            }
+
+            closeModal('categoryFormModal');
+            renderCategoryTable();
+        }
+
+        function deleteCategory(id) {
+            const cat = categories.find(c => c.id === id);
+            if (!cat) return;
+            categoryDeleteId = id;
+            const skillCount = getCategorySkillCount(cat.name);
+            const msg = skillCount > 0
+                ? `类别「${cat.name}」下还有 ${skillCount} 个关联技能，删除后这些技能将同步删除分类。确认删除？`
+                : `确认删除类别「${cat.name}」？`;
+            document.getElementById('delete-confirm-title').textContent = '确认删除类别';
+            document.getElementById('delete-confirm-msg').textContent = msg;
+            // 临时替换 confirmDelete 的行为
+            window._originalConfirmDelete = window._originalConfirmDelete || confirmDelete;
+            window._deleteAction = 'category';
+            openModal('deleteConfirmModal');
+        }
+
+        // 扩展 confirmDelete 以支持类别删除
+        const _origConfirmDelete = confirmDelete;
+        confirmDelete = function() {
+            if (window._deleteAction === 'category') {
+                if (categoryDeleteId) {
+                    const idx = categories.findIndex(c => c.id === categoryDeleteId);
+                    if (idx > -1) {
+                        categories.splice(idx, 1);
+                    }
+                    categoryDeleteId = null;
+                }
+                window._deleteAction = null;
+                closeModal('deleteConfirmModal');
+                renderCategoryTable();
+                showToast('类别已删除', 'success');
+                return;
+            }
+            // 原有技能删除逻辑
+            _origConfirmDelete();
+        }
 
         // ═══════════════════════════════════════════════
         // 筛选
@@ -1993,6 +2376,21 @@
         function filterSkills() { renderSkillGrid(); }
 
         // ═══════════════════════════════════════════════
+        // 回收站角标更新
+        // ═══════════════════════════════════════════════
+        function updateRecycleBadge() {
+            const badge = document.getElementById('recycle-badge');
+            if (!badge) return;
+            const count = deletedSkills.length;
+            badge.textContent = count;
+            if (count > 0) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // ═══════════════════════════════════════════════
         // Modal / Toast
         // ═══════════════════════════════════════════════
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
@@ -2012,6 +2410,7 @@
         // 初始化
         // ═══════════════════════════════════════════════
         renderSkillGrid();
+        renderCategoryTable();
         updateRecycleBadge();
         updateCreateIconPreview();
         updateEditIconPreview();
