@@ -248,6 +248,19 @@
         .ft-dots:hover {
             background: #E5E7EB;
         }
+        .ft-name-input {
+            font-size: 13px;
+            border: 1px solid #4F46E5;
+            border-radius: 4px;
+            padding: 2px 6px;
+            outline: none;
+            background: #fff;
+            color: #1f2937;
+            width: 100%;
+            max-width: 180px;
+            line-height: 1.4;
+            box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
+        }
 
         .dropdown-menu {
             position: absolute;
@@ -334,6 +347,45 @@
         }
         .code-editor .function {
             color: #61AFEF;
+        }
+
+        /* Pill Toggle */
+        .pill-toggle {
+            display: inline-flex;
+            align-items: center;
+            background: #F3F4F6;
+            border-radius: 9999px;
+            padding: 3px;
+            gap: 2px;
+        }
+        .pill-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 14px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #9CA3AF;
+            transition: all 0.2s ease;
+            line-height: 1.4;
+            white-space: nowrap;
+        }
+        .pill-toggle-btn:hover:not(.active) {
+            color: #6B7280;
+        }
+        .pill-toggle-btn.active {
+            background: #fff;
+            color: #4F46E5;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+        }
+        .pill-toggle-btn .pill-icon {
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
         }
 
         .breadcrumb {
@@ -691,10 +743,12 @@
                         <iconify-icon icon="mdi:tray-arrow-up"></iconify-icon>
                         <span>导入技能</span>
                     </button>
+					<!--
                     <button onclick="openModal('createModal')" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
                         <iconify-icon icon="mdi:plus"></iconify-icon>
                         <span>新建技能</span>
                     </button>
+					-->
                 </div>
                 <div id="header-detail-actions" class="hidden flex items-center space-x-3">
                     <button onclick="showView('list')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
@@ -839,10 +893,20 @@
                                 <span class="current" id="editor-filename">SKILL.md</span>
                             </div>
                             <div class="flex items-center gap-2">
+                                <div class="pill-toggle">
+                                    <button class="pill-toggle-btn active" id="btn-preview" onclick="switchEditorView('preview')">
+                                        <span class="pill-icon">👁</span>
+                                        <span>预览</span>
+                                    </button>
+                                    <button class="pill-toggle-btn" id="btn-code" onclick="switchEditorView('code')">
+                                        <span class="pill-icon">⟨⟩</span>
+                                        <span>代码</span>
+                                    </button>
+                                </div>
                                 <button class="p-1.5 rounded hover:bg-gray-100 text-gray-500" title="下载">
                                     <iconify-icon icon="mdi:download-outline" class="text-base"></iconify-icon>
                                 </button>
-                                <button class="p-1.5 rounded hover:bg-gray-100 text-gray-500" title="上传覆盖">
+                                <button id="btn-upload-override" class="p-1.5 rounded hover:bg-gray-100 text-gray-500" title="上传覆盖">
                                     <iconify-icon icon="mdi:upload-outline" class="text-base"></iconify-icon>
                                 </button>
                             </div>
@@ -1067,9 +1131,9 @@
             </div>
             <div class="px-6 py-5 space-y-5">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">类别 <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别 </label>
                     <div class="category-checkbox-group" id="import-category-group">
-                        <label><input type="checkbox" value="代码生成" checked class="import-category-cb" /> 代码生成</label>
+                        <label><input type="checkbox" value="代码生成" class="import-category-cb" /> 代码生成</label>
                         <label><input type="checkbox" value="数据分析" class="import-category-cb" /> 数据分析</label>
                         <label><input type="checkbox" value="文档处理" class="import-category-cb" /> 文档处理</label>
                         <label><input type="checkbox" value="自动化流程" class="import-category-cb" /> 自动化流程</label>
@@ -1384,9 +1448,11 @@
                             <span onclick="event.stopPropagation();exportSkill(${s.id})" class="card-action-btn" title="导出">
                                 <iconify-icon icon="mdi:download-outline" class="text-base"></iconify-icon>
                             </span>
+							<!--
                             <span onclick="event.stopPropagation();openDetail(${s.id}, 'edit')" class="card-action-btn" title="编辑">
                                 <iconify-icon icon="mdi:pencil-outline" class="text-base"></iconify-icon>
                             </span>
+							-->
                             <span onclick="event.stopPropagation();openDeleteConfirm(${s.id})" class="card-action-btn danger" title="删除">
                                 <iconify-icon icon="mdi:trash-can-outline" class="text-base"></iconify-icon>
                             </span>
@@ -1635,7 +1701,7 @@
                 const paddingLeft = 12 + indent * 24;
                 if (f.type === 'folder') {
                     return `
-                    <div class="relative">
+                    <div class="relative" data-name="${f.name}" data-type="folder">
                         <div class="file-tree-row" style="padding-left:${paddingLeft}px" onclick="toggleFolder(this)">
                             <span class="ft-icon">📁</span>
                             <span class="ft-name font-medium text-gray-700">${f.name}/</span>
@@ -1650,7 +1716,7 @@
                     const isProtected = f.protected;
                     const nameClass = isProtected ? 'font-semibold text-indigo-600' : 'text-gray-600';
                     return `
-                    <div class="file-tree-row" style="padding-left:${paddingLeft}px" onclick="selectFile(this, '${f.name}')">
+                    <div class="file-tree-row" data-name="${f.name}" data-type="file" style="padding-left:${paddingLeft}px" onclick="selectFile(this, '${f.name}')">
                         <span class="ft-icon">📄</span>
                         <span class="ft-name ${nameClass}">${f.name}</span>
                         <span class="ft-meta">${f.size || ''}</span>
@@ -1777,6 +1843,8 @@
             if (saveBtn) saveBtn.style.display = detailMode === 'edit' ? '' : 'none';
             if (publishBtn) publishBtn.style.display = detailMode === 'edit' ? '' : 'none';
             if (fileBtn) fileBtn.style.display = detailMode === 'edit' ? '' : 'none';
+            const uploadOverrideBtn = document.getElementById('btn-upload-override');
+            if (uploadOverrideBtn) uploadOverrideBtn.style.display = detailMode === 'edit' ? '' : 'none';
 
             document.getElementById('file-tree').innerHTML = renderFileTree(currentSkill.files);
             showView('detail');
@@ -2162,11 +2230,103 @@
         // ═══════════════════════════════════════════════
         // 文件操作占位
         // ═══════════════════════════════════════════════
-        function createNewFile() { showToast('新建文件功能', 'success'); }
+        function createNewFile() {
+            insertEditableRow('file');
+        }
 
-        function createNewFolder() { showToast('新建文件夹功能', 'success'); }
+        function createNewFolder() {
+            insertEditableRow('folder');
+        }
 
-        function renameItem(name) { showToast(`重命名「${name}」`, 'success'); }
+        function insertEditableRow(type) {
+            const container = document.getElementById('file-tree');
+            container.querySelectorAll('.new-item-row').forEach(el => el.remove());
+            const icon = type === 'folder' ? '📁' : '📄';
+            const placeholder = type === 'folder' ? '新建文件夹' : '新建文件';
+            const row = document.createElement('div');
+            row.className = 'file-tree-row new-item-row';
+            row.style.paddingLeft = '12px';
+            row.innerHTML = `
+                <span class="ft-icon">${icon}</span>
+                <input class="ft-name-input" type="text" value="${placeholder}" placeholder="请输入名称" />
+                <span class="ft-meta" style="color:#9CA3AF">${type === 'folder' ? '文件夹' : '文件'}</span>
+            `;
+            container.prepend(row);
+            const input = row.querySelector('.ft-name-input');
+            input.focus();
+            input.select();
+            const confirm = () => {
+                const val = input.value.trim();
+                if (!val) { row.remove(); return; }
+                if (currentSkill) {
+                    const newItem = type === 'folder'
+                        ? { name: val, type: 'folder', children: [] }
+                        : { name: val, type: 'file', size: '0 KB' };
+                    currentSkill.files.unshift(newItem);
+                }
+                refreshFileTree();
+                showToast(`已${type === 'folder' ? '创建文件夹' : '创建文件'}「${val}」`, 'success');
+            };
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); confirm(); }
+                if (e.key === 'Escape') { row.remove(); }
+            });
+            input.addEventListener('blur', confirm);
+        }
+
+        function renameItem(name) {
+            const container = document.getElementById('file-tree');
+            const allRows = container.querySelectorAll('[data-name]');
+            let targetWrapper = null;
+            allRows.forEach(el => {
+                if (el.getAttribute('data-name') === name) targetWrapper = el;
+            });
+            if (!targetWrapper) { showToast(`未找到「${name}」`, 'error'); return; }
+            const row = targetWrapper.querySelector('.file-tree-row') || targetWrapper;
+            const nameSpan = row.querySelector('.ft-name');
+            if (!nameSpan) return;
+            const oldName = name;
+            const isFolder = targetWrapper.getAttribute('data-type') === 'folder';
+            const displayName = isFolder ? oldName.replace(/\/$/, '') : oldName;
+            const input = document.createElement('input');
+            input.className = 'ft-name-input';
+            input.type = 'text';
+            input.value = displayName;
+            nameSpan.replaceWith(input);
+            input.focus();
+            input.select();
+            const confirm = () => {
+                const val = input.value.trim();
+                if (!val || val === displayName) {
+                    refreshFileTree();
+                    return;
+                }
+                if (currentSkill) {
+                    updateFileName(currentSkill.files, oldName, val);
+                }
+                refreshFileTree();
+                showToast(`已重命名为「${val}」`, 'success');
+            };
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); confirm(); }
+                if (e.key === 'Escape') { refreshFileTree(); }
+            });
+            input.addEventListener('blur', confirm);
+        }
+
+        function updateFileName(files, oldName, newName) {
+            for (let f of files) {
+                if (f.name === oldName) { f.name = newName; return true; }
+                if (f.children && updateFileName(f.children, oldName, newName)) return true;
+            }
+            return false;
+        }
+
+        function refreshFileTree() {
+            if (!currentSkill) return;
+            const container = document.getElementById('file-tree');
+            container.innerHTML = renderFileTree(currentSkill.files);
+        }
 
         function downloadFile(name) { showToast(`下载「${name}」`, 'success'); }
 
@@ -2407,6 +2567,23 @@
         }
 
         // ═══════════════════════════════════════════════
+        // 编辑器视图切换（预览 / 代码）
+        // ═══════════════════════════════════════════════
+        function switchEditorView(mode) {
+            const btnPreview = document.getElementById('btn-preview');
+            const btnCode = document.getElementById('btn-code');
+            if (!btnPreview || !btnCode) return;
+
+            if (mode === 'preview') {
+                btnPreview.classList.add('active');
+                btnCode.classList.remove('active');
+            } else {
+                btnCode.classList.add('active');
+                btnPreview.classList.remove('active');
+            }
+        }
+
+        // ═══════════════════════════════════════════════
         // 初始化
         // ═══════════════════════════════════════════════
         renderSkillGrid();
@@ -2415,5 +2592,9 @@
         updateCreateIconPreview();
         updateEditIconPreview();
     </script>
+	
+	<style> .prd-fab-wrapper { position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; align-items: center; justify-content: center; }  .prd-fab-btn { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #ffffff; box-shadow: 0 8px 28px rgba(79, 70, 229, 0.45); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; text-decoration: none; cursor: pointer; border: none; outline: none; position: relative; } .prd-fab-btn:hover { transform: scale(1.10); box-shadow: 0 12px 40px rgba(79, 70, 229, 0.60); } .prd-fab-btn:active { transform: scale(0.92); } .prd-fab-btn svg { width: 28px; height: 28px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08)); } .prd-fab-tooltip { position: absolute; right: 72px; background: #1e293b; color: #f1f5f9; padding: 6px 16px; border-radius: 8px; font-family: -apple-system, 'Inter', 'Microsoft YaHei', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.3px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateX(4px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); } .prd-fab-tooltip::after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); border-left: 6px solid #1e293b; border-top: 6px solid transparent; border-bottom: 6px solid transparent; } .prd-fab-btn:hover .prd-fab-tooltip { opacity: 1; transform: translateX(0); }  @media (max-width: 640px) { .prd-fab-wrapper { bottom: 20px; right: 20px; } .prd-fab-btn { width: 48px; height: 48px; } .prd-fab-btn svg { width: 22px; height: 22px; } .prd-fab-tooltip { right: 60px; font-size: 12px; padding: 4px 12px; } .prd-fab-tooltip::after { right: -5px; border-width: 5px; } }  @media (prefers-color-scheme: dark) { .prd-fab-tooltip { background: #0f172a; color: #e2e8f0; } .prd-fab-tooltip::after { border-left-color: #0f172a; } }</style>
+	<div class="prd-fab-wrapper"> <a class="prd-fab-btn" href="../prd/v2.1 技能管理模块-PRD.html" target="_blank" rel="noopener noreferrer" aria-label="查看 PRD 文档">  <svg viewBox="0 0 24 24"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /> <polyline points="14 2 14 8 20 8" /> <line x1="8" y1="13" x2="16" y2="13" /> <line x1="8" y1="17" x2="16" y2="17" /> </svg> <span class="prd-fab-tooltip">PRD 文档</span></a></div>
+	
 </body>
 </html>
