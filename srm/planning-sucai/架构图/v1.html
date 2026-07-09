@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>采购供应链一体化平台 — 产品功能架构图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif; background: #f0f2f5; color: #333; padding: 24px; }
+  
+  .header { text-align: center; margin-bottom: 32px; }
+  .header h1 { font-size: 28px; color: #1a1a2e; margin-bottom: 8px; }
+  .header p { font-size: 14px; color: #888; }
+  
+  .legend { display: flex; justify-content: center; gap: 32px; margin-bottom: 28px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+  .legend-dot { width: 16px; height: 16px; border-radius: 4px; }
+  .legend-dot.done { background: linear-gradient(135deg, #f5a623, #f7c948); }
+  .legend-dot.todo { background: #c8ccd0; }
+  
+  .arch-grid { display: grid; grid-template-columns: 140px 1fr; gap: 16px; max-width: 1400px; margin: 0 auto; }
+  
+  .side-label { display: flex; flex-direction: column; justify-content: center; align-items: center;
+    background: linear-gradient(135deg, #e8734a, #f5a623); color: #fff; border-radius: 12px;
+    font-size: 16px; font-weight: 700; letter-spacing: 2px; padding: 12px 8px; text-align: center; min-height: 100px; }
+  
+  .module-row { display: grid; grid-template-columns: 140px 1fr; gap: 16px; margin-bottom: 10px; align-items: stretch; }
+  
+  .module-title { display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #e8734a, #f5a623); color: #fff;
+    border-radius: 12px; font-size: 18px; font-weight: 700; padding: 16px 12px;
+    text-orientation: mixed; letter-spacing: 4px;  }
+  
+  .module-content { background: #fff; border-radius: 12px; padding: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #e8e8e8; }
+  
+  .feature-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  
+  .feature-tag { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    border: 1.5px solid; transition: all 0.2s; cursor: default; }
+  .feature-tag:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  
+  .feature-tag.done { background: linear-gradient(135deg, #fff8ee, #fff3d6);
+    border-color: #f5a623; color: #b8760a; }
+  .feature-tag.todo { background: #f5f6f8; border-color: #c8ccd0; color: #666; }
+  
+  .section-divider { height: 2px; background: linear-gradient(90deg, transparent, #e8734a, #f5a623, transparent);
+    margin: 24px 0; border-radius: 1px; }
+  
+  .top-bar { display: grid; grid-template-columns: 140px 1fr; gap: 16px; margin-bottom: 16px; }
+  .top-bar .module-title { writing-mode: horizontal-tb; min-height: auto; padding: 12px 16px; }
+  
+  .interaction-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  
+  .ai-section { display: grid; grid-template-columns: 140px 1fr; gap: 16px; margin-bottom: 16px; }
+  .ai-section .module-title { writing-mode: horizontal-tb; min-height: auto; padding: 12px 16px; }
+  
+  .sys-section { display: grid; grid-template-columns: 140px 1fr; gap: 16px; margin-bottom: 16px; }
+  .sys-section .module-title { writing-mode: horizontal-tb; min-height: auto; padding: 12px 16px; }
+  
+  .stats-bar { display: flex; justify-content: center; gap: 48px; margin-top: 32px; padding: 20px;
+    background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .stat-item { text-align: center; }
+  .stat-num { font-size: 32px; font-weight: 700; color: #e8734a; }
+  .stat-num.gray { color: #999; }
+  .stat-label { font-size: 13px; color: #888; margin-top: 4px; }
+  
+  .footer { text-align: center; margin-top: 24px; font-size: 12px; color: #bbb; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>采购供应链一体化平台 — 产品功能架构图</h1>
+  <p>Procurement & Supply Chain Integrated Platform — Product Feature Architecture</p>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot done"></div> 已开发功能</div>
+  <div class="legend-item"><div class="legend-dot todo"></div> 待开发功能</div>
+</div>
+
+
+<!-- 采购门户 -->
+<div class="module-row">
+  <div class="module-title">采购门户</div>
+  <div class="module-content">
+    <div class="feature-grid">
+      <span class="feature-tag done">采购门户</span>
+      <span class="feature-tag done">采购动态</span>
+      <span class="feature-tag done">招标公告</span>
+      <span class="feature-tag done">新闻资讯</span>
+      <span class="feature-tag done">平台公告</span>
+      <span class="feature-tag done">登录入口</span>
+      <span class="feature-tag done">注册入口</span>
+      <span class="feature-tag todo">政策法规</span>
+    </div>
+  </div>
+</div>
+
+<!-- 供应商管理 -->
+<div class="module-row">
+  <div class="module-title">供应商管理</div>
+  <div class="module-content">
+    <div class="feature-grid">
+      <span class="feature-tag done">注册审核</span>
+      <span class="feature-tag done">绿色通道</span>
+      <span class="feature-tag done">营业执照OCR</span>
+      <span class="feature-tag done">资质考核</span>
+      <span class="feature-tag done">供应商分类分级</span>
+      <span class="feature-tag done">供应商变更</span>
+      <span class="feature-tag done">验厂管理</span>
+      <span class="feature-tag done">绩效考核</span>
+      <span class="feature-tag done">合作终止</span>
+      <span class="feature-tag done">供应商黑名单</span>
+      <span class="feature-tag todo">样品试用</span>
+      <span class="feature-tag todo">索赔管理</span>
+      <span class="feature-tag todo">供应商组织隔离</span>
+      <span class="feature-tag todo">配额管理</span>
+    </div>
+  </div>
+</div>
+
+<!-- 数据中心 -->
+<div class="module-row">
+  <div class="module-title">数据中心</div>
+  <div class="module-content">
+    <div class="feature-grid">
+      <span class="feature-tag done">物料数据</span>
+      <span class="feature-tag done">物料分类</span>
+      <span class="feature-tag done">供应商数据</span>
+      <span class="feature-tag done">供应商分类</span>
+      <span class="feature-tag done">供应商等级</span>
+      <span class="feature-tag done">价格数据</span>
+      <span class="feature-tag todo">数据报表</span>
+      <span class="feature-tag todo">数字大屏</span>
+      <span class="feature-tag todo">价格趋势分析</span>
+      <span class="feature-tag todo">大宗行情分析</span>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- 采购寻源 -->
+<div class="module-row">
+  <div class="module-title">采购寻源</div>
+  <div class="module-content">
+    <div class="feature-grid">
+      <span class="feature-tag done">需求管理</span>
+      <span class="feature-tag done">在线询价</span>
+      <span class="feature-tag done">供方报价</span>
+      <span class="feature-tag done">在线比价</span>
+      <span class="feature-tag done">在线招标</span>
+      <span class="feature-tag done">在线投标</span>
+      <span class="feature-tag done">多轮竞标</span>
+      <span class="feature-tag todo">竞价</span>
+      <span class="feature-tag todo">竞拍</span>
+      <span class="feature-tag todo">项目管理</span>
+    </div>
+  </div>
+</div>
+
+<!-- 合同管理 -->
+<div class="module-row">
+  <div class="module-title">合同管理</div>
+  <div class="module-content">
+    <div class="feature-grid">
+      <span class="feature-tag done">合同签订</span>
+      <span class="feature-tag done">框架协议</span>
+      <span class="feature-tag done">合同模板</span>
+      <span class="feature-tag done">合同变更</span>
+      <span class="feature-tag done">合同终止</span>
+      <span class="feature-tag todo">电子签章</span>
+    </div>
+  </div>
+</div>
+
+<!-- 订单协同 -->
+<div class="module-row">
+  <div class="module-title">订单协同</div>
+  <div class="module-content">
+    <div class="feature-grid">
+      <span class="feature-tag done">订单管理</span>
+      <span class="feature-tag done">订单变更</span>
+      <span class="feature-tag done">收料通知</span>
+      <span class="feature-tag done">资产验收</span>
+      <span class="feature-tag done">入库管理</span>
+      <span class="feature-tag todo">退货管理</span>
+      <span class="feature-tag todo">质检管理</span>
+      <span class="feature-tag todo">条码标签</span>
+    </div>
+  </div>
+</div>
+
+<!-- 财务协同 -->
+<div class="module-row">
+  <div class="module-title">财务协同</div>
+  <div class="module-content">
+    <div class="feature-grid">
+      <span class="feature-tag done">预付款管理</span>
+      <span class="feature-tag done">应付管理</span>
+      <span class="feature-tag done">付款申请</span>
+      <span class="feature-tag done">发票管理</span>
+      <span class="feature-tag done">入库收票核销</span>
+      <span class="feature-tag todo">费用单</span>
+      <span class="feature-tag todo">对账管理</span>
+    </div>
+  </div>
+</div>
+
+<!-- 集采商城 -->
+<div class="module-row">
+  <div class="module-title">集采商城</div>
+  <div class="module-content">
+    <div class="feature-grid">
+      <span class="feature-tag done">商城门户</span>
+      <span class="feature-tag done">采购下单</span>
+      <span class="feature-tag done">物料上架</span>
+      <span class="feature-tag done">履约跟进</span>
+      <span class="feature-tag todo">工业品商城对接</span>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- AI深化应用 -->
+<div class="ai-section">
+  <div class="module-title">AI深化应用</div>
+  <div class="module-content">
+    <div class="feature-grid">
+      <span class="feature-tag done">智能问答</span>
+      <span class="feature-tag done">智能审核</span>
+      <span class="feature-tag todo">供应商风控</span>
+      <span class="feature-tag todo">合同AI助手</span>
+      <span class="feature-tag todo">智能比价</span>
+      <span class="feature-tag todo">智能问数</span>
+      <span class="feature-tag todo">自动化单据</span>
+      <span class="feature-tag todo">供应商AI画像分析</span>
+      <span class="feature-tag todo">智能寻源</span>
+      <span class="feature-tag todo">商城智能比价</span>
+    </div>
+  </div>
+</div>
+
+<!-- 移动端 -->
+<div class="top-bar">
+  <div class="module-title" style="writing-mode:horizontal-tb; min-height:auto; padding:12px 16px;">移动端</div>
+  <div class="module-content">
+    <div class="interaction-row">
+	  <span class="feature-tag todo">授权登录</span>
+	  <span class="feature-tag todo">常用功能</span>
+	  <span class="feature-tag todo">通知待办</span>
+	  <span class="feature-tag todo">企业信息</span>
+	  <span class="feature-tag todo">验厂管理</span>
+	  <span class="feature-tag todo">合同管理</span>
+	  <span class="feature-tag todo">订单管理</span>
+	  <span class="feature-tag todo">收料通知单</span>
+	  <span class="feature-tag todo">个人中心</span>
+	  <span class="feature-tag todo">AI接入</span>
+    </div>
+  </div>
+</div>
+
+<!-- 系统功能 -->
+<div class="sys-section">
+  <div class="module-title">系统功能</div>
+  <div class="module-content">
+    <div class="feature-grid">
+      <span class="feature-tag done">组织架构</span>
+      <span class="feature-tag done">权限管理</span>
+      <span class="feature-tag done">基础配置</span>
+      <span class="feature-tag done">接口平台</span>
+      <span class="feature-tag done">用户管理</span>
+      <span class="feature-tag done">角色管理</span>
+      <span class="feature-tag done">AI大模型</span>
+      <span class="feature-tag done">数智员工</span>
+      <span class="feature-tag done">日志管理</span>
+      <span class="feature-tag todo">业务规则自定义</span>
+      <span class="feature-tag todo">多语言支持</span>
+      <span class="feature-tag todo">ERP标准化对接</span>
+      <span class="feature-tag todo">单据流</span>
+      <span class="feature-tag todo">独立审批流</span>
+    </div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-num">68</div>
+    <div class="stat-label">功能总数</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">42</div>
+    <div class="stat-label">已开发功能</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num gray">26</div>
+    <div class="stat-label">待开发功能</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" style="color:#4caf50;">62%</div>
+    <div class="stat-label">开发完成度</div>
+  </div>
+</div>
+
+<div class="footer">采购供应链一体化平台 · 产品功能架构图 · 2026.07</div>
+
+</body>
+</html>

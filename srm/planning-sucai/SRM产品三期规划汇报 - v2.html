@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRM标准产品后续版本规划 — 三期路线图</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;font-size:14px;line-height:1.7;color:#2c2c2a;background:#f8f7f4}
+  a{color:#185fa5;text-decoration:none}
+  .top-nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:0.5px solid #d3d1c7;padding:0 32px;display:flex;align-items:center;gap:24px;height:52px;overflow-x:auto}
+  .top-nav .logo{font-size:15px;font-weight:500;color:#2c2c2a;white-space:nowrap;margin-right:8px}
+  .top-nav a{font-size:13px;color:#5f5e5a;white-space:nowrap;padding:4px 0;border-bottom:2px solid transparent}
+  .top-nav a:hover{color:#185fa5;border-bottom-color:#185fa5}
+  .page{max-width:1400px;margin:0 auto;padding:40px 24px 80px}
+  section{margin-bottom:60px}
+  .hero{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;padding:40px 48px;margin-bottom:48px}
+  .hero .badge{display:inline-block;background:#eeedfe;color:#534ab7;font-size:12px;padding:3px 10px;border-radius:20px;margin-bottom:16px}
+  .hero h1{font-size:26px;font-weight:500;color:#2c2c2a;margin-bottom:10px}
+  .hero .sub{font-size:14px;color:#5f5e5a;margin-bottom:24px;line-height:1.8}
+  .hero-meta{display:flex;gap:32px;flex-wrap:wrap}
+  .hero-meta .item{font-size:13px;color:#888780}
+  .hero-meta .item span{color:#2c2c2a;font-weight:500}
+  h2.sec{font-size:17px;font-weight:500;color:#2c2c2a;margin-bottom:20px;padding-bottom:10px;border-bottom:0.5px solid #d3d1c7;display:flex;align-items:center;gap:10px}
+  h2.sec .num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:#534ab7;color:#fff;border-radius:50%;font-size:12px;flex-shrink:0}
+  h3.sub-sec{font-size:14px;font-weight:500;color:#2c2c2a;margin:20px 0 12px}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:12px;margin-bottom:24px}
+  .m-card{background:#f1efe8;border-radius:8px;padding:16px;text-align:center}
+  .m-card .label{font-size:12px;color:#888780;margin-bottom:6px}
+  .m-card .value{font-size:22px;font-weight:500;color:#2c2c2a}
+  .m-card .hint{font-size:11px;color:#b4b2a9;margin-top:4px}
+  .m-card.ai{background:#eeedfe}
+  .m-card.ai .value{color:#534ab7}
+  .info-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+  .info-box{flex:1;min-width:200px;background:#fff;border:0.5px solid #d3d1c7;border-radius:10px;padding:16px 20px}
+  .info-box.purple{border-left:3px solid #534ab7}
+  .info-box.blue{border-left:3px solid #185fa5}
+  .info-box.green{border-left:3px solid #0f6e56}
+  .info-box.amber{border-left:3px solid #ba7517}
+  .info-box.red{border-left:3px solid #a32d2d}
+  .info-box .title{font-size:12px;color:#888780;margin-bottom:8px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+  .info-box .body{font-size:13px;color:#2c2c2a;line-height:1.7}
+  .info-box .body li{margin-left:16px;margin-bottom:4px}
+  /* strategy banner */
+  .strat-banner{background:#eeedfe;border:1px solid #afa9ec;border-radius:10px;padding:18px 24px;margin-bottom:24px}
+  .strat-banner .strat-title{font-size:13px;font-weight:500;color:#534ab7;margin-bottom:8px}
+  .strat-banner p{font-size:13px;color:#3c3489;line-height:1.8}
+  .strat-banner strong{color:#26215c}
+  /* comparison block */
+  .compare-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+  .compare-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:10px;padding:16px 18px}
+  .compare-card .cc-head{font-size:12px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .compare-card .cc-tag{font-size:11px;padding:2px 7px;border-radius:4px}
+  .cc-old .cc-tag{background:#fcebeb;color:#a32d2d}
+  .cc-new .cc-tag{background:#eeedfe;color:#534ab7}
+  .compare-card li{font-size:12px;color:#5f5e5a;margin-left:16px;margin-bottom:4px;line-height:1.6}
+  /* tbl */
+  .tbl-wrap{overflow-x:auto;border:0.5px solid #d3d1c7;border-radius:10px;margin-bottom:20px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead tr{background:#f1efe8}
+  th{padding:10px 14px;text-align:left;font-weight:500;color:#5f5e5a;white-space:nowrap}
+  td{padding:9px 14px;border-top:0.5px solid #e8e6df;color:#2c2c2a;vertical-align:top}
+  tr:hover td{background:#fafaf8}
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;white-space:nowrap}
+  .tag.p1{background:#eeedfe;color:#534ab7}
+  .tag.p2{background:#eaf3de;color:#3b6d11}
+  .tag.p3{background:#faeeda;color:#854f0b}
+  .tag.ai{background:#eeedfe;color:#534ab7}
+  .tag.must{background:#fcebeb;color:#a32d2d}
+  .tag.opt{background:#f1efe8;color:#5f5e5a}
+  .tag.blue{background:#e6f1fb;color:#185fa5}
+  /* roadmap */
+  .roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+  .phase-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:12px;overflow:hidden}
+  .phase-hd{padding:18px 20px 14px;border-bottom:0.5px solid #d3d1c7}
+  .phase-hd .ph-label{font-size:11px;font-weight:500;letter-spacing:.5px;margin-bottom:6px}
+  .phase-hd .ph-name{font-size:16px;font-weight:500;margin-bottom:4px}
+  .phase-hd .ph-period{font-size:12px;color:#888780}
+  .phase-card.ph1 .phase-hd{background:#eeedfe}.phase-card.ph1 .ph-label{color:#534ab7}
+  .phase-card.ph2 .phase-hd{background:#e6f1fb}.phase-card.ph2 .ph-label{color:#185fa5}
+  .phase-card.ph3 .phase-hd{background:#eaf3de}.phase-card.ph3 .ph-label{color:#3b6d11}
+  .phase-body{padding:16px 20px}
+  .phase-body .goal{font-size:12px;color:#5f5e5a;margin-bottom:14px;line-height:1.6;padding:10px 12px;background:#fafaf8;border-radius:6px;border-left:2px solid #d3d1c7}
+  .phase-card.ph1 .goal{border-left-color:#534ab7;background:#faf9ff}
+  .phase-card.ph2 .goal{border-left-color:#185fa5;background:#f6f9fd}
+  .phase-card.ph3 .goal{border-left-color:#0f6e56;background:#f5faf7}
+  .feat-group{margin-bottom:14px}
+  .feat-group .fg-title{font-size:11px;font-weight:500;color:#888780;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:4px}
+  .fg-title .ai-pill{background:#eeedfe;color:#534ab7;font-size:10px;padding:1px 5px;border-radius:3px}
+  .fg-title .base-pill{background:#e6f1fb;color:#185fa5;font-size:10px;padding:1px 5px;border-radius:3px}
+  .fg-title .adv-pill{background:#eaf3de;color:#3b6d11;font-size:10px;padding:1px 5px;border-radius:3px}
+  .feat-item{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#2c2c2a;margin-bottom:5px;line-height:1.5}
+  .feat-item .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+  .dot.ai{background:#534ab7}
+  .dot.must{background:#a32d2d}
+  .dot.base{background:#185fa5}
+  .dot.adv{background:#0f6e56}
+  .dot.opt{background:#888780}
+  .kpi-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:14px;border-top:0.5px solid #e8e6df}
+  .kpi-chip{background:#f1efe8;border-radius:6px;padding:4px 10px;font-size:11px;color:#5f5e5a}
+  .phase-card.ph1 .kpi-chip{background:#eeedfe;color:#534ab7}
+  .phase-card.ph2 .kpi-chip{background:#e6f1fb;color:#185fa5}
+  .phase-card.ph3 .kpi-chip{background:#eaf3de;color:#3b6d11}
+  /* ai scenario grid */
+  .ai-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px}
+  .ai-card{background:#fff;border:0.5px solid #afa9ec;border-radius:10px;padding:16px 18px}
+  .ai-card .ac-phase{font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;margin-bottom:8px;display:inline-block}
+  .ac-ph1{background:#eeedfe;color:#534ab7}
+  .ac-ph2{background:#e6f1fb;color:#185fa5}
+  .ac-ph3{background:#eaf3de;color:#3b6d11}
+  .ai-card h4{font-size:13px;font-weight:500;margin-bottom:6px;color:#2c2c2a}
+  .ai-card p{font-size:12px;color:#5f5e5a;line-height:1.7}
+  .ai-card .ac-why{font-size:11px;color:#888780;margin-top:8px;padding-top:8px;border-top:0.5px solid #e8e6df}
+  /* timeline */
+  .timeline{position:relative;padding-left:24px}
+  .timeline::before{content:'';position:absolute;left:6px;top:6px;bottom:6px;width:1px;background:#d3d1c7}
+  .tl-item{position:relative;margin-bottom:24px}
+  .tl-item::before{content:'';position:absolute;left:-20px;top:5px;width:10px;height:10px;border-radius:50%;border:2px solid #fff;z-index:1}
+  .tl-item.t1::before{background:#534ab7}
+  .tl-item.t2::before{background:#185fa5}
+  .tl-item.t3::before{background:#0f6e56}
+  .tl-item .t-head{font-size:13px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+  .tl-item .t-body{font-size:12px;color:#5f5e5a;line-height:1.7}
+  /* risk */
+  .risk-level{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+  .risk-high{background:#a32d2d}
+  .risk-mid{background:#ba7517}
+  .risk-low{background:#0f6e56}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:16px;font-size:12px;color:#5f5e5a}
+  .legend-item{display:flex;align-items:center;gap:5px}
+  /* summary */
+  .summary-box{background:#fff;border:1.5px solid #534ab7;border-radius:12px;padding:24px 28px}
+  .summary-box h3{font-size:14px;font-weight:500;color:#534ab7;margin-bottom:12px}
+  .summary-box p{font-size:13px;color:#2c2c2a;line-height:1.9}
+  /* callout */
+  .callout{display:flex;gap:12px;background:#faf9ff;border:0.5px solid #afa9ec;border-radius:8px;padding:14px 16px;margin-bottom:20px;font-size:13px;color:#3c3489;line-height:1.7}
+  .callout .ico{font-size:16px;flex-shrink:0;margin-top:1px}
+  /* competitor row */
+  .comp-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+  .comp-card{background:#fff;border:0.5px solid #d3d1c7;border-radius:10px;padding:14px 16px}
+  .comp-card .co-name{font-size:13px;font-weight:500;margin-bottom:3px}
+  .comp-card .co-tag{font-size:11px;color:#888780;margin-bottom:8px}
+  .comp-card .co-body li{font-size:12px;color:#5f5e5a;margin-left:14px;margin-bottom:3px;line-height:1.6}
+  @media(max-width:768px){
+    .roadmap{grid-template-columns:1fr}
+    .compare-row{grid-template-columns:1fr}
+    .hero{padding:24px}
+    .hero h1{font-size:20px}
+  }
+</style>
+</head>
+<body>
+
+
+<div class="page">
+
+
+  <!-- 1. 三期路线图 -->
+  <section id="roadmap">
+    <h2 class="sec"><span class="num">1</span>产品规划路线图</h2>
+
+    <div class="legend">
+      <span class="legend-item"><span class="dot ai" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span> AI核心场景</span>
+      <span class="legend-item"><span class="dot must" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span> 销售必备基础</span>
+      <span class="legend-item"><span class="dot base" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span> 基础增强</span>
+      <span class="legend-item"><span class="dot adv" style="width:9px;height:9px;border-radius:50%;display:inline-block"></span> 高阶行业能力</span>
+    </div>
+
+    <div class="roadmap">
+
+      <!-- 一期 -->
+      <div class="phase-card ph1">
+        <div class="phase-hd">
+          <div class="ph-label">PHASE 1 · AI先行</div>
+          <div class="ph-name">基础够用 + 通过AI打造差异化</div>
+          <div class="ph-period">0 ~ 6 个月</div>
+        </div>
+        <div class="phase-body">
+          <p class="goal">目标：用"刚好够用"的基础功能支撑交付，同步上线5大AI核心场景作为市场切入抓手。一期完成后，AI能力即超越携客云，形成立即可用的差异化销售卖点。</p>
+
+          <div class="feat-group">
+            <div class="fg-title">AI核心场景 <span class="ai-pill">同步首发</span></div>
+            <div class="feat-item"><span class="dot ai"></span><strong>智能问答</strong>：知识库 + 供应商咨询入口，最快上线，所有竞品标配</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>智能审核</strong>：供应商/寻源/财务单据自动合规审核，携客云缺失的功能</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>合同助手</strong>：信息提取/文本比对/风险扫描，制造业高频高价值场景</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>供应商风控</strong>：工商/司法/舆情实时监控预警，结合本地数据更精准</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>智能比价</strong>：AI推荐最优供应商+风险比价+结果总结</div>
+          </div>
+
+          <div class="feat-group">
+            <div class="fg-title">销售必备基础 <span class="base-pill">核心9项</span></div>
+            <div class="feat-item"><span class="dot must"></span>样品试用流程（制造业供应商准入必走）</div>
+            <div class="feat-item"><span class="dot must"></span>竞价功能（低价中选，防串通）</div>
+            <div class="feat-item"><span class="dot must"></span>退货单独立菜单</div>
+            <div class="feat-item"><span class="dot must"></span>费用单 + 对账协同</div>
+            <div class="feat-item"><span class="dot must"></span>数据报表（内置 + 自定义）</div>
+            <div class="feat-item"><span class="dot must"></span>数字大屏（科技感数据中控）</div>
+          </div>
+
+          <div class="kpi-row">
+            <span class="kpi-chip">5大AI首发</span>
+            <span class="kpi-chip">超越携客云AI</span>
+            <span class="kpi-chip">演示即差异化</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 二期 -->
+      <div class="phase-card ph2">
+        <div class="phase-hd">
+          <div class="ph-label">PHASE 2 · 补全深化</div>
+          <div class="ph-name">基础功能补全 + 深化AI应用</div>
+          <div class="ph-period">6 ~ 12 个月</div>
+        </div>
+        <div class="phase-body">
+          <p class="goal">目标：扩大SRM基础能力，同步深化AI能力（智能问数、供应商画像，自动化单据），构建完整产品竞争力，正式向中型客户渗透，开始建设标杆案例。</p>
+
+          <div class="feat-group">
+            <div class="fg-title">AI深化 <span class="ai-pill">核心3项</span></div>
+            <div class="feat-item"><span class="dot ai"></span><strong>智能问数</strong>：自然语言查询数据+个性化看板，移动端接入</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>自动化单据</strong>：询价/合同/订单AI辅助生成，大幅提高人效</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>供应商画像</strong>：基于供应商历史数据，综合分析，给出全维度AI画像</div>
+          </div>
+
+          <div class="feat-group">
+            <div class="fg-title">基础功能补全 <span class="base-pill">二期补全业务</span></div>
+            <div class="feat-item"><span class="dot base"></span>索赔管理（来料不良/逾期/违约全流程）</div>
+            <div class="feat-item"><span class="dot base"></span>单据流（上下游全链路查看）</div>
+            <div class="feat-item"><span class="dot base"></span>竞拍（增加竞拍模式，支持多种采购业务，高价中选）</div>
+            <div class="feat-item"><span class="dot base"></span>供应商隔离（合作邀约，供应商组织划分）</div>
+            <div class="feat-item"><span class="dot base"></span>质检结果查询（ERP同步展示）</div>
+            <div class="feat-item"><span class="dot base"></span>价格走势查看（历史采购价可视化）</div>
+          </div>
+
+          <div class="feat-group">
+            <div class="fg-title">平台能力增强</div>
+            <div class="feat-item"><span class="dot base"></span>业务规则定义（流程自动化配置）</div>
+            <div class="feat-item"><span class="dot base"></span>多语言支持（出口型企业）</div>
+            <div class="feat-item"><span class="dot base"></span>供应商移动基础（通知待办/寻源大厅/协同）</div>
+          </div>
+
+          <div class="kpi-row">
+            <span class="kpi-chip">AI功能总计8项</span>
+            <span class="kpi-chip">功能完整度对标竞品</span>
+            <span class="kpi-chip">中型客户标杆建设</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 三期 -->
+      <div class="phase-card ph3">
+        <div class="phase-hd">
+          <div class="ph-label">PHASE 3 · 行业深耕</div>
+          <div class="ph-name">高阶AI功能 + 大客户进阶功能 + 行业增值功能</div>
+          <div class="ph-period">12 ~ 18 个月</div>
+        </div>
+        <div class="phase-body">
+          <p class="goal">目标：高阶AI（智能寻源/商城比价/大宗行情）+ 行业专属功能，形成行业深耕的标准化产品，打造行业标杆案例，进军5~10亿营收中大型客户，逐步对标甄云。</p>
+
+          <div class="feat-group">
+            <div class="fg-title">高阶AI <span class="ai-pill">3大场景</span></div>
+            <div class="feat-item"><span class="dot ai"></span><strong>智能寻源</strong>：自动化发起采购申请，匹配合适供应商，发起询比价</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>商城智能比价</strong>：跨渠道自动抓取价格，推荐最优渠道</div>
+            <div class="feat-item"><span class="dot ai"></span><strong>大宗行情集成</strong>：接入行情平台，价格预测+波动提醒</div>
+          </div>
+
+          <div class="feat-group">
+            <div class="fg-title">大客户专属</div>
+            <div class="feat-item"><span class="dot adv"></span>项目管理（支持项目管理、需求预测、采购申请推送等）</div>
+            <div class="feat-item"><span class="dot adv"></span>配额管理（多供方按比例分配）</div>
+            <div class="feat-item"><span class="dot adv"></span>智能招投标（辅助评标+围串标分析）</div>
+            <div class="feat-item"><span class="dot adv"></span>条码标签（支持条码及二维码打印、格式编辑）</div>
+          </div>
+
+          <div class="feat-group">
+            <div class="fg-title">行业增值</div>
+            <div class="feat-item"><span class="dot adv"></span>供应商移动端完善（注册、验厂、个人中心、接入AI）</div>
+            <div class="feat-item"><span class="dot adv"></span>商城打通（京东工业/震坤行）</div>
+            <div class="feat-item"><span class="dot adv"></span>电子签章（接入法大大/易签宝）</div>
+            <div class="feat-item"><span class="dot adv"></span>ERP标准化对接（无缝打通金蝶、用友等ERP软件）</div>
+            <div class="feat-item"><span class="dot adv"></span>内部审批流（支持内外部独立审批，配置审批节点，查看审批进度）</div>
+          </div>
+
+          <div class="kpi-row">
+            <span class="kpi-chip">11项AI功能</span>
+            <span class="kpi-chip">大客户标杆案例</span>
+            <span class="kpi-chip">对标甄云功能集</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </section>
+
+  <!-- 7. 总结 -->
+  <section id="conclusion">
+    <h2 class="sec"><span class="num">7</span>总结与建议</h2>
+
+    <div class="summary-box">
+      <h3>产品调研总监核心建议</h3>
+      <p>
+        本次规划调整的核心判断是：<strong>AI不是未来的路，是现在的路</strong>。竞品调研清晰表明，甄云卖得最好的是智能审核，鲸采云几乎100%用户在用智能价格分析——中小客户对AI工具的接受度和付费意愿已经验证。等到一期补完基础功能再做AI，等于把最好的差异化窗口白白让给竞品。
+        <br><br>
+        <strong>一期（0~6个月）：基础够用 + AI先行。</strong>精简5项低频基础功能，腾出资源同步上线4大AI核心场景（智能问答、智能审核、合同助手、供应商风控），保留9项成单必备基础功能。一期完成后，AI能力即超越携客云，拥有立即可用的差异化销售弹药。
+        <br><br>
+        <strong>二期（6~12个月）：基础补全 + AI深化。</strong>补全一期精简项（商城打通、单据流、发票协同等），上线智能问数和自动化单据，整体功能完整度达到可对抗中型客户的水平。
+        <br><br>
+        <strong>三期（12~18个月）：高阶AI + 大客户进阶。</strong>智能寻源比价、商城智能比价、大宗行情形成完整降本闭环，叠加大客户专属功能，进军5~10亿营收市场，逐步对标甄云。
+        <br><br>
+        建议总经理重点批复两点：<strong>①一期研发资源是否可额外补充1~2名AI工程师；②商城打通商务谈判授权是否可以一期启动。</strong>这是影响后续节奏的两个关键决策。
+      </p>
+    </div>
+  </section>
+
+</div>
+
+
+</body></html>
