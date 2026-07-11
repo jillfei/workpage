@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>智能体配置</title>
+    <style>
+        /* ===== iframe 内样式 ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f7fa;
+            color: #1e293b;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .config-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .page-title small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #64748b;
+            margin-left: 8px;
+        }
+
+        /* 配置组卡片 */
+        .config-group {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            border: 1px solid #e9edf4;
+            transition: box-shadow 0.2s;
+        }
+        .config-group:hover {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 8px 28px rgba(0, 0, 0, 0.07);
+        }
+
+        .group-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 22px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f2f6;
+        }
+        .group-header .icon {
+            font-size: 20px;
+            line-height: 1;
+        }
+        .group-header h2 {
+            font-size: 17px;
+            font-weight: 600;
+            color: #0f172a;
+            letter-spacing: 0.3px;
+        }
+        .group-header .badge {
+            margin-left: auto;
+            font-size: 12px;
+            color: #94a3b8;
+            background: #f1f4f9;
+            padding: 2px 12px;
+            border-radius: 20px;
+        }
+
+        /* 配置项行 */
+        .config-row {
+            display: flex;
+            align-items: flex-start;
+            padding: 10px 0;
+            gap: 16px;
+            border-bottom: 1px solid #f5f7fb;
+        }
+        .config-row:last-child {
+            border-bottom: none;
+        }
+        .config-label {
+            flex: 0 0 140px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            padding-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .config-label .req {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        .config-label .hint {
+            font-weight: 400;
+            color: #94a3b8;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+        .config-control {
+            flex: 1;
+            min-width: 0;
+        }
+        .config-control .desc {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        /* 表单控件 */
+        select,
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d9e6;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            color: #1e293b;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+        select:focus,
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            line-height: 1.6;
+        }
+        textarea.small {
+            min-height: 52px;
+        }
+
+        .inline-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: #f1f4f9;
+            color: #1e293b;
+            border-color: #e2e8f0;
+            white-space: nowrap;
+            user-select: none;
+        }
+        .btn:hover {
+            background: #e5e9f0;
+        }
+        .btn-primary {
+            background: #3b82f6;
+            color: #fff;
+            border-color: #3b82f6;
+        }
+        .btn-primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+        .btn-outline {
+            background: transparent;
+            border-color: #d1d9e6;
+        }
+        .btn-outline:hover {
+            background: #f8fafc;
+        }
+        .btn-sm {
+            padding: 3px 10px;
+            font-size: 12px;
+        }
+        .btn-xs {
+            padding: 1px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+        }
+        .btn-success {
+            background: #22c55e;
+            color: #fff;
+            border-color: #22c55e;
+        }
+        .btn-success:hover {
+            background: #16a34a;
+            border-color: #16a34a;
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+            border-color: #ef4444;
+        }
+        .btn-danger:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+        .btn-ghost {
+            background: transparent;
+            border-color: transparent;
+            color: #3b82f6;
+        }
+        .btn-ghost:hover {
+            background: #eff6ff;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 开关 */
+        .switch-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-top: 2px;
+        }
+        .switch {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            background: #cbd5e1;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .switch.active {
+            background: #3b82f6;
+        }
+        .switch .thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        .switch.active .thumb {
+            transform: translateX(18px);
+        }
+        .switch-label {
+            font-size: 14px;
+            color: #475569;
+        }
+
+        /* 单选组（权限） */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-top: 2px;
+        }
+        .radio-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 6px 0;
+            cursor: pointer;
+        }
+        .radio-item input[type="radio"] {
+            margin-top: 2px;
+            accent-color: #3b82f6;
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .radio-item .radio-text {
+            font-size: 14px;
+            color: #1e293b;
+        }
+        .radio-item .radio-desc {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 1px;
+        }
+
+        /* 多选（输入框功能） */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            padding-top: 2px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #1e293b;
+            cursor: pointer;
+        }
+        .checkbox-item input[type="checkbox"] {
+            accent-color: #3b82f6;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* 标签 */
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #f1f4f9;
+            padding: 2px 10px 2px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+        }
+        .tag .remove {
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 15px;
+            line-height: 1;
+            margin-left: 2px;
+            transition: color 0.15s;
+        }
+        .tag .remove:hover {
+            color: #ef4444;
+        }
+
+        /* 问题列表 */
+        .question-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .question-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .question-item input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid #d1d9e6;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .question-item .btn {
+            flex-shrink: 0;
+        }
+        .question-hint {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        /* 已选展示 */
+        .selected-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 4px 0;
+        }
+        .selected-display .empty {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        /* 扩展能力入口 */
+        .ability-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        .ability-card {
+            border: 1px solid #e9edf4;
+            border-radius: 12px;
+            padding: 16px 18px;
+            background: #fafcff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .ability-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 12px rgba(59, 130, 246, 0.08);
+        }
+        .ability-card .emoji {
+            font-size: 28px;
+            line-height: 1;
+        }
+        .ability-card .info {
+            flex: 1;
+        }
+        .ability-card .info h4 {
+            font-size: 15px;
+            font-weight: 500;
+            color: #0f172a;
+        }
+        .ability-card .info p {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .ability-card .count {
+            background: #eef2f6;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        @media (max-width: 768px) {
+            .config-row {
+                flex-direction: column;
+                gap: 6px;
+                padding: 12px 0;
+            }
+            .config-label {
+                flex: none;
+                width: 100%;
+                padding-top: 0;
+            }
+            .ability-grid {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 12px;
+            }
+            .config-group {
+                padding: 16px 18px;
+            }
+        }
+
+        /* 工具提示 */
+        .tooltip-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #e9edf4;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: help;
+            margin-left: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="config-container" id="app">
+
+        <div class="page-title">
+            ⚙️ 专家配置
+            <small>配置智能体的核心参数与能力</small>
+        </div>
+
+        <!-- ==================== 1. 核心配置 ==================== -->
+        <div class="config-group">
+            <div class="group-header">
+                <span class="icon">🧠</span>
+                <h2>核心配置</h2>
+                <span class="badge">必填</span>
+            </div>
+
+            <!-- 模型 -->
+            <div class="config-row">
+                <div class="config-label">模型 <span class="req">*</span></div>
+                <div class="config-control">
+                    <select id="modelSelect" style="max-width:360px;"></select>
+                    <div class="desc">选择专家使用的大语言模型</div>
+                </div>
+            </div>
+
+            <!-- 提示词 -->
+            <div class="config-row">
+                <div class="config-label">提示词 <span class="req">*</span></div>
+                <div class="config-control">
+                    <textarea id="promptText" rows="4" placeholder="请输入专家系统提示词…"></textarea>
+                    <div class="inline-actions">
+                        <button class="btn btn-sm btn-outline" onclick="aiOptimizePrompt()">✨ AI 优化</button>
+                        <button class="btn btn-sm btn-outline" onclick="fullscreenPrompt()">⛶ 全屏显示</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 工具 -->
+            <div class="config-row">
+                <div class="config-label">工具</div>
+                <div class="config-control">
+                    <div class="selected-display" id="toolDisplay"><span class="empty">未选择工具</span></div>
+                    <button class="btn btn-sm btn-outline" onclick="openToolSelector('core')">+ 选择工具</button>
+                    <div class="desc">选择专家可调用的工具</div>
+                </div>
+            </div>
+
+            <!-- 插件 -->
+            <div class="config-row">
+                <div class="config-label">插件</div>
+                <div class="config-control">
+                    <div class="selected-display" id="pluginDisplay"><span class="empty">未选择插件</span></div>
+                    <button class="btn btn-sm btn-outline" onclick="openPluginSelector()">+ 选择插件</button>
+                    <div class="desc">插件配置（预留扩展）</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 2. 使用权限 ==================== -->
+        <div class="config-group">
+            <div class="group-header">
+                <span class="icon">🔐</span>
+                <h2>使用权限</h2>
+            </div>
+            <div class="config-row">
+                <div class="config-label">权限</div>
+                <div class="config-control">
+                    <div class="radio-group" id="permissionGroup">
+                        <label class="radio-item">
+                            <input type="radio" name="permission" value="public" checked />
+                            <div>
+                                <div class="radio-text">公开（所有人可使用）</div>
+                                <div class="radio-desc">发布后所有用户可在客户端搜索并使用该专家</div>
+                            </div>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="permission" value="public_clone" />
+                            <div>
+                                <div class="radio-text">公开（所有人可使用、可克隆）</div>
+                                <div class="radio-desc">在可使用基础上，允许他人克隆该专家配置为己用</div>
+                            </div>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="permission" value="private" />
+                            <div>
+                                <div class="radio-text">仅自己可见</div>
+                                <div class="radio-desc">仅创建者可见可用，发布后也不对他人开放</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 3. 对话体验 ==================== -->
+        <div class="config-group">
+            <div class="group-header">
+                <span class="icon">💬</span>
+                <h2>对话体验</h2>
+            </div>
+
+            <!-- 开场白 -->
+            <div class="config-row">
+                <div class="config-label">开场白</div>
+                <div class="config-control">
+                    <textarea id="openingText" class="small" placeholder="输入开场白内容…"></textarea>
+                    <div class="inline-actions">
+                        <button class="btn btn-sm btn-outline" onclick="aiOptimizeOpening()">✨ AI 优化</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 开场白问题 -->
+            <div class="config-row">
+                <div class="config-label">开场白问题</div>
+                <div class="config-control">
+                    <div class="switch-wrap">
+                        <div class="switch" id="questionSwitch" onclick="toggleQuestionSwitch()">
+                            <div class="thumb"></div>
+                        </div>
+                        <span class="switch-label" id="questionSwitchLabel">关闭</span>
+                    </div>
+                    <div id="questionArea" style="display:none; margin-top:10px;">
+                        <div class="question-list" id="questionList"></div>
+                        <div class="inline-actions" style="margin-top:6px;">
+                            <button class="btn btn-sm btn-outline" onclick="addQuestion()">+ 添加问题</button>
+                            <button class="btn btn-sm btn-outline" onclick="aiGenerateQuestions()">🤖 AI 生成</button>
+                        </div>
+                        <div class="question-hint">开启后至少填写 3 个，超出 3 个随机展示 3 个，每条 ≤ 50 字</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 自动追问 -->
+            <div class="config-row">
+                <div class="config-label">自动追问</div>
+                <div class="config-control">
+                    <div class="switch-wrap">
+                        <div class="switch" id="autoFollowSwitch" onclick="toggleAutoFollow()">
+                            <div class="thumb"></div>
+                        </div>
+                        <span class="switch-label" id="autoFollowLabel">关闭</span>
+                    </div>
+                    <div class="desc">开启后，智能体回复后自动根据对话内容提供 3 条问题建议</div>
+                </div>
+            </div>
+
+            <!-- 允许用户 @技能 -->
+            <div class="config-row">
+                <div class="config-label">允许用户 @技能</div>
+                <div class="config-control">
+                    <div class="switch-wrap">
+                        <div class="switch active" id="atSkillSwitch" onclick="toggleAtSkill()">
+                            <div class="thumb"></div>
+                        </div>
+                        <span class="switch-label" id="atSkillLabel">开启</span>
+                    </div>
+                    <div class="desc">开启后用户可通过 @技能 打开技能列表选择使用</div>
+                </div>
+            </div>
+
+            <!-- 输入框功能 -->
+            <div class="config-row">
+                <div class="config-label">输入框功能</div>
+                <div class="config-control">
+                    <div class="checkbox-group" id="inputFeatures">
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="input" checked /> 输入问题
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="upload_file" checked /> 上传文件
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="upload_image" checked /> 上传图片
+                        </label>
+                    </div>
+                    <div class="desc">支持多选，至少启用一个</div>
+                </div>
+            </div>
+
+            <!-- 输入框提示文案 -->
+            <div class="config-row">
+                <div class="config-label">输入框提示文案</div>
+                <div class="config-control">
+                    <input type="text" id="inputPlaceholder" placeholder="请输入提示文案，引导用户如何与智能体对话…" />
+                    <div class="desc">定义的提示语将显示在对话输入框内</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 4. 扩展能力 ==================== -->
+        <div class="config-group">
+            <div class="group-header">
+                <span class="icon">🚀</span>
+                <h2>扩展能力</h2>
+                <span class="badge">可选</span>
+            </div>
+            <div class="config-row" style="border-bottom:none; padding-bottom:0;">
+                <div class="config-label">能力入口</div>
+                <div class="config-control">
+                    <div class="ability-grid">
+                        <div class="ability-card" onclick="openExtToolPanel()">
+                            <div class="emoji">🔧</div>
+                            <div class="info">
+                                <h4>工具</h4>
+                                <p>浏览并添加工具</p>
+                            </div>
+                            <span class="count" id="extToolCount">0</span>
+                        </div>
+                        <div class="ability-card" onclick="openExtMCPPanel()">
+                            <div class="emoji">📦</div>
+                            <div class="info">
+                                <h4>MCP</h4>
+                                <p>添加 MCP 及子功能</p>
+                            </div>
+                            <span class="count" id="extMCPCount">0</span>
+                        </div>
+                        <div class="ability-card" onclick="openExtSkillPanel()">
+                            <div class="emoji">🎯</div>
+                            <div class="info">
+                                <h4>技能</h4>
+                                <p>浏览并添加技能</p>
+                            </div>
+                            <span class="count" id="extSkillCount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 5. 记忆相关 ==================== -->
+        <div class="config-group">
+            <div class="group-header">
+                <span class="icon">🧩</span>
+                <h2>记忆相关</h2>
+            </div>
+            <div class="config-row">
+                <div class="config-label">长期记忆</div>
+                <div class="config-control">
+                    <div class="switch-wrap">
+                        <div class="switch" id="memorySwitch" onclick="toggleMemory()">
+                            <div class="thumb"></div>
+                        </div>
+                        <span class="switch-label" id="memoryLabel">关闭</span>
+                    </div>
+                    <div class="desc">开启后专家可跨会话记忆用户信息与偏好</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部操作 -->
+        <div style="display:flex; gap:12px; justify-content:flex-end; padding:12px 0 32px;">
+            <button class="btn" onclick="resetConfig()">重置</button>
+            <button class="btn btn-primary" onclick="saveConfig()">💾 保存配置</button>
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- iframe 内 JS 逻辑 -->
+    <script>
+        // =============================================================
+        //  1. 数据
+        // =============================================================
+
+        // 模型数据
+        const MODEL_DATA = {
+            online: [
+                { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', label: '推荐', desc: '最强大的推理模型，适合复杂任务' },
+                { id: 'gpt-4', name: 'GPT-4', label: '稳定', desc: '平衡性能与成本，适用广泛' },
+                { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', label: '经济', desc: '快速响应，性价比高' },
+                { id: 'claude-3-opus', name: 'Claude 3 Opus', label: '专业', desc: '深度推理与长文本处理' },
+                { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', label: '均衡', desc: '速度与智能的平衡' },
+            ],
+            local: [
+                { id: 'llama-2-70b', name: 'Llama 2 70B', label: '开源', desc: '高性能开源模型，可本地部署' },
+                { id: 'llama-2-13b', name: 'Llama 2 13B', label: '轻量', desc: '资源占用少，响应快' },
+                { id: 'mistral-7b', name: 'Mistral 7B', label: '高效', desc: '7B 参数，性能卓越' },
+                { id: 'qwen-14b', name: 'Qwen 14B', label: '国产', desc: '通义千问 14B 版本' },
+            ]
+        };
+
+        // 工具列表（全局）
+        const TOOL_LIST = [
+            { id: 't1', name: '网页搜索', avatar: '🌐', creator: '系统', desc: '实时搜索互联网信息', tags: ['搜索', '信息'] },
+            { id: 't2', name: '代码执行', avatar: '💻', creator: '系统', desc: '安全执行 Python/JS 代码', tags: ['编程', '执行'] },
+            { id: 't3', name: '文件解析', avatar: '📄', creator: '系统', desc: '解析 PDF/Word/Excel 等文件', tags: ['文件', '解析'] },
+            { id: 't4', name: '图像生成', avatar: '🎨', creator: '系统', desc: '根据描述生成图像', tags: ['图像', '生成'] },
+            { id: 't5', name: '语音合成', avatar: '🔊', creator: '系统', desc: '文字转语音输出', tags: ['语音', '合成'] },
+            { id: 't6', name: '翻译', avatar: '🌍', creator: '系统', desc: '多语言翻译服务', tags: ['翻译', '语言'] },
+            { id: 't7', name: '数据分析', avatar: '📊', creator: '系统', desc: '数据统计与可视化分析', tags: ['数据', '分析'] },
+            { id: 't8', name: '邮件发送', avatar: '📧', creator: '系统', desc: '自动发送邮件通知', tags: ['邮件', '通知'] },
+        ];
+
+        // 插件列表（预留）
+        const PLUGIN_LIST = [
+            { id: 'p1', name: '日志插件', avatar: '📝', creator: '系统', desc: '记录对话日志' },
+            { id: 'p2', name: '监控插件', avatar: '📈', creator: '系统', desc: '实时监控性能指标' },
+            { id: 'p3', name: '安全插件', avatar: '🛡️', creator: '系统', desc: '内容安全过滤' },
+        ];
+
+        // MCP 列表
+        const MCP_LIST = [{
+            id: 'm1',
+            name: '数据库 MCP',
+            avatar: '🗄️',
+            desc: '提供数据库查询与操作能力',
+            creator: '系统',
+            date: '2026-06-10',
+            functions: [
+                { name: '查询数据', desc: '执行 SQL 查询并返回结果' },
+                { name: '更新数据', desc: '执行 INSERT/UPDATE/DELETE' },
+                { name: '表结构', desc: '获取表结构信息' },
+            ]
+        }, {
+            id: 'm2',
+            name: '文件系统 MCP',
+            avatar: '📁',
+            desc: '文件读写与管理能力',
+            creator: '系统',
+            date: '2026-06-12',
+            functions: [
+                { name: '读取文件', desc: '读取指定路径的文件内容' },
+                { name: '写入文件', desc: '将内容写入指定文件' },
+                { name: '列出目录', desc: '列出目录下的文件与文件夹' },
+                { name: '删除文件', desc: '删除指定文件' },
+            ]
+        }, {
+            id: 'm3',
+            name: 'HTTP MCP',
+            avatar: '🌐',
+            desc: 'HTTP 请求与 API 调用',
+            creator: '系统',
+            date: '2026-06-15',
+            functions: [
+                { name: 'GET 请求', desc: '发送 GET 请求获取资源' },
+                { name: 'POST 请求', desc: '发送 POST 请求提交数据' },
+                { name: '文件下载', desc: '下载文件到本地' },
+            ]
+        }, ];
+
+        // 技能列表
+        const SKILL_LIST = [
+            { id: 's1', name: '数学计算', avatar: '🧮', desc: '执行数学运算与公式推导', creator: '系统', date: '2026-06-01',
+            category: '计算' },
+            { id: 's2', name: '编程助手', avatar: '👨‍💻', desc: '代码编写、调试与优化', creator: '系统', date: '2026-06-03',
+            category: '编程' },
+            { id: 's3', name: '写作助手', avatar: '✍️', desc: '文章撰写与润色', creator: '系统', date: '2026-06-05',
+            category: '写作' },
+            { id: 's4', name: '翻译专家', avatar: '🌍', desc: '多语言翻译与本地化', creator: '系统', date: '2026-06-07',
+            category: '翻译' },
+            { id: 's5', name: '数据分析师', avatar: '📊', desc: '数据清洗、分析与可视化', creator: '系统', date: '2026-06-09',
+            category: '数据' },
+            { id: 's6', name: '法律顾问', avatar: '⚖️', desc: '法律条文查询与建议', creator: '系统', date: '2026-06-11',
+            category: '法律' },
+        ];
+
+        // =============================================================
+        //  2. 状态管理
+        // =============================================================
+
+        const state = {
+            // 核心配置
+            selectedModel: 'gpt-4-turbo',
+            prompt: '你是一个专业的智能助手，请基于用户的问题提供准确、有价值的回答。',
+            selectedTools: [], // 选中的工具 id 列表
+            selectedPlugins: [], // 选中的插件 id 列表
+
+            // 权限
+            permission: 'public',
+
+            // 对话体验
+            openingText: '',
+            questionSwitch: false,
+            questions: ['你能帮我做什么？', '你支持哪些功能？', '如何开始使用你？'],
+            autoFollow: false,
+            atSkill: true,
+            inputFeatures: ['input', 'upload_file', 'upload_image'],
+            inputPlaceholder: '请输入您的问题…',
+
+            // 扩展能力 (存储选中的 工具/MCP/技能)
+            extTools: [], // 工具 id 列表
+            extMCPs: [], // { mcpId, functionNames: [] } 或 { mcpId, all: true }
+            extSkills: [], // 技能 id 列表
+
+            // 记忆
+            longMemory: false,
+        };
+
+        // =============================================================
+        //  3. 弹窗管理器 (向父窗口注入 DOM)
+        // =============================================================
+
+        const topDoc = window.top.document;
+
+        function getModalContainer() {
+            let container = topDoc.getElementById('iframe-modal-container');
+            if (!container) {
+                container = topDoc.createElement('div');
+                container.id = 'iframe-modal-container';
+                container.style.cssText = `
+              position: fixed; inset:0; z-index:99999;
+              pointer-events: none;
+              display: flex; align-items:center; justify-content:center;
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            `;
+                topDoc.body.appendChild(container);
+                // 注入样式
+                const style = topDoc.createElement('style');
+                style.id = 'iframe-modal-style';
+                style.textContent = `
+              .modal-overlay {
+                position: fixed; inset:0; background: rgba(0,0,0,0.45);
+                backdrop-filter: blur(3px);
+                pointer-events: auto;
+                z-index: 99999;
+                display: flex; align-items:center; justify-content:center;
+                animation: modalFadeIn 0.2s ease;
+              }
+              .modal-box {
+                background: #fff; border-radius: 16px;
+                max-width: 720px; width: 92%; max-height: 85vh;
+                display: flex; flex-direction: column;
+                box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+                pointer-events: auto;
+                animation: modalSlideIn 0.25s ease;
+                overflow: hidden;
+              }
+              .modal-box.wide { max-width: 900px; }
+              .modal-box.xwide { max-width: 1100px; }
+              .modal-header {
+                display: flex; align-items: center; justify-content: space-between;
+                padding: 18px 24px; border-bottom: 1px solid #e9edf4;
+                flex-shrink: 0;
+              }
+              .modal-header h3 {
+                font-size: 17px; font-weight: 600; color: #0f172a;
+                margin: 0; display: flex; align-items: center; gap: 8px;
+              }
+              .modal-header .close-btn {
+                background: none; border: none; font-size: 24px; color: #94a3b8;
+                cursor: pointer; padding: 0 4px; line-height: 1;
+                transition: color 0.15s;
+              }
+              .modal-header .close-btn:hover { color: #ef4444; }
+              .modal-body {
+                padding: 20px 24px; overflow-y: auto; flex: 1;
+              }
+              .modal-footer {
+                padding: 14px 24px; border-top: 1px solid #e9edf4;
+                display: flex; justify-content: flex-end; gap: 10px;
+                flex-shrink: 0; background: #fafcff;
+              }
+              .modal-search {
+                width: 100%; padding: 8px 14px; border: 1px solid #d1d9e6;
+                border-radius: 8px; font-size: 14px; margin-bottom: 14px;
+              }
+              .modal-search:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+              .modal-list { display: flex; flex-direction: column; gap: 6px; max-height: 380px; overflow-y: auto; }
+              .modal-list-item {
+                display: flex; align-items: center; gap: 12px;
+                padding: 10px 14px; border-radius: 8px;
+                border: 1px solid #f0f2f6; background: #fff;
+                transition: background 0.15s, border-color 0.15s;
+                cursor: pointer;
+              }
+              .modal-list-item:hover { background: #f8fafc; border-color: #d1d9e6; }
+              .modal-list-item .avatar { font-size: 28px; line-height: 1; flex-shrink: 0; }
+              .modal-list-item .info { flex: 1; min-width: 0; }
+              .modal-list-item .info .name { font-size: 14px; font-weight: 500; color: #0f172a; }
+              .modal-list-item .info .meta { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+              .modal-list-item .info .desc { font-size: 13px; color: #475569; margin-top: 2px; }
+              .modal-list-item .info .tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
+              .modal-list-item .info .tags span {
+                background: #f1f4f9; padding: 0 8px; border-radius: 12px;
+                font-size: 11px; color: #64748b;
+              }
+              .modal-list-item .check { flex-shrink: 0; width: 20px; height: 20px; border-radius: 4px;
+                border: 2px solid #d1d9e6; display: flex; align-items: center; justify-content: center;
+                transition: all 0.15s; background: #fff;
+              }
+              .modal-list-item .check.checked {
+                background: #3b82f6; border-color: #3b82f6;
+              }
+              .modal-list-item .check.checked::after {
+                content: "✓"; color: #fff; font-size: 14px; font-weight: 600;
+              }
+              .modal-list-item .add-btn {
+                padding: 2px 14px; border-radius: 6px; font-size: 12px;
+                background: #3b82f6; color: #fff; border: none; cursor: pointer;
+              }
+              .modal-list-item .add-btn:hover { background: #2563eb; }
+              .modal-list-item .add-btn.added { background: #e9edf4; color: #94a3b8; cursor: default; }
+              .modal-list-item .expand-toggle {
+                cursor: pointer; color: #3b82f6; font-size: 13px;
+                background: none; border: none; padding: 4px 8px;
+              }
+              .modal-list-item .expand-toggle:hover { background: #eff6ff; border-radius: 4px; }
+              .sub-funcs { margin-left: 52px; padding: 8px 0 4px 12px; border-left: 2px solid #e9edf4; }
+              .sub-func-item {
+                display: flex; align-items: center; gap: 12px;
+                padding: 6px 10px; border-radius: 6px;
+                font-size: 13px; color: #1e293b;
+              }
+              .sub-func-item .sub-name { font-weight: 500; }
+              .sub-func-item .sub-desc { color: #94a3b8; font-size: 12px; }
+              .sub-func-item .add-btn { margin-left: auto; }
+              .modal-empty { color: #94a3b8; text-align: center; padding: 40px 0; font-size: 14px; }
+              .modal-tabs { display: flex; gap: 4px; margin-bottom: 14px; border-bottom: 1px solid #e9edf4; }
+              .modal-tabs .tab {
+                padding: 6px 18px; border-radius: 6px 6px 0 0;
+                cursor: pointer; font-size: 14px; color: #64748b;
+                border-bottom: 2px solid transparent; transition: all 0.15s;
+              }
+              .modal-tabs .tab.active { color: #0f172a; font-weight: 500; border-bottom-color: #3b82f6; }
+              .modal-tabs .tab:hover { background: #f1f4f9; }
+              @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
+              @keyframes modalSlideIn { from { transform: scale(0.96) translateY(12px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+              .modal-tag-select { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+              .modal-tag-select .tag-opt {
+                padding: 4px 14px; border-radius: 20px; border: 1px solid #d1d9e6;
+                font-size: 13px; cursor: pointer; transition: all 0.15s;
+                background: #fff; color: #1e293b;
+              }
+              .modal-tag-select .tag-opt.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+              .modal-tag-select .tag-opt:hover { border-color: #3b82f6; }
+              .modal-badge { background: #eef2f6; border-radius: 12px; padding: 0 8px; font-size: 11px; color: #64748b; }
+            `;
+                topDoc.head.appendChild(style);
+            }
+            return container;
+        }
+
+        let modalIdCounter = 0;
+
+        function openModal(config) {
+            const container = getModalContainer();
+            const id = 'modal-' + (++modalIdCounter);
+            const overlay = topDoc.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.id = id;
+
+            const boxClass = config.wide ? 'modal-box wide' : (config.xwide ? 'modal-box xwide' : 'modal-box');
+
+            overlay.innerHTML = `
+            <div class="${boxClass}">
+              <div class="modal-header">
+                <h3>${config.title || '弹窗'}</h3>
+                <button class="close-btn" data-close="true">&times;</button>
+              </div>
+              <div class="modal-body" id="${id}-body"></div>
+              <div class="modal-footer">
+                ${config.buttons ? config.buttons.map(b => `<button class="btn ${b.cls || ''}" data-action="${b.action}">${b.label}</button>`).join('') : ''}
+                <button class="btn btn-primary" data-confirm="true">${config.confirmText || '确认'}</button>
+                <button class="btn btn-outline" data-close="true">取消</button>
+              </div>
+            </div>
+          `;
+
+            container.appendChild(overlay);
+
+            // 渲染 body
+            const bodyEl = topDoc.getElementById(id + '-body');
+            if (config.render) {
+                config.render(bodyEl);
+            }
+
+            // 事件绑定
+            overlay.querySelectorAll('[data-close="true"]').forEach(el => {
+                el.addEventListener('click', () => closeModal(id));
+            });
+            overlay.querySelector('[data-confirm="true"]').addEventListener('click', () => {
+                if (config.onConfirm) {
+                    const result = config.onConfirm();
+                    if (result !== false) closeModal(id);
+                } else {
+                    closeModal(id);
+                }
+            });
+            // 点击遮罩关闭
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) closeModal(id);
+            });
+
+            // 自定义按钮
+            if (config.buttons) {
+                config.buttons.forEach(b => {
+                    overlay.querySelector(`[data-action="${b.action}"]`)?.addEventListener('click', () => {
+                        if (b.onClick) b.onClick();
+                    });
+                });
+            }
+
+            // 返回关闭函数
+            return { id, close: () => closeModal(id), bodyEl };
+        }
+
+        function closeModal(id) {
+            const el = topDoc.getElementById(id);
+            if (el) el.remove();
+        }
+
+        // =============================================================
+        //  4. 核心配置 - 模型下拉
+        // =============================================================
+
+        function renderModelSelect() {
+            const sel = document.getElementById('modelSelect');
+            sel.innerHTML = '';
+            // 使用 optgroup 分组
+            const onlineGroup = document.createElement('optgroup');
+            onlineGroup.label = '在线模型';
+            MODEL_DATA.online.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                opt.textContent = `${m.name} ${m.label ? '['+m.label+']' : ''}`;
+                opt.dataset.desc = m.desc;
+                if (m.id === state.selectedModel) opt.selected = true;
+                onlineGroup.appendChild(opt);
+            });
+            sel.appendChild(onlineGroup);
+
+            const localGroup = document.createElement('optgroup');
+            localGroup.label = '本地模型';
+            MODEL_DATA.local.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                opt.textContent = `${m.name} ${m.label ? '['+m.label+']' : ''}`;
+                opt.dataset.desc = m.desc;
+                if (m.id === state.selectedModel) opt.selected = true;
+                localGroup.appendChild(opt);
+            });
+            sel.appendChild(localGroup);
+
+            sel.addEventListener('change', function() {
+                state.selectedModel = this.value;
+            });
+        }
+
+        // =============================================================
+        //  5. 核心配置 - 提示词
+        // =============================================================
+
+        function aiOptimizePrompt() {
+            const ta = document.getElementById('promptText');
+            const current = ta.value || '';
+            // 模拟 AI 优化
+            const optimized = current + (current ? '\n\n' : '') +
+                '【优化版】请基于用户的问题提供准确、专业、有价值的回答，语气友好且富有同理心。';
+            ta.value = optimized;
+            state.prompt = optimized;
+            showTopToast('✨ 提示词已优化');
+        }
+
+        function fullscreenPrompt() {
+            const ta = document.getElementById('promptText');
+            const val = ta.value || '';
+            openModal({
+                title: '📝 提示词 - 全屏编辑',
+                wide: true,
+                confirmText: '保存',
+                render: (el) => {
+                    el.innerHTML = `
+                <textarea id="fullscreen-prompt" style="width:100%; min-height:320px; padding:12px; border:1px solid #d1d9e6; border-radius:8px; font-size:14px; line-height:1.7; font-family:inherit;">${val}</textarea>
+              `;
+                },
+                onConfirm: () => {
+                    const newVal = topDoc.getElementById('fullscreen-prompt').value;
+                    document.getElementById('promptText').value = newVal;
+                    state.prompt = newVal;
+                    showTopToast('✅ 提示词已更新');
+                }
+            });
+        }
+
+        // =============================================================
+        //  6. 核心配置 - 工具选择器 (弹窗多选)
+        // =============================================================
+
+        function openToolSelector(source) {
+            // source: 'core' 或 'ext'
+            const isCore = source === 'core';
+            const currentSelected = isCore ? state.selectedTools : state.extTools;
+            const allTools = TOOL_LIST;
+
+            openModal({
+                title: '🔧 选择工具',
+                wide: true,
+                confirmText: '确认选择',
+                render: (el) => {
+                    let html = `<input class="modal-search" id="tool-search-input" placeholder="搜索工具名称、描述…" />`;
+                    html += `<div class="modal-list" id="tool-select-list">`;
+                    allTools.forEach(t => {
+                        const checked = currentSelected.includes(t.id);
+                        html += `
+                  <div class="modal-list-item" data-id="${t.id}">
+                    <div class="avatar">${t.avatar || '🔧'}</div>
+                    <div class="info">
+                      <div class="name">${t.name}</div>
+                      <div class="meta">创建人: ${t.creator}</div>
+                      <div class="desc">${t.desc}</div>
+                      <div class="tags">${(t.tags||[]).map(tg => `<span>${tg}</span>`).join('')}</div>
+                    </div>
+                    <div class="check ${checked?'checked':''}"></div>
+                  </div>
+                `;
+                    });
+                    html += `</div>`;
+                    el.innerHTML = html;
+
+                    // 搜索过滤
+                    const searchInput = el.querySelector('#tool-search-input');
+                    searchInput.addEventListener('input', function() {
+                        const q = this.value.toLowerCase();
+                        el.querySelectorAll('.modal-list-item').forEach(item => {
+                            const text = item.textContent.toLowerCase();
+                            item.style.display = text.includes(q) ? '' : 'none';
+                        });
+                    });
+
+                    // 点击切换选中
+                    el.querySelectorAll('.modal-list-item').forEach(item => {
+                        item.addEventListener('click', function() {
+                            const id = this.dataset.id;
+                            const check = this.querySelector('.check');
+                            const isChecked = check.classList.contains('checked');
+                            if (isChecked) {
+                                check.classList.remove('checked');
+                            } else {
+                                check.classList.add('checked');
+                            }
+                            // 更新临时状态 (在 onConfirm 时提交)
+                            this.dataset.checked = isChecked ? '0' : '1';
+                        });
+                    });
+                },
+                onConfirm: () => {
+                    const list = topDoc.getElementById('tool-select-list');
+                    const selected = [];
+                    list.querySelectorAll('.modal-list-item').forEach(item => {
+                        if (item.querySelector('.check.checked')) {
+                            selected.push(item.dataset.id);
+                        }
+                    });
+                    if (isCore) {
+                        state.selectedTools = selected;
+                        renderToolDisplay();
+                    } else {
+                        state.extTools = selected;
+                        updateExtCounts();
+                    }
+                    showTopToast(`✅ 已选择 ${selected.length} 个工具`);
+                }
+            });
+        }
+
+        function renderToolDisplay() {
+            const container = document.getElementById('toolDisplay');
+            const ids = state.selectedTools;
+            if (!ids || ids.length === 0) {
+                container.innerHTML = '<span class="empty">未选择工具</span>';
+                return;
+            }
+            const items = ids.map(id => TOOL_LIST.find(t => t.id === id)).filter(Boolean);
+            container.innerHTML = items.map(t =>
+                `<span class="tag">${t.avatar||'🔧'} ${t.name} <span class="remove" onclick="removeTool('${t.id}')">&times;</span></span>`
+            ).join('');
+        }
+
+        function removeTool(id) {
+            state.selectedTools = state.selectedTools.filter(t => t !== id);
+            renderToolDisplay();
+            showTopToast('已移除工具');
+        }
+
+        // =============================================================
+        //  7. 核心配置 - 插件选择器
+        // =============================================================
+
+        function openPluginSelector() {
+            const currentSelected = state.selectedPlugins;
+            const allPlugins = PLUGIN_LIST;
+
+            openModal({
+                title: '🧩 选择插件',
+                wide: true,
+                confirmText: '确认选择',
+                render: (el) => {
+                    let html = `<input class="modal-search" id="plugin-search-input" placeholder="搜索插件…" />`;
+                    html += `<div class="modal-list" id="plugin-select-list">`;
+                    allPlugins.forEach(p => {
+                        const checked = currentSelected.includes(p.id);
+                        html += `
+                  <div class="modal-list-item" data-id="${p.id}">
+                    <div class="avatar">${p.avatar || '🧩'}</div>
+                    <div class="info">
+                      <div class="name">${p.name}</div>
+                      <div class="meta">创建人: ${p.creator}</div>
+                      <div class="desc">${p.desc}</div>
+                    </div>
+                    <div class="check ${checked?'checked':''}"></div>
+                  </div>
+                `;
+                    });
+                    html += `</div>`;
+                    el.innerHTML = html;
+
+                    const searchInput = el.querySelector('#plugin-search-input');
+                    searchInput.addEventListener('input', function() {
+                        const q = this.value.toLowerCase();
+                        el.querySelectorAll('.modal-list-item').forEach(item => {
+                            item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+                        });
+                    });
+
+                    el.querySelectorAll('.modal-list-item').forEach(item => {
+                        item.addEventListener('click', function() {
+                            const check = this.querySelector('.check');
+                            check.classList.toggle('checked');
+                            this.dataset.checked = check.classList.contains('checked') ? '1' : '0';
+                        });
+                    });
+                },
+                onConfirm: () => {
+                    const list = topDoc.getElementById('plugin-select-list');
+                    const selected = [];
+                    list.querySelectorAll('.modal-list-item').forEach(item => {
+                        if (item.querySelector('.check.checked')) {
+                            selected.push(item.dataset.id);
+                        }
+                    });
+                    state.selectedPlugins = selected;
+                    renderPluginDisplay();
+                    showTopToast(`✅ 已选择 ${selected.length} 个插件`);
+                }
+            });
+        }
+
+        function renderPluginDisplay() {
+            const container = document.getElementById('pluginDisplay');
+            const ids = state.selectedPlugins;
+            if (!ids || ids.length === 0) {
+                container.innerHTML = '<span class="empty">未选择插件</span>';
+                return;
+            }
+            const items = ids.map(id => PLUGIN_LIST.find(p => p.id === id)).filter(Boolean);
+            container.innerHTML = items.map(p =>
+                `<span class="tag">${p.avatar||'🧩'} ${p.name} <span class="remove" onclick="removePlugin('${p.id}')">&times;</span></span>`
+            ).join('');
+        }
+
+        function removePlugin(id) {
+            state.selectedPlugins = state.selectedPlugins.filter(p => p !== id);
+            renderPluginDisplay();
+            showTopToast('已移除插件');
+        }
+
+        // =============================================================
+        //  8. 使用权限
+        // =============================================================
+
+        document.querySelectorAll('input[name="permission"]').forEach(el => {
+            el.addEventListener('change', function() {
+                state.permission = this.value;
+            });
+        });
+
+        // =============================================================
+        //  9. 对话体验 - 开场白
+        // =============================================================
+
+        function aiOptimizeOpening() {
+            const ta = document.getElementById('openingText');
+            const current = ta.value || '';
+            const optimized = current + (current ? '\n\n' : '') + '【优化版】您好！我是您的专属智能助手，很高兴为您服务。请问今天有什么可以帮您？';
+            ta.value = optimized;
+            state.openingText = optimized;
+            showTopToast('✨ 开场白已优化');
+        }
+
+        // =============================================================
+        //  10. 对话体验 - 开场白问题
+        // =============================================================
+
+        function toggleQuestionSwitch() {
+            state.questionSwitch = !state.questionSwitch;
+            updateQuestionUI();
+        }
+
+        function updateQuestionUI() {
+            const sw = document.getElementById('questionSwitch');
+            const label = document.getElementById('questionSwitchLabel');
+            const area = document.getElementById('questionArea');
+            sw.classList.toggle('active', state.questionSwitch);
+            label.textContent = state.questionSwitch ? '开启' : '关闭';
+            area.style.display = state.questionSwitch ? 'block' : 'none';
+            if (state.questionSwitch) {
+                renderQuestions();
+            }
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionList');
+            container.innerHTML = '';
+            state.questions.forEach((q, idx) => {
+                const div = document.createElement('div');
+                div.className = 'question-item';
+                div.innerHTML = `
+              <input type="text" value="${q.replace(/"/g,'&quot;')}" maxlength="50" data-idx="${idx}" />
+              <button class="btn btn-sm btn-danger" onclick="removeQuestion(${idx})">✕</button>
+            `;
+                container.appendChild(div);
+                const input = div.querySelector('input');
+                input.addEventListener('change', function() {
+                    state.questions[this.dataset.idx] = this.value;
+                });
+                input.addEventListener('input', function() {
+                    state.questions[this.dataset.idx] = this.value;
+                });
+            });
+        }
+
+        function addQuestion() {
+            state.questions.push('请输入问题…');
+            renderQuestions();
+            // 自动聚焦最后一个输入
+            const inputs = document.querySelectorAll('#questionList input');
+            if (inputs.length) inputs[inputs.length - 1].focus();
+        }
+
+        function removeQuestion(idx) {
+            if (state.questions.length <= 1) {
+                showTopToast('至少保留一个问题');
+                return;
+            }
+            state.questions.splice(idx, 1);
+            renderQuestions();
+        }
+
+        function aiGenerateQuestions() {
+            const suggestions = [
+                '你能帮我解决哪些具体问题？',
+                '你的知识截止到什么时候？',
+                '如何更好地使用你的功能？',
+                '你能处理多语言吗？',
+                '你的回答是否可靠？',
+                '你能帮我做决策吗？',
+                '如何与你进行更高效的对话？',
+            ];
+            // 取3-5个随机
+            const count = 3 + Math.floor(Math.random() * 3);
+            const shuffled = suggestions.sort(() => Math.random() - 0.5);
+            const picked = shuffled.slice(0, count);
+            state.questions = picked;
+            renderQuestions();
+            showTopToast('🤖 AI 已生成问题');
+        }
+
+        // =============================================================
+        //  11. 对话体验 - 自动追问
+        // =============================================================
+
+        function toggleAutoFollow() {
+            state.autoFollow = !state.autoFollow;
+            const sw = document.getElementById('autoFollowSwitch');
+            const label = document.getElementById('autoFollowLabel');
+            sw.classList.toggle('active', state.autoFollow);
+            label.textContent = state.autoFollow ? '开启' : '关闭';
+        }
+
+        // =============================================================
+        //  12. 对话体验 - 允许用户 @技能
+        // =============================================================
+
+        function toggleAtSkill() {
+            state.atSkill = !state.atSkill;
+            const sw = document.getElementById('atSkillSwitch');
+            const label = document.getElementById('atSkillLabel');
+            sw.classList.toggle('active', state.atSkill);
+            label.textContent = state.atSkill ? '开启' : '关闭';
+        }
+
+        // =============================================================
+        //  13. 对话体验 - 输入框功能
+        // =============================================================
+
+        document.querySelectorAll('#inputFeatures input[type="checkbox"]').forEach(el => {
+            el.addEventListener('change', function() {
+                const checked = document.querySelectorAll('#inputFeatures input:checked');
+                if (checked.length === 0) {
+                    showTopToast('⚠️ 至少启用一个功能');
+                    this.checked = true;
+                    return;
+                }
+                state.inputFeatures = Array.from(checked).map(c => c.value);
+            });
+        });
+
+        // 输入框提示文案
+        document.getElementById('inputPlaceholder').addEventListener('input', function() {
+            state.inputPlaceholder = this.value;
+        });
+
+        // =============================================================
+        //  14. 扩展能力 - 工具面板
+        // =============================================================
+
+        function openExtToolPanel() {
+            // 复用工具选择器，但使用 extTools 状态
+            const currentSelected = state.extTools;
+            const allTools = TOOL_LIST;
+
+            openModal({
+                title: '🔧 扩展能力 - 工具',
+                xwide: true,
+                confirmText: '确认添加',
+                render: (el) => {
+                    let html = `<input class="modal-search" id="ext-tool-search" placeholder="搜索工具名称、描述…" />`;
+                    html += `<div class="modal-list" id="ext-tool-list">`;
+                    allTools.forEach(t => {
+                        const checked = currentSelected.includes(t.id);
+                        html += `
+                  <div class="modal-list-item" data-id="${t.id}">
+                    <div class="avatar">${t.avatar || '🔧'}</div>
+                    <div class="info">
+                      <div class="name">${t.name} <span class="modal-badge">${t.creator}</span></div>
+                      <div class="desc">${t.desc}</div>
+                      <div class="tags">${(t.tags||[]).map(tg => `<span>${tg}</span>`).join('')}</div>
+                    </div>
+                    <div class="check ${checked?'checked':''}"></div>
+                  </div>
+                `;
+                    });
+                    html += `</div>`;
+                    el.innerHTML = html;
+
+                    const searchInput = el.querySelector('#ext-tool-search');
+                    searchInput.addEventListener('input', function() {
+                        const q = this.value.toLowerCase();
+                        el.querySelectorAll('.modal-list-item').forEach(item => {
+                            item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+                        });
+                    });
+
+                    el.querySelectorAll('.modal-list-item').forEach(item => {
+                        item.addEventListener('click', function() {
+                            const check = this.querySelector('.check');
+                            check.classList.toggle('checked');
+                            this.dataset.checked = check.classList.contains('checked') ? '1' : '0';
+                        });
+                    });
+                },
+                onConfirm: () => {
+                    const list = topDoc.getElementById('ext-tool-list');
+                    const selected = [];
+                    list.querySelectorAll('.modal-list-item').forEach(item => {
+                        if (item.querySelector('.check.checked')) {
+                            selected.push(item.dataset.id);
+                        }
+                    });
+                    state.extTools = selected;
+                    updateExtCounts();
+                    showTopToast(`✅ 已添加 ${selected.length} 个工具`);
+                }
+            });
+        }
+
+        // =============================================================
+        //  15. 扩展能力 - MCP 面板
+        // =============================================================
+
+        function openExtMCPPanel() {
+            const allMCPs = MCP_LIST;
+            // state.extMCPs: [{ mcpId, all: true }] 或 [{ mcpId, functions: ['fn1','fn2'] }]
+
+            openModal({
+                title: '📦 扩展能力 - MCP',
+                xwide: true,
+                confirmText: '确认添加',
+                render: (el) => {
+                    let html = `<input class="modal-search" id="mcp-search" placeholder="搜索 MCP 名称、描述…" />`;
+                    html += `<div class="modal-list" id="mcp-list">`;
+                    allMCPs.forEach(m => {
+                        const existing = state.extMCPs.find(e => e.mcpId === m.id);
+                        const isAll = existing && existing.all === true;
+                        const funcs = existing && !existing.all ? (existing.functions || []) : [];
+                        const hasAny = existing && (isAll || funcs.length > 0);
+
+                        html += `
+                  <div class="modal-list-item" data-id="${m.id}" style="flex-wrap:wrap;">
+                    <div class="avatar">${m.avatar || '📦'}</div>
+                    <div class="info" style="flex:1;min-width:200px;">
+                      <div class="name">${m.name} <span class="modal-badge">${m.creator}</span></div>
+                      <div class="meta">发布时间: ${m.date}</div>
+                      <div class="desc">${m.desc}</div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+                      <button class="btn btn-sm ${isAll?'btn-success':'btn-outline'}" data-action="mcp-all" data-id="${m.id}">${isAll?'✅ 已添加':'+ 整体添加'}</button>
+                      <button class="btn btn-sm btn-ghost" data-action="mcp-expand" data-id="${m.id}">${funcs.length>0 || isAll ? '▼' : '▶'} 子功能 ${funcs.length>0 ? '('+funcs.length+')' : ''}</button>
+                    </div>
+                    <div class="sub-funcs" style="width:100%;display:${funcs.length>0 || isAll ? 'block' : 'none'};" data-mcp="${m.id}">
+                      ${isAll ? '<div style="padding:4px 10px;color:#22c55e;font-size:13px;">✅ 已整体添加全部子功能</div>' : ''}
+                      ${!isAll ? m.functions.map(f => `
+                        <div class="sub-func-item">
+                          <span class="sub-name">${f.name}</span>
+                          <span class="sub-desc">${f.desc}</span>
+                          <button class="btn btn-xs ${funcs.includes(f.name)?'btn-success':'btn-outline'}" data-action="mcp-func" data-mcp="${m.id}" data-fn="${f.name}">${funcs.includes(f.name)?'✅ 已添加':'+ 添加'}</button>
+                        </div>
+                      `).join('') : ''}
+                    </div>
+                  </div>
+                `;
+                    });
+                    html += `</div>`;
+                    el.innerHTML = html;
+
+                    // 搜索
+                    const searchInput = el.querySelector('#mcp-search');
+                    searchInput.addEventListener('input', function() {
+                        const q = this.value.toLowerCase();
+                        el.querySelectorAll('.modal-list-item').forEach(item => {
+                            item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+                        });
+                    });
+
+                    // 事件：整体添加
+                    el.querySelectorAll('[data-action="mcp-all"]').forEach(btn => {
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const mcpId = this.dataset.id;
+                            const existing = state.extMCPs.find(e => e.mcpId === mcpId);
+                            if (existing && existing.all === true) {
+                                // 移除
+                                state.extMCPs = state.extMCPs.filter(e => !(e.mcpId === mcpId && e.all ===
+                                true));
+                                showTopToast('已移除 MCP');
+                            } else {
+                                // 添加整体
+                                state.extMCPs = state.extMCPs.filter(e => e.mcpId !== mcpId);
+                                state.extMCPs.push({ mcpId, all: true });
+                                showTopToast('✅ 已整体添加 MCP');
+                            }
+                            // 重新渲染
+                            openExtMCPPanel();
+                        });
+                    });
+
+                    // 事件：展开/折叠
+                    el.querySelectorAll('[data-action="mcp-expand"]').forEach(btn => {
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const mcpId = this.dataset.id;
+                            const sub = el.querySelector(`.sub-funcs[data-mcp="${mcpId}"]`);
+                            if (sub) {
+                                const isHidden = sub.style.display === 'none';
+                                sub.style.display = isHidden ? 'block' : 'none';
+                                this.textContent = isHidden ? '▼ 子功能' : '▶ 子功能';
+                            }
+                        });
+                    });
+
+                    // 事件：单独添加子功能
+                    el.querySelectorAll('[data-action="mcp-func"]').forEach(btn => {
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const mcpId = this.dataset.mcp;
+                            const fnName = this.dataset.fn;
+                            const existing = state.extMCPs.find(e => e.mcpId === mcpId);
+                            // 如果已整体添加，则不能单独操作
+                            if (existing && existing.all === true) {
+                                showTopToast('⚠️ 已整体添加，不能单独操作');
+                                return;
+                            }
+                            let funcs = existing ? (existing.functions || []) : [];
+                            if (funcs.includes(fnName)) {
+                                funcs = funcs.filter(f => f !== fnName);
+                                showTopToast('已移除子功能');
+                            } else {
+                                funcs.push(fnName);
+                                showTopToast('✅ 已添加子功能');
+                            }
+                            if (funcs.length === 0) {
+                                state.extMCPs = state.extMCPs.filter(e => e.mcpId !== mcpId);
+                            } else {
+                                const idx = state.extMCPs.findIndex(e => e.mcpId === mcpId);
+                                if (idx >= 0) {
+                                    state.extMCPs[idx].functions = funcs;
+                                } else {
+                                    state.extMCPs.push({ mcpId, functions: funcs });
+                                }
+                            }
+                            // 重新渲染
+                            openExtMCPPanel();
+                        });
+                    });
+                },
+                onConfirm: () => {
+                    updateExtCounts();
+                    showTopToast('✅ MCP 配置已保存');
+                }
+            });
+        }
+
+        // =============================================================
+        //  16. 扩展能力 - 技能面板
+        // =============================================================
+
+        function openExtSkillPanel() {
+            const allSkills = SKILL_LIST;
+            const currentSelected = state.extSkills;
+
+            // 分类
+            const categories = [...new Set(allSkills.map(s => s.category))];
+
+            openModal({
+                title: '🎯 扩展能力 - 技能',
+                xwide: true,
+                confirmText: '确认添加',
+                render: (el) => {
+                    let html = `
+                <input class="modal-search" id="skill-search" placeholder="搜索技能名称、描述、分类…" />
+                <div class="modal-tag-select" id="skill-category-filter">
+                  <span class="tag-opt active" data-cat="all">全部</span>
+                  ${categories.map(c => `<span class="tag-opt" data-cat="${c}">${c}</span>`).join('')}
+                </div>
+                <div class="modal-list" id="skill-list">
+              `;
+                    allSkills.forEach(s => {
+                        const checked = currentSelected.includes(s.id);
+                        html += `
+                  <div class="modal-list-item" data-id="${s.id}" data-cat="${s.category}">
+                    <div class="avatar">${s.avatar || '🎯'}</div>
+                    <div class="info">
+                      <div class="name">${s.name} <span class="modal-badge">${s.category}</span></div>
+                      <div class="meta">创建人: ${s.creator} · 发布时间: ${s.date}</div>
+                      <div class="desc">${s.desc}</div>
+                    </div>
+                    <div class="check ${checked?'checked':''}"></div>
+                  </div>
+                `;
+                    });
+                    html += `</div>`;
+                    el.innerHTML = html;
+
+                    // 搜索
+                    const searchInput = el.querySelector('#skill-search');
+                    searchInput.addEventListener('input', function() {
+                        const q = this.value.toLowerCase();
+                        const activeCat = el.querySelector('.tag-opt.active')?.dataset.cat || 'all';
+                        el.querySelectorAll('.modal-list-item').forEach(item => {
+                            const text = item.textContent.toLowerCase();
+                            const cat = item.dataset.cat;
+                            const matchCat = activeCat === 'all' || cat === activeCat;
+                            item.style.display = (text.includes(q) && matchCat) ? '' : 'none';
+                        });
+                    });
+
+                    // 分类过滤
+                    el.querySelectorAll('#skill-category-filter .tag-opt').forEach(tag => {
+                        tag.addEventListener('click', function() {
+                            el.querySelectorAll('#skill-category-filter .tag-opt').forEach(t =>
+                                t.classList.remove('active'));
+                            this.classList.add('active');
+                            const cat = this.dataset.cat;
+                            const q = el.querySelector('#skill-search').value.toLowerCase();
+                            el.querySelectorAll('.modal-list-item').forEach(item => {
+                                const text = item.textContent.toLowerCase();
+                                const matchCat = cat === 'all' || item.dataset.cat === cat;
+                                item.style.display = (text.includes(q) && matchCat) ? '' :
+                                    'none';
+                            });
+                        });
+                    });
+
+                    // 点击切换
+                    el.querySelectorAll('.modal-list-item').forEach(item => {
+                        item.addEventListener('click', function() {
+                            const check = this.querySelector('.check');
+                            check.classList.toggle('checked');
+                            this.dataset.checked = check.classList.contains('checked') ? '1' : '0';
+                        });
+                    });
+                },
+                onConfirm: () => {
+                    const list = topDoc.getElementById('skill-list');
+                    const selected = [];
+                    list.querySelectorAll('.modal-list-item').forEach(item => {
+                        if (item.querySelector('.check.checked')) {
+                            selected.push(item.dataset.id);
+                        }
+                    });
+                    state.extSkills = selected;
+                    updateExtCounts();
+                    showTopToast(`✅ 已添加 ${selected.length} 个技能`);
+                }
+            });
+        }
+
+        // =============================================================
+        //  17. 更新扩展能力计数
+        // =============================================================
+
+        function updateExtCounts() {
+            document.getElementById('extToolCount').textContent = state.extTools.length;
+            // MCP 计数：计算添加了多少个 MCP（整体或部分）
+            let mcpCount = 0;
+            state.extMCPs.forEach(e => {
+                if (e.all) {
+                    const m = MCP_LIST.find(m => m.id === e.mcpId);
+                    if (m) mcpCount += m.functions.length;
+                } else {
+                    mcpCount += (e.functions || []).length;
+                }
+            });
+            document.getElementById('extMCPCount').textContent = mcpCount > 0 ? mcpCount : 0;
+            document.getElementById('extSkillCount').textContent = state.extSkills.length;
+        }
+
+        // =============================================================
+        //  18. 记忆相关 - 长期记忆
+        // =============================================================
+
+        function toggleMemory() {
+            state.longMemory = !state.longMemory;
+            const sw = document.getElementById('memorySwitch');
+            const label = document.getElementById('memoryLabel');
+            sw.classList.toggle('active', state.longMemory);
+            label.textContent = state.longMemory ? '开启' : '关闭';
+        }
+
+        // =============================================================
+        //  19. Toast 提示 (在父窗口)
+        // =============================================================
+
+        function showTopToast(msg) {
+            const container = getModalContainer();
+            let toast = topDoc.getElementById('iframe-toast');
+            if (!toast) {
+                toast = topDoc.createElement('div');
+                toast.id = 'iframe-toast';
+                toast.style.cssText = `
+              position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+              z-index: 100000; background: #0f172a; color: #fff;
+              padding: 10px 28px; border-radius: 12px;
+              font-size: 14px; font-weight: 500;
+              box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+              opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease;
+              pointer-events: none; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              max-width: 90%;
+            `;
+                topDoc.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(-12px)';
+            }, 2800);
+        }
+
+        // =============================================================
+        //  20. 保存 & 重置
+        // =============================================================
+
+        function saveConfig() {
+            // 收集所有数据
+            const config = {
+                model: state.selectedModel,
+                prompt: document.getElementById('promptText').value,
+                tools: state.selectedTools,
+                plugins: state.selectedPlugins,
+                permission: state.permission,
+                openingText: document.getElementById('openingText').value,
+                questions: state.questions,
+                questionSwitch: state.questionSwitch,
+                autoFollow: state.autoFollow,
+                atSkill: state.atSkill,
+                inputFeatures: state.inputFeatures,
+                inputPlaceholder: document.getElementById('inputPlaceholder').value,
+                extTools: state.extTools,
+                extMCPs: state.extMCPs,
+                extSkills: state.extSkills,
+                longMemory: state.longMemory,
+            };
+            console.log('📦 配置数据:', JSON.stringify(config, null, 2));
+            showTopToast('✅ 配置已保存 (控制台查看详情)');
+        }
+
+        function resetConfig() {
+            if (!confirm('确定要重置所有配置吗？')) return;
+            // 重置状态
+            state.selectedModel = 'gpt-4-turbo';
+            state.prompt = '你是一个专业的智能助手，请基于用户的问题提供准确、有价值的回答。';
+            state.selectedTools = [];
+            state.selectedPlugins = [];
+            state.permission = 'public';
+            state.openingText = '';
+            state.questions = ['你能帮我做什么？', '你支持哪些功能？', '如何开始使用你？'];
+            state.questionSwitch = false;
+            state.autoFollow = false;
+            state.atSkill = true;
+            state.inputFeatures = ['input', 'upload_file', 'upload_image'];
+            state.inputPlaceholder = '请输入您的问题…';
+            state.extTools = [];
+            state.extMCPs = [];
+            state.extSkills = [];
+            state.longMemory = false;
+
+            // 重置UI
+            document.getElementById('modelSelect').value = 'gpt-4-turbo';
+            document.getElementById('promptText').value = state.prompt;
+            renderToolDisplay();
+            renderPluginDisplay();
+            document.querySelector('input[name="permission"][value="public"]').checked = true;
+            document.getElementById('openingText').value = '';
+            updateQuestionUI();
+            document.getElementById('autoFollowSwitch').classList.toggle('active', false);
+            document.getElementById('autoFollowLabel').textContent = '关闭';
+            document.getElementById('atSkillSwitch').classList.toggle('active', true);
+            document.getElementById('atSkillLabel').textContent = '开启';
+            document.querySelectorAll('#inputFeatures input').forEach(el => {
+                el.checked = state.inputFeatures.includes(el.value);
+            });
+            document.getElementById('inputPlaceholder').value = '';
+            document.getElementById('memorySwitch').classList.toggle('active', false);
+            document.getElementById('memoryLabel').textContent = '关闭';
+            updateExtCounts();
+            showTopToast('🔄 已重置所有配置');
+        }
+
+        // =============================================================
+        //  21. 初始化
+        // =============================================================
+
+        function init() {
+            renderModelSelect();
+            document.getElementById('promptText').value = state.prompt;
+            renderToolDisplay();
+            renderPluginDisplay();
+            document.querySelector('input[name="permission"][value="public"]').checked = true;
+            document.getElementById('openingText').value = state.openingText;
+            document.getElementById('inputPlaceholder').value = state.inputPlaceholder;
+            // 开关状态
+            updateQuestionUI();
+            if (state.autoFollow) {
+                document.getElementById('autoFollowSwitch').classList.add('active');
+                document.getElementById('autoFollowLabel').textContent = '开启';
+            }
+            if (state.atSkill) {
+                document.getElementById('atSkillSwitch').classList.add('active');
+                document.getElementById('atSkillLabel').textContent = '开启';
+            }
+            document.querySelectorAll('#inputFeatures input').forEach(el => {
+                el.checked = state.inputFeatures.includes(el.value);
+            });
+            updateExtCounts();
+            // 监听输入框变化
+            document.getElementById('promptText').addEventListener('input', function() {
+                state.prompt = this.value;
+            });
+            document.getElementById('openingText').addEventListener('input', function() {
+                state.openingText = this.value;
+            });
+            document.getElementById('inputPlaceholder').addEventListener('input', function() {
+                state.inputPlaceholder = this.value;
+            });
+
+            // 模型选择默认
+            const modelOpts = document.querySelectorAll('#modelSelect option');
+            modelOpts.forEach(opt => {
+                if (opt.value === state.selectedModel) opt.selected = true;
+            });
+
+            showTopToast('👋 智能体配置已加载');
+        }
+
+        // 页面加载完成后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        // 暴露全局函数供内联 onclick 使用
+        window.aiOptimizePrompt = aiOptimizePrompt;
+        window.fullscreenPrompt = fullscreenPrompt;
+        window.openToolSelector = openToolSelector;
+        window.openPluginSelector = openPluginSelector;
+        window.removeTool = removeTool;
+        window.removePlugin = removePlugin;
+        window.aiOptimizeOpening = aiOptimizeOpening;
+        window.toggleQuestionSwitch = toggleQuestionSwitch;
+        window.addQuestion = addQuestion;
+        window.removeQuestion = removeQuestion;
+        window.aiGenerateQuestions = aiGenerateQuestions;
+        window.toggleAutoFollow = toggleAutoFollow;
+        window.toggleAtSkill = toggleAtSkill;
+        window.toggleMemory = toggleMemory;
+        window.openExtToolPanel = openExtToolPanel;
+        window.openExtMCPPanel = openExtMCPPanel;
+        window.openExtSkillPanel = openExtSkillPanel;
+        window.saveConfig = saveConfig;
+        window.resetConfig = resetConfig;
+        window.showTopToast = showTopToast;
+        window.updateExtCounts = updateExtCounts;
+        window.renderToolDisplay = renderToolDisplay;
+        window.renderPluginDisplay = renderPluginDisplay;
+        window.renderQuestions = renderQuestions;
+        window.updateQuestionUI = updateQuestionUI;
+    </script>
+
+</body>
+</html>

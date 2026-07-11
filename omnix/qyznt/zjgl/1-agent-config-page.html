@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>专家配置</title>
+<style>
+/* ========== Design System ========== */
+:root {
+  --primary: #3B82F6;
+  --primary-light: #EFF6FF;
+  --primary-hover: #2563EB;
+  --bg: #F8F9FA;
+  --bg-white: #FFFFFF;
+  --border: #E5E7EB;
+  --border-hover: #D1D5DB;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --text-disabled: #D1D5DB;
+  --success: #10B981;
+  --success-light: #ECFDF5;
+  --warning: #F59E0B;
+  --warning-light: #FFFBEB;
+  --danger: #EF4444;
+  --danger-light: #FEF2F2;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --font-xs: 12px;
+  --font-sm: 13px;
+  --font-base: 14px;
+  --font-md: 15px;
+  --font-lg: 18px;
+  --font-xl: 20px;
+  --transition: all 0.2s ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg-white);
+  color: var(--text-primary);
+  font-size: var(--font-base);
+  line-height: 1.6;
+  padding: 24px;
+}
+
+/* ========== Section ========== */
+.config-section {
+  margin-bottom: 32px;
+}
+
+.section-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.section-desc {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+/* ========== Form Elements ========== */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.form-label .required { color: var(--danger); }
+
+.form-label .tooltip {
+  color: var(--text-tertiary);
+  cursor: help;
+}
+
+.form-hint {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+/* Input */
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  background: var(--bg-white);
+  transition: var(--transition);
+  outline: none;
+  font-family: inherit;
+}
+
+.form-input:hover { border-color: var(--border-hover); }
+.form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+.form-input::placeholder { color: var(--text-tertiary); }
+
+/* Textarea */
+.form-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  background: var(--bg-white);
+  transition: var(--transition);
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+  font-family: inherit;
+}
+
+.form-textarea:hover { border-color: var(--border-hover); }
+.form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+.form-textarea::placeholder { color: var(--text-tertiary); }
+
+/* ========== Model Select Dropdown ========== */
+.select-wrapper { position: relative; }
+
+.select-trigger {
+  width: 100%;
+  padding: 10px 14px;
+  padding-right: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  background: var(--bg-white);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.select-trigger:hover { border-color: var(--border-hover); }
+.select-trigger.open { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+
+.select-arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+  pointer-events: none;
+  transition: var(--transition);
+}
+
+.select-trigger.open .select-arrow { transform: translateY(-50%) rotate(180deg); }
+
+.select-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 50;
+  display: none;
+  overflow: hidden;
+}
+
+.select-dropdown.show { display: block; }
+
+.model-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+}
+
+.model-tab {
+  padding: 12px 16px;
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition);
+  margin-bottom: -1px;
+  user-select: none;
+}
+
+.model-tab:hover { color: var(--text-primary); }
+.model-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 500; }
+
+.model-list {
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.model-item {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.model-item:hover { background: var(--bg); }
+.model-item.selected { background: var(--primary-light); }
+
+.model-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.model-name { font-size: var(--font-sm); font-weight: 500; color: var(--text-primary); }
+
+.model-tag {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.model-desc {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  line-height: 1.4;
+}
+
+/* ========== Buttons ========== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  outline: none;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-hover); }
+
+.btn-outline { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+.btn-outline:hover { border-color: var(--border-hover); color: var(--text-primary); background: var(--bg); }
+
+.btn-ghost { background: transparent; color: var(--text-secondary); border: none; padding: 6px 10px; }
+.btn-ghost:hover { color: var(--primary); background: var(--primary-light); }
+
+.btn-sm { padding: 6px 12px; font-size: var(--font-xs); }
+
+/* ========== Toggle Switch ========== */
+.toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+.toggle-slider {
+  position: absolute; cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--border); border-radius: 11px;
+  transition: var(--transition);
+}
+
+.toggle-slider:before {
+  content: ""; position: absolute;
+  height: 18px; width: 18px; left: 2px; bottom: 2px;
+  background: white; border-radius: 50%;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.toggle input:checked + .toggle-slider { background: var(--primary); }
+.toggle input:checked + .toggle-slider:before { transform: translateX(18px); }
+
+/* Toggle Row */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.toggle-row:last-child { border-bottom: none; }
+
+.toggle-info { flex: 1; }
+.toggle-title { font-size: var(--font-sm); font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
+.toggle-desc { font-size: var(--font-xs); color: var(--text-tertiary); }
+
+/* ========== Radio Cards ========== */
+.radio-cards { display: flex; flex-direction: column; gap: 10px; }
+
+.radio-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.radio-card:hover { border-color: var(--border-hover); background: var(--bg); }
+.radio-card.selected { border-color: var(--primary); background: var(--primary-light); }
+
+.radio-dot {
+  width: 18px; height: 18px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  flex-shrink: 0; margin-top: 1px;
+  transition: var(--transition);
+  position: relative;
+}
+
+.radio-card.selected .radio-dot { border-color: var(--primary); }
+
+.radio-card.selected .radio-dot::after {
+  content: ""; position: absolute;
+  top: 3px; left: 3px;
+  width: 8px; height: 8px;
+  background: var(--primary); border-radius: 50%;
+}
+
+.radio-card-content { flex: 1; }
+.radio-card-title { font-size: var(--font-sm); font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
+.radio-card-desc { font-size: var(--font-xs); color: var(--text-secondary); line-height: 1.5; }
+
+/* ========== Checkbox Group ========== */
+.checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.checkbox-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  cursor: pointer; transition: var(--transition);
+  font-size: var(--font-sm); color: var(--text-secondary);
+  user-select: none;
+}
+
+.checkbox-item:hover { border-color: var(--border-hover); }
+.checkbox-item.checked { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+
+.checkbox-box {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--border); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition); flex-shrink: 0;
+}
+
+.checkbox-item.checked .checkbox-box { background: var(--primary); border-color: var(--primary); }
+
+/* ========== Tag Input Group ========== */
+.tag-input-group { display: flex; flex-direction: column; gap: 8px; }
+
+.tag-input-row { display: flex; align-items: center; gap: 8px; }
+.tag-input-row .form-input { flex: 1; }
+
+.tag-input-row .remove-btn {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary); cursor: pointer;
+  transition: var(--transition); flex-shrink: 0;
+}
+
+.tag-input-row .remove-btn:hover { background: var(--danger-light); color: var(--danger); }
+
+/* ========== Prompt Editor ========== */
+.prompt-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.prompt-actions { display: flex; gap: 8px; }
+
+.prompt-action-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  font-size: var(--font-xs); color: var(--text-secondary);
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: var(--transition); font-family: inherit;
+}
+
+.prompt-action-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+.char-count { font-size: var(--font-xs); color: var(--text-tertiary); }
+
+/* ========== Selector Trigger ========== */
+.selector-trigger {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  cursor: pointer; transition: var(--transition);
+  background: var(--bg-white);
+}
+
+.selector-trigger:hover { border-color: var(--border-hover); }
+
+.selector-trigger-left {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--text-secondary); font-size: var(--font-sm);
+}
+
+.selector-trigger-right {
+  display: flex; align-items: center; gap: 6px;
+  color: var(--text-tertiary); font-size: var(--font-xs);
+}
+
+.selected-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+.selected-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-xs); color: var(--text-secondary);
+}
+
+.selected-tag .tag-remove { cursor: pointer; color: var(--text-tertiary); transition: var(--transition); }
+.selected-tag .tag-remove:hover { color: var(--danger); }
+
+/* ========== Config Card ========== */
+.config-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 12px;
+}
+
+.config-card:last-child { margin-bottom: 0; }
+
+/* ========== Notice Box ========== */
+.notice-box {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  display: flex; gap: 10px; align-items: flex-start;
+}
+
+.notice-box .notice-icon { flex-shrink: 0; margin-top: 2px; }
+.notice-box .notice-text { font-size: var(--font-xs); color: var(--text-secondary); line-height: 1.6; }
+
+/* ========== Scrollbar ========== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
+</style>
+</head>
+<body>
+
+<!-- ===== 一、核心配置 ===== -->
+<div class="config-section">
+  <div class="section-header">
+    <h2 class="section-title">核心配置</h2>
+    <p class="section-desc">配置专家的基础能力，包括模型选择、系统提示词和工具绑定</p>
+  </div>
+
+  <div class="config-card">
+    <!-- 模型 -->
+    <div class="form-group">
+      <label class="form-label">
+        模型 <span class="required">*</span>
+        <span class="tooltip" title="选择专家使用的 AI 模型">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </span>
+      </label>
+      <div class="select-wrapper" id="modelSelect">
+        <div class="select-trigger" id="modelTrigger" onclick="toggleModelSelect()">
+          <span style="font-weight:500;">GPT-4o</span>
+          <span class="model-tag">在线</span>
+          <span class="select-arrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <div class="select-dropdown" id="modelDropdown">
+          <div class="model-tabs">
+            <div class="model-tab active" onclick="switchModelTab('online', this)">在线模型</div>
+            <div class="model-tab" onclick="switchModelTab('local', this)">本地模型</div>
+          </div>
+          <div class="model-list" id="modelListOnline">
+            <div class="model-item selected" onclick="selectModel(this, 'GPT-4o', '在线')">
+              <div class="model-item-header">
+                <span class="model-name">GPT-4o</span>
+                <span class="model-tag">多模态</span>
+                <span class="model-tag">推荐</span>
+              </div>
+              <div class="model-desc">OpenAI 最新旗舰模型，支持文本、图像、音频多模态输入</div>
+            </div>
+            <div class="model-item" onclick="selectModel(this, 'Claude 3.5 Sonnet', '在线')">
+              <div class="model-item-header">
+                <span class="model-name">Claude 3.5 Sonnet</span>
+                <span class="model-tag">长文本</span>
+              </div>
+              <div class="model-desc">Anthropic 出品，擅长长文本理解与代码生成</div>
+            </div>
+            <div class="model-item" onclick="selectModel(this, 'DeepSeek-V3', '在线')">
+              <div class="model-item-header">
+                <span class="model-name">DeepSeek-V3</span>
+                <span class="model-tag">国产</span>
+                <span class="model-tag">高性价比</span>
+              </div>
+              <div class="model-desc">深度求索出品，中文能力优秀，推理速度快</div>
+            </div>
+            <div class="model-item" onclick="selectModel(this, 'Qwen-Max', '在线')">
+              <div class="model-item-header">
+                <span class="model-name">Qwen-Max</span>
+                <span class="model-tag">国产</span>
+              </div>
+              <div class="model-desc">通义千问旗舰版，擅长中文理解与知识问答</div>
+            </div>
+            <div class="model-item" onclick="selectModel(this, 'GLM-4', '在线')">
+              <div class="model-item-header">
+                <span class="model-name">GLM-4</span>
+                <span class="model-tag">国产</span>
+              </div>
+              <div class="model-desc">智谱 AI 出品，支持工具调用和代码执行</div>
+            </div>
+          </div>
+          <div class="model-list" id="modelListLocal" style="display:none;">
+            <div class="model-item" onclick="selectModel(this, 'Llama 3.1 70B', '本地')">
+              <div class="model-item-header">
+                <span class="model-name">Llama 3.1 70B</span>
+                <span class="model-tag">开源</span>
+              </div>
+              <div class="model-desc">Meta 开源模型，需本地部署，支持 128K 上下文</div>
+            </div>
+            <div class="model-item" onclick="selectModel(this, 'Qwen2.5 72B', '本地')">
+              <div class="model-item-header">
+                <span class="model-name">Qwen2.5 72B</span>
+                <span class="model-tag">开源</span>
+                <span class="model-tag">中文优化</span>
+              </div>
+              <div class="model-desc">通义千问开源版，中文场景表现优异</div>
+            </div>
+            <div class="model-item" onclick="selectModel(this, 'DeepSeek-Coder 33B', '本地')">
+              <div class="model-item-header">
+                <span class="model-name">DeepSeek-Coder 33B</span>
+                <span class="model-tag">开源</span>
+                <span class="model-tag">代码</span>
+              </div>
+              <div class="model-desc">专注代码生成的开源模型，支持多种编程语言</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 提示词 -->
+    <div class="form-group">
+      <label class="form-label">系统提示词 <span class="required">*</span></label>
+      <div class="prompt-editor">
+        <div class="prompt-toolbar">
+          <div class="prompt-actions">
+            <button class="prompt-action-btn" onclick="aiOptimize()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              AI 优化
+            </button>
+            <button class="prompt-action-btn" onclick="openFullscreen()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              全屏
+            </button>
+          </div>
+          <span class="char-count" id="promptCount">0 / 5000</span>
+        </div>
+        <textarea class="form-textarea" id="promptText" placeholder="请输入专家的系统提示词，定义专家的角色、能力范围和行为准则..." oninput="updateCharCount()"></textarea>
+      </div>
+      <p class="form-hint">系统提示词用于定义专家的角色定位、回答风格和能力边界</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== 二、使用权限 ===== -->
+<div class="config-section">
+  <div class="section-header">
+    <h2 class="section-title">使用权限</h2>
+    <p class="section-desc">设置专家的可见范围和使用权限</p>
+  </div>
+
+  <div class="config-card">
+    <div class="radio-cards">
+      <div class="radio-card selected" onclick="selectRadio(this)">
+        <div class="radio-dot"></div>
+        <div class="radio-card-content">
+          <div class="radio-card-title">公开（所有人可使用）</div>
+          <div class="radio-card-desc">发布后所有用户可在客户端搜索并使用该专家</div>
+        </div>
+      </div>
+      <div class="radio-card" onclick="selectRadio(this)">
+        <div class="radio-dot"></div>
+        <div class="radio-card-content">
+          <div class="radio-card-title">公开（所有人可使用、可克隆）</div>
+          <div class="radio-card-desc">在可使用基础上，允许他人克隆该专家配置为己用</div>
+        </div>
+      </div>
+      <div class="radio-card" onclick="selectRadio(this)">
+        <div class="radio-dot"></div>
+        <div class="radio-card-content">
+          <div class="radio-card-title">仅自己可见</div>
+          <div class="radio-card-desc">仅创建者可见可用，发布后也不对他人开放</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 三、对话体验 ===== -->
+<div class="config-section">
+  <div class="section-header">
+    <h2 class="section-title">对话体验</h2>
+    <p class="section-desc">优化用户与专家的对话交互体验</p>
+  </div>
+
+  <div class="config-card">
+    <!-- 开场白 -->
+    <div class="form-group">
+      <label class="form-label">开场白</label>
+      <div class="prompt-toolbar" style="margin-bottom:8px;">
+        <div class="prompt-actions">
+          <button class="prompt-action-btn" onclick="aiOptimizeGreeting()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            AI 优化
+          </button>
+        </div>
+      </div>
+      <textarea class="form-textarea" style="min-height:80px;" placeholder="输入专家首次对话时的欢迎语，例如：你好！我是你的采购分析助手，可以帮你分析供应商数据、生成采购报告..."></textarea>
+    </div>
+
+    <!-- 开场白问题 -->
+    <div class="form-group">
+      <div class="toggle-row" style="border-bottom:none;padding-bottom:0;">
+        <div class="toggle-info">
+          <div class="toggle-title">开场白问题</div>
+          <div class="toggle-desc">开启后可设置引导问题，至少填写 3 个，超出 3 个随机展示 3 个</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="greetingQToggle" onchange="toggleGreetingQuestions()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div id="greetingQuestionsArea" style="display:none;margin-top:12px;">
+        <div class="tag-input-group" id="greetingQList">
+          <div class="tag-input-row">
+            <input class="form-input" placeholder="请输入引导问题（≤50字）" maxlength="50">
+            <span class="remove-btn" onclick="removeGreetingQ(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+          </div>
+          <div class="tag-input-row">
+            <input class="form-input" placeholder="请输入引导问题（≤50字）" maxlength="50">
+            <span class="remove-btn" onclick="removeGreetingQ(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+          </div>
+          <div class="tag-input-row">
+            <input class="form-input" placeholder="请输入引导问题（≤50字）" maxlength="50">
+            <span class="remove-btn" onclick="removeGreetingQ(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button class="btn btn-outline btn-sm" onclick="addGreetingQ()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            添加问题
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="aiGenerateGreetingQ()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            AI 生成
+          </button>
+        </div>
+        <p class="form-hint" style="margin-top:6px;">至少填写 3 个，超出 3 个时系统将随机展示其中 3 个</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="config-card">
+    <!-- 自动追问 -->
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-title">自动追问</div>
+        <div class="toggle-desc">开启后，专家回复后自动根据对话内容提供 3 条问题建议</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <!-- 允许用户 @技能 -->
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <div class="toggle-title">允许用户 @技能</div>
+        <div class="toggle-desc">开启后用户可通过 @技能 打开技能列表选择使用</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="config-card">
+    <!-- 输入框功能 -->
+    <div class="form-group">
+      <label class="form-label">输入框功能 <span style="font-weight:400;color:var(--text-tertiary);font-size:12px;">（至少启用一个）</span></label>
+      <div class="checkbox-group">
+        <div class="checkbox-item checked" onclick="toggleCheckbox(this)">
+          <div class="checkbox-box">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          输入问题
+        </div>
+        <div class="checkbox-item checked" onclick="toggleCheckbox(this)">
+          <div class="checkbox-box">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          上传文件
+        </div>
+        <div class="checkbox-item" onclick="toggleCheckbox(this)">
+          <div class="checkbox-box">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          上传图片
+        </div>
+      </div>
+    </div>
+
+    <!-- 输入框提示文案 -->
+    <div class="form-group">
+      <label class="form-label">输入框提示文案</label>
+      <input class="form-input" placeholder="例如：请输入您的问题，我会为您分析采购数据...">
+      <p class="form-hint">定义的提示语将显示在对话输入框内，引导用户如何与专家对话</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 四、扩展能力 ===== -->
+<div class="config-section">
+  <div class="section-header">
+    <h2 class="section-title">扩展能力</h2>
+    <p class="section-desc">为专家绑定工具、MCP 和技能，扩展其能力边界</p>
+  </div>
+
+  <div class="config-card">
+    <!-- 工具 -->
+    <div class="form-group">
+      <label class="form-label">工具</label>
+      <div class="selector-trigger" onclick="openTopModal('tool')">
+        <div class="selector-trigger-left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <span>管理工具</span>
+        </div>
+        <div class="selector-trigger-right">
+          <span>已选 2 个</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+      <div class="selected-tags" style="margin-top:8px;">
+        <div class="selected-tag">联网搜索 <span class="tag-remove">×</span></div>
+        <div class="selected-tag">代码执行 <span class="tag-remove">×</span></div>
+      </div>
+    </div>
+
+    <!-- MCP -->
+    <div class="form-group">
+      <label class="form-label">MCP</label>
+      <div class="selector-trigger" onclick="openTopModal('mcp')">
+        <div class="selector-trigger-left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>管理 MCP</span>
+        </div>
+        <div class="selector-trigger-right">
+          <span>已选 1 个</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+      <div class="selected-tags" style="margin-top:8px;">
+        <div class="selected-tag">数据库查询 MCP <span class="tag-remove">×</span></div>
+      </div>
+    </div>
+
+    <!-- 技能 -->
+    <div class="form-group">
+      <label class="form-label">技能</label>
+      <div class="selector-trigger" onclick="openTopModal('skill')">
+        <div class="selector-trigger-left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>管理技能</span>
+        </div>
+        <div class="selector-trigger-right">
+          <span>已选 0 个</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 五、记忆相关 ===== -->
+<div class="config-section">
+  <div class="section-header">
+    <h2 class="section-title">记忆相关</h2>
+    <p class="section-desc">配置专家的长期记忆能力</p>
+  </div>
+
+  <div class="config-card">
+    <div class="toggle-row" style="border-bottom:none;">
+      <div class="toggle-info">
+        <div class="toggle-title">长期记忆</div>
+        <div class="toggle-desc">开启后专家可跨会话记忆用户信息与偏好，在后续对话中提供更个性化的回答</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="notice-box">
+      <svg class="notice-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div class="notice-text">开启长期记忆后，专家将自动记录用户的关键信息（如姓名、偏好、历史需求等），并在后续对话中自动调用。请确保符合数据隐私合规要求。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Fullscreen Prompt Overlay (inside iframe) ===== -->
+<div id="fullscreenOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:9999;flex-direction:column;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);">
+    <h3 style="font-size:15px;font-weight:600;">编辑系统提示词</h3>
+    <button class="btn btn-outline" onclick="closeFullscreen()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      退出全屏
+    </button>
+  </div>
+  <div style="flex:1;padding:24px;max-width:800px;margin:0 auto;width:100%;">
+    <textarea class="form-textarea" id="fullscreenPromptText" style="min-height:400px;" placeholder="请输入专家的系统提示词..."></textarea>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// Top-level Modal System — 弹窗注入到 window.top.document
+// ============================================================
+(function() {
+  var topDoc = null;
+  var topWin = null;
+  var styleInjected = false;
+
+  function getTop() {
+    try {
+      topWin = window.top;
+      topDoc = topWin.document;
+    } catch(e) {
+      // 跨域降级：弹窗留在 iframe 内
+      topWin = window;
+      topDoc = document;
+    }
+    return topDoc;
+  }
+
+  function injectStyles(doc) {
+    if (styleInjected && doc === topDoc) return;
+    var style = doc.createElement('style');
+    style.id = 'top-modal-styles';
+    style.textContent = `
+      .top-modal-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.45); z-index: 999999;
+        display: flex; align-items: center; justify-content: center;
+        padding: 24px; animation: topModalFadeIn 0.2s ease;
+      }
+      @keyframes topModalFadeIn {
+        from { opacity: 0; } to { opacity: 1; }
+      }
+      .top-modal {
+        background: #fff; border-radius: 12px;
+        box-shadow: 0 20px 40px -8px rgba(0,0,0,0.15);
+        width: 100%; max-width: 640px; max-height: 80vh;
+        display: flex; flex-direction: column; overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+        animation: topModalSlideIn 0.2s ease;
+      }
+      .top-modal.wide { max-width: 700px; }
+      @keyframes topModalSlideIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .top-modal-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 20px; border-bottom: 1px solid #E5E7EB;
+      }
+      .top-modal-title { font-size: 15px; font-weight: 600; color: #1F2937; }
+      .top-modal-close {
+        width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+        border-radius: 6px; cursor: pointer; color: #9CA3AF; transition: all 0.2s;
+        border: none; background: none;
+      }
+      .top-modal-close:hover { background: #F3F4F6; color: #1F2937; }
+      .top-modal-search { padding: 12px 20px; border-bottom: 1px solid #E5E7EB; }
+      .top-modal-search input {
+        width: 100%; padding: 10px 14px 10px 36px;
+        border: 1px solid #E5E7EB; border-radius: 8px;
+        font-size: 14px; color: #1F2937; outline: none;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 12px center;
+        font-family: inherit;
+      }
+      .top-modal-search input:focus { border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+      .top-modal-body { flex: 1; overflow-y: auto; padding: 8px 12px; }
+      .top-modal-footer {
+        display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+        padding: 12px 20px; border-top: 1px solid #E5E7EB;
+      }
+      .top-modal-footer .footer-count { font-size: 12px; color: #9CA3AF; margin-right: auto; }
+      .top-modal-btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+        cursor: pointer; transition: all 0.2s; border: none; outline: none;
+        font-family: inherit;
+      }
+      .top-modal-btn-outline { background: transparent; color: #6B7280; border: 1px solid #E5E7EB; }
+      .top-modal-btn-outline:hover { border-color: #D1D5DB; color: #1F2937; background: #F9FAFB; }
+      .top-modal-btn-primary { background: #3B82F6; color: #fff; }
+      .top-modal-btn-primary:hover { background: #2563EB; }
+      .top-modal-btn-ghost { background: transparent; color: #6B7280; border: none; padding: 6px 10px; font-size: 12px; }
+      .top-modal-btn-ghost:hover { color: #3B82F6; background: #EFF6FF; }
+
+      /* List items */
+      .top-modal-item {
+        display: flex; align-items: flex-start; gap: 12px;
+        padding: 10px 8px; border-radius: 6px;
+        cursor: pointer; transition: all 0.15s;
+      }
+      .top-modal-item:hover { background: #F9FAFB; }
+      .top-modal-item.selected { background: #EFF6FF; }
+      .top-modal-item-check {
+        width: 18px; height: 18px; border: 1.5px solid #E5E7EB;
+        border-radius: 4px; flex-shrink: 0; margin-top: 2px;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.15s;
+      }
+      .top-modal-item.selected .top-modal-item-check { background: #3B82F6; border-color: #3B82F6; }
+      .top-modal-item-avatar {
+        width: 36px; height: 36px; border-radius: 6px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; font-size: 13px; font-weight: 500;
+      }
+      .top-modal-item-content { flex: 1; min-width: 0; }
+      .top-modal-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+      .top-modal-item-name { font-size: 13px; font-weight: 500; color: #1F2937; }
+      .top-modal-item-meta { font-size: 12px; color: #9CA3AF; }
+      .top-modal-item-desc { font-size: 12px; color: #6B7280; line-height: 1.4; margin-top: 2px; }
+      .top-modal-item-tags { display: flex; gap: 4px; margin-top: 4px; }
+      .top-modal-item-tag { font-size: 11px; padding: 1px 6px; border-radius: 3px; background: #F3F4F6; color: #9CA3AF; }
+
+      /* MCP expandable */
+      .top-mcp-item { border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+      .top-mcp-header {
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 12px; cursor: pointer; transition: all 0.15s;
+      }
+      .top-mcp-header:hover { background: #F9FAFB; }
+      .top-mcp-expand { color: #9CA3AF; transition: transform 0.2s; flex-shrink: 0; }
+      .top-mcp-item.expanded .top-mcp-expand { transform: rotate(90deg); }
+      .top-mcp-body { display: none; padding: 0 12px 10px; border-top: 1px solid #E5E7EB; }
+      .top-mcp-item.expanded .top-mcp-body { display: block; }
+      .top-mcp-sub {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 8px 0 8px 48px; border-bottom: 1px solid #F3F4F6;
+      }
+      .top-mcp-sub:last-of-type { border-bottom: none; }
+      .top-mcp-sub-name { font-size: 12px; font-weight: 500; color: #1F2937; }
+      .top-mcp-sub-desc { font-size: 11px; color: #9CA3AF; }
+      .top-mcp-actions { padding: 8px 0 0; text-align: right; }
+    `;
+    doc.head.appendChild(style);
+    if (doc === topDoc) styleInjected = true;
+  }
+
+  // ===== Modal Data =====
+  var modalData = {
+    tool: {
+      title: '选择工具',
+      items: [
+        { id:'t1', name:'联网搜索', avatar:'搜', avatarBg:'#EFF6FF', avatarColor:'#3B82F6', meta:'系统内置', desc:'实时搜索互联网信息，获取最新数据和资讯', tags:['信息检索','实时数据'], selected:true },
+        { id:'t2', name:'代码执行', avatar:'码', avatarBg:'#ECFDF5', avatarColor:'#10B981', meta:'系统内置', desc:'在沙箱环境中执行 Python/JavaScript 代码', tags:['计算','数据处理'], selected:true },
+        { id:'t3', name:'图片生成', avatar:'图', avatarBg:'#FEF2F2', avatarColor:'#EF4444', meta:'系统内置', desc:'根据文本描述生成图片，支持多种风格', tags:['AI 绘画','创意设计'], selected:false },
+        { id:'t4', name:'文档解析', avatar:'文', avatarBg:'#FFFBEB', avatarColor:'#F59E0B', meta:'系统内置', desc:'解析 PDF、Word、Excel 等文档内容', tags:['文档处理','OCR'], selected:false },
+        { id:'t5', name:'数据库查询', avatar:'数', avatarBg:'#F3E8FF', avatarColor:'#8B5CF6', meta:'张三 · 自定义', desc:'连接 MySQL/PostgreSQL 数据库执行查询', tags:['数据库','SQL'], selected:false },
+      ]
+    },
+    plugin: {
+      title: '选择插件',
+      items: [
+        { id:'p1', name:'钉钉通知', avatar:'钉', avatarBg:'#EFF6FF', avatarColor:'#3B82F6', meta:'官方', desc:'将消息推送到钉钉群或个人', tags:[], selected:false },
+        { id:'p2', name:'飞书文档', avatar:'飞', avatarBg:'#ECFDF5', avatarColor:'#10B981', meta:'官方', desc:'自动创建或更新飞书文档', tags:[], selected:false },
+        { id:'p3', name:'企业微信', avatar:'企', avatarBg:'#FEF2F2', avatarColor:'#EF4444', meta:'官方', desc:'发送消息到企业微信工作台', tags:[], selected:false },
+      ]
+    },
+    skill: {
+      title: '选择技能',
+      items: [
+        { id:'s1', name:'多语言翻译', avatar:'翻', avatarBg:'#EFF6FF', avatarColor:'#3B82F6', meta:'翻译类 · 官方 · 2026-03-01', desc:'支持 50+ 语言实时互译，含专业术语库', tags:[], selected:false },
+        { id:'s2', name:'图表生成', avatar:'图', avatarBg:'#ECFDF5', avatarColor:'#10B981', meta:'数据类 · 张三 · 2026-05-12', desc:'根据数据自动生成柱状图、折线图、饼图等可视化图表', tags:[], selected:false },
+        { id:'s3', name:'智能摘要', avatar:'摘', avatarBg:'#FEF2F2', avatarColor:'#EF4444', meta:'文本类 · 李四 · 2026-04-20', desc:'对长文本进行智能摘要提取，生成结构化要点', tags:[], selected:false },
+        { id:'s4', name:'采购分析', avatar:'采', avatarBg:'#F3E8FF', avatarColor:'#8B5CF6', meta:'业务类 · 王五 · 2026-06-01', desc:'分析采购数据，生成供应商评估报告和成本优化建议', tags:[], selected:false },
+        { id:'s5', name:'合同审查', avatar:'合', avatarBg:'#FFFBEB', avatarColor:'#F59E0B', meta:'法务类 · 赵六 · 2026-05-28', desc:'自动审查合同条款，识别风险点并提供修改建议', tags:[], selected:false },
+      ]
+    }
+  };
+
+  var mcpData = [
+    {
+      id:'mcp1', name:'数据库查询 MCP', avatar:'DB', avatarBg:'#EFF6FF', avatarColor:'#3B82F6',
+      meta:'张三 · 2026-06-15', desc:'支持 MySQL、PostgreSQL 数据库的增删改查操作', selected:true, expanded:true,
+      subs: [
+        { name:'执行 SQL 查询', desc:'执行 SELECT 查询语句并返回结果' },
+        { name:'执行数据写入', desc:'执行 INSERT/UPDATE/DELETE 操作' },
+        { name:'获取表结构', desc:'获取指定数据库的表结构信息' },
+      ]
+    },
+    {
+      id:'mcp2', name:'HTTP 请求 MCP', avatar:'API', avatarBg:'#ECFDF5', avatarColor:'#10B981',
+      meta:'李四 · 2026-05-20', desc:'发送 HTTP 请求，支持 GET/POST/PUT/DELETE', selected:false, expanded:false,
+      subs: [
+        { name:'GET 请求', desc:'发送 GET 请求获取数据' },
+        { name:'POST 请求', desc:'发送 POST 请求提交数据' },
+      ]
+    },
+    {
+      id:'mcp3', name:'文件系统 MCP', avatar:'FS', avatarBg:'#FFFBEB', avatarColor:'#F59E0B',
+      meta:'王五 · 2026-04-10', desc:'读写本地或远程文件系统', selected:false, expanded:false,
+      subs: [
+        { name:'读取文件', desc:'读取指定路径的文件内容' },
+        { name:'写入文件', desc:'将内容写入指定文件' },
+      ]
+    }
+  ];
+
+  // ===== Build & Open Modal on Top =====
+  window.openTopModal = function(type) {
+    var doc = getTop();
+    injectStyles(doc);
+
+    // Remove existing
+    var existing = doc.getElementById('topModalContainer');
+    if (existing) existing.remove();
+
+    var overlay = doc.createElement('div');
+    overlay.className = 'top-modal-overlay';
+    overlay.id = 'topModalContainer';
+
+    var isMcp = type === 'mcp';
+    var modal = doc.createElement('div');
+    modal.className = 'top-modal' + (isMcp ? ' wide' : '');
+
+    if (isMcp) {
+      modal.innerHTML = buildMcpModalHTML();
+    } else {
+      modal.innerHTML = buildListModalHTML(type);
+    }
+
+    overlay.appendChild(modal);
+    doc.body.appendChild(overlay);
+
+    // Close on overlay click
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeModal(doc);
+    });
+
+    // Bind events
+    if (isMcp) {
+      bindMcpEvents(modal, doc);
+    } else {
+      bindListEvents(modal, doc, type);
+    }
+  };
+
+  function buildListModalHTML(type) {
+    var data = modalData[type];
+    var itemsHtml = data.items.map(function(item) {
+      var tagsHtml = item.tags.length ? '<div class="top-modal-item-tags">' + item.tags.map(function(t){ return '<span class="top-modal-item-tag">'+t+'</span>'; }).join('') + '</div>' : '';
+      return '<div class="top-modal-item' + (item.selected ? ' selected' : '') + '" data-id="'+item.id+'">' +
+        '<div class="top-modal-item-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+        '<div class="top-modal-item-avatar" style="background:'+item.avatarBg+';color:'+item.avatarColor+';">'+item.avatar+'</div>' +
+        '<div class="top-modal-item-content">' +
+          '<div class="top-modal-item-header"><span class="top-modal-item-name">'+item.name+'</span><span class="top-modal-item-meta">'+item.meta+'</span></div>' +
+          '<div class="top-modal-item-desc">'+item.desc+'</div>' +
+          tagsHtml +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    var selectedCount = data.items.filter(function(i){ return i.selected; }).length;
+
+    return '<div class="top-modal-header">' +
+      '<h3 class="top-modal-title">'+data.title+'</h3>' +
+      '<button class="top-modal-close" data-action="close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+    '</div>' +
+    '<div class="top-modal-search"><input placeholder="搜索'+data.title.replace('选择','')+'名称或描述..." data-action="search"></div>' +
+    '<div class="top-modal-body" data-role="list">'+itemsHtml+'</div>' +
+    '<div class="top-modal-footer">' +
+      '<span class="footer-count" data-role="count">已选 '+selectedCount+' 个</span>' +
+      '<button class="top-modal-btn top-modal-btn-outline" data-action="close">取消</button>' +
+      '<button class="top-modal-btn top-modal-btn-primary" data-action="confirm">确认</button>' +
+    '</div>';
+  }
+
+  function buildMcpModalHTML() {
+    var itemsHtml = mcpData.map(function(mcp) {
+      var subsHtml = mcp.subs.map(function(sub) {
+        return '<div class="top-mcp-sub">' +
+          '<div><div class="top-mcp-sub-name">'+sub.name+'</div><div class="top-mcp-sub-desc">'+sub.desc+'</div></div>' +
+          '<button class="top-modal-btn top-modal-btn-ghost" data-action="addSub" data-mcp="'+mcp.id+'" data-sub="'+sub.name+'">单独添加</button>' +
+        '</div>';
+      }).join('');
+
+      return '<div class="top-mcp-item' + (mcp.expanded ? ' expanded' : '') + (mcp.selected ? ' selected' : '') + '" data-id="'+mcp.id+'">' +
+        '<div class="top-mcp-header" data-action="toggleMcp">' +
+          '<div class="top-modal-item-check" data-action="toggleMcpCheck"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+          '<div class="top-modal-item-avatar" style="background:'+mcp.avatarBg+';color:'+mcp.avatarColor+';">'+mcp.avatar+'</div>' +
+          '<div class="top-modal-item-content">' +
+            '<div class="top-modal-item-header"><span class="top-modal-item-name">'+mcp.name+'</span><span class="top-modal-item-meta">'+mcp.meta+'</span></div>' +
+            '<div class="top-modal-item-desc">'+mcp.desc+'</div>' +
+          '</div>' +
+          '<span class="top-mcp-expand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
+        '</div>' +
+        '<div class="top-mcp-body">' + subsHtml +
+          '<div class="top-mcp-actions"><button class="top-modal-btn top-modal-btn-outline" data-action="addAll" data-mcp="'+mcp.id+'">整体添加 MCP</button></div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    var selectedCount = mcpData.filter(function(m){ return m.selected; }).length;
+
+    return '<div class="top-modal-header">' +
+      '<h3 class="top-modal-title">选择 MCP</h3>' +
+      '<button class="top-modal-close" data-action="close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+    '</div>' +
+    '<div class="top-modal-search"><input placeholder="搜索 MCP 名称或描述..." data-action="search"></div>' +
+    '<div class="top-modal-body" data-role="list">'+itemsHtml+'</div>' +
+    '<div class="top-modal-footer">' +
+      '<span class="footer-count" data-role="count">已选 '+selectedCount+' 个</span>' +
+      '<button class="top-modal-btn top-modal-btn-outline" data-action="close">取消</button>' +
+      '<button class="top-modal-btn top-modal-btn-primary" data-action="confirm">确认</button>' +
+    '</div>';
+  }
+
+  function closeModal(doc) {
+    var el = doc.getElementById('topModalContainer');
+    if (el) el.remove();
+  }
+
+  function updateCount(modal, count) {
+    var el = modal.querySelector('[data-role="count"]');
+    if (el) el.textContent = '已选 ' + count + ' 个';
+  }
+
+  // ===== List Modal Events =====
+  function bindListEvents(modal, doc, type) {
+    var data = modalData[type];
+
+    modal.addEventListener('click', function(e) {
+      var target = e.target;
+      // Close
+      if (target.closest('[data-action="close"]')) { closeModal(doc); return; }
+      // Confirm
+      if (target.closest('[data-action="confirm"]')) {
+        // Update iframe tags
+        updateTagsFromData(type);
+        closeModal(doc);
+        return;
+      }
+      // Toggle item
+      var item = target.closest('.top-modal-item');
+      if (item) {
+        var id = item.dataset.id;
+        var found = data.items.find(function(i){ return i.id === id; });
+        if (found) {
+          found.selected = !found.selected;
+          item.classList.toggle('selected');
+          var count = data.items.filter(function(i){ return i.selected; }).length;
+          updateCount(modal, count);
+        }
+      }
+    });
+
+    // Search
+    var searchInput = modal.querySelector('[data-action="search"]');
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        var keyword = this.value.toLowerCase();
+        var items = modal.querySelectorAll('.top-modal-item');
+        items.forEach(function(item) {
+          var text = item.textContent.toLowerCase();
+          item.style.display = text.indexOf(keyword) > -1 ? '' : 'none';
+        });
+      });
+    }
+  }
+
+  // ===== MCP Modal Events =====
+  function bindMcpEvents(modal, doc) {
+    modal.addEventListener('click', function(e) {
+      var target = e.target;
+      // Close
+      if (target.closest('[data-action="close"]')) { closeModal(doc); return; }
+      // Confirm
+      if (target.closest('[data-action="confirm"]')) {
+        updateTagsFromData('mcp');
+        closeModal(doc);
+        return;
+      }
+      // Toggle expand
+      if (target.closest('[data-action="toggleMcp"]')) {
+        var mcpItem = target.closest('.top-mcp-item');
+        if (mcpItem) {
+          // If clicking the checkbox area
+          if (target.closest('[data-action="toggleMcpCheck"]')) {
+            var id = mcpItem.dataset.id;
+            var found = mcpData.find(function(m){ return m.id === id; });
+            if (found) {
+              found.selected = !found.selected;
+              mcpItem.classList.toggle('selected');
+              var count = mcpData.filter(function(m){ return m.selected; }).length;
+              updateCount(modal, count);
+            }
+            return;
+          }
+          mcpItem.classList.toggle('expanded');
+        }
+        return;
+      }
+      // Add all
+      if (target.closest('[data-action="addAll"]')) {
+        var mcpId = target.closest('[data-action="addAll"]').dataset.mcp;
+        var found = mcpData.find(function(m){ return m.id === mcpId; });
+        if (found) {
+          found.selected = true;
+          var mcpEl = modal.querySelector('.top-mcp-item[data-id="'+mcpId+'"]');
+          if (mcpEl) mcpEl.classList.add('selected');
+          var count = mcpData.filter(function(m){ return m.selected; }).length;
+          updateCount(modal, count);
+        }
+        return;
+      }
+      // Add sub
+      if (target.closest('[data-action="addSub"]')) {
+        var btn = target.closest('[data-action="addSub"]');
+        var mcpId = btn.dataset.mcp;
+        var found = mcpData.find(function(m){ return m.id === mcpId; });
+        if (found) {
+          found.selected = true;
+          var mcpEl = modal.querySelector('.top-mcp-item[data-id="'+mcpId+'"]');
+          if (mcpEl) mcpEl.classList.add('selected');
+          var count = mcpData.filter(function(m){ return m.selected; }).length;
+          updateCount(modal, count);
+        }
+        return;
+      }
+    });
+
+    // Search
+    var searchInput = modal.querySelector('[data-action="search"]');
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        var keyword = this.value.toLowerCase();
+        var items = modal.querySelectorAll('.top-mcp-item');
+        items.forEach(function(item) {
+          var text = item.textContent.toLowerCase();
+          item.style.display = text.indexOf(keyword) > -1 ? '' : 'none';
+        });
+      });
+    }
+  }
+
+  // ===== Update iframe tags from data =====
+  function updateTagsFromData(type) {
+    if (type === 'tool') {
+      var container = document.getElementById('toolTags');
+      var items = modalData.tool.items.filter(function(i){ return i.selected; });
+      container.innerHTML = items.map(function(i){
+        return '<div class="selected-tag">'+i.name+' <span class="tag-remove" onclick="removeTag(this)">×</span></div>';
+      }).join('');
+      document.getElementById('toolCountLabel').textContent = '已选 ' + items.length + ' 个';
+    } else if (type === 'plugin') {
+      var container = document.getElementById('pluginTags');
+      var items = modalData.plugin.items.filter(function(i){ return i.selected; });
+      container.innerHTML = items.map(function(i){
+        return '<div class="selected-tag">'+i.name+' <span class="tag-remove" onclick="removeTag(this)">×</span></div>';
+      }).join('');
+      document.getElementById('pluginCountLabel').textContent = '已选 ' + items.length + ' 个';
+    } else if (type === 'mcp') {
+      // Find the MCP section tags container (second one in extension section)
+      var triggers = document.querySelectorAll('.selector-trigger');
+      var mcpTagsContainer = null;
+      triggers.forEach(function(t) {
+        if (t.textContent.indexOf('管理 MCP') > -1) {
+          mcpTagsContainer = t.nextElementSibling;
+        }
+      });
+      if (mcpTagsContainer) {
+        var items = mcpData.filter(function(m){ return m.selected; });
+        mcpTagsContainer.innerHTML = items.map(function(m){
+          return '<div class="selected-tag">'+m.name+' <span class="tag-remove" onclick="removeTag(this)">×</span></div>';
+        }).join('');
+      }
+    } else if (type === 'skill') {
+      var triggers = document.querySelectorAll('.selector-trigger');
+      var skillTagsContainer = null;
+      triggers.forEach(function(t) {
+        if (t.textContent.indexOf('管理技能') > -1) {
+          skillTagsContainer = t.nextElementSibling;
+        }
+      });
+      if (skillTagsContainer) {
+        var items = modalData.skill.items.filter(function(i){ return i.selected; });
+        skillTagsContainer.innerHTML = items.map(function(i){
+          return '<div class="selected-tag">'+i.name+' <span class="tag-remove" onclick="removeTag(this)">×</span></div>';
+        }).join('');
+      }
+    }
+  }
+
+})();
+
+// ============================================================
+// Iframe-local Interactions
+// ============================================================
+
+// Model Select
+function toggleModelSelect() {
+  var trigger = document.getElementById('modelTrigger');
+  var dropdown = document.getElementById('modelDropdown');
+  trigger.classList.toggle('open');
+  dropdown.classList.toggle('show');
+}
+
+function switchModelTab(tab, el) {
+  document.querySelectorAll('.model-tab').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('modelListOnline').style.display = tab === 'online' ? 'block' : 'none';
+  document.getElementById('modelListLocal').style.display = tab === 'local' ? 'block' : 'none';
+}
+
+function selectModel(el, name, tag) {
+  document.querySelectorAll('.model-item').forEach(function(m) { m.classList.remove('selected'); });
+  el.classList.add('selected');
+  var trigger = document.getElementById('modelTrigger');
+  trigger.innerHTML = '<span style="font-weight:500;">' + name + '</span><span class="model-tag">' + tag + '</span><span class="select-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>';
+  toggleModelSelect();
+}
+
+// Close model dropdown on outside click
+document.addEventListener('click', function(e) {
+  var select = document.getElementById('modelSelect');
+  if (select && !select.contains(e.target)) {
+    document.getElementById('modelTrigger').classList.remove('open');
+    document.getElementById('modelDropdown').classList.remove('show');
+  }
+});
+
+// Prompt
+function updateCharCount() {
+  var text = document.getElementById('promptText').value;
+  document.getElementById('promptCount').textContent = text.length + ' / 5000';
+}
+
+function aiOptimize() { alert('AI 优化功能：将根据您的提示词内容进行智能优化建议'); }
+function aiOptimizeGreeting() { alert('AI 优化功能：将优化您的开场白文案'); }
+function aiGenerateGreetingQ() { alert('AI 生成功能：将根据专家配置自动生成引导问题'); }
+
+// Fullscreen Prompt
+function openFullscreen() {
+  var text = document.getElementById('promptText').value;
+  document.getElementById('fullscreenPromptText').value = text;
+  document.getElementById('fullscreenOverlay').style.display = 'flex';
+}
+
+function closeFullscreen() {
+  var text = document.getElementById('fullscreenPromptText').value;
+  document.getElementById('promptText').value = text;
+  updateCharCount();
+  document.getElementById('fullscreenOverlay').style.display = 'none';
+}
+
+// Radio Cards
+function selectRadio(el) {
+  document.querySelectorAll('.radio-card').forEach(function(c) { c.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+// Checkbox
+function toggleCheckbox(el) { el.classList.toggle('checked'); }
+
+// Greeting Questions
+function toggleGreetingQuestions() {
+  var checked = document.getElementById('greetingQToggle').checked;
+  document.getElementById('greetingQuestionsArea').style.display = checked ? 'block' : 'none';
+}
+
+function addGreetingQ() {
+  var list = document.getElementById('greetingQList');
+  var row = document.createElement('div');
+  row.className = 'tag-input-row';
+  row.innerHTML = '<input class="form-input" placeholder="请输入引导问题（≤50字）" maxlength="50"><span class="remove-btn" onclick="removeGreetingQ(this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>';
+  list.appendChild(row);
+}
+
+function removeGreetingQ(el) {
+  var list = document.getElementById('greetingQList');
+  if (list.children.length > 1) el.parentElement.remove();
+}
+
+// Tags
+function removeTag(el) { el.parentElement.remove(); }
+</script>
+</body>
+</html>

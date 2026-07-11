@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品调研、设计专家 - 智能客服助手</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    height: 100vh;
+    padding: 0px;
+  }
+  .chat-container {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    background: #fff;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ===== Welcome Screen ===== */
+  .welcome-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 32px 20px;
+    transition: opacity 0.5s ease;
+  }
+  .welcome-screen.hidden { display: none; }
+  .avatar-icon {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    position: relative;
+    box-shadow: 0 4px 16px rgba(102,126,234,0.3);
+  }
+  .avatar-icon::before {
+    content: '';
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);
+    border-radius: 50%;
+    position: absolute;
+    opacity: 0.7;
+    top: -4px; left: 14px;
+  }
+  .avatar-icon::after {
+    content: '';
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+    border-radius: 50%;
+    position: absolute;
+    top: 4px; left: 20px;
+  }
+  .welcome-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+  }
+  .welcome-desc {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    line-height: 1.8;
+    margin-bottom: 32px;
+    max-width: 480px;
+  }
+  .example-list {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .example-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: #f8f9ff;
+    border: 1px solid #eef0ff;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-size: 14px;
+    color: #333;
+  }
+  .example-item:hover {
+    background: #eef1ff;
+    border-color: #c5caff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102,126,234,0.1);
+  }
+  .example-item .label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .example-item .diamond {
+    color: #667eea;
+    font-size: 12px;
+  }
+  .example-item .arrow {
+    color: #999;
+    font-size: 18px;
+    transition: transform 0.2s;
+  }
+  .example-item:hover .arrow { transform: translateX(4px); }
+
+  /* ===== Chat Area ===== */
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    scroll-behavior: smooth;
+  }
+  .chat-area.active { display: flex; }
+  .no-more-msg {
+    text-align: center;
+    font-size: 12px;
+    color: #bbb;
+    padding: 8px 0;
+  }
+
+  /* User Message */
+  .msg-row {
+    display: flex;
+    width: 100%;
+  }
+  .msg-row.user { justify-content: flex-end; }
+  .msg-row.bot { justify-content: flex-start; }
+  .msg-bubble {
+    max-width: 75%;
+    padding: 12px 18px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    position: relative;
+  }
+  .msg-row.user .msg-bubble {
+    background: #e8f0fe;
+    color: #1a1a2e;
+    border-bottom-right-radius: 4px;
+  }
+  .msg-row.bot .msg-bubble {
+    background: #f5f6fa;
+    color: #333;
+    border-bottom-left-radius: 4px;
+  }
+
+  /* Bot thinking section */
+  .thinking-section {
+    background: #f5f6fa;
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    padding: 16px 20px;
+    max-width: 80%;
+  }
+  .thinking-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .thinking-header .chevron {
+    font-size: 10px;
+    transition: transform 0.2s;
+  }
+  .thinking-header .chevron.open { transform: rotate(90deg); }
+  .thinking-body {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.8;
+  }
+  .thinking-body .tool-call {
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px;
+  }
+  .thinking-body .tool-call::before {
+    content: '▸ ';
+  }
+  .thinking-body .kb-notice {
+    font-size: 13px;
+    color: #aaa;
+    margin-top: 8px;
+  }
+
+  /* Loading animation */
+  .loading-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #888;
+    padding-left: 4px;
+  }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid #e0e0e0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Final response */
+  .final-response {
+    background: #f5f6fa;
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    padding: 20px;
+    max-width: 85%;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #333;
+  }
+  .final-response .section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 15px;
+    color: #1a1a2e;
+    margin: 16px 0 8px;
+  }
+  .final-response .section-title:first-child { margin-top: 0; }
+  .final-response .section-title .icon { font-size: 16px; }
+  .final-response ul {
+    padding-left: 20px;
+    margin: 4px 0 12px;
+  }
+  .final-response ul li {
+    margin-bottom: 4px;
+    color: #444;
+  }
+  .final-response .highlight {
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .final-response .closing {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #e8e8e8;
+    font-size: 14px;
+    color: #555;
+  }
+  .response-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #bbb;
+  }
+  .copy-btn {
+    padding: 4px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 12px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { border-color: #667eea; color: #667eea; }
+
+  /* ===== Input Area ===== */
+  .input-area {
+    padding: 16px 20px;
+    border-top: 1px solid #f0f0f0;
+    background: #fff;
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    flex-shrink: 0;
+  }
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f5f6fa;
+    border-radius: 12px;
+    padding: 12px 16px;
+  }
+  .input-wrapper .plus-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid #ccc;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    color: #888;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .input-wrapper .plus-btn:hover { border-color: #667eea; color: #667eea; }
+  .input-wrapper input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+  }
+  .input-wrapper input::placeholder { color: #bbb; }
+  .send-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #667eea;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .send-btn.visible { opacity: 1; pointer-events: auto; }
+  .send-btn svg { width: 16px; height: 16px; fill: #fff; }
+  .send-btn.stop { background: #667eea; }
+  .send-btn.stop svg { fill: #fff; }
+
+  .footer-text {
+    text-align: center;
+    font-size: 11px;
+    color: #ccc;
+    padding: 8px 0 4px;
+  }
+
+  /* Watermark */
+  .watermark {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 10;
+  }
+  .watermark span {
+    position: absolute;
+    font-size: 12px;
+    color: rgba(0,0,0,0.03);
+    white-space: nowrap;
+    transform: rotate(-20deg);
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in {
+    animation: fadeInUp 0.4s ease forwards;
+  }
+  @keyframes typewriter {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Scrollbar */
+  .chat-area::-webkit-scrollbar { width: 4px; }
+  .chat-area::-webkit-scrollbar-track { background: transparent; }
+  .chat-area::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="chat-container" id="chatContainer">
+  <!-- Watermark -->
+  <div class="watermark" id="watermark"></div>
+
+  <!-- Welcome Screen -->
+  <div class="welcome-screen" id="welcomeScreen">
+    <div class="avatar-icon"></div>
+    <h1 class="welcome-title">产品调研、设计专家</h1>
+    <p class="welcome-desc">
+      你好！我是你的智能客服助手，可以帮你解答产品咨询、识别证件图片、查询最新信息。请直接描述你的问题，或点击下面的示例问题快速开始。
+    </p>
+    <div class="example-list">
+      <div class="example-item" onclick="startChat(0)">
+        <span class="label"><span class="diamond">✦</span> 帮我识别一下这张身份证信息</span>
+        <span class="arrow">→</span>
+      </div>
+      <div class="example-item" onclick="startChat(1)">
+        <span class="label"><span class="diamond">✦</span> 这个表格里的数据怎么提取出来</span>
+        <span class="arrow">→</span>
+      </div>
+      <div class="example-item" onclick="startChat(2)">
+        <span class="label"><span class="diamond">✦</span> 我想查询一下产品的最新优惠活动</span>
+        <span class="arrow">→</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="chat-area" id="chatArea">
+    <div class="no-more-msg"></div>
+  </div>
+
+  <!-- Input Area -->
+  <div class="input-area">
+    <div class="input-wrapper">
+      <div class="plus-btn">+</div>
+      <input type="text" id="chatInput" placeholder="请输入你的问题，支持上传图片或文件。" oninput="toggleSendBtn()">
+      <button class="send-btn" id="sendBtn" onclick="handleSend()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Generate watermark
+(function() {
+  const wm = document.getElementById('watermark');
+  for (let i = 0; i < 30; i++) {
+    const span = document.createElement('span');
+    span.textContent = 'AI生成内容仅供参考';
+    span.style.left = (Math.random() * 100) + '%';
+    span.style.top = (Math.random() * 100) + '%';
+    wm.appendChild(span);
+  }
+})();
+
+let chatStarted = false;
+let isProcessing = false;
+
+const examples = [
+  '帮我识别一下这张身份证信息',
+  '这个表格里的数据怎么提取出来',
+  '我想查询一下产品的最新优惠活动'
+];
+
+function toggleSendBtn() {
+  const input = document.getElementById('chatInput');
+  const btn = document.getElementById('sendBtn');
+  if (input.value.trim()) {
+    btn.classList.add('visible');
+  } else {
+    btn.classList.remove('visible');
+  }
+}
+
+function startChat(index) {
+  if (chatStarted) return;
+  chatStarted = true;
+
+  const welcome = document.getElementById('welcomeScreen');
+  const chatArea = document.getElementById('chatArea');
+
+  welcome.classList.add('hidden');
+  chatArea.classList.add('active');
+
+  // Simulate flow for example 3 (优惠活动)
+  simulateFullFlow();
+}
+
+function addMessage(type, content, extra) {
+  const chatArea = document.getElementById('chatArea');
+  const row = document.createElement('div');
+  row.className = `msg-row ${type} animate-in`;
+
+  if (type === 'user') {
+    row.innerHTML = `<div class="msg-bubble">${content}</div>`;
+  } else {
+    row.innerHTML = content;
+  }
+
+  chatArea.appendChild(row);
+  chatArea.scrollTop = chatArea.scrollHeight;
+  return row;
+}
+
+function simulateFullFlow() {
+  const chatArea = document.getElementById('chatArea');
+
+  // Step 1: User message
+  setTimeout(() => {
+    addMessage('user', '我想查询一下产品的最新优惠活动');
+  }, 600);
+
+  // Step 2: Bot thinking
+  setTimeout(() => {
+    const thinkingHTML = `
+      <div class="thinking-section animate-in">
+        <div class="thinking-header" onclick="toggleThinking(this)">
+          <span class="chevron open">▸</span> 深度思考
+        </div>
+        <div class="thinking-body">
+          <div>我来帮您查询最新的产品优惠活动信息，请稍等~</div>
+          <div class="tool-call">调用了1次工具</div>
+          <div class="kb-notice">知识库中暂未收录相关</div>
+        </div>
+      </div>
+    `;
+    addMessage('bot', thinkingHTML);
+  }, 1800);
+
+  // Step 3: Loading
+  setTimeout(() => {
+    const loadingHTML = `
+      <div class="loading-row animate-in" id="loadingRow">
+        <div class="spinner"></div>
+        <span>正在输出中..</span>
+      </div>
+    `;
+    addMessage('bot', loadingHTML);
+  }, 3000);
+
+  // Step 4: Final response
+  setTimeout(() => {
+    // Remove loading
+    const loadingRow = document.getElementById('loadingRow');
+    if (loadingRow) loadingRow.remove();
+
+    const responseHTML = `
+      <div class="final-response animate-in">
+        <div class="section-title"><span class="icon">📱</span> 数码与家电全品类优惠</div>
+        <ul>
+          <li>直播间每2小时抽奖，下单即参与</li>
+          <li>学生用户享20元返现，老用户返还10元，以旧换新再得20元红包（可叠加）</li>
+        </ul>
+
+        <div class="section-title"><span class="icon"></span> 三星专"暑"福利</div>
+        <ul>
+          <li>教育验证用户享额外购机优惠，可与同期其他优惠叠加</li>
+          <li>涵盖 Galaxy Z Fold7、Galaxy Z Flip7 等新品</li>
+        </ul>
+
+        <div class="section-title"><span class="icon">🎧</span> 京东耳机优惠</div>
+        <ul>
+          <li>国家3C数码专项换新补贴 + 平台暑期专项活动</li>
+          <li>头戴降噪、无线蓝牙、骨传导、电竞游戏等全品类覆盖</li>
+        </ul>
+
+        <div class="section-title"><span class="icon">📱</span> 华为七月以旧换新（7月1日-31日）</div>
+        <ul>
+          <li>实名认证华为账号用户均可参与</li>
+          <li>部分机型可享 <span class="highlight">20%补贴</span></li>
+        </ul>
+
+        <div class="section-title"><span class="icon">🎮</span> 索尼 PSN 商店7月促销</div>
+        <ul>
+          <li>游戏大促，多款游戏新史低价（截至7月15日）</li>
+        </ul>
+
+        <div class="section-title"><span class="icon">🛍️</span> 淘宝/天猫七月活动</div>
+        <ul>
+          <li>天猫七月狂暑季、淘宝超级88等多场促销</li>
+          <li>超值满减、官方立减、限时快抢等福利</li>
+        </ul>
+
+        <div class="closing">
+          请问您对哪类产品的优惠活动比较感兴趣？我可以帮您进一步查询更详细的信息~ 😊
+        </div>
+        <div class="response-meta">
+          <span></span>
+          <span>04:03:31</span>
+          <button class="copy-btn" onclick="copyResponse(this)">复制</button>
+        </div>
+      </div>
+    `;
+    addMessage('bot', responseHTML);
+  }, 5500);
+}
+
+function toggleThinking(header) {
+  const chevron = header.querySelector('.chevron');
+  const body = header.nextElementSibling;
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    chevron.classList.add('open');
+  } else {
+    body.style.display = 'none';
+    chevron.classList.remove('open');
+  }
+}
+
+function copyResponse(btn) {
+  const response = btn.closest('.final-response');
+  const text = response.innerText.replace('复制', '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '已复制';
+    setTimeout(() => { btn.textContent = '复制'; }, 2000);
+  }).catch(() => {
+    btn.textContent = '复制失败';
+    setTimeout(() => { btn.textContent = '复制'; }, 2000);
+  });
+}
+
+function handleSend() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  if (!chatStarted) {
+    chatStarted = true;
+    document.getElementById('welcomeScreen').classList.add('hidden');
+    document.getElementById('chatArea').classList.add('active');
+  }
+
+  addMessage('user', text);
+  input.value = '';
+  toggleSendBtn();
+
+  // Simple auto-reply for custom input
+  setTimeout(() => {
+    const replyHTML = `
+      <div class="thinking-section animate-in">
+        <div class="thinking-header" onclick="toggleThinking(this)">
+          <span class="chevron open">▸</span> 深度思考
+        </div>
+        <div class="thinking-body">
+          <div>我来帮您处理这个问题，请稍等~</div>
+          <div class="tool-call">调用了1次工具</div>
+          <div class="kb-notice">知识库中暂未收录相关</div>
+        </div>
+      </div>
+    `;
+    addMessage('bot', replyHTML);
+  }, 1200);
+
+  setTimeout(() => {
+    const responseHTML = `
+      <div class="final-response animate-in">
+        <div class="closing">
+          感谢您的提问！关于"${text}"，我目前还在持续学习中，暂时无法给出详细回答。建议您尝试其他问题，或联系人工客服获取帮助。😊
+        </div>
+        <div class="response-meta">
+          <span>📋</span>
+          <span>${new Date().toLocaleTimeString('zh-CN', {hour12: false})}</span>
+          <button class="copy-btn" onclick="copyResponse(this)">复制</button>
+        </div>
+      </div>
+    `;
+    addMessage('bot', responseHTML);
+  }, 3000);
+}
+
+// Enter key support
+document.getElementById('chatInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleSend();
+  }
+});
+</script>
+</body>
+</html>

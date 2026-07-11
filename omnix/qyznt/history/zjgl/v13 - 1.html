@@ -1,0 +1,3686 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>专家管理</title>
+    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js">
+    </script>
+    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js">
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+        .page-wrap {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #d1d5db;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-published {
+            background: #D1FAE5;
+            color: #059669;
+        }
+        .tag-disabled {
+            background: #dfdfdf;
+            color: #565656;
+        }
+        .tag-category {
+            background: #EEF2FF;
+            color: #4F46E5;
+        }
+        .tag-source {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+        .tag-source-client {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .skill-card {
+            transition: all 0.2s;
+        }
+        .skill-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        .card-actions {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .skill-card:hover .card-actions {
+            opacity: 1;
+        }
+        .card-action-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            color: #9CA3AF;
+            transition: all 0.15s;
+            cursor: pointer;
+        }
+        .card-action-btn:hover {
+            background: #F3F4F6;
+            color: #4F46E5;
+        }
+        .card-action-btn.danger:hover {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        .card-action-btn.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+			display:none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 22px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: #D1D5DB;
+            border-radius: 9999px;
+            transition: all 0.25s;
+        }
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            left: 3px;
+            top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.25s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+        .toggle-switch input:checked+.toggle-slider {
+            background: #059669;
+        }
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(18px);
+        }
+        .toggle-switch:hover .toggle-slider {
+            box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.12);
+        }
+        .toggle-switch.disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+        }
+        .toggle-switch.disabled:hover .toggle-slider {
+            box-shadow: none;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.hidden {
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            z-index: 100;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideIn 0.3s ease;
+        }
+        .toast.hidden {
+            display: none;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .file-tree-row {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .file-tree-row:hover {
+            background: #F3F4F6;
+        }
+        .file-tree-row.active {
+            background: #EEF2FF;
+        }
+        .ft-icon {
+            font-size: 18px;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        .ft-name {
+            font-size: 13px;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ft-meta {
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-right: 8px;
+        }
+        .ft-dots {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            color: #9CA3AF;
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+        .file-tree-row:hover .ft-dots {
+            opacity: 1;
+        }
+        .ft-dots:hover {
+            background: #E5E7EB;
+        }
+        .ft-name-input {
+            font-size: 13px;
+            border: 1px solid #4F46E5;
+            border-radius: 4px;
+            padding: 2px 6px;
+            outline: none;
+            background: #fff;
+            color: #1f2937;
+            width: 100%;
+            max-width: 180px;
+            line-height: 1.4;
+            box-shadow: 0 0 0 2px rgba(79,70,229,0.15);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 160px;
+            z-index: 40;
+            padding: 4px;
+        }
+        .dropdown-menu.hidden {
+            display: none;
+        }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #374151;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .dropdown-item:hover {
+            background: #F3F4F6;
+        }
+        .dropdown-item.danger {
+            color: #DC2626;
+        }
+        .dropdown-item.danger:hover {
+            background: #FEE2E2;
+        }
+        .dropdown-divider {
+            height: 1px;
+            background: #E5E7EB;
+            margin: 4px 0;
+        }
+
+        /* 历史下拉弹窗 */
+        .history-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            width: 340px;
+            max-height: 420px;
+            background: #fff;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            z-index: 60;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .history-dropdown.hidden {
+            display: none;
+        }
+        .history-dropdown-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px 10px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+        .history-dropdown-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1F2937;
+        }
+        .history-dropdown-close {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            color: #9CA3AF;
+            cursor: pointer;
+            font-size: 18px;
+            border: none;
+            background: none;
+            transition: all 0.15s;
+        }
+        .history-dropdown-close:hover {
+            background: #F3F4F6;
+            color: #4B5563;
+        }
+        .history-session-label {
+            padding: 10px 16px 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4F46E5;
+            background: #FAFAFA;
+        }
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px 8px 8px;
+        }
+        .history-list.custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .history-list.custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .history-list.custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E5E7EB;
+            border-radius: 10px;
+        }
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .history-item:hover {
+            background: #F3F4F6;
+        }
+        .history-item-title {
+            font-size: 13px;
+            color: #374151;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            flex-shrink: 1;
+        }
+        .history-item-time {
+            font-size: 12px;
+            color: #9CA3AF;
+            white-space: nowrap;
+            margin-left: 12px;
+            flex-shrink: 0;
+        }
+
+
+        .upload-area {
+            border: 2px dashed #D1D5DB;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: #4F46E5;
+            background: #EEF2FF;
+        }
+
+
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: #6B7280;
+        }
+        .breadcrumb a {
+            color: #6B7280;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: #4F46E5;
+        }
+        .breadcrumb .current {
+            color: #1F2937;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .status-dot.published {
+            background: #059669;
+        }
+        .status-dot.disabled {
+            background: #818181;
+        }
+
+        .recycle-card {
+            transition: all 0.2s;
+        }
+        .recycle-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        .recycle-hover-actions {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            display: flex;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 2;
+        }
+        .recycle-card:hover .recycle-hover-actions {
+            opacity: 1;
+        }
+        .recycle-hover-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .recycle-hover-btn.restore {
+            background: #EEF2FF;
+            color: #4F46E5;
+            border-color: #C7D2FE;
+        }
+        .recycle-hover-btn.restore:hover {
+            background: #4F46E5;
+            color: #fff;
+            border-color: #4F46E5;
+        }
+        .recycle-hover-btn.delete {
+            background: #FEF2F2;
+            color: #DC2626;
+            border-color: #FECACA;
+        }
+        .recycle-hover-btn.delete:hover {
+            background: #DC2626;
+            color: #fff;
+            border-color: #DC2626;
+        }
+
+        .recycle-badge-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+        .recycle-badge {
+            position: absolute;
+            top: -16px;
+            right: -70px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            background: #EF4444;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 18px;
+            text-align: center;
+            border-radius: 9999px;
+            pointer-events: none;
+            box-shadow: 0 0 0 2px #fff;
+        }
+        .recycle-badge.hidden {
+            display: none;
+        }
+
+
+        /* ═════ 分页样式 ═════ */
+        .pagination-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: #f9fafb;
+    padding: 12px 24px;
+    margin: 0;
+    border-top: 1px solid #E5E7EB;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #6B7280;
+    flex-wrap: wrap;
+    gap: 8px;
+        }
+        .pagination-bar .page-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pagination-bar .page-controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pagination-bar .page-btn {
+            min-width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            background: #fff;
+            color: #374151;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s;
+            padding: 0 6px;
+        }
+        .pagination-bar .page-btn:hover:not(.active):not(:disabled) {
+            background: #F3F4F6;
+            border-color: #D1D5DB;
+        }
+        .pagination-bar .page-btn.active {
+            background: #4F46E5;
+            color: #fff;
+            border-color: #4F46E5;
+        }
+        .pagination-bar .page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .pagination-bar .page-size-select {
+            padding: 4px 8px;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #374151;
+            background: #fff;
+            cursor: pointer;
+            outline: none;
+        }
+        .pagination-bar .page-size-select:focus {
+            border-color: #4F46E5;
+        }
+        .pagination-bar.hidden {
+            display: none;
+        }
+
+        .filter-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 140px;
+            z-index: 30;
+            padding: 4px;
+        }
+        .filter-dropdown.hidden {
+            display: none;
+        }
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #374151;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .filter-option:hover {
+            background: #F3F4F6;
+        }
+        .filter-option.active {
+            background: #EEF2FF;
+            color: #4F46E5;
+            font-weight: 500;
+        }
+        .filter-option .check-icon {
+            opacity: 0;
+            margin-left: auto;
+        }
+        .filter-option.active .check-icon {
+            opacity: 1;
+        }
+
+        .icon-preview-wrap {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .icon-preview-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+        .icon-preview-box.has-icon {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+        .icon-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .icon-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .icon-actions .btn-icon-action {
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .icon-actions .btn-icon-action:hover {
+            background: #f3f4f6;
+        }
+        .icon-actions .btn-icon-action.primary {
+            border-color: #4f46e5;
+            color: #4f46e5;
+        }
+        .icon-actions .btn-icon-action.primary:hover {
+            background: #eef2ff;
+        }
+        .icon-actions .btn-icon-action.danger {
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+        .icon-actions .btn-icon-action.danger:hover {
+            background: #fee2e2;
+        }
+        .icon-actions .btn-icon-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .upload-progress {
+            display: none;
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .upload-progress .bar {
+            height: 100%;
+            width: 0%;
+            background: #4f46e5;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .upload-progress.active {
+            display: block;
+        }
+
+        .category-checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .category-checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.15s;
+        }
+        .category-checkbox-group label:hover {
+            background: #f3f4f6;
+        }
+        .category-checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4f46e5;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .category-checkbox-group input[type="checkbox"]:checked {
+            border-color: #4f46e5;
+        }
+
+        /* ─── 回收站新增样式 ─── */
+        .recycle-checkbox {
+            width: 17px;
+            height: 17px;
+            accent-color: #4f46e5;
+            border-radius: 4px;
+            border: 1.5px solid #d1d5db;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: all 0.15s;
+        }
+        .recycle-checkbox:hover {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+        .recycle-checkbox:checked {
+            border-color: #4f46e5;
+            background-color: #4f46e5;
+        }
+        #recycle-select-all {
+            width: 17px;
+            height: 17px;
+            accent-color: #4f46e5;
+            cursor: pointer;
+        }
+        .recycle-selected-count {
+            font-weight: 600;
+            color: #4f46e5;
+        }
+        .recycle-header-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 13px;
+            color: #4b5563;
+        }
+        .recycle-header-label:hover {
+            color: #1f2937;
+        }
+
+        /* ─── 三栏可拖拽布局 ─── */
+        .tri-panel-wrap {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            position: relative;
+        }
+        .tri-panel {
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            min-width: 0;
+        }
+        .tri-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            flex-shrink: 0;
+            gap: 8px;
+        }
+        .tri-panel-header .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            white-space: nowrap;
+        }
+        .tri-panel-header .panel-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .tri-panel-header .panel-actions button {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #6b7280;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .tri-panel-header .panel-actions button:hover {
+            background: #f3f4f6;
+            color: #4f46e5;
+            border-color: #c7d2fe;
+        }
+        .tri-panel-header .panel-actions button.active {
+            background: #eef2ff;
+            color: #4f46e5;
+            border-color: #a5b4fc;
+        }
+        .tri-panel-body {
+            flex: 1;
+            min-height: 0;
+            position: relative;
+        }
+        .tri-panel-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+        .tri-divider {
+            width: 6px;
+            flex-shrink: 0;
+            cursor: col-resize;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 5;
+            transition: background 0.15s;
+        }
+        .tri-divider::after {
+            content: '';
+            width: 2px;
+            height: 40px;
+            border-radius: 2px;
+            background: #d1d5db;
+            transition: all 0.15s;
+        }
+        .tri-divider:hover {
+            background: #eef2ff;
+        }
+        .tri-divider:hover::after {
+            background: #4f46e5;
+            height: 60px;
+        }
+        .tri-divider.dragging {
+            background: #eef2ff;
+        }
+        .tri-divider.dragging::after {
+            background: #4f46e5;
+            height: 80px;
+        }
+        /* ── AI 创建动画 ── */
+        @keyframes ai-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 1; }
+        }
+        @keyframes ai-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes ai-icon-pop {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+        @keyframes ai-step-in {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .ai-step-item {
+            animation: ai-step-in 0.4s ease-out forwards;
+        }
+        .ai-step-done iconify-icon {
+            color: #10B981 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+
+        <!-- ═════ 顶部栏 ═════ -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
+            <div class="flex items-center space-x-2 text-sm text-gray-500" id="breadcrumb-area">
+                <span>资源管理</span>
+                <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                <span class="text-gray-900 font-medium">专家管理</span>
+            </div>
+            <div class="flex items-center space-x-3" id="header-actions">
+                <div id="header-list-actions" class="flex items-center space-x-3">
+                    <button onclick="showView('recycle')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                        <span class="recycle-badge-wrap">
+                            <iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
+                            <span id="recycle-badge" class="recycle-badge hidden">0</span>
+                        </span>
+                        <span>回收站</span>
+                    </button>
+                    <div class="relative" id="create-dropdown-wrap">
+                        <button onclick="toggleCreateDropdown()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                            <iconify-icon icon="mdi:plus"></iconify-icon>
+                            <span>新建专家</span>
+                            <iconify-icon icon="mdi:chevron-down" class="text-base"></iconify-icon>
+                        </button>
+                        <div id="create-dropdown-menu" class="dropdown-menu hidden" style="right:0;top:calc(100% + 4px);min-width:180px;">
+                            <div class="dropdown-item" onclick="closeCreateDropdown();openModal('createModal')" style="padding:8px 12px;cursor:pointer;border-radius:6px;gap:10px;align-items:center;">
+                                <iconify-icon icon="mdi:form-textbox" class="text-lg text-gray-500"></iconify-icon>
+                                <div>
+                                    <div style="font-size:13px;font-weight:500;color:#374151;">手动创建</div>
+                                    <div style="font-size:11px;color:#9CA3AF;">填写表单逐步配置专家信息</div>
+                                </div>
+                            </div>
+                            <div class="dropdown-item" onclick="closeCreateDropdown();openModal('aiCreateModal')" style="padding:8px 12px;cursor:pointer;border-radius:6px;gap:10px;align-items:center;">
+                                <iconify-icon icon="mdi:robot-outline" class="text-lg text-blue-500"></iconify-icon>
+                                <div>
+                                    <div style="font-size:13px;font-weight:500;color:#374151;">AI 智能创建</div>
+                                    <div style="font-size:11px;color:#9CA3AF;">描述需求，AI 自动生成专家</div>
+                                </div>
+                            </div>
+                            <div style="height:1px;background:#F3F4F6;margin:4px 8px;"></div>
+                            <div class="dropdown-item" onclick="closeCreateDropdown();openModal('importModal')" style="padding:8px 12px;cursor:pointer;border-radius:6px;gap:10px;align-items:center;">
+                                <iconify-icon icon="mdi:tray-arrow-up" class="text-lg text-green-600"></iconify-icon>
+                                <div>
+                                    <div style="font-size:13px;font-weight:500;color:#374151;">导入专家</div>
+                                    <div style="font-size:11px;color:#9CA3AF;">从文件批量导入已有专家</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="header-detail-actions" class="hidden flex items-center space-x-3">
+                    <button onclick="showView('list')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                        <iconify-icon icon="mdi:arrow-left"></iconify-icon>
+                        <span>返回</span>
+                    </button>
+                    <button onclick="exportSkill(currentSkill ? currentSkill.id : null)" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                        <iconify-icon icon="mdi:download-outline"></iconify-icon>
+                        <span>导出专家</span>
+                    </button>
+                    <!-- 历史记录按钮 + 下拉 -->
+                    <div class="relative" id="publish-history-wrap">
+                        <button id="btn-publish-history" onclick="togglePublishHistoryDropdown(event)" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                            <iconify-icon icon="mdi:history"></iconify-icon>
+                            <span>历史记录</span>
+                            <iconify-icon icon="mdi:chevron-down" class="text-base text-gray-400"></iconify-icon>
+                        </button>
+                        <div id="publishHistoryDropdown" class="history-dropdown hidden">
+                            <div class="history-dropdown-header">
+                                <span class="history-dropdown-title">发布历史</span>
+                                <button class="history-dropdown-close" onclick="closePublishHistoryDropdown()">
+                                    <iconify-icon icon="mdi:close" class="text-sm"></iconify-icon>
+                                </button>
+                            </div>
+                            <div class="history-list custom-scrollbar" id="publishHistoryList">
+                                <!-- 由 renderPublishHistory() 动态渲染 -->
+                            </div>
+                        </div>
+                    </div>
+                    <button id="btn-save-detail" onclick="saveDetail()" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                        <iconify-icon icon="mdi:content-save"></iconify-icon>
+                        <span>保存</span>
+                    </button>
+                    <button id="btn-publish-detail" onclick="openPublishModal('save-publish')" class="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
+                        <iconify-icon icon="mdi:rocket-launch-outline"></iconify-icon>
+                        <span>保存并发布</span>
+                    </button>
+                    <button id="btn-publish-only" onclick="openPublishModal('publish')" style="display:none;" class="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
+                        <iconify-icon icon="mdi:rocket-launch-outline"></iconify-icon>
+                        <span>发布</span>
+                    </button>
+                </div>
+                <div id="header-recycle-actions" class="hidden flex items-center space-x-3">
+                    <button onclick="showView('list')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                        <iconify-icon icon="mdi:arrow-left"></iconify-icon>
+                        <span>返回列表</span>
+                    </button>
+                    <button onclick="batchRestore()" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                        <iconify-icon icon="mdi:restore"></iconify-icon>
+                        <span>恢复选中</span>
+                    </button>
+                    <button onclick="batchPermanentDelete()" class="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
+                        <iconify-icon icon="mdi:trash-can"></iconify-icon>
+                        <span>彻底删除</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ═════ 内容滚动区 ═════ -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+            <!-- ─── 列表视图 ─── -->
+            <div id="view-list">
+                <div class="flex items-center space-x-4 mb-6 flex-wrap gap-3">
+                    <div class="relative flex-1 max-w-md">
+                        <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                        <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm" placeholder="搜索专家名称、描述、创建人" type="text" id="search-input" oninput="filterSkills()" />
+                    </div>
+                    <div class="flex items-center space-x-2 flex-wrap gap-2">
+                        <!-- 来源筛选 -->
+                        <div class="relative">
+                            <button class="flex items-center space-x-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50" onclick="toggleSourceFilter(event)">
+                                <span id="source-filter-label">全部来源</span>
+                                <iconify-icon class="text-gray-400" icon="mdi:chevron-down"></iconify-icon>
+                            </button>
+                            <div id="source-filter-dropdown" class="filter-dropdown hidden">
+                                <div class="filter-option active" onclick="selectSourceFilter('', this)"><span>全部来源</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectSourceFilter('管理端', this)"><span>🏢 管理端</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectSourceFilter('客户端', this)"><span>📱 客户端</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="flex items-center space-x-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50" onclick="toggleCategoryFilter(event)">
+                                <span id="category-filter-label">全部分类</span>
+                                <iconify-icon class="text-gray-400" icon="mdi:chevron-down"></iconify-icon>
+                            </button>
+                            <div id="category-filter-dropdown" class="filter-dropdown hidden">
+                                <div class="filter-option active" onclick="selectCategoryFilter('', this)"><span>全部分类</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectCategoryFilter('代码生成', this)"><span>代码生成</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectCategoryFilter('数据分析', this)"><span>数据分析</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectCategoryFilter('文档处理', this)"><span>文档处理</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectCategoryFilter('自动化流程', this)"><span>自动化流程</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectCategoryFilter('知识检索', this)"><span>知识检索</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectCategoryFilter('创意写作', this)"><span>创意写作</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="flex items-center space-x-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50" onclick="toggleStatusFilter(event)">
+                                <span id="status-filter-label">全部状态</span>
+                                <iconify-icon class="text-gray-400" icon="mdi:chevron-down"></iconify-icon>
+                            </button>
+                            <div id="status-filter-dropdown" class="filter-dropdown hidden">
+                                <div class="filter-option active" onclick="selectStatusFilter('', this)"><span>全部状态</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectStatusFilter('enabled', this)"><span class="status-dot published"></span><span>发布</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectStatusFilter('disabled', this)"><span class="status-dot disabled"></span><span>下架</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                            </div>
+                        </div>
+                        <button onclick="openModal('categoryModal')" class="flex items-center justify-center w-9 h-9 bg-white border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50" title="类别管理">
+                            <iconify-icon icon="mdi:cog-outline"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="skill-grid">
+                </div>
+
+                <!-- 列表分页 -->
+                <div id="skill-pagination" class="pagination-bar hidden"></div>
+
+                <div id="empty-state" class="hidden flex-col items-center justify-center py-20 text-center">
+                    <iconify-icon icon="mdi:package-variant" class="text-6xl text-gray-300 mb-4"></iconify-icon>
+                    <p class="text-gray-500 text-lg mb-2">暂无专家</p>
+                    <p class="text-gray-400 text-sm mb-6">点击「新建专家」选择创建方式开始使用</p>
+                    <button onclick="toggleCreateDropdown()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm flex items-center space-x-2 mx-auto">
+                        <iconify-icon icon="mdi:plus"></iconify-icon>
+                        <span>新建专家</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ─── 详情视图 ─── -->
+            <div id="view-detail" class="hidden h-full flex flex-col">
+                <div class="bg-white rounded-xl border border-gray-200 p-6 mb-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl flex-shrink-0" id="detail-icon"></div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-1 flex-wrap">
+                                <h2 class="text-xl font-bold text-gray-900" id="detail-name">代码审查助手</h2>
+                                <button id="detail-edit-btn" onclick="openEditModal()" class="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-colors" title="编辑专家">
+                                    <iconify-icon icon="mdi:pencil-outline" class="text-lg"></iconify-icon>
+                                </button>
+                                <span class="tag tag-published" id="detail-status-tag"><span class="status-dot published"></span>已发布</span>
+                                <span class="tag tag-source" id="detail-source-tag">🏢 管理端</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-3" id="detail-desc">自动审查代码质量，提供改进建议，支持多种编程语言。</p>
+                            <div class="flex items-center gap-4 text-xs text-gray-400 flex-wrap">
+                                <span class="flex items-center gap-1"><iconify-icon icon="mdi:tag-outline"></iconify-icon> <span id="detail-category">代码生成</span></span>
+                                <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline"></iconify-icon> <span id="detail-creator">孙礼飞</span></span>
+                                <span class="flex items-center gap-1"><iconify-icon icon="mdi:counter"></iconify-icon> 调用 <span id="detail-calls">128</span> 次</span>
+                                <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon> 更新于 <span id="detail-updated">2026-07-05 14:30</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── 三栏可拖拽布局 ─── -->
+                <div class="tri-panel-wrap" id="triPanelWrap">
+                    <!-- 左栏：专家配置 -->
+                    <div class="tri-panel" id="panelLeft" style="flex: 0 0 30%;">
+                        <div class="tri-panel-header">
+                            <span class="panel-title">专家配置</span>
+                        </div>
+                        <div class="tri-panel-body">
+                            <iframe id="iframeLeft" src="./zjgl/1-agent-config-page.html"></iframe>
+                        </div>
+                    </div>
+
+                    <!-- 左分割线 -->
+                    <div class="tri-divider" id="dividerLeft" data-divider="left"></div>
+
+                    <!-- 中栏：会话与产物 -->
+                    <div class="tri-panel" id="panelMiddle" style="flex: 0 0 calc(70% - 12px);">
+                        <div class="tri-panel-header">
+                            <span class="panel-title">预览调试</span>
+                            <div class="panel-actions" style="position:relative;">
+                                <button class="mid-btn active" data-tab="new-session" onclick="switchMiddleTab(this, '新会话')">
+                                    <iconify-icon icon="mdi:chat-plus-outline" class="text-sm"></iconify-icon>
+                                    新会话
+                                </button>
+                                <button class="mid-btn" data-tab="history" id="historyBtn" onclick="toggleHistoryDropdown(event)">
+                                    <iconify-icon icon="mdi:history" class="text-sm"></iconify-icon>
+                                    历史
+                                </button>
+                                <!-- 历史下拉弹窗 -->
+                                <div class="history-dropdown hidden" id="historyDropdown">
+                                    <div class="history-dropdown-header">
+                                        <span class="history-dropdown-title">历史提问</span>
+                                        <button class="history-dropdown-close" onclick="closeHistoryDropdown()">
+                                            <iconify-icon icon="mdi:close" class="text-sm"></iconify-icon>
+                                        </button>
+                                    </div>
+                                    <div class="history-session-label">会话 12</div>
+                                    <div class="history-list custom-scrollbar">
+                                        <div class="history-item" onclick="loadHistorySession('创建数据分析专家配置')">
+                                            <span class="history-item-title">创建数据分析专家配置</span>
+                                            <span class="history-item-time">2026-07-08 14:30:25</span>
+                                        </div>
+                                        <div class="history-item" onclick="loadHistorySession('调整专家节点参数')">
+                                            <span class="history-item-title">调整专家节点参数</span>
+                                            <span class="history-item-time">2026-07-08 13:15:42</span>
+                                        </div>
+                                        <div class="history-item" onclick="loadHistorySession('新增财务审计专家')">
+                                            <span class="history-item-title">新增财务审计专家</span>
+                                            <span class="history-item-time">2026-07-08 11:20:18</span>
+                                        </div>
+                                        <div class="history-item" onclick="loadHistorySession('优化工作流连线逻辑')">
+                                            <span class="history-item-title">优化工作流连线逻辑</span>
+                                            <span class="history-item-time">2026-07-07 16:45:33</span>
+                                        </div>
+                                        <div class="history-item" onclick="loadHistorySession('配置 MCP 服务连接')">
+                                            <span class="history-item-title">配置 MCP 服务连接</span>
+                                            <span class="history-item-time">2026-07-07 14:22:07</span>
+                                        </div>
+                                        <div class="history-item" onclick="loadHistorySession('调试 BI 工程师节点')">
+                                            <span class="history-item-title">调试 BI 工程师节点</span>
+                                            <span class="history-item-time">2026-07-07 10:38:51</span>
+                                        </div>
+                                        <div class="history-item" onclick="loadHistorySession('生成月度财务报告')">
+                                            <span class="history-item-title">生成月度财务报告</span>
+                                            <span class="history-item-time">2026-07-06 17:12:44</span>
+                                        </div>
+                                        <div class="history-item" onclick="loadHistorySession('添加数据可视化组件')">
+                                            <span class="history-item-title">添加数据可视化组件</span>
+                                            <span class="history-item-time">2026-07-06 15:05:29</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="mid-btn" data-tab="product" onclick="switchMiddleTab(this, '产物'); openRightPanel('product')">
+                                    <iconify-icon icon="mdi:file-document-outline" class="text-sm"></iconify-icon>
+                                    产物
+                                </button>
+                                <button class="mid-btn" data-tab="ai-tuning" onclick="switchMiddleTab(this, 'AI 智能调优'); openRightPanel('ai-tuning')">
+                                    <iconify-icon icon="mdi:robot-outline" class="text-sm"></iconify-icon>
+                                    AI 智能调优
+                                </button>
+                                <button class="mid-btn" data-tab="run-log" onclick="switchMiddleTab(this, '运行日志'); openRightPanel('run-log')">
+                                    <iconify-icon icon="mdi:console-line" class="text-sm"></iconify-icon>
+                                    运行日志
+                                </button>
+                            </div>
+                        </div>
+                        <div class="tri-panel-body">
+                            <iframe id="iframeMiddle" src="./zjgl/2-ai-chat.html"></iframe>
+                        </div>
+                    </div>
+
+                    <!-- 右分割线 -->
+                    <div class="tri-divider" id="dividerRight" data-divider="right"></div>
+
+                    <!-- 右栏：产物/调优/日志 -->
+                    <div class="tri-panel" id="panelRight" style="flex: 0 0 0%; display:none;">
+                        <div class="tri-panel-header">
+                            <span class="panel-title" id="rightPanelTitle">产物</span>
+                            <div class="panel-actions">
+                                <button onclick="toggleRightFullscreen()" title="全屏">
+                                    <iconify-icon icon="mdi:fullscreen" class="text-sm"></iconify-icon>
+                                    全屏
+                                </button>
+                                <button onclick="closeRightPanel()" title="关闭">
+                                    <iconify-icon icon="mdi:close" class="text-sm"></iconify-icon>
+                                    关闭
+                                </button>
+                            </div>
+                        </div>
+                        <div class="tri-panel-body">
+                            <iframe id="iframeProduct" src="./zjgl/3-file-list.html" style="display:none;"></iframe>
+                            <iframe id="iframeAITuning" src="./zjgl/5-agent-config-optimizer.html" style="display:none;"></iframe>
+                            <iframe id="iframeRunLog" src="./zjgl/4-skill-runtime-detail.html" style="display:none;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── 回收站视图 ─── -->
+            <div id="view-recycle" class="hidden">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="relative flex-1 max-w-md">
+                        <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                        <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm" placeholder="搜索已删除专家..." type="text" id="recycle-search-input" oninput="filterRecycleSkills()" />
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex items-center justify-between flex-wrap gap-3">
+                    <div class="flex items-center gap-4 text-sm text-gray-600 flex-wrap">
+                        <iconify-icon icon="mdi:trash-can-outline" class="text-red-500"></iconify-icon>
+                        <span>共 <strong id="recycle-count" class="text-gray-900">0</strong> 个已删除专家</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400">
+						<label class="recycle-header-label" title="全选/取消全选">
+						    <input type="checkbox" id="recycle-select-all" onchange="toggleAllRecycle()" />
+						    <span>全选</span>
+                        <span>已选 <strong id="recycle-selected-count" class="recycle-selected-count">0</strong> 项</span>
+						</label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="recycle-grid">
+                </div>
+
+                <div id="recycle-pagination" class="pagination-bar hidden"></div>
+
+                <div id="recycle-empty" class="hidden flex-col items-center justify-center py-20 text-center">
+                    <iconify-icon icon="mdi:trash-can-outline" class="text-6xl text-gray-300 mb-4"></iconify-icon>
+                    <p class="text-gray-500 text-lg">回收站为空</p>
+                    <p class="text-gray-400 text-sm">没有已删除的专家</p>
+                </div>
+            </div>
+
+        </div><!-- end 内容滚动区 -->
+    </div><!-- end page-wrap -->
+
+    <!-- ═════ 新建专家弹窗 ═════ -->
+    <div id="createModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('createModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">新建专家</h3>
+                <button onclick="closeModal('createModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-5">
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="create-name" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入专家名称" maxlength="50" />
+                    <p class="text-xs text-gray-400 mt-1">同一类别下不可重名，最大 50 字符</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别 </label>
+                    <div class="category-checkbox-group" id="create-category-group">
+                        <label><input type="checkbox" value="代码生成" checked class="create-category-cb" /> 代码生成</label>
+                        <label><input type="checkbox" value="数据分析" class="create-category-cb" /> 数据分析</label>
+                        <label><input type="checkbox" value="文档处理" class="create-category-cb" /> 文档处理</label>
+                        <label><input type="checkbox" value="自动化流程" class="create-category-cb" /> 自动化流程</label>
+                        <label><input type="checkbox" value="知识检索" class="create-category-cb" /> 知识检索</label>
+                        <label><input type="checkbox" value="创意写作" class="create-category-cb" /> 创意写作</label>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1"></p>
+                </div>
+
+                <!-- 图标 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">图标 <span class="text-gray-400 font-normal">(可选)</span></label>
+                    <div class="icon-preview-wrap">
+                        <div class="icon-preview-box" id="create-icon-preview">
+                            <span id="create-icon-preview-text">🤖</span>
+                        </div>
+                        <div class="icon-actions">
+                            <button class="btn-icon-action primary" onclick="openCustomIconPicker('create')">
+                                <iconify-icon icon="mdi:emoticon-outline" class="text-base"></iconify-icon>
+                                选择图标
+                            </button>
+                            <button class="btn-icon-action" onclick="document.getElementById('create-icon-upload').click()">
+                                <iconify-icon icon="mdi:upload-outline" class="text-base"></iconify-icon>
+                                上传图标
+                            </button>
+                            <button class="btn-icon-action danger" onclick="clearCreateIcon()">
+                                <iconify-icon icon="mdi:close-circle-outline" class="text-base"></iconify-icon>
+                                清除
+                            </button>
+                        </div>
+                        <input type="file" id="create-icon-upload" accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp" class="hidden" onchange="handleCreateIconUpload(event)" />
+                        <div class="upload-progress" id="create-icon-progress">
+                            <div class="bar" id="create-icon-progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">描述 <span class="text-red-500">*</span></label>
+                    <textarea id="create-desc" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm resize-none" rows="3" placeholder="请描述专家的功能和用途..." maxlength="200" oninput="updateCreateCharCount(this, 200)"></textarea>
+                    <p class="text-xs text-gray-400 mt-1"><span id="create-char-count">0</span>/200</p>
+                </div>
+
+                <!-- 来源选择 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">来源 <span class="text-red-500">*</span></label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="create-source" value="管理端" checked class="accent-blue-600">
+                            <span class="text-sm text-gray-700">🏢 管理端</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="create-source" value="客户端" class="accent-blue-600">
+                            <span class="text-sm text-gray-700">📱 客户端</span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('createModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="createSkill()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════ AI 智能创建专家弹窗 ═════ -->
+    <div id="aiCreateModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('aiCreateModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <!-- ── 输入阶段 ── -->
+            <div id="ai-step-input">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                    <div class="flex items-center space-x-2">
+                        <iconify-icon icon="mdi:robot-outline" class="text-2xl text-blue-500"></iconify-icon>
+                        <h3 class="text-lg font-bold text-gray-900">AI 智能创建专家</h3>
+                    </div>
+                    <button onclick="closeModal('aiCreateModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                        <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                    </button>
+                </div>
+                <div class="px-6 py-5 space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">描述您需要的专家</label>
+                        <textarea id="ai-prompt-input" rows="5" placeholder="例如：我需要一个擅长采购成本分析的专家，能够对比供应商报价、分析历史价格趋势、识别成本优化机会，熟悉制造业原材料市场行情..." class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none" style="font-family:'Inter','Microsoft YaHei',sans-serif;"></textarea>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                        <div class="flex items-start space-x-3">
+                            <iconify-icon icon="mdi:lightbulb-on-outline" class="text-xl text-blue-500 mt-0.5"></iconify-icon>
+                            <div>
+                                <p class="text-sm font-medium text-blue-800 mb-1">提示</p>
+                                <p class="text-xs text-blue-600 leading-relaxed">描述越详细，AI 生成的专家越精准。建议包含：专业领域、核心能力、应用场景、行业背景等信息。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-end space-x-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+                    <button onclick="closeModal('aiCreateModal')" class="px-5 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">取消</button>
+                    <button onclick="aiGenerateExpert()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center space-x-2">
+                        <iconify-icon icon="mdi:auto-fix"></iconify-icon>
+                        <span>生成专家</span>
+                    </button>
+                </div>
+            </div>
+            <!-- ── 生成动画阶段 ── -->
+            <div id="ai-step-generating" class="hidden">
+                <div class="px-6 py-10 flex flex-col items-center justify-center" style="min-height:360px;">
+                    <!-- 中心动画图标 -->
+                    <div class="relative mb-8" style="width:120px;height:120px;">
+                        <div class="absolute inset-0 rounded-full" style="background:radial-gradient(circle,rgba(59,130,246,0.15) 0%,transparent 70%);animation:ai-pulse 2s ease-in-out infinite;"></div>
+                        <div class="absolute inset-2 rounded-full" style="border:3px solid transparent;border-top-color:#3B82F6;border-right-color:#60A5FA;animation:ai-spin 1.5s linear infinite;"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <iconify-icon id="ai-anim-icon" icon="mdi:brain" class="text-5xl text-blue-500" style="animation:ai-icon-pop 1s ease-in-out infinite alternate;"></iconify-icon>
+                        </div>
+                    </div>
+                    <div class="text-center mb-6">
+                        <p id="ai-status-text" class="text-lg font-semibold text-gray-800 mb-2">正在初始化 AI 引擎...</p>
+                        <p id="ai-status-sub" class="text-sm text-gray-400">请稍候，AI 正在为您打造专属专家</p>
+                    </div>
+                    <div class="w-full max-w-xs">
+                        <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div id="ai-progress-bar" class="h-full rounded-full" style="width:0%;background:linear-gradient(90deg,#3B82F6,#8B5CF6);transition:width 0.6s ease;"></div>
+                        </div>
+                        <div class="flex justify-between mt-2 text-xs text-gray-400">
+                            <span id="ai-progress-pct">0%</span>
+                            <span id="ai-progress-eta">预计 5 秒</span>
+                        </div>
+                    </div>
+                    <div id="ai-step-list" class="w-full max-w-sm mt-6 space-y-2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════ 编辑专家弹窗 ═════ -->
+    <div id="editModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('editModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">编辑专家</h3>
+                <button onclick="closeModal('editModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-5">
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="edit-name" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入术语名称" maxlength="50" />
+                    <p class="text-xs text-gray-400 mt-1">同一类别下不可重名，最大 50 字符</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别 </label>
+                    <div class="category-checkbox-group" id="edit-category-group">
+                        <label><input type="checkbox" value="代码生成" class="edit-category-cb" /> 代码生成</label>
+                        <label><input type="checkbox" value="数据分析" class="edit-category-cb" /> 数据分析</label>
+                        <label><input type="checkbox" value="文档处理" class="edit-category-cb" /> 文档处理</label>
+                        <label><input type="checkbox" value="自动化流程" class="edit-category-cb" /> 自动化流程</label>
+                        <label><input type="checkbox" value="知识检索" class="edit-category-cb" /> 知识检索</label>
+                        <label><input type="checkbox" value="创意写作" class="edit-category-cb" /> 创意写作</label>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1"></p>
+                </div>
+
+                <!-- 图标 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">图标 <span class="text-gray-400 font-normal">(可选)</span></label>
+                    <div class="icon-preview-wrap">
+                        <div class="icon-preview-box" id="edit-icon-preview">
+                            <span id="edit-icon-preview-text">🤖</span>
+                        </div>
+                        <div class="icon-actions">
+                            <button class="btn-icon-action primary" onclick="openCustomIconPicker('edit')">
+                                <iconify-icon icon="mdi:emoticon-outline" class="text-base"></iconify-icon>
+                                选择图标
+                            </button>
+                            <button class="btn-icon-action" onclick="document.getElementById('edit-icon-upload').click()">
+                                <iconify-icon icon="mdi:upload-outline" class="text-base"></iconify-icon>
+                                上传图标
+                            </button>
+                            <button class="btn-icon-action danger" onclick="clearEditIcon()">
+                                <iconify-icon icon="mdi:close-circle-outline" class="text-base"></iconify-icon>
+                                清除
+                            </button>
+                        </div>
+                        <input type="file" id="edit-icon-upload" accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp" class="hidden" onchange="handleEditIconUpload(event)" />
+                        <div class="upload-progress" id="edit-icon-progress">
+                            <div class="bar" id="edit-icon-progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">描述 <span class="text-red-500">*</span></label>
+                    <textarea id="edit-desc" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm resize-none" rows="3" placeholder="请描述专家的功能和用途..." maxlength="200" oninput="updateEditCharCount(this, 200)"></textarea>
+                    <p class="text-xs text-gray-400 mt-1"><span id="edit-char-count">0</span>/200</p>
+                </div>
+
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('editModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="saveEdit()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════ 导入专家弹窗 ═════ -->
+    <div id="importModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('importModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">导入专家</h3>
+                <button onclick="closeModal('importModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别 <span class="text-red-500">*</span></label>
+                    <div class="category-checkbox-group" id="import-category-group">
+                        <label><input type="checkbox" value="代码生成" checked class="import-category-cb" /> 代码生成</label>
+                        <label><input type="checkbox" value="数据分析" class="import-category-cb" /> 数据分析</label>
+                        <label><input type="checkbox" value="文档处理" class="import-category-cb" /> 文档处理</label>
+                        <label><input type="checkbox" value="自动化流程" class="import-category-cb" /> 自动化流程</label>
+                        <label><input type="checkbox" value="知识检索" class="import-category-cb" /> 知识检索</label>
+                        <label><input type="checkbox" value="创意写作" class="import-category-cb" /> 创意写作</label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">上传 ZIP 文件 <span class="text-red-500">*</span></label>
+                    <div class="upload-area" id="import-upload-area" onclick="document.getElementById('import-file-input').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="event.preventDefault();this.classList.remove('dragover');handleImportDrop(event)">
+                        <iconify-icon icon="mdi:cloud-upload-outline" class="text-4xl text-gray-400 mb-3"></iconify-icon>
+                        <p class="text-sm text-gray-600 font-medium mb-1">拖拽文件到此处，或点击选择文件</p>
+                        <p class="text-xs text-gray-400">仅支持 .zip 格式，文件大小不超过 20MB;</p>
+                    </div>
+					<div class="mt-6 flex items-start space-x-3 text-sm text-gray-500 bg-gray-50 p-4 rounded-lg">
+						<iconify-icon class="text-lg text-blue-500 flex-shrink-0" icon="mdi:information-outline"></iconify-icon>
+						<p>
+							1、专家可在<a href="https://modelscope.cn/skills" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">魔塔</a>、 <a href="https://skill.xfyun.cn/" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">SkillHub</a>、  <a href="https://skills.aliyun.com/" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">阿里云</a>等市场获取。<br/>
+							2、.zip需要包含skill.md文件。<br/>
+							3、skill.md 文件需要包含YAML格式的专家名称和描述。<br/>
+							4、系统将自动进行安全性扫描。
+						</p>
+					</div>
+                    <input type="file" id="import-file-input" accept=".zip" class="hidden" onchange="handleImportFileSelect(this)" />
+                    <div id="import-file-info" class="hidden mt-3 flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-3 py-2">
+                        <iconify-icon icon="mdi:file-zip-outline" class="text-blue-500"></iconify-icon>
+                        <span id="import-file-name" class="flex-1 truncate"></span>
+                        <button onclick="clearImportFile()" class="text-gray-400 hover:text-gray-600"><iconify-icon icon="mdi:close"></iconify-icon></button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('importModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="importSkill()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">导入</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════ 类别管理弹窗 ═════ -->
+    <div id="categoryModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('categoryModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[80vh] overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">类别管理</h3>
+                <button onclick="closeModal('categoryModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                            <th class="px-6 py-3 text-left font-semibold">类别名称</th>
+                            <th class="px-6 py-3 text-left font-semibold">排序号</th>
+                            <th class="px-6 py-3 text-left font-semibold">状态</th>
+                            <th class="px-6 py-3 text-left font-semibold">关联专家数</th>
+                            <th class="px-6 py-3 text-right font-semibold">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="category-table-body">
+                        <!-- 由 renderCategoryTable() 动态渲染 -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100">
+                <button onclick="addCategory()" class="flex items-center gap-2 px-4 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100">
+                    <iconify-icon icon="mdi:plus"></iconify-icon>
+                    <span>新增类别</span>
+                </button>
+                <button onclick="closeModal('categoryModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════ 新增/编辑类别弹窗 ═════ -->
+    <div id="categoryFormModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('categoryFormModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900" id="category-form-title">新增类别</h3>
+                <button onclick="closeModal('categoryFormModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                <input type="hidden" id="category-edit-id" value="">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">类别名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="category-name-input" placeholder="请输入类别名称" maxlength="20"
+                        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">排序号</label>
+                    <input type="number" id="category-sort-input" placeholder="数字越小越靠前" min="1" max="999"
+                        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="category-status" value="published" checked class="accent-indigo-600">
+                            <span class="text-sm text-gray-700">启用</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="category-status" value="disabled" class="accent-indigo-600">
+                            <span class="text-sm text-gray-700">禁用</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('categoryFormModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="saveCategory()" class="px-5 py-2 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════ 确认删除弹窗 ═════ -->
+    <div id="deleteConfirmModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('deleteConfirmModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+            <div class="px-6 py-8 text-center">
+                <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                    <iconify-icon icon="mdi:alert-circle-outline" class="text-3xl text-red-500"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2" id="delete-confirm-title">确认删除</h3>
+                <p class="text-sm text-gray-500" id="delete-confirm-msg">确认删除专家「代码审查助手」？删除后可在回收站恢复。</p>
+            </div>
+            <div class="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('deleteConfirmModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="confirmDelete()" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════ 彻底删除确认弹窗 ═════ -->
+    <div id="permanentDeleteModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('permanentDeleteModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+            <div class="px-6 py-8 text-center">
+                <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                    <iconify-icon icon="mdi:alert-outline" class="text-3xl text-red-600"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">⚠️ 彻底删除</h3>
+                <p class="text-sm text-gray-500" id="permanent-delete-msg">此操作不可恢复，专家及其所有文件将被永久删除。</p>
+            </div>
+            <div class="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('permanentDeleteModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="confirmPermanentDelete()" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700">确认彻底删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════ 发布描述弹窗 ═════ -->
+    <div id="publishModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('publishModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center space-x-2">
+                    <iconify-icon icon="mdi:rocket-launch-outline" class="text-xl text-green-600"></iconify-icon>
+                    <h3 class="text-lg font-bold text-gray-900" id="publish-modal-title">发布专家</h3>
+                </div>
+                <button onclick="closeModal('publishModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">发布描述 <span class="text-red-500">*</span></label>
+                    <textarea id="publish-desc-input" rows="5" placeholder="请输入本次发布的描述，例如：新增了 XX 功能、修复了 XX 问题、优化了 XX 体验..." maxlength="500" oninput="updatePublishCharCount(this, 500)" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 text-sm resize-none"></textarea>
+                    <p class="text-xs text-gray-400 mt-1"><span id="publish-char-count">0</span>/500</p>
+                </div>
+                <div class="bg-green-50 border border-green-100 rounded-xl p-4">
+                    <div class="flex items-start space-x-3">
+                        <iconify-icon icon="mdi:information-outline" class="text-xl text-green-600 mt-0.5"></iconify-icon>
+                        <div>
+                            <p class="text-sm font-medium text-green-800 mb-1">发布说明</p>
+                            <p class="text-xs text-green-600 leading-relaxed" id="publish-modal-tip">发布后专家将上线可用，发布描述将记录在版本历史中，便于后续追溯。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('publishModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button id="publish-submit-btn" onclick="submitPublish()" class="flex items-center gap-2 px-5 py-2 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700">
+                    <iconify-icon icon="mdi:check"></iconify-icon>
+                    <span id="publish-submit-label">确认发布</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════ Toast ═════ -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script>
+        // ═══════════════════════════════════════════════
+        // 数据模型
+        // ═══════════════════════════════════════════════
+        // ═══════════════════════════════════════════════
+        // 分页状态
+        // ═══════════════════════════════════════════════
+        let skillPage = 1;
+        let skillPageSize = 12;
+        let recyclePage = 1;
+        let recyclePageSize = 12;
+
+        let skills = [
+            { id: 1, name: '代码审查助手', icon: '🐳', category: '代码生成', desc: '自动审查代码质量，提供改进建议，支持多种编程语言。', status: 'published',
+                enabled: true, source: '管理端', calls: 128, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-07-05 14:30', publishHistory: [
+                    { version: 'v1.2.0', desc: '优化代码审查规则，新增对 TypeScript 5.x 的支持', operator: '孙礼飞', time: '2026-07-05 14:30' },
+                    { version: 'v1.1.0', desc: '修复多语言混合审查时的误报问题', operator: '孙礼飞', time: '2026-06-20 10:12' },
+                    { version: 'v1.0.0', desc: '初始版本：支持 JS/Python/Go 代码审查', operator: '孙礼飞', time: '2026-05-08 09:00' }
+                ], files: [
+                    { name: 'SKILL.md', type: 'file', size: '2.4 KB', protected: true },
+                    { name: 'scripts', type: 'folder', children: [
+                            { name: 'track_actions.py', type: 'file', size: '5.2 KB' },
+                            { name: 'analyze.py', type: 'file', size: '3.8 KB' }
+                        ] },
+                    { name: 'references', type: 'folder', children: [
+                            { name: 'meeting_template.md', type: 'file', size: '1.1 KB' }
+                        ] },
+                    { name: 'assets', type: 'folder', children: [] }
+                ] },
+            { id: 2, name: '数据分析看板', icon: '📊', category: '数据分析', desc: '自动连接数据源，生成可视化分析看板，支持自定义指标和维度。', status: 'published',
+                enabled: true, source: '管理端', calls: 89, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-07-04 09:15', publishHistory: [
+                    { version: 'v2.0.0', desc: '重构可视化引擎，支持自定义图表组合', operator: '孙礼飞', time: '2026-07-04 09:15' },
+                    { version: 'v1.0.0', desc: '初始版本：基础数据看板能力', operator: '孙礼飞', time: '2026-05-15 14:00' }
+                ], files: [
+                    { name: 'SKILL.md', type: 'file', size: '1.8 KB', protected: true },
+                    { name: 'scripts', type: 'folder', children: [
+                            { name: 'dashboard.py', type: 'file', size: '8.1 KB' }
+                        ] }
+                ] },
+            { id: 3, name: '文档翻译助手', icon: '📝', category: '文档处理', desc: '支持多语言文档翻译，保持原文格式，可处理 PDF、Word 等格式。', status: 'disabled',
+                enabled: false, source: '客户端', calls: 45, createdBy: '王博士', updatedBy: '王博士', updatedAt: '2026-07-03 16:45', publishHistory: [
+                    { version: 'v1.0.0', desc: '初始版本：支持中英互译', operator: '王博士', time: '2026-06-10 11:30' }
+                ], files: [
+                    { name: 'SKILL.md', type: 'file', size: '1.5 KB', protected: true }
+                ] },
+            { id: 4, name: '会议纪要生成器', icon: '⚙️', category: '文档处理', desc: '从会议录音转写文字中自动生成结构化会议纪要，提取行动项并分配负责人。',
+                status: 'published', enabled: true, source: '管理端', calls: 234, createdBy: '李工', updatedBy: '李工', updatedAt: '2026-07-02 11:20', publishHistory: [
+                    { version: 'v1.3.0', desc: '新增行动项自动分配负责人能力', operator: '李工', time: '2026-07-02 11:20' },
+                    { version: 'v1.2.0', desc: '提升转写准确率，优化专有名词识别', operator: '李工', time: '2026-06-18 16:45' },
+                    { version: 'v1.1.0', desc: '支持多说话人区分', operator: '李工', time: '2026-06-01 09:30' },
+                    { version: 'v1.0.0', desc: '初始版本：基础会议纪要生成', operator: '李工', time: '2026-05-20 10:00' }
+                ], files: [
+                    { name: 'SKILL.md', type: 'file', size: '3.1 KB', protected: true },
+                    { name: 'scripts', type: 'folder', children: [
+                            { name: 'track_actions.py', type: 'file', size: '4.5 KB' }
+                        ] }
+                ] },
+            { id: 5, name: '智能客服机器人', icon: '🔍', category: '知识检索', desc: '基于企业知识库的智能问答系统，支持多轮对话和知识图谱检索。', status: 'disabled',
+                enabled: false, source: '客户端', calls: 312, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-06-28 08:00', publishHistory: [
+                    { version: 'v2.1.0', desc: '接入知识图谱检索能力', operator: '孙礼飞', time: '2026-06-25 15:00' },
+                    { version: 'v2.0.0', desc: '支持多轮对话上下文', operator: '孙礼飞', time: '2026-06-10 11:00' },
+                    { version: 'v1.0.0', desc: '初始版本：基于 FAQ 的问答', operator: '孙礼飞', time: '2026-05-12 14:00' }
+                ], files: [
+                    { name: 'SKILL.md', type: 'file', size: '2.0 KB', protected: true }
+                ] },
+            { id: 6, name: '自动化部署工具', icon: '🔧', category: '自动化流程', desc: '一键式应用部署与回滚，支持多环境管理和灰度发布策略。', status: 'disabled',
+                enabled: false, source: '管理端', calls: 67, createdBy: '王博士', updatedBy: '王博士', updatedAt: '2026-07-01 13:10', publishHistory: [
+                    { version: 'v1.0.0', desc: '初始版本：支持单环境部署与回滚', operator: '王博士', time: '2026-06-22 10:00' }
+                ], files: [
+                    { name: 'SKILL.md', type: 'file', size: '1.2 KB', protected: true },
+                    { name: 'scripts', type: 'folder', children: [
+                            { name: 'deploy.sh', type: 'file', size: '2.3 KB' },
+                            { name: 'rollback.sh', type: 'file', size: '1.8 KB' }
+                        ] }
+                ] }
+        ];
+
+        let deletedSkills = [
+            { id: 101, name: 'Webhook服务', icon: '🔧', category: '知识检索', desc: 'Webhook事件的接收、处理和转发服务', status: 'published',
+                source: '管理端', calls: 56, deletedBy: '孙礼飞', deletedAt: '2026-01-22' },
+            { id: 102, name: '文件转换工具', icon: '📝', category: '文档处理', desc: '多格式文件互转与批量处理工具，支持DOC/PDF/TXT/JPG/PNG/MP4等千种格式',
+                status: 'published', source: '客户端', calls: 178, deletedBy: '孙礼飞', deletedAt: '2026-01-22' },
+            { id: 103, name: '定时任务调度', icon: '⚙', category: '数据分析', desc: '灵活的定时任务编排与调度引擎，支持秒级/周期/日历等多种触发规则',
+                status: 'published', source: '管理端', calls: 92, deletedBy: '孙礼飞', deletedAt: '2026-01-22' }
+        ];
+
+        let currentView = 'list';
+        let currentSkill = null;
+        let deleteTargetId = null;
+        let selectedCategoryFilter = '';
+        let selectedStatusFilter = '';
+        let selectedSourceFilter = '';
+
+        // ─── 回收站选中状态管理 ───
+        let selectedRecycleIds = new Set();
+
+        // 图标状态
+        let createIconData = '🤖';
+        let createIconType = 'emoji';
+        let editIconData = '🤖';
+        let editIconType = 'emoji';
+        let detailMode = 'view';
+
+        // ═══════════════════════════════════════════════
+        // 用户自定义图标面板入口
+        // ═══════════════════════════════════════════════
+        function openCustomIconPicker(mode) {
+            showToast('请实现自定义图标选择面板（mode: ' + mode + '）', 'success');
+        }
+
+
+        // ═══════════════════════════════════════════════
+        // 视图切换
+        // ═══════════════════════════════════════════════
+        function showView(view) {
+            currentView = view;
+            document.getElementById('view-list').classList.toggle('hidden', view !== 'list');
+            document.getElementById('view-detail').classList.toggle('hidden', view !== 'detail');
+            document.getElementById('view-recycle').classList.toggle('hidden', view !== 'recycle');
+
+            document.getElementById('header-list-actions').classList.toggle('hidden', view !== 'list');
+            document.getElementById('header-detail-actions').classList.toggle('hidden', view !== 'detail');
+            document.getElementById('header-recycle-actions').classList.toggle('hidden', view !== 'recycle');
+
+            const bc = document.getElementById('breadcrumb-area');
+            if (view === 'list') {
+                bc.innerHTML =
+                    '<span>资源管理</span><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">专家管理</span>';
+            } else if (view === 'detail') {
+                bc.innerHTML =
+                    '<a href="#" onclick="showView(\'list\')" class="hover:text-blue-600">专家管理</a><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium" id="bc-detail-name">' +
+                    (currentSkill ? currentSkill.name : '') + '</span>';
+            } else if (view === 'recycle') {
+                bc.innerHTML =
+                    '<a href="#" onclick="showView(\'list\')" class="hover:text-blue-600">专家管理</a><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">回收站</span>';
+                selectedRecycleIds.clear();
+            }
+
+            if (view === 'list') renderSkillGrid();
+            if (view === 'recycle') renderRecycleGrid();
+        }
+
+        // ═══════════════════════════════════════════════
+        // 渲染专家卡片
+        // ═══════════════════════════════════════════════
+        function renderSkillGrid() {
+            const grid = document.getElementById('skill-grid');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const filtered = skills.filter(s =>
+                s.name.toLowerCase().includes(search) &&
+                (!selectedCategoryFilter || s.category === selectedCategoryFilter) &&
+                (!selectedStatusFilter || (selectedStatusFilter === 'enabled' ? s.enabled !== false : s.enabled === false)) &&
+                (!selectedSourceFilter || s.source === selectedSourceFilter)
+            );
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('empty-state').classList.add('flex');
+                document.getElementById('skill-pagination').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('empty-state').classList.remove('flex');
+
+            const totalPages = Math.ceil(filtered.length / skillPageSize);
+            if (skillPage > totalPages) skillPage = totalPages;
+            const startIdx = (skillPage - 1) * skillPageSize;
+            const pageItems = filtered.slice(startIdx, startIdx + skillPageSize);
+
+            grid.innerHTML = pageItems.map(s => {
+                const enabled = s.enabled !== false;
+                const isClient = s.source === '客户端';
+                const iconHtml = (typeof s.icon === 'string' && s.icon.startsWith('data:image')) ?
+                    `<img src="${s.icon}" class="w-full h-full object-cover rounded-lg" alt="icon" />` :
+                    s.icon;
+                const sourceLabel = s.source === '管理端' ? '🏢 管理端' : '📱 客户端';
+                const sourceTagClass = s.source === '管理端' ? 'tag-source' : 'tag-source-client';
+                return `
+                <div class="skill-card bg-white rounded-xl border border-gray-200 p-5 cursor-pointer relative" onclick="openDetail(${s.id})">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${iconHtml}</div>
+                        <h3 class="font-semibold text-gray-900 truncate flex-1">${s.name}</h3>
+                        <div class="card-actions flex items-center gap-0.5 flex-shrink-0">
+                            <span onclick="event.stopPropagation();exportSkill(${s.id})" class="card-action-btn" title="导出">
+                                <iconify-icon icon="mdi:download-outline" class="text-base"></iconify-icon>
+                            </span>
+                            <span onclick="event.stopPropagation();openDetail(${s.id}, 'edit')" class="card-action-btn ${isClient ? 'disabled' : ''}" title="${isClient ? '客户端来源不可编辑' : '编辑'}">
+                                <iconify-icon icon="mdi:pencil-outline" class="text-base"></iconify-icon>
+                            </span>
+                            <span onclick="event.stopPropagation();openDeleteConfirm(${s.id})" class="card-action-btn danger" title="删除">
+                                <iconify-icon icon="mdi:trash-can-outline" class="text-base"></iconify-icon>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mb-2.5 flex-wrap">
+                        <span class="tag tag-category">${s.category}</span>
+                        <span class="tag ${sourceTagClass}">${sourceLabel}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-3 leading-relaxed line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height: calc(14px * 1.5 * 2); ">${s.desc}</p>
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div class="flex items-center gap-3 text-xs text-gray-400 min-w-0">
+                            <span class="flex items-center gap-1 truncate"><iconify-icon icon="mdi:account-outline"></iconify-icon>${s.createdBy}</span>
+                            <span class="flex items-center gap-1 flex-shrink-0"><iconify-icon icon="mdi:clock-outline"></iconify-icon>${s.updatedAt.split(' ')[0]}</span>
+                            <span class="flex items-center gap-1 flex-shrink-0"><iconify-icon icon="mdi:counter"></iconify-icon>${s.calls || 0}</span>
+                        </div>
+                        <label class="toggle-switch ${isClient ? 'disabled' : ''}" onclick="event.stopPropagation()" title="${isClient ? '客户端来源不可操作' : (enabled ? '点击下架' : '点击发布')}">
+                            <input type="checkbox" ${enabled ? 'checked' : ''} ${isClient ? 'disabled' : ''} onchange="toggleSkill(${s.id}, this.checked)"/>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>`;
+            }).join('');
+
+            renderPagination('skill-pagination', filtered.length, totalPages, skillPage, skillPageSize, function(p) { skillPage = p; renderSkillGrid(); }, function(sz) { skillPageSize = sz; skillPage = 1; renderSkillGrid(); });
+        }
+
+        function toggleSkill(id, enabled) {
+            const skill = skills.find(s => s.id === id);
+            if (!skill) return;
+            if (skill.source === '客户端') return;
+            skill.enabled = enabled;
+            if (enabled) {
+                skill.status = 'published';
+                showToast(`「${skill.name}」已发布`, 'success');
+            } else {
+                skill.status = 'disabled';
+                showToast(`「${skill.name}」已下架`, 'success');
+            }
+            setTimeout(() => renderSkillGrid(), 600);
+        }
+
+        // ═══════════════════════════════════════════════
+        // 渲染回收站卡片
+        // ═══════════════════════════════════════════════
+        function renderRecycleGrid() {
+            const grid = document.getElementById('recycle-grid');
+            const search = document.getElementById('recycle-search-input')?.value?.toLowerCase() || '';
+            const filtered = deletedSkills.filter(s =>
+                s.name.toLowerCase().includes(search)
+            );
+
+            document.getElementById('recycle-count').textContent = filtered.length;
+            updateRecycleBadge();
+
+            const validIds = new Set(filtered.map(s => s.id));
+            for (const id of selectedRecycleIds) {
+                if (!validIds.has(id)) {
+                    selectedRecycleIds.delete(id);
+                }
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                document.getElementById('recycle-empty').classList.remove('hidden');
+                document.getElementById('recycle-empty').classList.add('flex');
+                document.getElementById('recycle-pagination').classList.add('hidden');
+                const selectAll = document.getElementById('recycle-select-all');
+                if (selectAll) selectAll.checked = false;
+                updateRecycleSelectionUI();
+                return;
+            }
+
+            document.getElementById('recycle-empty').classList.add('hidden');
+            document.getElementById('recycle-empty').classList.remove('flex');
+
+            const totalPages = Math.ceil(filtered.length / recyclePageSize);
+            if (recyclePage > totalPages) recyclePage = totalPages;
+            const startIdx = (recyclePage - 1) * recyclePageSize;
+            const pageItems = filtered.slice(startIdx, startIdx + recyclePageSize);
+
+            grid.innerHTML = pageItems.map(s => {
+                const iconHtml = (typeof s.icon === 'string' && s.icon.startsWith('data:image')) ?
+                    `<img src="${s.icon}" class="w-full h-full object-cover rounded-lg" alt="icon" />` :
+                    s.icon;
+                const checked = selectedRecycleIds.has(s.id) ? 'checked' : '';
+                const sourceLabel = s.source === '管理端' ? '🏢 管理端' : '📱 客户端';
+                const sourceTagClass = s.source === '管理端' ? 'tag-source' : 'tag-source-client';
+                return `
+                <div class="recycle-card bg-white rounded-xl border border-gray-200 p-5 relative">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${iconHtml}</div>
+                        <h3 class="font-semibold text-gray-900 truncate flex-1">${s.name}</h3>
+                        <input type="checkbox" class="recycle-checkbox" data-id="${s.id}" ${checked} onchange="updateRecycleSelection()" />
+                    </div>
+                    <div class="flex items-center gap-2 mb-2.5 flex-wrap">
+                        <span class="tag tag-category">${s.category}</span>
+                        <span class="tag ${sourceTagClass}">${sourceLabel}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-3 leading-relaxed line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height: calc(14px * 1.5 * 2);">${s.desc}</p>
+                    <div class="flex items-center gap-3 pt-3 border-t border-gray-100 text-xs text-gray-400">
+                        <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline"></iconify-icon>${s.deletedBy}</span>
+                        <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon>删除: ${s.deletedAt.split(' ')[0]}</span>
+                        <span class="flex items-center gap-1"><iconify-icon icon="mdi:counter"></iconify-icon>${s.calls || 0}</span>
+                    </div>
+                    <div class="recycle-hover-actions">
+                        <button class="recycle-hover-btn restore" onclick="event.stopPropagation();restoreSkill(${s.id})" title="恢复专家">
+                            <iconify-icon icon="mdi:restore" style="font-size:14px"></iconify-icon>恢复
+                        </button>
+                        <button class="recycle-hover-btn delete" onclick="event.stopPropagation();openPermanentDelete(${s.id})" title="彻底删除">
+                            <iconify-icon icon="mdi:trash-can-outline" style="font-size:14px"></iconify-icon>彻底删除
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+
+            updateRecycleSelectionUI();
+            updateSelectAllState();
+
+            renderPagination('recycle-pagination', filtered.length, totalPages, recyclePage, recyclePageSize, function(p) { recyclePage = p; renderRecycleGrid(); }, function(sz) { recyclePageSize = sz; recyclePage = 1; renderRecycleGrid(); });
+        }
+
+        // ═══════════════════════════════════════════════
+        // 通用分页渲染
+        // ═══════════════════════════════════════════════
+        function renderPagination(containerId, total, totalPages, currentPage, pageSize, onPageChange, onPageSizeChange) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (total === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+            container.classList.remove('hidden');
+
+            const startNum = (currentPage - 1) * pageSize + 1;
+            const endNum = Math.min(currentPage * pageSize, total);
+
+            let pageButtons = '';
+            const maxVisible = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            if (endPage - startPage < maxVisible - 1) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+
+            pageButtons += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="prev">\u2039</button>`;
+
+            if (startPage > 1) {
+                pageButtons += `<button class="page-btn" data-page="1">1</button>`;
+                if (startPage > 2) pageButtons += `<span style="padding:0 4px;color:#9CA3AF">...</span>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                pageButtons += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) pageButtons += `<span style="padding:0 4px;color:#9CA3AF">...</span>`;
+                pageButtons += `<button class="page-btn" data-page="${totalPages}">${totalPages}</button>`;
+            }
+
+            pageButtons += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} data-page="next">\u203A</button>`;
+
+            container.innerHTML = `
+                <div class="page-info">
+                    <span>\u5171 <strong>${total}</strong> \u6761</span>
+                    <span style="color:#D1D5DB">|</span>
+                    <span>\u7B2C ${startNum}-${endNum} \u6761</span>
+                    <span style="color:#D1D5DB">|</span>
+                    <span>\u6BCF\u9875
+                        <select class="page-size-select">
+                            <option value="8" ${pageSize===8?'selected':''}>8</option>
+                            <option value="12" ${pageSize===12?'selected':''}>12</option>
+                            <option value="20" ${pageSize===20?'selected':''}>20</option>
+                            <option value="50" ${pageSize===50?'selected':''}>50</option>
+                        </select>
+                    \u6761</span>
+                </div>
+                <div class="page-controls">
+                    ${pageButtons}
+                </div>
+            `;
+
+            container.querySelectorAll('.page-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (this.disabled) return;
+                    const val = this.dataset.page;
+                    if (val === 'prev') onPageChange(currentPage - 1);
+                    else if (val === 'next') onPageChange(currentPage + 1);
+                    else onPageChange(parseInt(val));
+                });
+            });
+            const sizeSelect = container.querySelector('.page-size-select');
+            if (sizeSelect) {
+                sizeSelect.addEventListener('change', function(e) {
+                    e.stopPropagation();
+                    onPageSizeChange(parseInt(this.value));
+                });
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        // 回收站选中状态管理
+        // ═══════════════════════════════════════════════
+        function updateRecycleSelection() {
+            const checkboxes = document.querySelectorAll('.recycle-checkbox');
+            let checkedCount = 0;
+            checkboxes.forEach(cb => {
+                const id = parseInt(cb.dataset.id);
+                if (cb.checked) {
+                    selectedRecycleIds.add(id);
+                    checkedCount++;
+                } else {
+                    selectedRecycleIds.delete(id);
+                }
+            });
+            updateRecycleSelectionUI();
+            updateSelectAllState();
+        }
+
+        function updateRecycleSelectionUI() {
+            const count = selectedRecycleIds.size;
+            document.getElementById('recycle-selected-count').textContent = count;
+        }
+
+        function updateSelectAllState() {
+            const checkboxes = document.querySelectorAll('.recycle-checkbox');
+            const selectAll = document.getElementById('recycle-select-all');
+            if (!selectAll) return;
+            if (checkboxes.length === 0) {
+                selectAll.checked = false;
+                return;
+            }
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            selectAll.checked = allChecked;
+        }
+
+        function toggleAllRecycle() {
+            const checked = document.getElementById('recycle-select-all').checked;
+            const checkboxes = document.querySelectorAll('.recycle-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = checked;
+                const id = parseInt(cb.dataset.id);
+                if (checked) {
+                    selectedRecycleIds.add(id);
+                } else {
+                    selectedRecycleIds.delete(id);
+                }
+            });
+            updateRecycleSelectionUI();
+        }
+
+        function filterRecycleSkills() {
+            recyclePage = 1;
+            renderRecycleGrid();
+        }
+
+        // ═══════════════════════════════════════════════
+        // 回收站批量操作
+        // ═══════════════════════════════════════════════
+        function batchRestore() {
+            if (selectedRecycleIds.size === 0) {
+                showToast('请先选择要恢复的专家', 'error');
+                return;
+            }
+            const idsToRestore = Array.from(selectedRecycleIds);
+            let restoredCount = 0;
+            idsToRestore.forEach(id => {
+                const idx = deletedSkills.findIndex(s => s.id === id);
+                if (idx > -1) {
+                    const restored = deletedSkills.splice(idx, 1)[0];
+                    delete restored.deletedBy;
+                    delete restored.deletedAt;
+                    skills.push(restored);
+                    restoredCount++;
+                }
+            });
+            selectedRecycleIds.clear();
+            renderRecycleGrid();
+            if (restoredCount > 0) {
+                showToast(`已恢复 ${restoredCount} 个专家`, 'success');
+            } else {
+                showToast('没有可恢复的专家', 'error');
+            }
+        }
+
+        function batchPermanentDelete() {
+            if (selectedRecycleIds.size === 0) {
+                showToast('请先选择要彻底删除的专家', 'error');
+                return;
+            }
+            const count = selectedRecycleIds.size;
+            document.getElementById('permanent-delete-msg').textContent =
+                `此操作不可恢复，将彻底删除选中的 ${count} 个专家及其所有文件。`;
+            deleteTargetId = 'batch';
+            openModal('permanentDeleteModal');
+        }
+
+        function confirmPermanentDelete() {
+            if (deleteTargetId === 'batch') {
+                const idsToDelete = Array.from(selectedRecycleIds);
+                let deletedCount = 0;
+                idsToDelete.forEach(id => {
+                    const idx = deletedSkills.findIndex(s => s.id === id);
+                    if (idx > -1) {
+                        deletedSkills.splice(idx, 1);
+                        deletedCount++;
+                    }
+                });
+                selectedRecycleIds.clear();
+                deleteTargetId = null;
+                closeModal('permanentDeleteModal');
+                renderRecycleGrid();
+                if (deletedCount > 0) {
+                    showToast(`已彻底删除 ${deletedCount} 个专家`, 'success');
+                }
+            } else if (deleteTargetId) {
+                const idx = deletedSkills.findIndex(s => s.id === deleteTargetId);
+                if (idx > -1) {
+                    deletedSkills.splice(idx, 1);
+                    selectedRecycleIds.delete(deleteTargetId);
+                }
+                deleteTargetId = null;
+                closeModal('permanentDeleteModal');
+                renderRecycleGrid();
+                showToast('已彻底删除', 'success');
+            } else {
+                closeModal('permanentDeleteModal');
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        // 文件树
+        // ═══════════════════════════════════════════════
+        function renderFileTree(files, indent = 0) {
+            const dotsHide = detailMode === 'view' ? ' style="display:none"' : '';
+            return files.map((f, i) => {
+                const paddingLeft = 12 + indent * 24;
+                if (f.type === 'folder') {
+                    return `
+                    <div class="relative" data-name="${f.name}" data-type="folder">
+                        <div class="file-tree-row" style="padding-left:${paddingLeft}px" onclick="toggleFolder(this)">
+                            <span class="ft-icon">📁</span>
+                            <span class="ft-name font-medium text-gray-700">${f.name}/</span>
+                            <span class="ft-meta">${f.children ? f.children.length : 0} 个文件</span>
+                            <span class="ft-dots"${dotsHide} onclick="event.stopPropagation();showFileMenu(this, 'folder', '${f.name.replace(/'/g, "\\'")}')">⋯</span>
+                        </div>
+                        <div class="folder-children">
+                            ${f.children ? renderFileTree(f.children, indent + 1) : ''}
+                        </div>
+                    </div>`;
+                } else {
+                    const isProtected = f.protected;
+                    const nameClass = isProtected ? 'font-semibold text-indigo-600' : 'text-gray-600';
+                    return `
+                    <div class="file-tree-row" data-name="${f.name}" data-type="file" style="padding-left:${paddingLeft}px" onclick="selectFile(this, '${f.name}')">
+                        <span class="ft-icon">📄</span>
+                        <span class="ft-name ${nameClass}">${f.name}</span>
+                        <span class="ft-meta">${f.size || ''}</span>
+                        <span class="ft-dots"${dotsHide} onclick="event.stopPropagation();showFileMenu(this, '${isProtected ? 'protected' : 'file'}', '${f.name.replace(/'/g, "\\'")}')">⋯</span>
+                    </div>`;
+                }
+            }).join('');
+        }
+
+        function toggleFolder(el) {
+            const children = el.nextElementSibling;
+            if (children && children.classList.contains('folder-children')) {
+                children.classList.toggle('hidden');
+                const icon = el.querySelector('.ft-icon');
+                icon.textContent = children.classList.contains('hidden') ? '📁' : '📂';
+            }
+        }
+
+        function selectFile(el, name) {
+            document.querySelectorAll('.file-tree-row').forEach(r => r.classList.remove('active'));
+            el.classList.add('active');
+            const fnEl = document.getElementById('editor-filename');
+            if (fnEl) fnEl.textContent = name;
+            const bc = document.getElementById('file-breadcrumb');
+            if (bc) bc.innerHTML =
+                `<a href="#">${currentSkill ? currentSkill.name : ''}</a><iconify-icon icon="mdi:chevron-right" class="text-gray-400"></iconify-icon><span class="current">${name}</span>`;
+        }
+
+        function showFileMenu(dotsEl, type, name) {
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
+            const menu = document.createElement('div');
+            menu.className = 'dropdown-menu';
+            let items = [];
+            if (type === 'folder') {
+                items = [
+                    { icon: '📄', label: '新建文件', action: 'createNewFile()' },
+                    { icon: '📁', label: '新建文件夹', action: 'createNewFolder()' },
+                    { icon: '✏️', label: '重命名', action: `renameItem('${name}')` },
+                    { divider: true },
+                    { icon: '⬆', label: '上传文件', action: 'uploadFile()' },
+                    { icon: '⬆', label: '上传文件夹', action: 'uploadFolder()' },
+                    { divider: true },
+                    { icon: '🗑', label: '删除', action: `deleteItem('${name}')`, danger: true }
+                ];
+            } else if (type === 'file') {
+                items = [
+                    { icon: '✏️', label: '重命名', action: `renameItem('${name}')` },
+                    { icon: '⬇️', label: '下载', action: `downloadFile('${name}')` },
+                    { divider: true },
+                    { icon: '🗑', label: '删除', action: `deleteItem('${name}')`, danger: true }
+                ];
+            } else if (type === 'protected') {
+                items = [
+                    { icon: '⬇️', label: '下载', action: `downloadFile('${name}')` }
+                ];
+            }
+
+            menu.innerHTML = items.map(item => {
+                if (item.divider) return '<div class="dropdown-divider"></div>';
+                return `<div class="dropdown-item${item.danger ? ' danger' : ''}" onclick="${item.action};this.parentElement.remove()">
+                    <span>${item.icon}</span><span>${item.label}</span>
+                </div>`;
+            }).join('');
+
+            dotsEl.parentElement.style.position = 'relative';
+            dotsEl.parentElement.appendChild(menu);
+
+            setTimeout(() => {
+                document.addEventListener('click', function closeMenu(e) {
+                    if (!menu.contains(e.target) && e.target !== dotsEl) {
+                        menu.remove();
+                        document.removeEventListener('click', closeMenu);
+                    }
+                });
+            }, 0);
+        }
+
+        // ═══════════════════════════════════════════════
+        // 详情操作
+        // ═══════════════════════════════════════════════
+        function openDetail(id, mode) {
+            detailMode = mode || 'view';
+            currentSkill = skills.find(s => s.id === id);
+            if (!currentSkill) return;
+
+            const iconEl = document.getElementById('detail-icon');
+            if (typeof currentSkill.icon === 'string' && currentSkill.icon.startsWith('data:image')) {
+                iconEl.innerHTML = `<img src="${currentSkill.icon}" class="w-full h-full object-cover rounded-xl" alt="icon" />`;
+            } else {
+                iconEl.textContent = currentSkill.icon || '🤖';
+            }
+
+            document.getElementById('detail-name').textContent = currentSkill.name;
+            document.getElementById('detail-desc').textContent = currentSkill.desc;
+            document.getElementById('detail-category').textContent = currentSkill.category;
+            document.getElementById('detail-updated').textContent = currentSkill.updatedAt;
+            document.getElementById('detail-creator').textContent = currentSkill.createdBy;
+            document.getElementById('detail-calls').textContent = currentSkill.calls || 0;
+
+            // 来源标签
+            const sourceTag = document.getElementById('detail-source-tag');
+            if (currentSkill.source === '管理端') {
+                sourceTag.className = 'tag tag-source';
+                sourceTag.textContent = '🏢 管理端';
+            } else {
+                sourceTag.className = 'tag tag-source-client';
+                sourceTag.textContent = '📱 客户端';
+            }
+
+            const statusMap = { published: { label: '已发布', cls: 'tag-published', dot: 'published' },
+                disabled: { label: '下架', cls: 'tag-disabled', dot: 'disabled' } };
+            const st = statusMap[currentSkill.status] || statusMap.disabled;
+            const tagEl = document.getElementById('detail-status-tag');
+            tagEl.className = `tag ${st.cls}`;
+            tagEl.innerHTML = `<span class="status-dot ${st.dot}"></span>${st.label}`;
+
+            const btnPublish = document.getElementById('btn-publish-detail');
+            const btnPublishOnly = document.getElementById('btn-publish-only');
+            const btnSaveDetail = document.getElementById('btn-save-detail');
+            const isPublished = currentSkill.status === 'published';
+
+            const isClient = currentSkill.source === '客户端';
+            const editBtn = document.getElementById('detail-edit-btn');
+            const fileBtn = document.getElementById('btnFile');
+
+            // 按需求控制按钮显示：
+            //   下架状态(disabled)：导出专家 + 历史记录 + 保存 + 保存并发布
+            //   发布状态(published)：导出专家 + 历史记录 + 发布
+            //   客户端来源：仅保留 导出专家 + 历史记录（隐藏保存/保存并发布/发布）
+            if (isClient) {
+                if (editBtn) editBtn.style.display = 'none';
+                if (btnSaveDetail) btnSaveDetail.style.display = 'none';
+                if (btnPublish) btnPublish.style.display = 'none';
+                if (btnPublishOnly) btnPublishOnly.style.display = 'none';
+            } else {
+                if (editBtn) editBtn.style.display = detailMode === 'edit' ? '' : 'none';
+                if (btnSaveDetail) btnSaveDetail.style.display = isPublished ? 'none' : '';
+                if (btnPublish) btnPublish.style.display = isPublished ? 'none' : '';
+                if (btnPublishOnly) btnPublishOnly.style.display = isPublished ? '' : 'none';
+            }
+
+            if (fileBtn) fileBtn.style.display = detailMode === 'edit' ? '' : 'none';
+            const uploadOverrideBtn = document.getElementById('btn-upload-override');
+            if (uploadOverrideBtn) uploadOverrideBtn.style.display = detailMode === 'edit' ? '' : 'none';
+
+            const fileTreeEl = document.getElementById('file-tree');
+            if (fileTreeEl) fileTreeEl.innerHTML = renderFileTree(currentSkill.files);
+            // 关闭可能残留的发布历史下拉
+            closePublishHistoryDropdown();
+            showView('detail');
+        }
+
+        // 兼容入口：发布统一走弹窗流程（见 openPublishModal）
+        function publishSkill() {
+            openPublishModal('publish');
+        }
+
+        // ═══════════════════════════════════════════════
+        // 图标预览更新（新建）
+        // ═══════════════════════════════════════════════
+        function updateCreateIconPreview() {
+            const box = document.getElementById('create-icon-preview');
+            const text = document.getElementById('create-icon-preview-text');
+            const existingImg = box.querySelector('img');
+            if (existingImg) existingImg.remove();
+
+            if (createIconType === 'emoji') {
+                text.textContent = createIconData || '🤖';
+                text.style.display = 'block';
+                box.classList.toggle('has-icon', !!createIconData);
+            } else if (createIconType === 'image') {
+                text.style.display = 'none';
+                const img = document.createElement('img');
+                img.src = createIconData;
+                img.alt = '自定义图标';
+                box.appendChild(img);
+                box.classList.add('has-icon');
+            }
+        }
+
+        function handleCreateIconUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const validTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/svg+xml', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                showToast('请上传 PNG、JPG、GIF、SVG 或 WebP 格式的图片', 'error');
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('图片大小不能超过 2MB', 'error');
+                return;
+            }
+
+            const progress = document.getElementById('create-icon-progress');
+            const bar = document.getElementById('create-icon-progress-bar');
+            progress.classList.add('active');
+            bar.style.width = '30%';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                bar.style.width = '100%';
+                setTimeout(() => {
+                    progress.classList.remove('active');
+                    bar.style.width = '0%';
+                }, 400);
+                createIconData = e.target.result;
+                createIconType = 'image';
+                updateCreateIconPreview();
+                showToast('图标上传成功', 'success');
+            };
+            reader.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const pct = Math.round((e.loaded / e.total) * 70) + 30;
+                    bar.style.width = Math.min(pct, 95) + '%';
+                }
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function clearCreateIcon() {
+            createIconData = '🤖';
+            createIconType = 'emoji';
+            updateCreateIconPreview();
+            showToast('已清除图标', 'success');
+        }
+
+        // ═══════════════════════════════════════════════
+        // 图标预览更新（编辑）
+        // ═══════════════════════════════════════════════
+        function updateEditIconPreview() {
+            const box = document.getElementById('edit-icon-preview');
+            const text = document.getElementById('edit-icon-preview-text');
+            const existingImg = box.querySelector('img');
+            if (existingImg) existingImg.remove();
+
+            if (editIconType === 'emoji') {
+                text.textContent = editIconData || '🤖';
+                text.style.display = 'block';
+                box.classList.toggle('has-icon', !!editIconData);
+            } else if (editIconType === 'image') {
+                text.style.display = 'none';
+                const img = document.createElement('img');
+                img.src = editIconData;
+                img.alt = '自定义图标';
+                box.appendChild(img);
+                box.classList.add('has-icon');
+            }
+        }
+
+        function handleEditIconUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const validTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/svg+xml', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                showToast('请上传 PNG、JPG、GIF、SVG 或 WebP 格式的图片', 'error');
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('图片大小不能超过 2MB', 'error');
+                return;
+            }
+
+            const progress = document.getElementById('edit-icon-progress');
+            const bar = document.getElementById('edit-icon-progress-bar');
+            progress.classList.add('active');
+            bar.style.width = '30%';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                bar.style.width = '100%';
+                setTimeout(() => {
+                    progress.classList.remove('active');
+                    bar.style.width = '0%';
+                }, 400);
+                editIconData = e.target.result;
+                editIconType = 'image';
+                updateEditIconPreview();
+                showToast('图标上传成功', 'success');
+            };
+            reader.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const pct = Math.round((e.loaded / e.total) * 70) + 30;
+                    bar.style.width = Math.min(pct, 95) + '%';
+                }
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function clearEditIcon() {
+            editIconData = '🤖';
+            editIconType = 'emoji';
+            updateEditIconPreview();
+            showToast('已清除图标', 'success');
+        }
+
+        // ═══════════════════════════════════════════════
+        // 创建专家
+        // ═══════════════════════════════════════════════
+        function updateCreateCharCount(el, max) {
+            document.getElementById('create-char-count').textContent = el.value.length;
+        }
+
+        // ═══════════════════════════════════════════════
+        // AI 智能创建专家
+        // ═══════════════════════════════════════════════
+        const AI_STEPS = [
+            { icon: 'mdi:cog-outline',     text: '正在配置模型参数...',       sub: '选择最适合的 AI 模型' },
+            { icon: 'mdi:text-box-edit-outline', text: '正在编写系统提示词...', sub: '构建专家的核心指令与人格' },
+            { icon: 'mdi:chat-processing-outline', text: '正在升级对话体验...', sub: '优化多轮对话与上下文理解' },
+            { icon: 'mdi:toolbox-outline', text: '正在匹配合适的工具...',    sub: '为专家配备专业工具箱' },
+            { icon: 'mdi:puzzle-outline',  text: '正在组装技能模块...',      sub: '整合知识库与技能链路' },
+            { icon: 'mdi:shield-check-outline', text: '正在安全校验...',     sub: '确保专家输出稳定可靠' },
+            { icon: 'mdi:party-popper',    text: '专家创建完成！',          sub: '即将进入专家详情页' }
+        ];
+
+        let _aiAnimTimer = null;
+        let _aiStepTimer = null;
+
+        function aiGenerateExpert() {
+            const prompt = document.getElementById('ai-prompt-input').value.trim();
+            if (!prompt) { showToast('请输入专家描述', 'error'); return; }
+
+            document.getElementById('ai-step-input').classList.add('hidden');
+            document.getElementById('ai-step-generating').classList.remove('hidden');
+
+            const stepList = document.getElementById('ai-step-list');
+            stepList.innerHTML = '';
+            const progressBar = document.getElementById('ai-progress-bar');
+            const progressPct = document.getElementById('ai-progress-pct');
+            const progressEta = document.getElementById('ai-progress-eta');
+            const statusText = document.getElementById('ai-status-text');
+            const statusSub = document.getElementById('ai-status-sub');
+            const animIcon = document.getElementById('ai-anim-icon');
+            progressBar.style.width = '0%';
+
+            const totalDuration = 5000;
+            const stepDuration = totalDuration / AI_STEPS.length;
+            let currentStep = 0;
+
+            function runStep() {
+                if (currentStep >= AI_STEPS.length) {
+                    clearInterval(_aiAnimTimer);
+                    const newName = prompt.length > 20 ? prompt.substring(0, 20) + '专家' : prompt + '专家';
+                    const newDesc = '【AI 生成】基于描述"' + prompt + '"自动生成的专家配置，请根据需要调整。';
+
+                    const newSkill = {
+                        id: Date.now(),
+                        name: newName,
+                        desc: newDesc,
+                        icon: '🤖',
+                        category: '通用',
+                        status: 'disabled',
+                        source: '管理端',
+                        calls: 0,
+                        createdBy: 'AI 系统',
+                        updatedBy: 'AI 系统',
+                        updatedAt: new Date().toISOString().slice(0, 10) + ' ' + new Date().toTimeString().slice(0,5),
+                        files: [{ name: 'SKILL.md', type: 'file', size: '0 KB', protected: true }]
+                    };
+                    skills.unshift(newSkill);
+
+                    setTimeout(() => {
+                        closeModal('aiCreateModal');
+                        document.getElementById('ai-step-input').classList.remove('hidden');
+                        document.getElementById('ai-step-generating').classList.add('hidden');
+                        document.getElementById('ai-prompt-input').value = '';
+                        openDetail(newSkill.id, 'edit');
+                        showView('detail');
+                        showToast('AI 已成功创建专家「' + newName + '」', 'success');
+                    }, 600);
+                    return;
+                }
+
+                const step = AI_STEPS[currentStep];
+                const pct = Math.round(((currentStep + 1) / AI_STEPS.length) * 100);
+
+                animIcon.setAttribute('icon', step.icon);
+                statusText.textContent = step.text;
+                statusSub.textContent = step.sub;
+                progressBar.style.width = pct + '%';
+                progressPct.textContent = pct + '%';
+                const remaining = Math.max(0, Math.ceil((totalDuration - (currentStep + 1) * stepDuration) / 1000));
+                progressEta.textContent = remaining > 0 ? '剩余 ' + remaining + ' 秒' : '即将完成';
+
+                const item = document.createElement('div');
+                item.className = 'ai-step-item flex items-center space-x-3 text-sm';
+                item.style.opacity = '0';
+                item.innerHTML =
+                    '<iconify-icon icon="' + step.icon + '" class="text-lg text-blue-500 flex-shrink-0"></iconify-icon>' +
+                    '<span class="text-gray-600">' + step.text + '</span>' +
+                    '<iconify-icon icon="mdi:check-circle" class="text-green-500 ml-auto opacity-0 ai-check" style="transition:opacity 0.3s;"></iconify-icon>';
+                stepList.appendChild(item);
+                requestAnimationFrame(() => { item.style.opacity = '1'; });
+
+                if (currentStep > 0) {
+                    const prevItem = stepList.children[currentStep - 1];
+                    if (prevItem) {
+                        prevItem.classList.add('ai-step-done');
+                        const check = prevItem.querySelector('.ai-check');
+                        if (check) check.style.opacity = '1';
+                    }
+                }
+
+                currentStep++;
+            }
+
+            runStep();
+            _aiAnimTimer = setInterval(runStep, stepDuration);
+        }
+
+        function createSkill() {
+            const name = document.getElementById('create-name').value.trim();
+            const desc = document.getElementById('create-desc').value.trim();
+            const selectedCategories = Array.from(document.querySelectorAll('#create-category-group input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+            const source = document.querySelector('input[name="create-source"]:checked')?.value || '管理端';
+
+            if (!name) { showToast('请输入专家名称', 'error'); return; }
+            if (skills.some(s => s.name === name)) { showToast('专家名称已存在', 'error'); return; }
+            if (selectedCategories.length === 0) { showToast('请选择至少一个类别', 'error'); return; }
+
+            const newSkill = {
+                id: Date.now(),
+                name: name,
+                icon: createIconData,
+                category: selectedCategories[0],
+                desc: desc || '暂无描述',
+                status: 'disabled',
+                enabled: false,
+                source: source,
+                calls: 0,
+                createdBy: '孙礼飞',
+                updatedBy: '孙礼飞',
+                updatedAt: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-'),
+                files: [{ name: 'SKILL.md', type: 'file', size: '0 KB', protected: true }]
+            };
+            skills.unshift(newSkill);
+            closeModal('createModal');
+            renderSkillGrid();
+            showToast('创建成功', 'success');
+
+            document.getElementById('create-name').value = '';
+            document.getElementById('create-desc').value = '';
+            document.getElementById('create-char-count').textContent = '0';
+            createIconData = '🤖';
+            createIconType = 'emoji';
+            updateCreateIconPreview();
+            document.querySelectorAll('#create-category-group input[type="checkbox"]').forEach(cb => {
+                cb.checked = cb.value === '代码生成';
+            });
+
+            openDetail(newSkill.id, 'edit');
+        }
+
+        // ═══════════════════════════════════════════════
+        // 编辑专家
+        // ═══════════════════════════════════════════════
+        function updateEditCharCount(el, max) {
+            document.getElementById('edit-char-count').textContent = el.value.length;
+        }
+
+        function openEditModal() {
+            if (!currentSkill) return;
+            if (currentSkill.source === '客户端') {
+                showToast('客户端来源的专家不可编辑', 'error');
+                return;
+            }
+
+            document.getElementById('edit-name').value = currentSkill.name;
+            document.getElementById('edit-desc').value = currentSkill.desc || '';
+            updateEditCharCount(document.getElementById('edit-desc'), 200);
+
+            if (typeof currentSkill.icon === 'string' && currentSkill.icon.startsWith('data:image')) {
+                editIconData = currentSkill.icon;
+                editIconType = 'image';
+            } else {
+                editIconData = currentSkill.icon || '🤖';
+                editIconType = 'emoji';
+            }
+            updateEditIconPreview();
+
+            const currentCategory = currentSkill.category || '';
+            document.querySelectorAll('#edit-category-group input[type="checkbox"]').forEach(cb => {
+                cb.checked = (cb.value === currentCategory);
+            });
+
+            openModal('editModal');
+        }
+
+        function saveEdit() {
+            if (!currentSkill) return;
+            if (currentSkill.source === '客户端') {
+                showToast('客户端来源的专家不可编辑', 'error');
+                return;
+            }
+            const name = document.getElementById('edit-name').value.trim();
+            const desc = document.getElementById('edit-desc').value.trim();
+            const selectedCategories = Array.from(document.querySelectorAll('#edit-category-group input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+
+            if (!name) { showToast('请输入专家名称', 'error'); return; }
+            if (selectedCategories.length === 0) { showToast('请选择至少一个类别', 'error'); return; }
+
+            currentSkill.name = name;
+            currentSkill.desc = desc;
+            currentSkill.icon = editIconData;
+            currentSkill.category = selectedCategories[0];
+            currentSkill.updatedAt = new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit',
+                day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-');
+
+            closeModal('editModal');
+            openDetail(currentSkill.id, 'edit');
+            renderSkillGrid();
+            showToast('专家更新成功', 'success');
+        }
+
+        // ═══════════════════════════════════════════════
+        // 导入专家
+        // ═══════════════════════════════════════════════
+        function handleImportDrop(e) {
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.zip')) {
+                showImportFileInfo(file);
+            } else {
+                showToast('请上传 .zip 格式文件', 'error');
+            }
+        }
+
+        function handleImportFileSelect(input) {
+            if (input.files[0]) showImportFileInfo(input.files[0]);
+        }
+
+        function showImportFileInfo(file) {
+            if (file.size > 20 * 1024 * 1024) { showToast('文件大小超过 20MB 限制', 'error'); return; }
+            document.getElementById('import-file-name').textContent = file.name + ' (' + (file.size / 1024).toFixed(1) +
+                ' KB)';
+            document.getElementById('import-file-info').classList.remove('hidden');
+        }
+
+        function clearImportFile() {
+            document.getElementById('import-file-info').classList.add('hidden');
+            const fi = document.getElementById('import-file-input');
+            if (fi) fi.value = '';
+        }
+
+        function importSkill() {
+            const fileInfo = document.getElementById('import-file-info');
+            if (fileInfo.classList.contains('hidden')) { showToast('请先选择 ZIP 文件', 'error'); return; }
+            const selectedCategories = Array.from(document.querySelectorAll('#import-category-group input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+            if (selectedCategories.length === 0) { showToast('请选择至少一个类别', 'error'); return; }
+
+            const mockName = '导入专家-' + Date.now().toString().slice(-4);
+            const newSkill = {
+                id: Date.now(),
+                name: mockName,
+                icon: '📦',
+                category: selectedCategories[0],
+                desc: '通过 ZIP 导入的专家',
+                status: 'disabled',
+                enabled: false,
+                source: '管理端',
+                calls: 0,
+                createdBy: '孙礼飞',
+                updatedBy: '孙礼飞',
+                updatedAt: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-'),
+                files: [{ name: 'SKILL.md', type: 'file', size: '0 KB', protected: true }]
+            };
+            skills.unshift(newSkill);
+            closeModal('importModal');
+            renderSkillGrid();
+            showToast('导入成功', 'success');
+
+            clearImportFile();
+            document.querySelectorAll('#import-category-group input[type="checkbox"]').forEach(cb => {
+                cb.checked = cb.value === '代码生成';
+            });
+        }
+
+        // ═══════════════════════════════════════════════
+        // 删除操作
+        // ═══════════════════════════════════════════════
+        function openDeleteConfirm(id) {
+            deleteTargetId = id;
+            const skill = skills.find(s => s.id === id);
+            document.getElementById('delete-confirm-msg').textContent =
+                `确认删除专家「${skill ? skill.name : ''}」？删除后可在回收站恢复。`;
+            openModal('deleteConfirmModal');
+        }
+
+        function confirmDelete() {
+            if (deleteTargetId) {
+                const idx = skills.findIndex(s => s.id === deleteTargetId);
+                if (idx > -1) {
+                    const deleted = skills.splice(idx, 1)[0];
+                    deletedSkills.push({ ...deleted, deletedBy: '孙礼飞', deletedAt: new Date().toISOString().split('T')[0] });
+                }
+                deleteTargetId = null;
+            }
+            closeModal('deleteConfirmModal');
+            renderSkillGrid();
+            updateRecycleBadge();
+            showToast('删除成功', 'success');
+        }
+
+        function openPermanentDelete(id) {
+            deleteTargetId = id;
+            const skill = deletedSkills.find(s => s.id === id);
+            document.getElementById('permanent-delete-msg').textContent =
+                `此操作不可恢复，将永久删除专家「${skill ? skill.name : ''}」及其所有文件。`;
+            openModal('permanentDeleteModal');
+        }
+
+        function restoreSkill(id) {
+            const idx = deletedSkills.findIndex(s => s.id === id);
+            if (idx > -1) {
+                const restored = deletedSkills.splice(idx, 1)[0];
+                delete restored.deletedBy;
+                delete restored.deletedAt;
+                skills.push(restored);
+                selectedRecycleIds.delete(id);
+            }
+            renderRecycleGrid();
+            showToast('恢复成功', 'success');
+        }
+
+        // ═══════════════════════════════════════════════
+        // 文件操作占位
+        // ═══════════════════════════════════════════════
+        function createNewFile() {
+            insertEditableRow('file');
+        }
+
+        function createNewFolder() {
+            insertEditableRow('folder');
+        }
+
+        function insertEditableRow(type) {
+            const container = document.getElementById('file-tree');
+            if (!container) { showToast('文件树未加载', 'error'); return; }
+            container.querySelectorAll('.new-item-row').forEach(el => el.remove());
+            const icon = type === 'folder' ? '📁' : '📄';
+            const placeholder = type === 'folder' ? '新建文件夹' : '新建文件';
+            const row = document.createElement('div');
+            row.className = 'file-tree-row new-item-row';
+            row.style.paddingLeft = '12px';
+            row.innerHTML = `
+                <span class="ft-icon">${icon}</span>
+                <input class="ft-name-input" type="text" value="${placeholder}" placeholder="请输入名称" />
+                <span class="ft-meta" style="color:#9CA3AF">${type === 'folder' ? '文件夹' : '文件'}</span>
+            `;
+            container.prepend(row);
+            const input = row.querySelector('.ft-name-input');
+            input.focus();
+            input.select();
+            const confirm = () => {
+                const val = input.value.trim();
+                if (!val) { row.remove(); return; }
+                if (currentSkill) {
+                    const newItem = type === 'folder'
+                        ? { name: val, type: 'folder', children: [] }
+                        : { name: val, type: 'file', size: '0 KB' };
+                    currentSkill.files.unshift(newItem);
+                }
+                refreshFileTree();
+                showToast(`已${type === 'folder' ? '创建文件夹' : '创建文件'}「${val}」`, 'success');
+            };
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); confirm(); }
+                if (e.key === 'Escape') { row.remove(); }
+            });
+            input.addEventListener('blur', confirm);
+        }
+
+        function renameItem(name) {
+            const container = document.getElementById('file-tree');
+            const allRows = container.querySelectorAll('[data-name]');
+            let targetWrapper = null;
+            allRows.forEach(el => {
+                if (el.getAttribute('data-name') === name) targetWrapper = el;
+            });
+            if (!targetWrapper) { showToast(`未找到「${name}」`, 'error'); return; }
+            const row = targetWrapper.querySelector('.file-tree-row') || targetWrapper;
+            const nameSpan = row.querySelector('.ft-name');
+            if (!nameSpan) return;
+            const oldName = name;
+            const isFolder = targetWrapper.getAttribute('data-type') === 'folder';
+            const displayName = isFolder ? oldName.replace(/\/$/, '') : oldName;
+            const input = document.createElement('input');
+            input.className = 'ft-name-input';
+            input.type = 'text';
+            input.value = displayName;
+            nameSpan.replaceWith(input);
+            input.focus();
+            input.select();
+            const confirm = () => {
+                const val = input.value.trim();
+                if (!val || val === displayName) {
+                    refreshFileTree();
+                    return;
+                }
+                if (currentSkill) {
+                    updateFileName(currentSkill.files, oldName, val);
+                }
+                refreshFileTree();
+                showToast(`已重命名为「${val}」`, 'success');
+            };
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); confirm(); }
+                if (e.key === 'Escape') { refreshFileTree(); }
+            });
+            input.addEventListener('blur', confirm);
+        }
+
+        function updateFileName(files, oldName, newName) {
+            for (let f of files) {
+                if (f.name === oldName) { f.name = newName; return true; }
+                if (f.children && updateFileName(f.children, oldName, newName)) return true;
+            }
+            return false;
+        }
+
+        function refreshFileTree() {
+            if (!currentSkill) return;
+            const container = document.getElementById('file-tree');
+            if (container) container.innerHTML = renderFileTree(currentSkill.files);
+        }
+
+        function downloadFile(name) { showToast(`下载「${name}」`, 'success'); }
+
+        function uploadFile() { showToast('上传文件功能', 'success'); }
+
+        function uploadFolder() { showToast('上传文件夹功能', 'success'); }
+
+        function deleteItem(name) { showToast(`删除「${name}」`, 'success'); }
+
+        function exportSkill(id) { showToast('导出成功', 'success'); }
+
+        // ═══════════════════════════════════════════════
+        // 类别管理 CRUD
+        // ═══════════════════════════════════════════════
+        let categories = [
+            { id: 1, name: '代码生成', sort: 1, status: 'published' },
+            { id: 2, name: '数据分析', sort: 2, status: 'published' },
+            { id: 3, name: '文档处理', sort: 3, status: 'published' },
+            { id: 4, name: '自动化流程', sort: 4, status: 'published' },
+            { id: 5, name: '知识检索', sort: 5, status: 'disabled' },
+            { id: 6, name: '创意写作', sort: 6, status: 'published' }
+        ];
+        let categoryDeleteId = null;
+        let categoryNextId = 7;
+
+        function getCategorySkillCount(catName) {
+            return skills.filter(s => s.category === catName).length;
+        }
+
+        function renderCategoryTable() {
+            const tbody = document.getElementById('category-table-body');
+            if (!tbody) return;
+            const sorted = [...categories].sort((a, b) => a.sort - b.sort);
+            tbody.innerHTML = sorted.map((cat, idx) => {
+                const statusClass = cat.status === 'published' ? 'tag-published' : 'tag-disabled';
+                const statusDot = cat.status === 'published' ? 'published' : 'disabled';
+                const statusText = cat.status === 'published' ? '启用' : '禁用';
+                const skillCount = getCategorySkillCount(cat.name);
+                const isLast = idx === sorted.length - 1;
+                return `<tr class="${isLast ? '' : 'border-b border-gray-50'} hover:bg-gray-50">
+                    <td class="px-6 py-3 font-medium text-gray-900">${cat.name}</td>
+                    <td class="px-6 py-3 text-gray-500">${cat.sort}</td>
+                    <td class="px-6 py-3"><span class="tag ${statusClass}"><span class="status-dot ${statusDot}"></span>${statusText}</span></td>
+                    <td class="px-6 py-3 text-gray-500">${skillCount}</td>
+                    <td class="px-6 py-3 text-right">
+                        <button onclick="editCategory(${cat.id})" class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>
+                        <button onclick="deleteCategory(${cat.id})" class="text-red-500 hover:text-red-700 text-xs">删除</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function addCategory() {
+            document.getElementById('category-form-title').textContent = '新增类别';
+            document.getElementById('category-edit-id').value = '';
+            document.getElementById('category-name-input').value = '';
+            document.getElementById('category-sort-input').value = '';
+            document.querySelector('input[name="category-status"][value="published"]').checked = true;
+            openModal('categoryFormModal');
+            setTimeout(() => document.getElementById('category-name-input').focus(), 100);
+        }
+
+        function editCategory(id) {
+            const cat = categories.find(c => c.id === id);
+            if (!cat) return;
+            document.getElementById('category-form-title').textContent = '编辑类别';
+            document.getElementById('category-edit-id').value = id;
+            document.getElementById('category-name-input').value = cat.name;
+            document.getElementById('category-sort-input').value = cat.sort;
+            const radio = document.querySelector(`input[name="category-status"][value="${cat.status}"]`);
+            if (radio) radio.checked = true;
+            openModal('categoryFormModal');
+            setTimeout(() => document.getElementById('category-name-input').focus(), 100);
+        }
+
+        function saveCategory() {
+            const editId = document.getElementById('category-edit-id').value;
+            const name = document.getElementById('category-name-input').value.trim();
+            const sort = document.getElementById('category-sort-input').value;
+            const status = document.querySelector('input[name="category-status"]:checked').value;
+
+            if (!name) {
+                showToast('请输入类别名称', 'error');
+                document.getElementById('category-name-input').focus();
+                return;
+            }
+
+            const duplicate = categories.find(c => c.name === name && c.id !== Number(editId));
+            if (duplicate) {
+                showToast('类别名称已存在', 'error');
+                document.getElementById('category-name-input').focus();
+                return;
+            }
+
+            if (editId) {
+                const cat = categories.find(c => c.id === Number(editId));
+                if (cat) {
+                    cat.name = name;
+                    cat.sort = sort ? Number(sort) : cat.sort;
+                    cat.status = status;
+                }
+                showToast('类别已更新', 'success');
+            } else {
+                const maxSort = categories.length > 0 ? Math.max(...categories.map(c => c.sort)) : 0;
+                categories.push({
+                    id: categoryNextId++,
+                    name: name,
+                    sort: sort ? Number(sort) : maxSort + 1,
+                    status: status
+                });
+                showToast('类别已添加', 'success');
+            }
+
+            closeModal('categoryFormModal');
+            renderCategoryTable();
+        }
+
+        function deleteCategory(id) {
+            const cat = categories.find(c => c.id === id);
+            if (!cat) return;
+            categoryDeleteId = id;
+            const skillCount = getCategorySkillCount(cat.name);
+            const msg = skillCount > 0
+                ? `类别「${cat.name}」下还有 ${skillCount} 个关联专家，删除后这些专家将同步删除分类。确认删除？`
+                : `确认删除类别「${cat.name}」？`;
+            document.getElementById('delete-confirm-title').textContent = '确认删除类别';
+            document.getElementById('delete-confirm-msg').textContent = msg;
+            window._originalConfirmDelete = window._originalConfirmDelete || confirmDelete;
+            window._deleteAction = 'category';
+            openModal('deleteConfirmModal');
+        }
+
+        const _origConfirmDelete = confirmDelete;
+        confirmDelete = function() {
+            if (window._deleteAction === 'category') {
+                if (categoryDeleteId) {
+                    const idx = categories.findIndex(c => c.id === categoryDeleteId);
+                    if (idx > -1) {
+                        categories.splice(idx, 1);
+                    }
+                    categoryDeleteId = null;
+                }
+                window._deleteAction = null;
+                closeModal('deleteConfirmModal');
+                renderCategoryTable();
+                showToast('类别已删除', 'success');
+                return;
+            }
+            _origConfirmDelete();
+        }
+
+        // ═══════════════════════════════════════════════
+        // 筛选
+        // ═══════════════════════════════════════════════
+        function toggleSourceFilter(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('source-filter-dropdown');
+            document.getElementById('category-filter-dropdown').classList.add('hidden');
+            document.getElementById('status-filter-dropdown').classList.add('hidden');
+            dd.classList.toggle('hidden');
+        }
+
+        function selectSourceFilter(source, el) {
+            selectedSourceFilter = source;
+            document.getElementById('source-filter-label').textContent = source || '全部来源';
+            document.querySelectorAll('#source-filter-dropdown .filter-option').forEach(opt => opt.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('source-filter-dropdown').classList.add('hidden');
+            skillPage = 1;
+            renderSkillGrid();
+        }
+
+        function toggleCategoryFilter(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('category-filter-dropdown');
+            document.getElementById('status-filter-dropdown').classList.add('hidden');
+            document.getElementById('source-filter-dropdown').classList.add('hidden');
+            dd.classList.toggle('hidden');
+        }
+
+        function toggleStatusFilter(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('status-filter-dropdown');
+            document.getElementById('category-filter-dropdown').classList.add('hidden');
+            document.getElementById('source-filter-dropdown').classList.add('hidden');
+            dd.classList.toggle('hidden');
+        }
+
+        function selectCategoryFilter(cat, el) {
+            selectedCategoryFilter = cat;
+            document.getElementById('category-filter-label').textContent = cat || '全部分类';
+            document.querySelectorAll('#category-filter-dropdown .filter-option').forEach(opt => opt.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('category-filter-dropdown').classList.add('hidden');
+            skillPage = 1;
+            renderSkillGrid();
+        }
+
+        function selectStatusFilter(status, el) {
+            selectedStatusFilter = status;
+            const label = status === 'enabled' ? '发布' : (status === 'disabled' ? '下架' : '全部状态');
+            document.getElementById('status-filter-label').textContent = label;
+            document.querySelectorAll('#status-filter-dropdown .filter-option').forEach(opt => opt.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('status-filter-dropdown').classList.add('hidden');
+            skillPage = 1;
+            renderSkillGrid();
+        }
+
+        document.addEventListener('click', function(e) {
+            const catDd = document.getElementById('category-filter-dropdown');
+            const statusDd = document.getElementById('status-filter-dropdown');
+            const sourceDd = document.getElementById('source-filter-dropdown');
+            if (catDd && !catDd.contains(e.target) && !e.target.closest('[onclick*="toggleCategoryFilter"]')) {
+                catDd.classList.add('hidden');
+            }
+            if (statusDd && !statusDd.contains(e.target) && !e.target.closest('[onclick*="toggleStatusFilter"]')) {
+                statusDd.classList.add('hidden');
+            }
+            if (sourceDd && !sourceDd.contains(e.target) && !e.target.closest('[onclick*="toggleSourceFilter"]')) {
+                sourceDd.classList.add('hidden');
+            }
+        });
+
+        function filterSkills() { skillPage = 1; renderSkillGrid(); }
+
+        // ═══════════════════════════════════════════════
+        // 回收站角标更新
+        // ═══════════════════════════════════════════════
+        function updateRecycleBadge() {
+            const badge = document.getElementById('recycle-badge');
+            if (!badge) return;
+            const count = deletedSkills.length;
+            badge.textContent = count;
+            if (count > 0) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        // 发布历史下拉
+        // ═══════════════════════════════════════════════
+        function renderPublishHistory() {
+            var list = document.getElementById('publishHistoryList');
+            if (!list) return;
+            if (!currentSkill || !currentSkill.publishHistory || currentSkill.publishHistory.length === 0) {
+                list.innerHTML =
+                    '<div style="padding:32px 16px;text-align:center;color:#9CA3AF;">' +
+                    '<iconify-icon icon="mdi:history-off" style="font-size:36px;display:block;margin-bottom:8px;"></iconify-icon>' +
+                    '<p style="font-size:13px;">暂无发布历史</p>' +
+                    '</div>';
+                return;
+            }
+            list.innerHTML = currentSkill.publishHistory.map(function(h, idx) {
+                var isLatest = idx === 0;
+                var versionTag = isLatest
+                    ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:1px 8px;border-radius:9999px;font-size:11px;font-weight:600;background:#D1FAE5;color:#059669;margin-left:8px;">最新</span>'
+                    : '';
+                return '<div class="history-item" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px 12px;">' +
+                    '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
+                        '<div style="display:flex;align-items:center;min-width:0;flex:1;">' +
+                            '<iconify-icon icon="mdi:tag-outline" style="font-size:15px;color:#4F46E5;margin-right:6px;flex-shrink:0;"></iconify-icon>' +
+                            '<span style="font-size:13px;font-weight:600;color:#1F2937;">' + (h.version || 'v1.0.0') + '</span>' +
+                            versionTag +
+                        '</div>' +
+                        '<span class="history-item-time" style="margin-left:0;">' + (h.time || '') + '</span>' +
+                    '</div>' +
+                    '<div style="font-size:12px;color:#4B5563;line-height:1.5;padding-left:21px;">' + (h.desc || '无描述') + '</div>' +
+                    '<div style="font-size:11px;color:#9CA3AF;padding-left:21px;display:flex;align-items:center;gap:4px;">' +
+                        '<iconify-icon icon="mdi:account-circle-outline" style="font-size:13px;"></iconify-icon>' +
+                        '<span>' + (h.operator || '未知') + '</span>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        function togglePublishHistoryDropdown(e) {
+            if (e) e.stopPropagation();
+            var dropdown = document.getElementById('publishHistoryDropdown');
+            var btn = document.getElementById('btn-publish-history');
+            if (!dropdown || !btn) return;
+            if (dropdown.classList.contains('hidden')) {
+                renderPublishHistory();
+                dropdown.classList.remove('hidden');
+                btn.classList.add('border-indigo-300');
+                btn.classList.add('text-indigo-600');
+                // 定位到按钮下方
+                var btnRect = btn.getBoundingClientRect();
+                var wrap = document.getElementById('publish-history-wrap');
+                var wrapRect = wrap.getBoundingClientRect();
+                dropdown.style.position = 'absolute';
+                dropdown.style.right = (wrapRect.right - btnRect.right) + 'px';
+                dropdown.style.top = (btnRect.bottom - wrapRect.top + 4) + 'px';
+            } else {
+                closePublishHistoryDropdown();
+            }
+        }
+
+        function closePublishHistoryDropdown() {
+            var dropdown = document.getElementById('publishHistoryDropdown');
+            var btn = document.getElementById('btn-publish-history');
+            if (dropdown) dropdown.classList.add('hidden');
+            if (btn) {
+                btn.classList.remove('border-indigo-300');
+                btn.classList.remove('text-indigo-600');
+            }
+        }
+
+        // 点击外部关闭发布历史下拉
+        document.addEventListener('click', function(e) {
+            var dropdown = document.getElementById('publishHistoryDropdown');
+            var wrap = document.getElementById('publish-history-wrap');
+            if (dropdown && !dropdown.classList.contains('hidden') && wrap && !wrap.contains(e.target)) {
+                closePublishHistoryDropdown();
+            }
+        });
+
+        // ═══════════════════════════════════════════════
+        // 发布描述弹窗 & 发布逻辑
+        // ═══════════════════════════════════════════════
+        var _publishMode = 'publish'; // 'publish' | 'save-publish'
+
+        function updatePublishCharCount(el, max) {
+            var countEl = document.getElementById('publish-char-count');
+            if (countEl) countEl.textContent = el.value.length;
+        }
+
+        function openPublishModal(mode) {
+            if (!currentSkill) { showToast('请先选择专家', 'error'); return; }
+            if (currentSkill.source === '客户端') {
+                showToast('客户端来源的专家不可发布', 'error');
+                return;
+            }
+            _publishMode = mode || 'publish';
+            var titleEl = document.getElementById('publish-modal-title');
+            var tipEl = document.getElementById('publish-modal-tip');
+            var submitLabel = document.getElementById('publish-submit-label');
+            if (_publishMode === 'save-publish') {
+                if (titleEl) titleEl.textContent = '保存并发布专家';
+                if (tipEl) tipEl.textContent = '将先保存当前配置，再发布上线。发布描述会记录在版本历史中，便于后续追溯。';
+                if (submitLabel) submitLabel.textContent = '保存并发布';
+            } else {
+                if (titleEl) titleEl.textContent = '发布专家';
+                if (tipEl) tipEl.textContent = '发布后专家将上线可用，发布描述将记录在版本历史中，便于后续追溯。';
+                if (submitLabel) submitLabel.textContent = '确认发布';
+            }
+            var input = document.getElementById('publish-desc-input');
+            if (input) {
+                input.value = '';
+                var countEl = document.getElementById('publish-char-count');
+                if (countEl) countEl.textContent = '0';
+            }
+            openModal('publishModal');
+            setTimeout(function() { if (input) input.focus(); }, 100);
+        }
+
+        function submitPublish() {
+            if (!currentSkill) { closeModal('publishModal'); return; }
+            var desc = (document.getElementById('publish-desc-input').value || '').trim();
+            if (!desc) {
+                showToast('请输入发布描述', 'error');
+                document.getElementById('publish-desc-input').focus();
+                return;
+            }
+
+            // 计算新版本号
+            var lastVersion = (currentSkill.publishHistory && currentSkill.publishHistory.length > 0)
+                ? currentSkill.publishHistory[0].version
+                : '';
+            var newVersion = bumpVersion(lastVersion);
+
+            // 保存 -> 发布 或 直接发布
+            var now = new Date();
+            var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+            var timeStr = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) +
+                ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+
+            // 推入发布历史
+            if (!currentSkill.publishHistory) currentSkill.publishHistory = [];
+            currentSkill.publishHistory.unshift({
+                version: newVersion,
+                desc: desc,
+                operator: currentSkill.updatedBy || currentSkill.createdBy || '当前用户',
+                time: timeStr
+            });
+
+            // 更新状态
+            currentSkill.status = 'published';
+            currentSkill.enabled = true;
+            currentSkill.updatedAt = timeStr;
+
+            closeModal('publishModal');
+            // 刷新详情按钮区
+            openDetail(currentSkill.id, detailMode);
+            renderSkillGrid();
+
+            var actionLabel = _publishMode === 'save-publish' ? '保存并发布' : '发布';
+            showToast(actionLabel + '成功（' + newVersion + '）', 'success');
+        }
+
+        function bumpVersion(lastVersion) {
+            // 解析 vMAJOR.MINOR.PATCH，patch +1
+            if (!lastVersion) return 'v1.0.0';
+            var m = /^v?(\d+)\.(\d+)\.(\d+)$/.exec(lastVersion.trim());
+            if (!m) return 'v1.0.0';
+            var major = parseInt(m[1], 10);
+            var minor = parseInt(m[2], 10);
+            var patch = parseInt(m[3], 10) + 1;
+            if (patch > 9) { patch = 0; minor += 1; }
+            if (minor > 9) { minor = 0; major += 1; }
+            return 'v' + major + '.' + minor + '.' + patch;
+        }
+
+        // 详情页"保存"按钮
+        function saveDetail() {
+            if (!currentSkill) { showToast('请先选择专家', 'error'); return; }
+            if (currentSkill.source === '客户端') {
+                showToast('客户端来源的专家不可保存', 'error');
+                return;
+            }
+            var now = new Date();
+            var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+            currentSkill.updatedAt = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) +
+                ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+            renderSkillGrid();
+            showToast('保存成功', 'success');
+        }
+
+        // ═══════════════════════════════════════════════
+        // Modal / Toast
+        // ═══════════════════════════════════════════════
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function toggleCreateDropdown() {
+            const menu = document.getElementById('create-dropdown-menu');
+            menu.classList.toggle('hidden');
+        }
+        function closeCreateDropdown() {
+            document.getElementById('create-dropdown-menu').classList.add('hidden');
+        }
+        document.addEventListener('click', function(e) {
+            const wrap = document.getElementById('create-dropdown-wrap');
+            if (wrap && !wrap.contains(e.target)) {
+                closeCreateDropdown();
+            }
+        });
+
+        function showToast(msg, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast toast-${type}`;
+            toast.classList.remove('hidden');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => { toast.classList.add('hidden'); }, 2500);
+        }
+
+
+        // ═══════════════════════════════════════════════
+        // 初始化
+        // ═══════════════════════════════════════════════
+        renderSkillGrid();
+        renderCategoryTable();
+        updateRecycleBadge();
+        updateCreateIconPreview();
+        updateEditIconPreview();
+
+        /* ─── 三栏拖拽 & 面板交互 ─── */
+        (function() {
+            const wrap = document.getElementById('triPanelWrap');
+            const panelLeft = document.getElementById('panelLeft');
+            const panelMiddle = document.getElementById('panelMiddle');
+            const panelRight = document.getElementById('panelRight');
+            const dividerLeft = document.getElementById('dividerLeft');
+            const dividerRight = document.getElementById('dividerRight');
+
+            let dragging = null;
+            let startX = 0;
+            let startLeftW = 0;
+            let startMidW = 0;
+            let startRightW = 0;
+
+            function getWrapWidth() { return wrap.getBoundingClientRect().width; }
+            function minPx() { return getWrapWidth() * 0.2; }
+
+            dividerLeft.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                dragging = 'left';
+                startX = e.clientX;
+                startLeftW = panelLeft.getBoundingClientRect().width;
+                startMidW = panelMiddle.getBoundingClientRect().width;
+                dividerLeft.classList.add('dragging');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+
+            dividerRight.addEventListener('mousedown', function(e) {
+                if (panelRight.style.display === 'none') return;
+                e.preventDefault();
+                dragging = 'right';
+                startX = e.clientX;
+                startMidW = panelMiddle.getBoundingClientRect().width;
+                startRightW = panelRight.getBoundingClientRect().width;
+                dividerRight.classList.add('dragging');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!dragging) return;
+                const dx = e.clientX - startX;
+                const minP = minPx();
+
+                if (dragging === 'left') {
+                    let newLeftW = startLeftW + dx;
+                    let newMidW = startMidW - dx;
+                    if (newLeftW < minP) { newLeftW = minP; newMidW = startLeftW + startMidW - minP; }
+                    if (newMidW < minP) { newMidW = minP; newLeftW = startLeftW + startMidW - minP; }
+                    panelLeft.style.flex = '0 0 ' + newLeftW + 'px';
+                    panelMiddle.style.flex = '0 0 ' + newMidW + 'px';
+                } else if (dragging === 'right') {
+                    let newMidW = startMidW + dx;
+                    let newRightW = startRightW - dx;
+                    if (newMidW < minP) { newMidW = minP; newRightW = startMidW + startRightW - minP; }
+                    if (newRightW < minP) { newRightW = minP; newMidW = startMidW + startRightW - minP; }
+                    panelMiddle.style.flex = '0 0 ' + newMidW + 'px';
+                    panelRight.style.flex = '0 0 ' + newRightW + 'px';
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (dragging) {
+                    dividerLeft.classList.remove('dragging');
+                    dividerRight.classList.remove('dragging');
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                    dragging = null;
+                }
+            });
+
+            window.closeRightPanel = function() {
+                panelRight.style.display = 'none';
+                panelRight.style.flex = '0 0 0%';
+                dividerRight.style.display = 'none';
+                panelMiddle.style.flex = '1 1 auto';
+            };
+
+            window.openRightPanel = function(key) {
+                panelRight.style.display = 'flex';
+                dividerRight.style.display = 'flex';
+
+                const titleMap = { 'product': '产物', 'ai-tuning': 'AI 智能调优', 'run-log': '运行日志' };
+                document.getElementById('rightPanelTitle').textContent = titleMap[key] || key;
+
+                document.getElementById('iframeProduct').style.display = 'none';
+                document.getElementById('iframeAITuning').style.display = 'none';
+                document.getElementById('iframeRunLog').style.display = 'none';
+
+                if (key === 'product') {
+                    document.getElementById('iframeProduct').style.display = 'block';
+                } else if (key === 'ai-tuning') {
+                    document.getElementById('iframeAITuning').style.display = 'block';
+                } else if (key === 'run-log') {
+                    document.getElementById('iframeRunLog').style.display = 'block';
+                }
+
+                const totalW = getWrapWidth();
+                const leftW = panelLeft.getBoundingClientRect().width;
+                const remain = totalW - leftW - 12;
+                const midW = remain * 0.50;
+                const rightW = remain * 0.50;
+                panelMiddle.style.flex = '0 0 ' + midW + 'px';
+                panelRight.style.flex = '0 0 ' + rightW + 'px';
+            };
+
+            window.switchMiddleTab = function(btn, title) {
+                document.querySelectorAll('.mid-btn').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                // 点击新会话时刷新预览调试iframe
+                if (btn.dataset.tab === 'new-session') {
+                    var iframe = document.getElementById('iframeMiddle');
+                    if (iframe) {
+                        iframe.src = iframe.src;
+                    }
+                }
+            };
+
+            // 历史下拉弹窗
+            window.toggleHistoryDropdown = function(e) {
+                e.stopPropagation();
+                var dropdown = document.getElementById('historyDropdown');
+                var btn = document.getElementById('historyBtn');
+                if (dropdown.classList.contains('hidden')) {
+                    dropdown.classList.remove('hidden');
+                    btn.classList.add('active');
+                    // 定位到按钮下方
+                    var btnRect = btn.getBoundingClientRect();
+                    var panelMiddle = document.getElementById('panelMiddle');
+                    var panelRect = panelMiddle.getBoundingClientRect();
+                    dropdown.style.position = 'absolute';
+                    dropdown.style.right = (panelRect.right - btnRect.right) + 'px';
+                    dropdown.style.top = (btnRect.bottom - panelRect.top + 4) + 'px';
+                } else {
+                    dropdown.classList.add('hidden');
+                    btn.classList.remove('active');
+                }
+            };
+
+            window.closeHistoryDropdown = function() {
+                var dropdown = document.getElementById('historyDropdown');
+                var btn = document.getElementById('historyBtn');
+                dropdown.classList.add('hidden');
+                btn.classList.remove('active');
+            };
+
+            window.loadHistorySession = function(title) {
+                closeHistoryDropdown();
+                // 切换回新会话 tab 并加载历史内容
+                var newSessionBtn = document.querySelector('.mid-btn[data-tab="new-session"]');
+                switchMiddleTab(newSessionBtn, '新会话');
+                // TODO: 加载历史会话内容到 iframe
+                console.log('加载历史会话:', title);
+            };
+
+            // 点击外部关闭历史下拉
+            document.addEventListener('click', function(e) {
+                var dropdown = document.getElementById('historyDropdown');
+                var btn = document.getElementById('historyBtn');
+                if (dropdown && !dropdown.classList.contains('hidden') && !dropdown.contains(e.target) && e.target !== btn) {
+                    closeHistoryDropdown();
+                }
+            });
+
+            window.toggleRightFullscreen = function() {
+                if (panelRight.dataset.fullscreen === 'true') {
+                    panelRight.dataset.fullscreen = 'false';
+                    panelRight.style.position = '';
+                    panelRight.style.inset = '';
+                    panelRight.style.zIndex = '';
+                    panelRight.style.borderRadius = '';
+                    panelRight.style.flex = panelRight.dataset.prevFlex || '0 0 30%';
+                } else {
+                    panelRight.dataset.prevFlex = panelRight.style.flex;
+                    panelRight.dataset.fullscreen = 'true';
+                    panelRight.style.position = 'fixed';
+                    panelRight.style.inset = '0';
+                    panelRight.style.zIndex = '100';
+                    panelRight.style.borderRadius = '0';
+                    panelRight.style.flex = '0 0 100%';
+                }
+            };
+        })();
+    </script>
+</body>
+</html>

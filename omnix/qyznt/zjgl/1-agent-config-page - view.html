@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>专家配置 - 查看模式</title>
+    <style>
+        /* ========== Design System ========== */
+        :root {
+            --primary: #3B82F6;
+            --primary-light: #EFF6FF;
+            --primary-hover: #2563EB;
+            --bg: #F8F9FA;
+            --bg-white: #FFFFFF;
+            --border: #E5E7EB;
+            --border-hover: #D1D5DB;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --text-tertiary: #9CA3AF;
+            --text-disabled: #D1D5DB;
+            --success: #10B981;
+            --success-light: #ECFDF5;
+            --warning: #F59E0B;
+            --warning-light: #FFFBEB;
+            --danger: #EF4444;
+            --danger-light: #FEF2F2;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --font-xs: 12px;
+            --font-sm: 13px;
+            --font-base: 14px;
+            --font-md: 15px;
+            --font-lg: 18px;
+            --font-xl: 20px;
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: var(--bg-white);
+            color: var(--text-primary);
+            font-size: var(--font-base);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        /* ========== Section ========== */
+        .config-section {
+            margin-bottom: 32px;
+        }
+        .section-header {
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-title {
+            font-size: var(--font-lg);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        .section-desc {
+            font-size: var(--font-sm);
+            color: var(--text-secondary);
+        }
+
+        /* ========== Form Elements ========== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: var(--font-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .form-label .required {
+            color: var(--danger);
+        }
+        .form-label .tooltip {
+            color: var(--text-tertiary);
+            cursor: help;
+        }
+        .form-hint {
+            font-size: var(--font-xs);
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        /* Input */
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: var(--font-base);
+            color: var(--text-primary);
+            background: var(--bg-white);
+            transition: var(--transition);
+            outline: none;
+            font-family: inherit;
+        }
+        .form-input:hover {
+            border-color: var(--border-hover);
+        }
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .form-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        /* Textarea */
+        .form-textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: var(--font-base);
+            color: var(--text-primary);
+            background: var(--bg-white);
+            transition: var(--transition);
+            outline: none;
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+            font-family: inherit;
+        }
+        .form-textarea:hover {
+            border-color: var(--border-hover);
+        }
+        .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .form-textarea::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        /* ===== ✦ 修改：系统提示词专用滚动样式 ===== */
+        #promptText {
+            min-height: 150px;
+            max-height: 340px;
+            overflow-y: auto;
+            resize: none;
+            /* 查看模式下禁止拖拽调整大小，保持滚动体验一致 */;
+        }
+
+        /* 自定义滚动条（系统提示词 & 其他 textarea） */
+        #promptText::-webkit-scrollbar,
+        .form-textarea::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        #promptText::-webkit-scrollbar-track,
+        .form-textarea::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        #promptText::-webkit-scrollbar-thumb,
+        .form-textarea::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+        #promptText::-webkit-scrollbar-thumb:hover,
+        .form-textarea::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        /* ========== Model Select Dropdown ========== */
+        .select-wrapper {
+            position: relative;
+        }
+        .select-trigger {
+            width: 100%;
+            padding: 10px 14px;
+            padding-right: 36px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: var(--font-base);
+            color: var(--text-primary);
+            background: var(--bg-white);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .select-trigger:hover {
+            border-color: var(--border-hover);
+        }
+        .select-trigger.open {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .select-arrow {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            pointer-events: none;
+            transition: var(--transition);
+        }
+        .select-trigger.open .select-arrow {
+            transform: translateY(-50%) rotate(180deg);
+        }
+        .select-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 50;
+            display: none;
+            overflow: hidden;
+        }
+        .select-dropdown.show {
+            display: block;
+        }
+        .model-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            padding: 0 16px;
+        }
+        .model-tab {
+            padding: 12px 16px;
+            font-size: var(--font-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+            margin-bottom: -1px;
+            user-select: none;
+        }
+        .model-tab:hover {
+            color: var(--text-primary);
+        }
+        .model-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            font-weight: 500;
+        }
+        .model-list {
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        .model-item {
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .model-item:hover {
+            background: var(--bg);
+        }
+        .model-item.selected {
+            background: var(--primary-light);
+        }
+        .model-item-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        .model-name {
+            font-size: var(--font-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .model-tag {
+            font-size: 11px;
+            padding: 1px 6px;
+            border-radius: 4px;
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .model-desc {
+            font-size: var(--font-xs);
+            color: var(--text-tertiary);
+            line-height: 1.4;
+        }
+
+        /* ========== Buttons ========== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-size: var(--font-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            outline: none;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        .btn-outline:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+            background: var(--bg);
+        }
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 6px 10px;
+        }
+        .btn-ghost:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: var(--font-xs);
+        }
+
+        /* ========== Toggle Switch ========== */
+        .toggle {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--border);
+            border-radius: 11px;
+            transition: var(--transition);
+        }
+        .toggle-slider:before {
+            content: "";
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        .toggle input:checked+.toggle-slider {
+            background: var(--primary);
+        }
+        .toggle input:checked+.toggle-slider:before {
+            transform: translateX(18px);
+        }
+
+        /* Toggle Row */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .toggle-row:last-child {
+            border-bottom: none;
+        }
+        .toggle-info {
+            flex: 1;
+        }
+        .toggle-title {
+            font-size: var(--font-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        .toggle-desc {
+            font-size: var(--font-xs);
+            color: var(--text-tertiary);
+        }
+
+        /* ========== Radio Cards ========== */
+        .radio-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .radio-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .radio-card:hover {
+            border-color: var(--border-hover);
+            background: var(--bg);
+        }
+        .radio-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .radio-dot {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: var(--transition);
+            position: relative;
+        }
+        .radio-card.selected .radio-dot {
+            border-color: var(--primary);
+        }
+        .radio-card.selected .radio-dot::after {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+        .radio-card-content {
+            flex: 1;
+        }
+        .radio-card-title {
+            font-size: var(--font-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        .radio-card-desc {
+            font-size: var(--font-xs);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ========== Checkbox Group ========== */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: var(--font-sm);
+            color: var(--text-secondary);
+            user-select: none;
+        }
+        .checkbox-item:hover {
+            border-color: var(--border-hover);
+        }
+        .checkbox-item.checked {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .checkbox-box {
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .checkbox-item.checked .checkbox-box {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* ========== Tag Input Group ========== */
+        .tag-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .tag-input-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tag-input-row .form-input {
+            flex: 1;
+        }
+        .tag-input-row .remove-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            color: var(--text-tertiary);
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        .tag-input-row .remove-btn:hover {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        /* ========== Prompt Editor ========== */
+        .prompt-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .prompt-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .prompt-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            font-size: var(--font-xs);
+            color: var(--text-secondary);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .prompt-action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .char-count {
+            font-size: var(--font-xs);
+            color: var(--text-tertiary);
+        }
+
+        /* ========== Selector Trigger ========== */
+        .selector-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-white);
+        }
+        .selector-trigger:hover {
+            border-color: var(--border-hover);
+        }
+        .selector-trigger-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: var(--font-sm);
+        }
+        .selector-trigger-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-tertiary);
+            font-size: var(--font-xs);
+        }
+        .selected-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .selected-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-xs);
+            color: var(--text-secondary);
+        }
+        .selected-tag .tag-remove {
+            cursor: pointer;
+            color: var(--text-tertiary);
+            transition: var(--transition);
+        }
+        .selected-tag .tag-remove:hover {
+            color: var(--danger);
+        }
+
+        /* ========== Config Card ========== */
+        .config-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 12px;
+        }
+        .config-card:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ========== Notice Box ========== */
+        .notice-box {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: var(--bg);
+            border-radius: var(--radius-md);
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .notice-box .notice-icon {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .notice-box .notice-text {
+            font-size: var(--font-xs);
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ========== Scrollbar ========== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-hover);
+        }
+
+        /* ========== View Mode ========== */
+        .view-mode-disabled {
+            pointer-events: none !important;
+            cursor: default !important;
+            opacity: 0.92;
+        }
+
+        .view-mode-disabled .form-input,
+        .view-mode-disabled .form-textarea,
+        .view-mode-disabled .select-trigger,
+        .view-mode-disabled .selector-trigger,
+        .view-mode-disabled .radio-card,
+        .view-mode-disabled .checkbox-item,
+        .view-mode-disabled .toggle,
+        .view-mode-disabled .model-item,
+        .view-mode-disabled .model-tab,
+        .view-mode-disabled .tag-remove,
+        .view-mode-disabled .remove-btn,
+        .view-mode-disabled .prompt-action-btn,
+        .view-mode-disabled .btn {
+            pointer-events: none !important;
+            cursor: default !important;
+        }
+
+        .view-mode-disabled input:disabled,
+        .view-mode-disabled textarea:disabled,
+        .view-mode-disabled button:disabled {
+            opacity: 0.85;
+            cursor: default !important;
+        }
+
+        /* 查看模式下的输入框样式 */
+        .view-mode-disabled .form-input:disabled,
+        .view-mode-disabled .form-textarea:disabled {
+            background: #f3f4f6 !important;
+            border-color: #e5e7eb !important;
+            color: #1f2937 !important;
+            cursor: default !important;
+            box-shadow: none !important;
+        }
+        .view-mode-disabled .form-input:disabled::placeholder,
+        .view-mode-disabled .form-textarea:disabled::placeholder {
+            color: #9ca3af !important;
+        }
+
+        /* ===== ✦ 修改：查看模式下 textarea 允许滚动 ===== */
+        .view-mode-disabled textarea:disabled {
+            pointer-events: auto !important;
+            /* 保留滚动能力 */
+            cursor: default !important;
+            resize: none !important;
+        }
+
+        .view-mode-disabled .select-trigger {
+            background: #f3f4f6 !important;
+            border-color: #e5e7eb !important;
+        }
+        .view-mode-disabled .selector-trigger {
+            background: #f3f4f6 !important;
+            border-color: #e5e7eb !important;
+        }
+        .view-mode-disabled .prompt-action-btn:disabled {
+            background: #f3f4f6 !important;
+            border-color: #e5e7eb !important;
+            color: #9ca3af !important;
+            cursor: default !important;
+        }
+        .view-mode-disabled .btn:disabled {
+            background: #f3f4f6 !important;
+            border-color: #e5e7eb !important;
+            color: #9ca3af !important;
+            cursor: default !important;
+        }
+        .view-mode-disabled .btn-primary:disabled {
+            background: #9ca3af !important;
+            color: #e5e7eb !important;
+        }
+        .view-mode-disabled .toggle-slider {
+            cursor: default !important;
+        }
+        .view-mode-disabled .radio-card:hover {
+            background: transparent !important;
+            border-color: var(--border) !important;
+        }
+        .view-mode-disabled .radio-card.selected:hover {
+            background: var(--primary-light) !important;
+            border-color: var(--primary) !important;
+        }
+        .view-mode-disabled .checkbox-item:hover {
+            background: transparent !important;
+            border-color: var(--border) !important;
+        }
+        .view-mode-disabled .checkbox-item.checked:hover {
+            background: var(--primary-light) !important;
+            border-color: var(--primary) !important;
+        }
+        .view-mode-disabled .model-item:hover {
+            background: transparent !important;
+        }
+        .view-mode-disabled .model-item.selected:hover {
+            background: var(--primary-light) !important;
+        }
+
+        /* 查看模式顶部提示条 */
+        .view-mode-banner {
+            background: #f0f4ff;
+            border: 1px solid #d6e4ff;
+            border-radius: var(--radius-md);
+            padding: 10px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1a56db;
+            font-size: var(--font-sm);
+        }
+        .view-mode-banner svg {
+            flex-shrink: 0;
+        }
+        .view-mode-banner strong {
+            font-weight: 600;
+        }
+        .view-mode-banner .banner-hint {
+            color: #6b7280;
+            font-size: var(--font-xs);
+            margin-left: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 查看模式提示条 ===== -->
+    <div class="view-mode-banner" id="viewModeBanner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span><strong>查看模式</strong> — 当前为只读状态，所有配置项不可修改</span>
+        <span class="banner-hint">（此页面用于预览专家配置详情）</span>
+    </div>
+
+    <!-- ===== 一、核心配置 ===== -->
+    <div class="config-section">
+        <div class="section-header">
+            <h2 class="section-title">核心配置</h2>
+            <p class="section-desc">配置专家的基础能力，包括模型选择、系统提示词和工具绑定</p>
+        </div>
+
+        <div class="config-card">
+            <!-- 模型 -->
+            <div class="form-group">
+                <label class="form-label">
+                    模型 <span class="required">*</span>
+                    <span class="tooltip" title="选择专家使用的 AI 模型">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </span>
+                </label>
+                <div class="select-wrapper" id="modelSelect">
+                    <div class="select-trigger" id="modelTrigger">
+                        <span style="font-weight:500;">GPT-4o</span>
+                        <span class="model-tag">在线</span>
+                        <span class="select-arrow">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                    </div>
+                    <div class="select-dropdown" id="modelDropdown">
+                        <div class="model-tabs">
+                            <div class="model-tab active">在线模型</div>
+                            <div class="model-tab">本地模型</div>
+                        </div>
+                        <div class="model-list" id="modelListOnline">
+                            <div class="model-item selected">
+                                <div class="model-item-header">
+                                    <span class="model-name">GPT-4o</span>
+                                    <span class="model-tag">多模态</span>
+                                    <span class="model-tag">推荐</span>
+                                </div>
+                                <div class="model-desc">OpenAI 最新旗舰模型，支持文本、图像、音频多模态输入</div>
+                            </div>
+                            <div class="model-item">
+                                <div class="model-item-header">
+                                    <span class="model-name">Claude 3.5 Sonnet</span>
+                                    <span class="model-tag">长文本</span>
+                                </div>
+                                <div class="model-desc">Anthropic 出品，擅长长文本理解与代码生成</div>
+                            </div>
+                            <div class="model-item">
+                                <div class="model-item-header">
+                                    <span class="model-name">DeepSeek-V3</span>
+                                    <span class="model-tag">国产</span>
+                                    <span class="model-tag">高性价比</span>
+                                </div>
+                                <div class="model-desc">深度求索出品，中文能力优秀，推理速度快</div>
+                            </div>
+                            <div class="model-item">
+                                <div class="model-item-header">
+                                    <span class="model-name">Qwen-Max</span>
+                                    <span class="model-tag">国产</span>
+                                </div>
+                                <div class="model-desc">通义千问旗舰版，擅长中文理解与知识问答</div>
+                            </div>
+                            <div class="model-item">
+                                <div class="model-item-header">
+                                    <span class="model-name">GLM-4</span>
+                                    <span class="model-tag">国产</span>
+                                </div>
+                                <div class="model-desc">智谱 AI 出品，支持工具调用和代码执行</div>
+                            </div>
+                        </div>
+                        <div class="model-list" id="modelListLocal" style="display:none;">
+                            <div class="model-item">
+                                <div class="model-item-header">
+                                    <span class="model-name">Llama 3.1 70B</span>
+                                    <span class="model-tag">开源</span>
+                                </div>
+                                <div class="model-desc">Meta 开源模型，需本地部署，支持 128K 上下文</div>
+                            </div>
+                            <div class="model-item">
+                                <div class="model-item-header">
+                                    <span class="model-name">Qwen2.5 72B</span>
+                                    <span class="model-tag">开源</span>
+                                    <span class="model-tag">中文优化</span>
+                                </div>
+                                <div class="model-desc">通义千问开源版，中文场景表现优异</div>
+                            </div>
+                            <div class="model-item">
+                                <div class="model-item-header">
+                                    <span class="model-name">DeepSeek-Coder 33B</span>
+                                    <span class="model-tag">开源</span>
+                                    <span class="model-tag">代码</span>
+                                </div>
+                                <div class="model-desc">专注代码生成的开源模型，支持多种编程语言</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 提示词 -->
+            <div class="form-group">
+                <label class="form-label">系统提示词 <span class="required">*</span></label>
+                <div class="prompt-editor">
+                    <div class="prompt-toolbar">
+                        <div class="prompt-actions">
+                            <button class="prompt-action-btn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                AI 优化
+                            </button>
+                            <button class="prompt-action-btn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                                全屏
+                            </button>
+                        </div>
+                        <span class="char-count" id="promptCount">0 / 5000</span>
+                    </div>
+                    <!-- ===== ✦ 修改：textarea 已应用 #promptText 滚动样式 ===== -->
+                    <textarea class="form-textarea" id="promptText" placeholder="请输入专家的系统提示词，定义专家的角色、能力范围和行为准则..."></textarea>
+                </div>
+                <p class="form-hint">系统提示词用于定义专家的角色定位、回答风格和能力边界</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== 二、使用权限 ===== -->
+    <div class="config-section">
+        <div class="section-header">
+            <h2 class="section-title">使用权限</h2>
+            <p class="section-desc">设置专家的可见范围和使用权限</p>
+        </div>
+
+        <div class="config-card">
+            <div class="radio-cards">
+                <div class="radio-card selected">
+                    <div class="radio-dot"></div>
+                    <div class="radio-card-content">
+                        <div class="radio-card-title">公开（所有人可使用）</div>
+                        <div class="radio-card-desc">发布后所有用户可在客户端搜索并使用该专家</div>
+                    </div>
+                </div>
+                <div class="radio-card">
+                    <div class="radio-dot"></div>
+                    <div class="radio-card-content">
+                        <div class="radio-card-title">公开（所有人可使用、可克隆）</div>
+                        <div class="radio-card-desc">在可使用基础上，允许他人克隆该专家配置为己用</div>
+                    </div>
+                </div>
+                <div class="radio-card">
+                    <div class="radio-dot"></div>
+                    <div class="radio-card-content">
+                        <div class="radio-card-title">仅自己可见</div>
+                        <div class="radio-card-desc">仅创建者可见可用，发布后也不对他人开放</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 三、对话体验 ===== -->
+    <div class="config-section">
+        <div class="section-header">
+            <h2 class="section-title">对话体验</h2>
+            <p class="section-desc">优化用户与专家的对话交互体验</p>
+        </div>
+
+        <div class="config-card">
+            <!-- 开场白 -->
+            <div class="form-group">
+                <label class="form-label">开场白</label>
+                <div class="prompt-toolbar" style="margin-bottom:8px;">
+                    <div class="prompt-actions">
+                        <button class="prompt-action-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            AI 优化
+                        </button>
+                    </div>
+                </div>
+                <textarea class="form-textarea" style="min-height:80px;" placeholder="输入专家首次对话时的欢迎语，例如：你好！我是你的采购分析助手，可以帮你分析供应商数据、生成采购报告..."></textarea>
+            </div>
+
+            <!-- 开场白问题 -->
+            <div class="form-group">
+                <div class="toggle-row" style="border-bottom:none;padding-bottom:0;">
+                    <div class="toggle-info">
+                        <div class="toggle-title">开场白问题</div>
+                        <div class="toggle-desc">开启后可设置引导问题，至少填写 3 个，超出 3 个随机展示 3 个</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="greetingQToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div id="greetingQuestionsArea" style="margin-top:12px;">
+                    <div class="tag-input-group" id="greetingQList">
+                        <div class="tag-input-row">
+                            <input class="form-input" placeholder="请输入引导问题（≤50字）" maxlength="50">
+                            <span class="remove-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </span>
+                        </div>
+                        <div class="tag-input-row">
+                            <input class="form-input" placeholder="请输入引导问题（≤50字）" maxlength="50">
+                            <span class="remove-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </span>
+                        </div>
+                        <div class="tag-input-row">
+                            <input class="form-input" placeholder="请输入引导问题（≤50字）" maxlength="50">
+                            <span class="remove-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </span>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:8px;">
+                        <button class="btn btn-outline btn-sm">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            添加问题
+                        </button>
+                        <button class="btn btn-ghost btn-sm">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            AI 生成
+                        </button>
+                    </div>
+                    <p class="form-hint" style="margin-top:6px;">至少填写 3 个，超出 3 个时系统将随机展示其中 3 个</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="config-card">
+            <!-- 自动追问 -->
+            <div class="toggle-row">
+                <div class="toggle-info">
+                    <div class="toggle-title">自动追问</div>
+                    <div class="toggle-desc">开启后，专家回复后自动根据对话内容提供 3 条问题建议</div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+
+            <!-- 允许用户 @技能 -->
+            <div class="toggle-row">
+                <div class="toggle-info">
+                    <div class="toggle-title">允许用户 @技能</div>
+                    <div class="toggle-desc">开启后用户可通过 @技能 打开技能列表选择使用</div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="config-card">
+            <!-- 输入框功能 -->
+            <div class="form-group">
+                <label class="form-label">输入框功能 <span style="font-weight:400;color:var(--text-tertiary);font-size:12px;">（至少启用一个）</span></label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item checked">
+                        <div class="checkbox-box">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        输入问题
+                    </div>
+                    <div class="checkbox-item checked">
+                        <div class="checkbox-box">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        上传文件
+                    </div>
+                    <div class="checkbox-item">
+                        <div class="checkbox-box">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        上传图片
+                    </div>
+                </div>
+            </div>
+
+            <!-- 输入框提示文案 -->
+            <div class="form-group">
+                <label class="form-label">输入框提示文案</label>
+                <input class="form-input" placeholder="例如：请输入您的问题，我会为您分析采购数据...">
+                <p class="form-hint">定义的提示语将显示在对话输入框内，引导用户如何与专家对话</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 四、扩展能力 ===== -->
+    <div class="config-section">
+        <div class="section-header">
+            <h2 class="section-title">扩展能力</h2>
+            <p class="section-desc">为专家绑定工具、MCP 和技能，扩展其能力边界</p>
+        </div>
+
+        <div class="config-card">
+            <!-- 工具 -->
+            <div class="form-group">
+                <label class="form-label">工具</label>
+                <div class="selector-trigger">
+                    <div class="selector-trigger-left">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                        <span>管理工具</span>
+                    </div>
+                    <div class="selector-trigger-right">
+                        <span id="toolCountLabel">已选 2 个</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="selected-tags" id="toolTags" style="margin-top:8px;">
+                    <div class="selected-tag">联网搜索 <span class="tag-remove">×</span></div>
+                    <div class="selected-tag">代码执行 <span class="tag-remove">×</span></div>
+                </div>
+            </div>
+
+            <!-- MCP -->
+            <div class="form-group">
+                <label class="form-label">MCP</label>
+                <div class="selector-trigger">
+                    <div class="selector-trigger-left">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        <span>管理 MCP</span>
+                    </div>
+                    <div class="selector-trigger-right">
+                        <span>已选 1 个</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+                <div class="selected-tags" style="margin-top:8px;">
+                    <div class="selected-tag">数据库查询 MCP <span class="tag-remove">×</span></div>
+                </div>
+            </div>
+
+            <!-- 技能 -->
+            <div class="form-group">
+                <label class="form-label">技能</label>
+                <div class="selector-trigger">
+                    <div class="selector-trigger-left">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <span>管理技能</span>
+                    </div>
+                    <div class="selector-trigger-right">
+                        <span>已选 0 个</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 五、记忆相关 ===== -->
+    <div class="config-section">
+        <div class="section-header">
+            <h2 class="section-title">记忆相关</h2>
+            <p class="section-desc">配置专家的长期记忆能力</p>
+        </div>
+
+        <div class="config-card">
+            <div class="toggle-row" style="border-bottom:none;">
+                <div class="toggle-info">
+                    <div class="toggle-title">长期记忆</div>
+                    <div class="toggle-desc">开启后专家可跨会话记忆用户信息与偏好，在后续对话中提供更个性化的回答</div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="notice-box">
+                <svg class="notice-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <div class="notice-text">开启长期记忆后，专家将自动记录用户的关键信息（如姓名、偏好、历史需求等），并在后续对话中自动调用。请确保符合数据隐私合规要求。</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Fullscreen Prompt Overlay ===== -->
+    <div id="fullscreenOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:9999;flex-direction:column;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);">
+            <h3 style="font-size:15px;font-weight:600;">编辑系统提示词</h3>
+            <button class="btn btn-outline">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                退出全屏
+            </button>
+        </div>
+        <div style="flex:1;padding:24px;max-width:800px;margin:0 auto;width:100%;">
+            <textarea class="form-textarea" id="fullscreenPromptText" style="min-height:400px;" placeholder="请输入专家的系统提示词..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ============================================================
+         * 初始化：填充示例数据 + 切换为查看模式（只读）
+         * ============================================================
+         */
+        (function initViewMode() {
+
+            // ---------- 1. 填充示例数据 ----------
+            function fillSampleData() {
+                // 1.1 系统提示词
+                var promptEl = document.getElementById('promptText');
+                if (promptEl) {
+                    promptEl.value =
+                        '你是一位资深的采购分析专家，拥有 15 年以上的供应链管理经验，曾服务于多家世界 500 强企业。\n\n' +
+                        '【核心职责】\n' +
+                        '1. 供应商评估与筛选 — 基于多维度指标（质量、价格、交期、服务、信用）对供应商进行量化评估\n' +
+                        '2. 采购成本分析 — 分析采购成本构成，识别降本机会，提供成本优化方案\n' +
+                        '3. 供应链风险识别 — 预警供应中断、价格波动、地缘政治等风险因素\n' +
+                        '4. 采购合同审查 — 识别合同条款中的潜在风险，提供修改建议\n' +
+                        '5. 采购数据可视化 — 将采购数据转化为直观的图表和报告\n\n' +
+                        '【回答风格】\n' +
+                        '· 专业、精准、数据驱动，所有建议均基于最佳实践和行业标准\n' +
+                        '· 提供可操作的落地方案，而非泛泛而谈\n' +
+                        '· 使用结构化表达（分点、表格、对比），便于用户理解\n' +
+                        '· 在不确定时主动询问补充信息，避免猜测\n\n' +
+                        '【行为准则】\n' +
+                        '· 仅基于用户提供的采购数据进行分析，不编造数据\n' +
+                        '· 涉及商业决策时，明确标注建议的置信度和依据\n' +
+                        '· 保护用户商业机密，不主动询问敏感信息\n' +
+                        '· 如遇到超出采购领域的问题，礼貌引导用户回到主题';
+                    updateCharCount();
+                }
+
+                // 1.2 开场白
+                var greetingTextareas = document.querySelectorAll('.config-card .form-textarea:not(#promptText)');
+                if (greetingTextareas.length > 0) {
+                    greetingTextareas[0].value =
+                        '你好！我是你的采购分析专家助手 👋\n\n' +
+                        '我可以帮你：\n' +
+                        '· 评估供应商资质与信用风险\n' +
+                        '· 分析采购成本趋势与优化空间\n' +
+                        '· 审查采购合同条款\n' +
+                        '· 生成采购数据报告与可视化图表\n\n' +
+                        '请告诉我你今天想从哪方面开始？';
+                }
+
+                // 1.3 开场白问题
+                var qInputs = document.querySelectorAll('#greetingQList .form-input');
+                if (qInputs.length >= 3) {
+                    qInputs[0].value = '如何系统化评估新供应商的信用风险？';
+                    qInputs[1].value = '帮我分析过去 3 个月的采购成本趋势，并给出优化建议';
+                    qInputs[2].value = '采购合同中有哪些常见的风险条款需要重点关注？';
+                }
+
+                // 1.4 输入框提示文案
+                var hintInputs = document.querySelectorAll('.form-input[placeholder*="请输入您的问题"]');
+                if (hintInputs.length > 0) {
+                    hintInputs[0].value = '请描述您的采购需求，我会为您分析数据、评估供应商或提供专业建议...';
+                }
+
+                // 1.5 同步全屏提示词
+                var fullscreenPrompt = document.getElementById('fullscreenPromptText');
+                if (fullscreenPrompt && promptEl) {
+                    fullscreenPrompt.value = promptEl.value;
+                }
+            }
+
+            // ---------- 2. 切换为查看模式 ----------
+            function enableViewMode() {
+
+                // 2.1 给 body 添加查看模式类
+                document.body.classList.add('view-mode-disabled');
+
+                // 2.2 禁用所有 input、textarea、button
+                var formElements = document.querySelectorAll('input, textarea, button');
+                formElements.forEach(function(el) {
+                    el.disabled = true;
+                });
+
+                // 2.3 移除所有内联 onclick 属性（防止点击触发）
+                var allElements = document.querySelectorAll('[onclick]');
+                allElements.forEach(function(el) {
+                    el.removeAttribute('onclick');
+                });
+
+                // 2.4 移除所有 onchange 属性
+                var changeElements = document.querySelectorAll('[onchange]');
+                changeElements.forEach(function(el) {
+                    el.removeAttribute('onchange');
+                });
+
+                // 2.5 移除所有 oninput 属性
+                var inputElements = document.querySelectorAll('[oninput]');
+                inputElements.forEach(function(el) {
+                    el.removeAttribute('oninput');
+                });
+
+                // 2.6 处理自定义交互元素：添加 pointer-events: none 样式
+                var interactiveSelectors = [
+                    '.select-trigger',
+                    '.select-dropdown',
+                    '.model-item',
+                    '.model-tab',
+                    '.radio-card',
+                    '.checkbox-item',
+                    '.toggle',
+                    '.selector-trigger',
+                    '.tag-remove',
+                    '.remove-btn',
+                    '.prompt-action-btn',
+                    '.btn'
+                ];
+
+                interactiveSelectors.forEach(function(selector) {
+                    var elements = document.querySelectorAll(selector);
+                    elements.forEach(function(el) {
+                        if (el.closest('.toggle') && el.tagName === 'INPUT') {
+                            return;
+                        }
+                        el.style.pointerEvents = 'none';
+                        el.style.cursor = 'default';
+                    });
+                });
+
+                // ===== ✦ 修改：确保 textarea 的滚动不被禁用 =====
+                // 单独处理 textarea：恢复滚动能力（pointer-events: auto）
+                var textareas = document.querySelectorAll('textarea');
+                textareas.forEach(function(ta) {
+                    ta.style.pointerEvents = 'auto';
+                    ta.style.cursor = 'default';
+                });
+
+                // 2.7 特别处理 select-dropdown：隐藏下拉（查看模式下不显示）
+                var dropdowns = document.querySelectorAll('.select-dropdown');
+                dropdowns.forEach(function(d) {
+                    d.classList.remove('show');
+                    d.style.display = 'none';
+                });
+
+                // 2.8 移除所有 tooltip 的 cursor: help
+                var tooltips = document.querySelectorAll('.tooltip');
+                tooltips.forEach(function(t) {
+                    t.style.cursor = 'default';
+                });
+
+                // 2.9 禁用全屏覆盖层中的按钮和文本域
+                var overlayBtn = document.querySelector('#fullscreenOverlay .btn');
+                if (overlayBtn) overlayBtn.disabled = true;
+                var overlayTextarea = document.getElementById('fullscreenPromptText');
+                if (overlayTextarea) overlayTextarea.disabled = true;
+
+                // 2.10 确保所有 checkbox 和 radio 不可交互
+                var radioCards = document.querySelectorAll('.radio-card');
+                radioCards.forEach(function(card) {
+                    card.style.pointerEvents = 'none';
+                    card.style.cursor = 'default';
+                });
+
+                var checkboxItems = document.querySelectorAll('.checkbox-item');
+                checkboxItems.forEach(function(item) {
+                    item.style.pointerEvents = 'none';
+                    item.style.cursor = 'default';
+                });
+
+                var selectorArrows = document.querySelectorAll('.selector-trigger-right svg');
+                selectorArrows.forEach(function(arrow) {
+                    arrow.style.pointerEvents = 'none';
+                });
+
+                console.log('[ViewMode] 页面已切换为查看模式，系统提示词已启用滚动查看');
+            }
+
+            // ---------- 3. 执行初始化 ----------
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    fillSampleData();
+                    enableViewMode();
+                });
+            } else {
+                fillSampleData();
+                enableViewMode();
+            }
+
+        })();
+
+        // ============================================================
+        // 保留原有函数（但已被禁用，仅用于兼容）
+        // ============================================================
+        function updateCharCount() {
+            var text = document.getElementById('promptText');
+            var count = document.getElementById('promptCount');
+            if (text && count) {
+                count.textContent = text.value.length + ' / 5000';
+            }
+        }
+
+        // 空函数占位，防止原有 onclick 报错
+        function toggleModelSelect() {}
+        function switchModelTab() {}
+        function selectModel() {}
+        function aiOptimize() {}
+        function aiOptimizeGreeting() {}
+        function aiGenerateGreetingQ() {}
+        function openFullscreen() {}
+        function closeFullscreen() {}
+        function selectRadio() {}
+        function toggleCheckbox() {}
+        function toggleGreetingQuestions() {}
+        function addGreetingQ() {}
+        function removeGreetingQ() {}
+        function removeTag() {}
+        function openTopModal() {}
+        function updateTagsFromData() {}
+        function bindListEvents() {}
+        function bindMcpEvents() {}
+        function closeModal() {}
+        function buildListModalHTML() {}
+        function buildMcpModalHTML() {}
+    </script>
+
+</body>
+</html>

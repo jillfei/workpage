@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能体配置优化助手</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f5f6fa;
+  }
+
+  .app {
+    width: 100%; height: 100vh;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    z-index: 20;
+  }
+  .header-avatar {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .header-avatar::before {
+    content: '';
+    width: 20px; height: 20px;
+    background: linear-gradient(135deg, #a8c0ff, #3f2b96);
+    border-radius: 50%;
+    position: absolute;
+    opacity: 0.7;
+    top: -2px; left: 8px;
+  }
+  .header-avatar::after {
+    content: '';
+    width: 16px; height: 16px;
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    border-radius: 50%;
+    position: absolute;
+    top: 2px; left: 12px;
+  }
+  .header-info h1 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .header-info p {
+    font-size: 11px;
+    color: #999;
+    margin-top: 1px;
+  }
+  .header-status {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #52c41a;
+  }
+  .header-status .dot {
+    width: 7px; height: 7px;
+    background: #52c41a;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ===== Welcome ===== */
+  .welcome {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    overflow-y: auto;
+    transition: opacity 0.4s ease;
+  }
+  .welcome.hidden { display: none; }
+  .welcome-icon {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(102,126,234,0.25);
+    font-size: 32px;
+  }
+  .welcome h2 {
+    font-size: 22px;
+    color: #1a1a2e;
+    margin-bottom: 10px;
+  }
+  .welcome p {
+    font-size: 14px;
+    color: #888;
+    text-align: center;
+    line-height: 1.7;
+    max-width: 420px;
+    margin-bottom: 28px;
+  }
+  .quick-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    max-width: 500px;
+  }
+  .quick-tag {
+    padding: 10px 18px;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .quick-tag:hover {
+    border-color: #667eea;
+    color: #667eea;
+    background: #f0f2ff;
+    transform: translateY(-1px);
+  }
+
+  /* ===== Chat Area ===== */
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    padding-bottom: 120px;
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+  .chat-area.active { display: flex; }
+
+  .msg-row { display: flex; width: 100%; }
+  .msg-row.user { justify-content: flex-end; }
+  .msg-row.bot { justify-content: flex-start; }
+
+  .msg-bubble {
+    max-width: 78%;
+    padding: 12px 18px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .msg-row.user .msg-bubble {
+    background: #e8f0fe;
+    color: #1a1a2e;
+    border-bottom-right-radius: 4px;
+  }
+  .msg-row.bot .msg-bubble {
+    background: #fff;
+    color: #333;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  /* Thinking */
+  .thinking-box {
+    background: #fff;
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    padding: 14px 18px;
+    max-width: 80%;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .thinking-header {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: #888;
+    cursor: pointer; user-select: none;
+  }
+  .thinking-header .chevron {
+    font-size: 10px; transition: transform 0.2s;
+  }
+  .thinking-header .chevron.open { transform: rotate(90deg); }
+  .thinking-body {
+    margin-top: 8px;
+    font-size: 13px; color: #555; line-height: 1.7;
+  }
+  .thinking-body .step {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 4px;
+  }
+  .thinking-body .step .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #667eea;
+    flex-shrink: 0;
+  }
+  .thinking-body .step.done .dot { background: #52c41a; }
+
+  /* Loading */
+  .loading-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: #888;
+  }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid #e0e0e0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== Optimization List ===== */
+  .opt-card {
+    background: #fff;
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    max-width: 85%;
+    overflow: hidden;
+  }
+  .opt-card-header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .opt-card-header h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a2e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .opt-card-header .badge {
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .badge-total {
+    background: #f0f2ff;
+    color: #667eea;
+  }
+  .badge-applied {
+    background: #f0fff4;
+    color: #52c41a;
+  }
+  .opt-list {
+    list-style: none;
+  }
+  .opt-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 14px 20px;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background 0.15s;
+    gap: 12px;
+  }
+  .opt-item:last-child { border-bottom: none; }
+  .opt-item:hover { background: #fafbff; }
+  .opt-item.applied { background: #f8fff8; }
+
+  .opt-checkbox {
+    width: 18px; height: 18px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .opt-checkbox.checked {
+    background: #52c41a;
+    border-color: #52c41a;
+  }
+  .opt-checkbox.checked::after {
+    content: '✓';
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .opt-content { flex: 1; min-width: 0; }
+  .opt-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 3px;
+  }
+  .opt-desc {
+    font-size: 12px;
+    color: #999;
+    line-height: 1.5;
+  }
+  .opt-tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 1px 8px;
+    border-radius: 8px;
+    margin-right: 6px;
+    margin-top: 4px;
+  }
+  .tag-high { background: #fff2f0; color: #ff4d4f; }
+  .tag-medium { background: #fff7e6; color: #fa8c16; }
+  .tag-low { background: #f0f2ff; color: #667eea; }
+
+  .opt-apply-btn {
+    flex-shrink: 0;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+  .opt-apply-btn.apply {
+    background: #667eea;
+    color: #fff;
+  }
+  .opt-apply-btn.apply:hover {
+    background: #5a6fd6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102,126,234,0.3);
+  }
+  .opt-apply-btn.done {
+    background: #f0fff4;
+    color: #52c41a;
+    cursor: default;
+  }
+  .opt-apply-btn.done::before {
+    content: '✓ ';
+  }
+
+  /* Card footer */
+  .opt-card-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fafbff;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .opt-card-footer .progress-text {
+    font-size: 12px;
+    color: #888;
+  }
+  .opt-card-footer .progress-text strong {
+    color: #667eea;
+  }
+  .footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .apply-selected-btn {
+    padding: 8px 20px;
+    background: #fff;
+    color: #667eea;
+    border: 1.5px solid #667eea;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .apply-selected-btn:hover {
+    background: #667eea;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102,126,234,0.25);
+  }
+  .apply-selected-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    background: #fff;
+    color: #667eea;
+  }
+  .apply-selected-btn.all-done {
+    background: #f0fff4;
+    color: #52c41a;
+    border-color: #52c41a;
+    cursor: default;
+  }
+  .footer-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #bbb;
+  }
+  .apply-all-btn {
+    padding: 8px 24px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .apply-all-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102,126,234,0.35);
+  }
+  .apply-all-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .apply-all-btn.all-done {
+    background: linear-gradient(135deg, #52c41a, #389e0d);
+  }
+
+  .response-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #bbb;
+    padding: 0 4px;
+  }
+  .copy-btn {
+    padding: 3px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 11px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { border-color: #667eea; color: #667eea; }
+
+  /* ===== Input Area ===== */
+  .input-area {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 12px 24px 16px;
+    background: #fff;
+    border-top: 1px solid #f0f0f0;
+    z-index: 100;
+  }
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f5f6fa;
+    border-radius: 14px;
+    padding: 10px 16px;
+  }
+  .input-wrapper input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+  }
+  .input-wrapper input::placeholder { color: #bbb; }
+  .send-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: #667eea;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .send-btn.visible { opacity: 1; pointer-events: auto; }
+  .send-btn svg { width: 16px; height: 16px; fill: #fff; }
+  .footer-text {
+    text-align: center;
+    font-size: 11px;
+    color: #ccc;
+    padding: 6px 0 0;
+  }
+
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in { animation: fadeInUp 0.35s ease forwards; }
+
+  @keyframes applyFlash {
+    0% { background: #e8ffe8; }
+    100% { background: #f8fff8; }
+  }
+  .flash { animation: applyFlash 0.5s ease; }
+
+  /* Scrollbar */
+  .chat-area::-webkit-scrollbar { width: 4px; }
+  .chat-area::-webkit-scrollbar-track { background: transparent; }
+  .chat-area::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Header -->
+
+
+  <!-- Welcome -->
+  <div class="welcome" id="welcomeScreen">
+    <div class="welcome-icon">🤖</div>
+    <h2>智能体配置优化助手</h2>
+    <p>请描述您的智能体当前配置或粘贴配置内容，我将分析并生成优化清单，支持逐项或批量应用优化建议。</p>
+    <div class="quick-tags">
+      <div class="quick-tag" onclick="quickStart('帮我优化客服机器人的回复策略配置')">💬 客服机器人优化</div>
+      <div class="quick-tag" onclick="quickStart('分析当前智能体的知识库配置和检索策略')">📚 知识库配置分析</div>
+      <div class="quick-tag" onclick="quickStart('优化智能体的Prompt模板和系统指令')">✏️ Prompt优化</div>
+      <div class="quick-tag" onclick="quickStart('检查智能体的工具调用和API配置')"> 工具调用优化</div>
+      <div class="quick-tag" onclick="quickStart('优化多轮对话的上下文管理策略')">🔄 对话管理优化</div>
+    </div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="chat-area" id="chatArea"></div>
+
+  <!-- Input -->
+  <div class="input-area">
+    <div class="input-wrapper">
+      <input type="text" id="chatInput" placeholder="描述您的智能体配置，或粘贴配置内容..." oninput="toggleSendBtn()">
+      <button class="send-btn" id="sendBtn" onclick="handleSend()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+    <div class="footer-text">AI生成仅供参考，请根据实际业务场景评估后应用</div>
+  </div>
+</div>
+
+<script>
+let chatStarted = false;
+let optCounter = 0;
+
+function toggleSendBtn(){
+  const inp=document.getElementById('chatInput');
+  const btn=document.getElementById('sendBtn');
+  btn.classList.toggle('visible', !!inp.value.trim());
+}
+
+function quickStart(text){
+  document.getElementById('chatInput').value = text;
+  toggleSendBtn();
+  handleSend();
+}
+
+function startChat(){
+  if(chatStarted) return;
+  chatStarted = true;
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  document.getElementById('chatArea').classList.add('active');
+}
+
+function addMsg(type, html){
+  const area = document.getElementById('chatArea');
+  const row = document.createElement('div');
+  row.className = `msg-row ${type} animate-in`;
+  row.innerHTML = type==='user'
+    ? `<div class="msg-bubble">${html}</div>`
+    : html;
+  area.appendChild(row);
+  area.scrollTop = area.scrollHeight;
+  return row;
+}
+
+// Demo optimization data
+const demoOptimizations = [
+  {
+    title: '启用流式响应（Streaming）',
+    desc: '将响应模式从完整等待改为流式输出，首Token延迟降低80%，提升用户感知速度',
+    tag: 'high', tagText: '高优先级',
+    change: 'streaming: false → true'
+  },
+  {
+    title: '优化系统Prompt结构',
+    desc: '将当前单段式Prompt改为分层结构（角色→规则→示例→约束），提升指令遵循准确率约35%',
+    tag: 'high', tagText: '高优先级',
+    change: 'system_prompt 重构'
+  },
+  {
+    title: '增加Few-Shot示例',
+    desc: '在关键意图识别场景补充3-5个标准示例，减少模型幻觉和误判',
+    tag: 'high', tagText: '高优先级',
+    change: 'few_shot_examples: 0 → 5'
+  },
+  {
+    title: '调整Temperature参数',
+    desc: '当前Temperature=0.9偏高，客服场景建议降至0.3-0.5，提升回复稳定性和一致性',
+    tag: 'medium', tagText: '中优先级',
+    change: 'temperature: 0.9 → 0.4'
+  },
+  {
+    title: '启用上下文压缩',
+    desc: '当对话超过10轮时自动压缩历史消息，保留关键信息同时控制Token消耗',
+    tag: 'medium', tagText: '中优先级',
+    change: 'context_compression: off → on'
+  },
+  {
+    title: '配置Fallback模型',
+    desc: '设置备用模型（如主模型超时或限流时自动切换），提升服务可用性至99.9%',
+    tag: 'medium', tagText: '中优先级',
+    change: 'fallback_model: none → gpt-4o-mini'
+  },
+  {
+    title: '添加敏感词过滤层',
+    desc: '在输入/输出端增加内容安全过滤，防止不当内容生成，满足合规要求',
+    tag: 'low', tagText: '低优先级',
+    change: 'content_filter: off → on'
+  },
+  {
+    title: '优化知识库检索Top-K',
+    desc: '将RAG检索返回文档数从Top-3调整为Top-5，配合重排序提升召回质量',
+    tag: 'low', tagText: '低优先级',
+    change: 'retrieval_top_k: 3 → 5'
+  }
+];
+
+function buildOptCard(optimizations, userInput){
+  optCounter++;
+  const cardId = `opt-card-${optCounter}`;
+  const total = optimizations.length;
+
+  let itemsHTML = optimizations.map((opt, i) => `
+    <li class="opt-item" id="${cardId}-item-${i}" data-index="${i}">
+      <div class="opt-checkbox" id="${cardId}-cb-${i}" onclick="toggleCheck('${cardId}', ${i})"></div>
+      <div class="opt-content">
+        <div class="opt-title">${opt.title}</div>
+        <div class="opt-desc">${opt.desc}</div>
+      </div>
+      <button class="opt-apply-btn apply" id="${cardId}-btn-${i}" onclick="applyItem('${cardId}', ${i})">应用</button>
+    </li>
+  `).join('');
+
+  return `
+    <div style="display:flex;flex-direction:column;max-width:85%;">
+      <div class="opt-card animate-in" id="${cardId}">
+        <div class="opt-card-header">
+          <h3>
+            <span>📋</span> 配置优化清单
+            <span class="badge badge-total" id="${cardId}-badge-total">共 ${total} 项</span>
+            <span class="badge badge-applied" id="${cardId}-badge-applied" style="display:none;">已应用 0 项</span>
+          </h3>
+        </div>
+        <ul class="opt-list" id="${cardId}-list">
+          ${itemsHTML}
+        </ul>
+        <div class="opt-card-footer">
+          <div class="progress-text" id="${cardId}-progress">
+            已应用 <strong id="${cardId}-selected-count">0</strong> / ${total} 项
+          </div>
+          <div class="footer-actions">
+            <button class="apply-selected-btn" id="${cardId}-apply-selected" onclick="applySelected('${cardId}', ${total})" disabled>
+              <span>☑</span> 应用已选择 (<strong id="${cardId}-checked-count">0</strong>)
+            </button>
+            <button class="apply-all-btn" id="${cardId}-apply-all" onclick="applyAll('${cardId}', ${total})">
+              <span></span> 一键全部应用
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="response-meta">
+        <span>🕐 ${new Date().toLocaleTimeString('zh-CN',{hour12:false})}</span>
+        <button class="copy-btn" onclick="copyCard('${cardId}')">复制清单</button>
+      </div>
+    </div>
+  `;
+}
+
+// State tracking per card
+const cardStates = {};
+
+function initCardState(cardId, total){
+  if(!cardStates[cardId]){
+    cardStates[cardId] = {
+      applied: new Set(),
+      checked: new Set(),
+      total: total
+    };
+  }
+}
+
+function toggleCheck(cardId, index){
+  initCardState(cardId, cardStates[cardId]?.total || 8);
+  const state = cardStates[cardId];
+  const cb = document.getElementById(`${cardId}-cb-${index}`);
+  if(state.checked.has(index)){
+    state.checked.delete(index);
+    cb.classList.remove('checked');
+  } else {
+    state.checked.add(index);
+    cb.classList.add('checked');
+  }
+  updateProgress(cardId);
+}
+
+function applyItem(cardId, index){
+  initCardState(cardId, cardStates[cardId]?.total || 8);
+  const state = cardStates[cardId];
+  if(state.applied.has(index)) return;
+
+  const btn = document.getElementById(`${cardId}-btn-${index}`);
+  const item = document.getElementById(`${cardId}-item-${index}`);
+  const cb = document.getElementById(`${cardId}-cb-${index}`);
+
+  btn.className = 'opt-apply-btn done';
+  btn.textContent = '已应用';
+  item.classList.add('applied', 'flash');
+  cb.classList.add('checked');
+
+  state.applied.add(index);
+  state.checked.add(index);
+  updateProgress(cardId);
+}
+
+function applyAll(cardId, total){
+  initCardState(cardId, total);
+  const state = cardStates[cardId];
+  const btn = document.getElementById(`${cardId}-apply-all`);
+
+  // Disable button during animation
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:1.5px;"></span> 应用中...';
+
+  let delay = 0;
+  for(let i = 0; i < total; i++){
+    if(!state.applied.has(i)){
+      setTimeout(() => {
+        applyItem(cardId, i);
+        // Scroll to show progress
+        const area = document.getElementById('chatArea');
+        area.scrollTop = area.scrollHeight;
+      }, delay);
+      delay += 200;
+    }
+  }
+
+  setTimeout(() => {
+    btn.className = 'apply-all-btn all-done';
+    btn.innerHTML = '<span>✅</span> 全部已应用';
+  }, delay + 300);
+}
+
+function updateProgress(cardId){
+  const state = cardStates[cardId];
+  if(!state) return;
+  const checkedCount = state.checked.size;
+  const appCount = state.applied.size;
+
+  const selEl = document.getElementById(`${cardId}-selected-count`);
+  if(selEl) selEl.textContent = appCount;
+
+  // Update checked count display
+  const checkedEl = document.getElementById(`${cardId}-checked-count`);
+  if(checkedEl) checkedEl.textContent = checkedCount;
+
+  // Update apply-selected button state
+  const applySelBtn = document.getElementById(`${cardId}-apply-selected`);
+  if(applySelBtn){
+    const unappliedChecked = [...state.checked].filter(i => !state.applied.has(i)).length;
+    applySelBtn.disabled = unappliedChecked === 0;
+    if(appCount >= state.total){
+      applySelBtn.className = 'apply-selected-btn all-done';
+      applySelBtn.innerHTML = '<span>✅</span> 全部已应用';
+    }
+  }
+
+  const badgeApplied = document.getElementById(`${cardId}-badge-applied`);
+  if(badgeApplied){
+    badgeApplied.style.display = appCount > 0 ? 'inline-block' : 'none';
+    badgeApplied.textContent = `已应用 ${appCount} 项`;
+  }
+
+  // Update apply-all button state
+  const applyAllBtn = document.getElementById(`${cardId}-apply-all`);
+  if(applyAllBtn && appCount >= state.total){
+    applyAllBtn.className = 'apply-all-btn all-done';
+    applyAllBtn.innerHTML = '<span>✅</span> 全部已应用';
+    applyAllBtn.disabled = true;
+  }
+}
+
+function applySelected(cardId, total){
+  initCardState(cardId, total);
+  const state = cardStates[cardId];
+  const btn = document.getElementById(`${cardId}-apply-selected`);
+
+  // Get only checked & not yet applied items
+  const toApply = [...state.checked].filter(i => !state.applied.has(i));
+  if(toApply.length === 0) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:1.5px;border-top-color:#667eea;"></span> 应用中...';
+
+  let delay = 0;
+  toApply.forEach(i => {
+    setTimeout(() => {
+      applyItem(cardId, i);
+      const area = document.getElementById('chatArea');
+      area.scrollTop = area.scrollHeight;
+    }, delay);
+    delay += 200;
+  });
+
+  setTimeout(() => {
+    if(state.applied.size >= state.total){
+      btn.className = 'apply-selected-btn all-done';
+      btn.innerHTML = '<span>✅</span> 全部已应用';
+    } else {
+      btn.disabled = true;
+      btn.innerHTML = `<span>☑</span> 应用已选择 (<strong id="${cardId}-checked-count">${state.checked.size - toApply.length}</strong>)`;
+    }
+  }, delay + 300);
+}
+
+function copyCard(cardId){
+  const card = document.getElementById(cardId);
+  const items = card.querySelectorAll('.opt-item');
+  let text = '智能体配置优化清单\n\n';
+  items.forEach((item, i) => {
+    const title = item.querySelector('.opt-title').textContent;
+    const desc = item.querySelector('.opt-desc').textContent;
+    const applied = item.classList.contains('applied') ? ' [已应用]' : '';
+    text += `${i+1}. ${title}${applied}\n   ${desc}\n\n`;
+  });
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = card.querySelector('.copy-btn');
+    if(btn){ btn.textContent='已复制'; setTimeout(()=>btn.textContent='复制清单',2000); }
+  });
+}
+
+function handleSend(){
+  const inp = document.getElementById('chatInput');
+  const text = inp.value.trim();
+  if(!text) return;
+
+  startChat();
+  addMsg('user', text);
+  inp.value = '';
+  toggleSendBtn();
+
+  // Thinking phase
+  setTimeout(()=>{
+    const thinkingHTML = `
+      <div class="thinking-box animate-in">
+        <div class="thinking-header" onclick="toggleThinking(this)">
+          <span class="chevron open">▸</span> 深度分析中
+        </div>
+        <div class="thinking-body" id="thinking-body-${Date.now()}">
+          <div class="step"><div class="dot"></div> 解析配置内容...</div>
+          <div class="step"><div class="dot"></div> 对比最佳实践库...</div>
+          <div class="step"><div class="dot"></div> 生成优化建议...</div>
+        </div>
+      </div>
+    `;
+    addMsg('bot', thinkingHTML);
+
+    // Animate steps
+    const steps = document.querySelectorAll('.thinking-body .step');
+    steps.forEach((step, i) => {
+      setTimeout(()=>{
+        step.classList.add('done');
+      }, 600 * (i+1));
+    });
+  }, 800);
+
+  // Loading
+  setTimeout(()=>{
+    addMsg('bot', `
+      <div class="loading-row animate-in" id="loading-${Date.now()}">
+        <div class="spinner"></div>
+        <span>正在生成优化清单...</span>
+      </div>
+    `);
+  }, 2200);
+
+  // Final: optimization card
+  setTimeout(()=>{
+    // Remove all loading rows
+    document.querySelectorAll('[id^="loading-"]').forEach(el=>el.remove());
+
+    const cardHTML = buildOptCard(demoOptimizations, text);
+    addMsg('bot', cardHTML);
+  }, 3800);
+}
+
+function toggleThinking(header){
+  const chevron = header.querySelector('.chevron');
+  const body = header.nextElementSibling;
+  if(body.style.display==='none'){
+    body.style.display='block';
+    chevron.classList.add('open');
+  } else {
+    body.style.display='none';
+    chevron.classList.remove('open');
+  }
+}
+
+// Enter key
+document.getElementById('chatInput').addEventListener('keydown', function(e){
+  if(e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    handleSend();
+  }
+});
+</script>
+</body>
+</html>
