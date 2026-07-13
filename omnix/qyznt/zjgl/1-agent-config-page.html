@@ -498,7 +498,7 @@ body {
     <div class="form-group">
       <label class="form-label">
         模型 <span class="required">*</span>
-        <span class="tooltip" title="选择专家使用的 AI 模型">
+        <span class="tooltip" title="选择专家使用的默认模型，客户端可选其他模型">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         </span>
       </label>
@@ -512,8 +512,8 @@ body {
         </div>
         <div class="select-dropdown" id="modelDropdown">
           <div class="model-tabs">
-            <div class="model-tab active" onclick="switchModelTab('online', this)">在线模型</div>
-            <div class="model-tab" onclick="switchModelTab('local', this)">本地模型</div>
+            <div class="model-tab active" onclick="switchModelTab('online', this)" style="display:none">在线模型</div>
+            <div class="model-tab" onclick="switchModelTab('local', this)" style="display:none">本地模型</div>
           </div>
           <div class="model-list" id="modelListOnline">
             <div class="model-item selected" onclick="selectModel(this, 'GPT-4o', '在线')">
@@ -589,6 +589,10 @@ body {
       <div class="prompt-editor">
         <div class="prompt-toolbar">
           <div class="prompt-actions">
+            <button class="prompt-action-btn" onclick="openExpertLibrary()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              专家词库
+            </button>
             <button class="prompt-action-btn" onclick="aiOptimize()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               AI 优化
@@ -612,33 +616,18 @@ body {
 
 
 <!-- ===== 三、对话体验 ===== -->
-<div class="config-section">
+<!--div class="config-section">
   <div class="section-header">
     <h2 class="section-title">对话体验</h2>
     <p class="section-desc">优化用户与专家的对话交互体验</p>
   </div>
 
   <div class="config-card">
-    <!-- 开场白 -->
-    <div class="form-group">
-      <label class="form-label">开场白</label>
-      <div class="prompt-toolbar" style="margin-bottom:8px;">
-        <div class="prompt-actions">
-          <button class="prompt-action-btn" onclick="aiOptimizeGreeting()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            AI 优化
-          </button>
-        </div>
-      </div>
-      <textarea class="form-textarea" style="min-height:80px;" placeholder="输入专家首次对话时的欢迎语，例如：你好！我是你的采购分析助手，可以帮你分析供应商数据、生成采购报告..."></textarea>
-    </div>
-
-    <!-- 开场白问题 -->
     <div class="form-group">
       <div class="toggle-row" style="border-bottom:none;padding-bottom:0;">
         <div class="toggle-info">
           <div class="toggle-title">开场白问题</div>
-          <div class="toggle-desc">开启后可设置引导问题，至少填写 3 个，超出 3 个随机展示 3 个</div>
+          <div class="toggle-desc">系统会根据专家配置自动生成引导问题</div>
         </div>
         <label class="toggle">
           <input type="checkbox" id="greetingQToggle" onchange="toggleGreetingQuestions()">
@@ -680,56 +669,7 @@ body {
       </div>
     </div>
   </div>
-
-  <div class="config-card">
-    <!-- 自动追问 -->
-    <div class="toggle-row">
-      <div class="toggle-info">
-        <div class="toggle-title">自动追问</div>
-        <div class="toggle-desc">开启后，专家回复后自动根据对话内容提供 3 条问题建议</div>
-      </div>
-      <label class="toggle">
-        <input type="checkbox">
-        <span class="toggle-slider"></span>
-      </label>
-    </div>
-
-  </div>
-
-  <div class="config-card">
-    <!-- 输入框功能 -->
-    <div class="form-group">
-      <label class="form-label">输入框功能 <span style="font-weight:400;color:var(--text-tertiary);font-size:12px;">（至少启用一个）</span></label>
-      <div class="checkbox-group">
-        <div class="checkbox-item checked" onclick="toggleCheckbox(this)">
-          <div class="checkbox-box">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          输入问题
-        </div>
-        <div class="checkbox-item checked" onclick="toggleCheckbox(this)">
-          <div class="checkbox-box">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          上传文件
-        </div>
-        <div class="checkbox-item" onclick="toggleCheckbox(this)">
-          <div class="checkbox-box">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          上传图片
-        </div>
-      </div>
-    </div>
-
-    <!-- 输入框提示文案 -->
-    <div class="form-group">
-      <label class="form-label">输入框提示文案</label>
-      <input class="form-input" placeholder="例如：请输入您的问题，我会为您分析采购数据...">
-      <p class="form-hint">定义的提示语将显示在对话输入框内，引导用户如何与专家对话</p>
-    </div>
-  </div>
-</div>
+</div-->
 
 <!-- ===== 四、扩展能力 ===== -->
 <div class="config-section">
@@ -739,24 +679,6 @@ body {
   </div>
 
   <div class="config-card">
-    <!-- 工具 -->
-    <div class="form-group">
-      <label class="form-label">工具</label>
-      <div class="selector-trigger" onclick="openTopModal('tool')">
-        <div class="selector-trigger-left">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-          <span>管理工具</span>
-        </div>
-        <div class="selector-trigger-right">
-          <span>已选 2 个</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
-      </div>
-      <div class="selected-tags" style="margin-top:8px;">
-        <div class="selected-tag">联网搜索 <span class="tag-remove">×</span></div>
-        <div class="selected-tag">代码执行 <span class="tag-remove">×</span></div>
-      </div>
-    </div>
 
     <!-- MCP -->
     <div class="form-group">
@@ -793,30 +715,6 @@ body {
   </div>
 </div>
 
-<!-- ===== 五、记忆相关 ===== -->
-<div class="config-section">
-  <div class="section-header">
-    <h2 class="section-title">记忆相关</h2>
-    <p class="section-desc">配置专家的长期记忆能力</p>
-  </div>
-
-  <div class="config-card">
-    <div class="toggle-row" style="border-bottom:none;">
-      <div class="toggle-info">
-        <div class="toggle-title">长期记忆</div>
-        <div class="toggle-desc">开启后专家可跨会话记忆用户信息与偏好，在后续对话中提供更个性化的回答</div>
-      </div>
-      <label class="toggle">
-        <input type="checkbox">
-        <span class="toggle-slider"></span>
-      </label>
-    </div>
-    <div class="notice-box">
-      <svg class="notice-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <div class="notice-text">开启长期记忆后，专家将自动记录用户的关键信息（如姓名、偏好、历史需求等），并在后续对话中自动调用。请确保符合数据隐私合规要求。</div>
-    </div>
-  </div>
-</div>
 
 <!-- ===== Fullscreen Prompt Overlay (inside iframe) ===== -->
 <div id="fullscreenOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:9999;flex-direction:column;">
@@ -966,6 +864,92 @@ body {
       .top-mcp-sub-name { font-size: 12px; font-weight: 500; color: #1F2937; }
       .top-mcp-sub-desc { font-size: 11px; color: #9CA3AF; }
       .top-mcp-actions { padding: 8px 0 0; text-align: right; }
+
+      /* ===== Expert Library Modal ===== */
+      .expert-item {
+        display: flex; align-items: flex-start; gap: 12px;
+        padding: 12px; border-radius: 8px;
+        cursor: pointer; transition: all 0.15s;
+        position: relative;
+      }
+      .expert-item:hover { background: #F9FAFB; }
+      .expert-item-avatar {
+        width: 40px; height: 40px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; font-size: 14px; font-weight: 600;
+      }
+      .expert-item-content { flex: 1; min-width: 0; }
+      .expert-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+      .expert-item-name { font-size: 14px; font-weight: 500; color: #1F2937; }
+      .expert-item-category {
+        font-size: 11px; color: #3B82F6; background: #EFF6FF;
+        padding: 1px 8px; border-radius: 10px;
+      }
+      .expert-item-meta { font-size: 12px; color: #9CA3AF; margin-bottom: 4px; }
+      .expert-item-desc { font-size: 12px; color: #6B7280; line-height: 1.5; }
+      .expert-item-actions {
+        display: none; position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+        gap: 6px;
+      }
+      .expert-item:hover .expert-item-actions { display: flex; }
+      .expert-action-btn {
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
+        cursor: pointer; transition: all 0.15s; border: none; outline: none;
+        font-family: inherit; white-space: nowrap;
+      }
+      .expert-action-btn.view { background: #F3F4F6; color: #374151; }
+      .expert-action-btn.view:hover { background: #E5E7EB; }
+      .expert-action-btn.apply { background: #3B82F6; color: #fff; }
+      .expert-action-btn.apply:hover { background: #2563EB; }
+
+      /* Expert Detail Modal */
+      .expert-detail-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.45); z-index: 1000000;
+        display: flex; align-items: center; justify-content: center;
+        padding: 24px; animation: topModalFadeIn 0.2s ease;
+      }
+      .expert-detail-modal {
+        background: #fff; border-radius: 12px;
+        box-shadow: 0 20px 40px -8px rgba(0,0,0,0.15);
+        width: 100%; max-width: 640px; max-height: 80vh;
+        display: flex; flex-direction: column; overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+        animation: topModalSlideIn 0.2s ease;
+      }
+      .expert-detail-header {
+        display: flex; align-items: center; gap: 12px;
+        padding: 16px 20px; border-bottom: 1px solid #E5E7EB;
+      }
+      .expert-detail-avatar {
+        width: 44px; height: 44px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 16px; font-weight: 600; flex-shrink: 0;
+      }
+      .expert-detail-title-area { flex: 1; }
+      .expert-detail-title { font-size: 15px; font-weight: 600; color: #1F2937; }
+      .expert-detail-subtitle { font-size: 12px; color: #9CA3AF; margin-top: 2px; }
+      .expert-detail-close {
+        width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+        border-radius: 6px; cursor: pointer; color: #9CA3AF; transition: all 0.2s;
+        border: none; background: none;
+      }
+      .expert-detail-close:hover { background: #F3F4F6; color: #1F2937; }
+      .expert-detail-body {
+        flex: 1; overflow-y: auto; padding: 16px 20px;
+      }
+      .expert-detail-label { font-size: 12px; font-weight: 500; color: #6B7280; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+      .expert-detail-prompt {
+        background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px;
+        padding: 16px; font-size: 13px; color: #374151; line-height: 1.7;
+        white-space: pre-wrap; word-break: break-word;
+        max-height: 400px; overflow-y: auto;
+      }
+      .expert-detail-footer {
+        display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+        padding: 12px 20px; border-top: 1px solid #E5E7EB;
+      }
     `;
     doc.head.appendChild(style);
     if (doc === topDoc) styleInjected = true;
@@ -1316,6 +1300,233 @@ body {
     }
   }
 
+  // ============================================================
+  // Expert Library (专家词库)
+  // ============================================================
+  var expertLibraryData = [
+    {
+      id: 'e1', name: '采购谈判专家', avatar: '谈', avatarBg: '#EFF6FF', avatarColor: '#3B82F6',
+      category: '采购', updateDate: '2026-07-01',
+      desc: '擅长供应商谈判策略制定、价格分析和合同条款优化，帮助企业降低采购成本',
+      prompt: '你是一位资深的采购谈判专家，拥有超过15年的供应链管理经验。\n\n## 核心能力\n- 供应商评估与谈判策略制定\n- 采购成本分析与优化建议\n- 合同条款审查与风险提示\n- 多轮谈判场景模拟与话术指导\n\n## 行为准则\n1. 始终以数据驱动决策，引用行业基准数据\n2. 提供具体可执行的谈判话术和策略\n3. 主动识别潜在风险并给出预防建议\n4. 回答简洁专业，避免冗余表述\n\n## 回答风格\n- 使用结构化格式（标题、列表、表格）\n- 重要结论用加粗标注\n- 必要时提供对比分析表'
+    },
+    {
+      id: 'e2', name: '法务合同专家', avatar: '法', avatarBg: '#FEF2F2', avatarColor: '#EF4444',
+      category: '法务', updateDate: '2026-06-28',
+      desc: '专注于合同审查、法律风险识别和合规建议，覆盖采购、销售、服务等各类合同',
+      prompt: '你是一位专业的法务合同审查专家，精通中国合同法及相关法律法规。\n\n## 核心能力\n- 合同条款风险识别与评估\n- 合规性审查与建议\n- 争议解决条款优化\n- 知识产权保护建议\n\n## 行为准则\n1. 对每个风险条款标注风险等级（高/中/低）\n2. 提供修改建议和替代条款\n3. 引用具体法律条文作为依据\n4. 必要时建议寻求专业律师意见\n\n## 免责声明\n本专家提供的建议仅供参考，不构成正式法律意见。'
+    },
+    {
+      id: 'e3', name: '供应链分析师', avatar: '链', avatarBg: '#ECFDF5', avatarColor: '#10B981',
+      category: '供应链', updateDate: '2026-06-15',
+      desc: '擅长供应链数据分析、库存优化和物流规划，提升整体供应链效率',
+      prompt: '你是一位供应链数据分析专家，擅长运用数据模型优化供应链管理。\n\n## 核心能力\n- 供应链全链路数据分析\n- 库存优化模型（EOQ、安全库存计算）\n- 物流成本分析与路线优化\n- 供应商绩效评估体系设计\n\n## 行为准则\n1. 用数据和公式支撑分析结论\n2. 提供可视化图表建议\n3. 结合行业最佳实践给出建议\n4. 考虑多种场景的敏感性分析'
+    },
+    {
+      id: 'e4', name: '财务成本专家', avatar: '财', avatarBg: '#F3E8FF', avatarColor: '#8B5CF6',
+      category: '财务', updateDate: '2026-06-10',
+      desc: '专注于采购成本分析、TCO总拥有成本计算和预算规划',
+      prompt: '你是一位财务成本分析专家，精通企业采购成本管理和财务分析。\n\n## 核心能力\n- TCO（总拥有成本）模型构建\n- 采购预算编制与执行分析\n- 成本节约量化评估\n- 供应商报价对比分析\n\n## 行为准则\n1. 所有分析必须包含计算过程和公式\n2. 提供Excel模板建议\n3. 用表格呈现对比数据\n4. 标注数据来源和假设条件'
+    },
+    {
+      id: 'e5', name: '质量管理专家', avatar: '质', avatarBg: '#FFFBEB', avatarColor: '#F59E0B',
+      category: '质量', updateDate: '2026-05-20',
+      desc: '擅长供应商质量管理体系评估、来料检验标准制定和质量改进方案',
+      prompt: '你是一位质量管理专家，拥有丰富的供应商质量管理（SQE）经验。\n\n## 核心能力\n- 供应商质量体系审核（ISO 9001/IATF 16949）\n- 来料检验标准制定（AQL抽样方案）\n- 8D/5Why等质量问题分析方法\n- 供应商质量改进计划制定\n\n## 行为准则\n1. 引用国际/行业标准\n2. 提供可落地的检查清单\n3. 用案例说明问题解决方法\n4. 注重预防而非事后处理'
+    },
+    {
+      id: 'e6', name: '招标策划专家', avatar: '标', avatarBg: '#FFF7ED', avatarColor: '#EA580C',
+      category: '招标', updateDate: '2026-05-15',
+      desc: '擅长招标文件编制、评标标准设计和招标流程管理',
+      prompt: '你是一位招标策划专家，精通企业采购招标全流程管理。\n\n## 核心能力\n- 招标文件编制与审核\n- 评标标准与权重设计\n- 供应商资质审查要点\n- 招标风险防控\n\n## 行为准则\n1. 严格遵循《招标投标法》及相关法规\n2. 提供标准化的文档模板\n3. 评标标准量化可操作\n4. 注意公平公正原则'
+    }
+  ];
+
+  window.openExpertLibrary = function() {
+    var doc = getTop();
+    injectStyles(doc);
+
+    var existing = doc.getElementById('expertLibraryContainer');
+    if (existing) existing.remove();
+
+    var overlay = doc.createElement('div');
+    overlay.className = 'top-modal-overlay';
+    overlay.id = 'expertLibraryContainer';
+
+    var modal = doc.createElement('div');
+    modal.className = 'top-modal';
+    modal.innerHTML = buildExpertLibraryHTML();
+
+    overlay.appendChild(modal);
+    doc.body.appendChild(overlay);
+
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeExpertLibrary(doc);
+    });
+
+    bindExpertLibraryEvents(modal, doc, overlay);
+  };
+
+  function buildExpertLibraryHTML() {
+    var itemsHtml = expertLibraryData.map(function(exp) {
+      return '<div class="expert-item" data-id="'+exp.id+'">' +
+        '<div class="expert-item-avatar" style="background:'+exp.avatarBg+';color:'+exp.avatarColor+';">'+exp.avatar+'</div>' +
+        '<div class="expert-item-content">' +
+          '<div class="expert-item-header">' +
+            '<span class="expert-item-name">'+exp.name+'</span>' +
+            '<span class="expert-item-category">'+exp.category+'</span>' +
+          '</div>' +
+          '<div class="expert-item-meta">\u66F4\u65B0\u4E8E '+exp.updateDate+'</div>' +
+          '<div class="expert-item-desc">'+exp.desc+'</div>' +
+        '</div>' +
+        '<div class="expert-item-actions">' +
+          '<button class="expert-action-btn view" data-action="viewPrompt" data-id="'+exp.id+'">' +
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+            '\u67E5\u770B\u63D0\u793A\u8BCD' +
+          '</button>' +
+          '<button class="expert-action-btn apply" data-action="applyExpert" data-id="'+exp.id+'">' +
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+            '\u5E94\u7528\u4E13\u5BB6' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    return '<div class="top-modal-header">' +
+      '<h3 class="top-modal-title">\u4E13\u5BB6\u8BCD\u5E93</h3>' +
+      '<button class="top-modal-close" data-action="close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+    '</div>' +
+    '<div class="top-modal-search"><input placeholder="搜索专家名称或描述..." data-action="searchExpert"></div>' +
+    '<div class="top-modal-body" data-role="expertList">'+itemsHtml+'</div>' +
+    '<div class="top-modal-footer">' +
+      '<span class="footer-count" data-role="expertCount">\u5171 '+expertLibraryData.length+' \u4E2A\u4E13\u5BB6</span>' +
+      '<button class="top-modal-btn top-modal-btn-outline" data-action="close">\u5173\u95ED</button>' +
+    '</div>';
+  }
+
+  function closeExpertLibrary(doc) {
+    var container = doc.getElementById('expertLibraryContainer');
+    if (container) container.remove();
+  }
+
+  function bindExpertLibraryEvents(modal, doc, overlay) {
+    // Close button
+    modal.querySelectorAll('[data-action="close"]').forEach(function(btn) {
+      btn.addEventListener('click', function() { closeExpertLibrary(doc); });
+    });
+
+    // Search
+    var searchInput = modal.querySelector('[data-action="searchExpert"]');
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        var keyword = this.value.toLowerCase().trim();
+        var listContainer = modal.querySelector('[data-role="expertList"]');
+        var items = listContainer.querySelectorAll('.expert-item');
+        var visibleCount = 0;
+        items.forEach(function(item) {
+          var name = item.querySelector('.expert-item-name').textContent.toLowerCase();
+          var category = item.querySelector('.expert-item-category').textContent.toLowerCase();
+          var desc = item.querySelector('.expert-item-desc').textContent.toLowerCase();
+          if (!keyword || name.indexOf(keyword) > -1 || category.indexOf(keyword) > -1 || desc.indexOf(keyword) > -1) {
+            item.style.display = '';
+            visibleCount++;
+          } else {
+            item.style.display = 'none';
+          }
+        });
+        modal.querySelector('[data-role="expertCount"]').textContent = '\u663E\u793A '+visibleCount+' / '+expertLibraryData.length+' \u4E2A\u4E13\u5BB6';
+      });
+    }
+
+    // View prompt
+    modal.querySelectorAll('[data-action="viewPrompt"]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var id = this.getAttribute('data-id');
+        var expert = expertLibraryData.find(function(ex) { return ex.id === id; });
+        if (expert) openExpertDetail(doc, expert);
+      });
+    });
+
+    // Apply expert
+    modal.querySelectorAll('[data-action="applyExpert"]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var id = this.getAttribute('data-id');
+        var expert = expertLibraryData.find(function(ex) { return ex.id === id; });
+        if (expert) applyExpert(doc, expert, overlay);
+      });
+    });
+  }
+
+  function openExpertDetail(doc, expert) {
+    var overlay = doc.createElement('div');
+    overlay.className = 'expert-detail-overlay';
+    overlay.id = 'expertDetailContainer';
+
+    var modal = doc.createElement('div');
+    modal.className = 'expert-detail-modal';
+    modal.innerHTML = '<div class="expert-detail-header">' +
+      '<div class="expert-detail-avatar" style="background:'+expert.avatarBg+';color:'+expert.avatarColor+';">'+expert.avatar+'</div>' +
+      '<div class="expert-detail-title-area">' +
+        '<div class="expert-detail-title">'+expert.name+'</div>' +
+        '<div class="expert-detail-subtitle">'+expert.category+' \u00B7 \u66F4\u65B0\u4E8E '+expert.updateDate+'</div>' +
+      '</div>' +
+      '<button class="expert-detail-close" data-action="closeDetail"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+    '</div>' +
+    '<div class="expert-detail-body">' +
+      '<div class="expert-detail-label">\u63CF\u8FF0</div>' +
+      '<div style="font-size:13px;color:#374151;margin-bottom:16px;line-height:1.6;">'+expert.desc+'</div>' +
+      '<div class="expert-detail-label">\u7CFB\u7EDF\u63D0\u793A\u8BCD</div>' +
+      '<div class="expert-detail-prompt">'+escapeHtml(expert.prompt)+'</div>' +
+    '</div>' +
+    '<div class="expert-detail-footer">' +
+      '<button class="top-modal-btn top-modal-btn-outline" data-action="closeDetail">\u5173\u95ED</button>' +
+      '<button class="top-modal-btn top-modal-btn-primary" data-action="applyFromDetail" data-id="'+expert.id+'">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+        '\u5E94\u7528\u4E13\u5BB6' +
+      '</button>' +
+    '</div>';
+
+    overlay.appendChild(modal);
+    doc.body.appendChild(overlay);
+
+    // Close on overlay click
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) overlay.remove();
+    });
+
+    // Close buttons
+    modal.querySelectorAll('[data-action="closeDetail"]').forEach(function(btn) {
+      btn.addEventListener('click', function() { overlay.remove(); });
+    });
+
+    // Apply from detail
+    var applyBtn = modal.querySelector('[data-action="applyFromDetail"]');
+    if (applyBtn) {
+      applyBtn.addEventListener('click', function() {
+        var expertLibOverlay = doc.getElementById('expertLibraryContainer');
+        applyExpert(doc, expert, expertLibOverlay);
+        overlay.remove();
+      });
+    }
+  }
+
+  function applyExpert(doc, expert, libraryOverlay) {
+    var textarea = document.getElementById('promptText');
+    if (textarea) {
+      textarea.value = expert.prompt;
+      updateCharCount();
+    }
+    if (libraryOverlay) libraryOverlay.remove();
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+  }
+
 })();
 
 // ============================================================
@@ -1360,7 +1571,7 @@ function updateCharCount() {
   document.getElementById('promptCount').textContent = text.length + ' / 5000';
 }
 
-function aiOptimize() { alert('AI 优化功能：将根据您的提示词内容进行智能优化建议'); }
+function aiOptimize() { alert('AI 优化功能：将使用系统默认模型，根据您的专家配置内容进行智能优化'); }
 function aiOptimizeGreeting() { alert('AI 优化功能：将优化您的开场白文案'); }
 function aiGenerateGreetingQ() { alert('AI 生成功能：将根据专家配置自动生成引导问题'); }
 
