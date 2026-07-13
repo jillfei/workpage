@@ -277,7 +277,7 @@
         .dropdown-menu {
             animation: slideDown 0.2s ease;
             transform-origin: top center;
-            z-index: 60;
+			z-index: 60;
         }
 
         .dropdown-item {
@@ -690,7 +690,7 @@
             }
         }
 
-        /* ===== 导入弹窗类别网格 ===== */
+        /* ===== 导入弹窗类别网格（与图片一致） ===== */
         .import-category-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -714,103 +714,6 @@
             cursor: pointer;
             flex-shrink: 0;
         }
-
-        /* ===== 分页控件 ===== */
-        .pagination-bar {
-            flex-shrink: 0;
-            background: #ffffff;
-            border-top: 1px solid #e5e7eb;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 14px;
-            color: #4b5563;
-            margin-top: auto;
-            border-radius: 0 0 12px 12px;
-        }
-        .pagination-bar .pagination-info {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .pagination-bar .pagination-info .sep {
-            color: #d1d5db;
-            margin: 0 2px;
-        }
-        .pagination-bar .pagination-controls {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        .pagination-bar .pagination-controls .page-size-wrap {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .pagination-bar .pagination-controls .page-size-wrap select {
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 2px 8px 2px 6px;
-            font-size: 13px;
-            background: #fff;
-            color: #1f2937;
-            outline: none;
-            cursor: pointer;
-            transition: border-color 0.2s;
-            appearance: auto;
-        }
-        .pagination-bar .pagination-controls .page-size-wrap select:focus {
-            border-color: #4f46e5;
-            ring: 2px solid #4f46e520;
-        }
-        .pagination-bar .pagination-controls .page-btns {
-            display: flex;
-            gap: 2px;
-        }
-        .pagination-bar .pagination-controls .page-btns button {
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            border: 1px solid transparent;
-            background: transparent;
-            color: #4b5563;
-            cursor: pointer;
-            transition: all 0.15s;
-            font-size: 16px;
-        }
-        .pagination-bar .pagination-controls .page-btns button:hover:not(:disabled) {
-            background: #f3f4f6;
-            border-color: #e5e7eb;
-        }
-        .pagination-bar .pagination-controls .page-btns button:disabled {
-            color: #d1d5db;
-            cursor: not-allowed;
-        }
-        .pagination-bar .pagination-controls .page-btns button iconify-icon {
-            font-size: 18px;
-        }
-
-        /* 内容区底部留白，让分页更舒适 */
-        .view-content {
-            padding-bottom: 0;
-        }
-
-        @media (max-width: 640px) {
-            .pagination-bar {
-                flex-wrap: wrap;
-                gap: 8px;
-                padding: 10px 14px;
-                font-size: 13px;
-            }
-            .pagination-bar .pagination-controls {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -831,7 +734,7 @@
                         <span class="recycle-badge" id="recycle-badge" style="display:none;">0</span>
                     </button>
 
-                    <!-- 新增下拉按钮 -->
+                    <!-- ===== 新增下拉按钮 ===== -->
                     <div class="relative" id="add-dropdown-wrapper">
                         <button onclick="toggleAddDropdown()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm" id="add-main-btn">
                             <iconify-icon icon="mdi:plus"></iconify-icon>
@@ -841,8 +744,7 @@
                         <!-- 下拉菜单 -->
                         <div class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden dropdown-menu hidden" id="add-dropdown-menu">
                             <div class="p-1.5">
-								<!-- todo 暂不开启手动创建、AI智能创建-->
-                                <!--div class="dropdown-item" onclick="handleDropdownAction('manual')">
+                                <div class="dropdown-item" onclick="handleDropdownAction('manual')">
                                     <div class="item-icon blue"><iconify-icon icon="mdi:file-document-outline"></iconify-icon></div>
                                     <div class="item-text">
                                         <div class="title">手动创建</div>
@@ -855,12 +757,12 @@
                                         <div class="title">AI 智能创建</div>
                                         <div class="desc">描述需求，AI 自动生成专家</div>
                                     </div>
-                                </div-->
+                                </div>
                                 <div class="dropdown-item" onclick="handleDropdownAction('import')">
                                     <div class="item-icon green"><iconify-icon icon="mdi:file-upload-outline"></iconify-icon></div>
                                     <div class="item-text">
-                                        <div class="title">导入专家团</div>
-                                        <div class="desc">通过JSON配置文件导入专家团</div>
+                                        <div class="title">导入专家</div>
+                                        <div class="desc">通过JSON配置文件导入专家</div>
                                     </div>
                                 </div>
                             </div>
@@ -886,12 +788,12 @@
         </header>
 
         <!-- ===== 内容滚动区 ===== -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar p-6 view-content" id="scroll-container">
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
 
-            <!-- ===== 列表视图 ===== -->
-            <div id="view-list" class="flex flex-col h-full">
+            <!-- 列表视图 -->
+            <div id="view-list">
                 <!-- 筛选栏 -->
-                <div class="flex items-center space-x-4 mb-6 flex-wrap gap-y-2 flex-shrink-0">
+                <div class="flex items-center space-x-4 mb-6 flex-wrap gap-y-2">
                     <div class="relative flex-1 max-w-md">
                         <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
                         <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
@@ -927,50 +829,21 @@
                 </div>
 
                 <!-- 专家团卡片网格 -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 flex-1 content-start" id="entry-grid">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="entry-grid">
                 </div>
 
                 <!-- 空状态 -->
-                <div id="empty-state" class="hidden flex-col items-center justify-center py-20 text-center flex-1">
+                <div id="empty-state" class="hidden flex-col items-center justify-center py-20 text-center">
                     <iconify-icon icon="mdi:book-open-page-variant-outline" class="text-6xl text-gray-300 mb-4"></iconify-icon>
                     <p class="text-gray-500 text-lg mb-2">暂无专家团</p>
                     <p class="text-gray-400 text-sm mb-6">点击「新增专家团」开始创建</p>
                     <button onclick="toggleAddDropdown()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">新增专家团</button>
                 </div>
-
-                <!-- ===== 分页控件（列表） ===== -->
-                <div id="list-pagination" class="pagination-bar">
-                    <div class="pagination-info">
-                        <span>共 <strong id="list-total">0</strong> 条</span>
-                        <span class="sep">|</span>
-                        <span>第 <strong id="list-start">0</strong>-<strong id="list-end">0</strong> 条</span>
-                    </div>
-                    <div class="pagination-controls">
-                        <div class="page-size-wrap">
-                            <span>每页</span>
-                            <select id="list-page-size">
-                                <option value="6">6</option>
-                                <option value="12" selected>12</option>
-                                <option value="24">24</option>
-                                <option value="48">48</option>
-                            </select>
-                            <span>条</span>
-                        </div>
-                        <div class="page-btns">
-                            <button id="list-prev-page" disabled>
-                                <iconify-icon icon="mdi:chevron-left"></iconify-icon>
-                            </button>
-                            <button id="list-next-page" disabled>
-                                <iconify-icon icon="mdi:chevron-right"></iconify-icon>
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
 
-            <!-- ===== 回收站视图 ===== -->
-            <div id="view-recycle" class="hidden flex flex-col h-full">
-                <div class="flex items-center space-x-4 mb-6 flex-shrink-0">
+            <!-- 回收站视图 -->
+            <div id="view-recycle" class="hidden">
+                <div class="flex items-center space-x-4 mb-6">
                     <div class="relative flex-1 max-w-md">
                         <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
                         <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
@@ -978,7 +851,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex items-center justify-between flex-shrink-0">
+                <div class="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex items-center justify-between">
                     <div class="flex items-center gap-2 text-sm text-gray-600">
                         <iconify-icon icon="mdi:trash-can-outline" class="text-red-500"></iconify-icon>
                         <span>共 <strong id="recycle-count" class="text-gray-900">0</strong> 个已删除专家团</span>
@@ -992,42 +865,13 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 flex-1 content-start" id="recycle-grid">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="recycle-grid">
                 </div>
 
-                <div id="recycle-empty" class="hidden flex-col items-center justify-center py-20 text-center flex-1">
+                <div id="recycle-empty" class="hidden flex-col items-center justify-center py-20 text-center">
                     <iconify-icon icon="mdi:trash-can-outline" class="text-6xl text-gray-300 mb-4"></iconify-icon>
                     <p class="text-gray-500 text-lg">回收站为空</p>
                     <p class="text-gray-400 text-sm">没有已删除的专家团</p>
-                </div>
-
-                <!-- ===== 分页控件（回收站） ===== -->
-                <div id="recycle-pagination" class="pagination-bar">
-                    <div class="pagination-info">
-                        <span>共 <strong id="recycle-total">0</strong> 条</span>
-                        <span class="sep">|</span>
-                        <span>第 <strong id="recycle-start">0</strong>-<strong id="recycle-end">0</strong> 条</span>
-                    </div>
-                    <div class="pagination-controls">
-                        <div class="page-size-wrap">
-                            <span>每页</span>
-                            <select id="recycle-page-size">
-                                <option value="6">6</option>
-                                <option value="12" selected>12</option>
-                                <option value="24">24</option>
-                                <option value="48">48</option>
-                            </select>
-                            <span>条</span>
-                        </div>
-                        <div class="page-btns">
-                            <button id="recycle-prev-page" disabled>
-                                <iconify-icon icon="mdi:chevron-left"></iconify-icon>
-                            </button>
-                            <button id="recycle-next-page" disabled>
-                                <iconify-icon icon="mdi:chevron-right"></iconify-icon>
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -1059,6 +903,20 @@
                 </div>
 
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">来源 <span class="text-red-500">*</span></label>
+                    <div class="source-radio-group" id="source-radio-group">
+                        <label>
+                            <input type="radio" name="entry-source" value="admin" checked />
+                            <span class="flex items-center gap-1"><span class="tag tag-source-admin">管理端</span></span>
+                        </label>
+                        <label>
+                            <input type="radio" name="entry-source" value="client" />
+                            <span class="flex items-center gap-1"><span class="tag tag-source-client">客户端</span></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">图标 <span class="text-gray-400 font-normal">(可选)</span></label>
                     <div class="flex items-center gap-3 mb-2">
                         <div class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-xl" id="icon-preview"></div>
@@ -1073,6 +931,12 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">简介 <span class="text-red-500">*</span></label>
                     <textarea id="entry-intro" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm resize-none" rows="3" placeholder="请简要描述该术语的含义..." maxlength="200" oninput="updateIntroCount(this)"></textarea>
                     <p class="text-xs mt-1"><span id="intro-count" class="text-gray-400">0</span><span class="text-gray-400">/200</span></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">详情 <span class="text-red-500">*</span></label>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="rte-content" contenteditable="true" id="entry-detail"></div>
+                    </div>
                 </div>
                 <div class="flex items-center justify-between">
                     <div>
@@ -1265,11 +1129,11 @@
         </div>
     </div>
 
-    <!-- ===== 导入专家团弹窗 ===== -->
+    <!-- ===== 🆕 导入专家弹窗 ===== -->
     <div id="importModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('importModal')">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-2xl">
-                <h3 class="text-lg font-bold text-gray-900">导入专家团</h3>
+                <h3 class="text-lg font-bold text-gray-900">导入专家</h3>
                 <button onclick="closeModal('importModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
                     <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
                 </button>
@@ -1286,7 +1150,7 @@
 
                 <!-- 上传区域 -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">上传 JSON 文件 <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">上传 ZIP 文件 <span class="text-red-500">*</span></label>
                     <div class="import-drop-zone" id="import-drop-zone" onclick="document.getElementById('import-file-input').click()">
                         <div class="drop-icon"><iconify-icon icon="mdi:file-upload-outline"></iconify-icon></div>
                         <div class="drop-text">
@@ -1324,7 +1188,7 @@
 
     <!-- ===== FAB ===== -->
     <div class="prd-fab-wrapper">
-        <a class="prd-fab-btn" href="../prd/v2.2 专家团管理-prd.html" target="_blank" rel="noopener noreferrer" aria-label="查看 PRD 文档">
+        <a class="prd-fab-btn" href="../prd/v2.1 专家团管理模块-PRD.html" target="_blank" rel="noopener noreferrer" aria-label="查看 PRD 文档">
             <svg viewBox="0 0 24 24">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" />
@@ -1361,7 +1225,7 @@
 
         let entries = [{
             id: 1,
-            name: 'RBAC生成团队',
+            name: 'RBAC',
             icon: '⚙️',
             categoryIds: [1],
             categories: ['技术术语'],
@@ -1387,7 +1251,7 @@
             ]
         }, {
             id: 2,
-            name: 'ROI数据分析专家团',
+            name: 'ROI',
             icon: '📊',
             categoryIds: [4],
             categories: ['缩写说明'],
@@ -1413,7 +1277,7 @@
             ]
         }, {
             id: 3,
-            name: '软件工坊专家团',
+            name: 'SaaS',
             icon: '📦',
             categoryIds: [3],
             categories: ['行业标准'],
@@ -1431,7 +1295,7 @@
             openingQuestions: []
         }, {
             id: 4,
-            name: '微服务架构设计团队',
+            name: '微服务架构',
             icon: '🔧',
             categoryIds: [1],
             categories: ['技术术语'],
@@ -1457,7 +1321,7 @@
             ]
         }, {
             id: 5,
-            name: '绩效指标分析团队',
+            name: 'KPI',
             icon: '📈',
             categoryIds: [2, 4],
             categories: ['业务概念', '缩写说明'],
@@ -1482,7 +1346,7 @@
             ]
         }, {
             id: 6,
-            name: 'API网关服务团队',
+            name: 'API 网关',
             icon: '🌐',
             categoryIds: [1],
             categories: ['技术术语'],
@@ -1500,7 +1364,7 @@
             openingQuestions: []
         }, {
             id: 7,
-            name: 'SLA协议标准团队',
+            name: 'SLA',
             icon: '📋',
             categoryIds: [4],
             categories: ['缩写说明'],
@@ -1518,7 +1382,7 @@
             openingQuestions: []
         }, {
             id: 8,
-            name: '数字化转型战略团队',
+            name: '数字化转型',
             icon: '💡',
             categoryIds: [2],
             categories: ['业务概念'],
@@ -1544,7 +1408,7 @@
             ]
         }, {
             id: 9,
-            name: '容器编排专家团',
+            name: '容器编排',
             icon: '🐳',
             categoryIds: [1],
             categories: ['技术术语'],
@@ -1562,7 +1426,7 @@
             openingQuestions: []
         }, {
             id: 10,
-            name: 'DevOps专家团',
+            name: 'DevOps',
             icon: '🚀',
             categoryIds: [1, 2],
             categories: ['技术术语', '业务概念'],
@@ -1613,15 +1477,12 @@
         let deleteTargetIds = [];
         let recycleDeleteTargetIds = [];
         let selectedIcon = '📖';
-
-        // ---- 分页状态 ----
-        let listPage = 1;
-        let listPageSize = 12;
-        let recyclePage = 1;
-        let recyclePageSize = 12;
+        const iconList = ['', '⚙️', '📊', '📦', '🔧', '📈', '🌐', '📋', '💡', '🐳', '🚀', '🔍', '🏷️', '🔑', '⚡', '🔗', '📱', '💻', '🤖',
+            '🛠️'
+        ];
 
         // ---- 导入相关 ----
-        let importFileData = null;
+        let importFileData = null; // 存储读取的JSON数据
         let importFileName = '';
 
         // ============================================================
@@ -1640,6 +1501,7 @@
             }
         }
 
+        // 点击外部关闭下拉
         document.addEventListener('click', function(e) {
             const wrapper = document.getElementById('add-dropdown-wrapper');
             if (wrapper && !wrapper.contains(e.target)) {
@@ -1651,6 +1513,7 @@
         });
 
         function handleDropdownAction(action) {
+            // 关闭下拉
             const menu = document.getElementById('add-dropdown-menu');
             const chevron = document.getElementById('dropdown-chevron');
             if (menu) menu.classList.add('hidden');
@@ -1669,13 +1532,17 @@
         //  导入弹窗
         // ============================================================
         function openImportModal() {
+            // 重置状态
             importFileData = null;
             importFileName = '';
             document.getElementById('import-file-input').value = '';
             const zone = document.getElementById('import-drop-zone');
             zone.classList.remove('has-file');
             document.getElementById('import-file-name').textContent = '';
+
+            // 渲染类别（使用系统categories，只显示已发布的）
             renderImportCategories();
+
             openModal('importModal');
         }
 
@@ -1709,6 +1576,7 @@
             }
         }
 
+        // 监听导入弹窗中的类别变化
         document.addEventListener('change', function(e) {
             if (e.target.closest && e.target.closest('#import-category-grid')) {
                 updateImportCategoryHint();
@@ -1720,12 +1588,14 @@
             return Array.from(checks).map(cb => parseInt(cb.value));
         }
 
+        // ---- 文件上传 ----
         function handleImportFile(event) {
             const file = event.target.files[0];
             if (!file) return;
             processImportFile(file);
         }
 
+        // 拖拽支持
         const dropZone = document.getElementById('import-drop-zone');
         if (dropZone) {
             dropZone.addEventListener('dragover', function(e) {
@@ -1747,6 +1617,7 @@
         }
 
         function processImportFile(file) {
+            // 检查文件类型
             const validTypes = ['application/json', 'application/zip', 'application/x-zip-compressed'];
             const ext = file.name.split('.').pop().toLowerCase();
             if (!validTypes.includes(file.type) && ext !== 'json' && ext !== 'zip') {
@@ -1754,12 +1625,19 @@
                 return;
             }
 
+            // 读取文件
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     let content = e.target.result;
+                    // 如果是ZIP，这里简化处理：直接尝试解析为JSON
+                    // 实际项目中需要解压ZIP，这里演示直接解析
                     if (ext === 'zip') {
+                        // 简单提示，实际需要JSZip等库
                         showToast('ZIP 文件解析需要解压，请上传 JSON 文件（或使用库解压）', 'error');
+                        // 但为了演示，我们假装解析成功
+                        // 实际会使用 JSZip 等库
+                        // 这里我们模拟一个JSON数据
                         const mockData = {
                             name: '导入的专家',
                             icon: '📚',
@@ -1776,7 +1654,9 @@
                         return;
                     }
 
+                    // JSON 解析
                     const data = JSON.parse(content);
+                    // 验证数据结构
                     if (!data.name || !data.intro) {
                         showToast('JSON 格式不完整，缺少 name 或 intro 字段', 'error');
                         return;
@@ -1807,6 +1687,7 @@
             document.getElementById('import-file-name').textContent = '';
         }
 
+        // ---- 执行导入 ----
         function doImport() {
             const categoryIds = getImportSelectedCategoryIds();
             if (categoryIds.length === 0) {
@@ -1822,6 +1703,7 @@
             const now = new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit',
                 hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\//g, '-');
 
+            // 检查重名（在所选类别中）
             const conflict = entries.find(e => {
                 if (e.name !== data.name) return false;
                 if (!e.categoryIds || !categoryIds) return false;
@@ -1832,6 +1714,7 @@
                 return;
             }
 
+            // 构建新专家团
             const catNames = categoryIds.map(cid => {
                 const cat = categories.find(c => c.id === cid);
                 return cat ? cat.name : '';
@@ -1864,10 +1747,11 @@
             });
 
             closeModal('importModal');
-            listPage = 1;
             renderEntryGrid();
             updateCategoryFilter();
-            showToast(`成功导入专家团团「${newEntry.name}」`, 'success');
+            showToast(`成功导入专家团「${newEntry.name}」`, 'success');
+
+            // 重置导入状态
             clearImportFile();
         }
 
@@ -1885,15 +1769,14 @@
             if (view === 'list') {
                 bc.innerHTML =
                     '<span>资源管理</span><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">专家团管理</span>';
-                listPage = 1;
-                renderEntryGrid();
-                updateCategoryFilter();
             } else if (view === 'recycle') {
                 bc.innerHTML =
                     '<a href="#" onclick="showView(\'list\')" class="hover:text-blue-600">专家团管理</a><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">回收站</span>';
-                recyclePage = 1;
-                renderRecycleGrid();
             }
+
+            if (view === 'list') { renderEntryGrid();
+                updateCategoryFilter(); }
+            if (view === 'recycle') renderRecycleGrid();
         }
 
         function updateRecycleBadge() {
@@ -1908,20 +1791,7 @@
         }
 
         // ============================================================
-        //  分页工具
-        // ============================================================
-        function getPagedData(items, page, pageSize) {
-            const total = items.length;
-            const totalPages = Math.max(1, Math.ceil(total / pageSize));
-            const safePage = Math.min(Math.max(1, page), totalPages);
-            const start = (safePage - 1) * pageSize;
-            const end = Math.min(start + pageSize, total);
-            const pageItems = items.slice(start, end);
-            return { total, totalPages, page: safePage, start, end, pageItems };
-        }
-
-        // ============================================================
-        //  渲染专家团卡片（带分页）
+        //  渲染专家团卡片
         // ============================================================
         function getFilteredEntries() {
             const search = document.getElementById('search-input').value.toLowerCase();
@@ -1997,105 +1867,72 @@
         function renderEntryGrid() {
             const filtered = getFilteredEntries();
             const grid = document.getElementById('entry-grid');
-            const empty = document.getElementById('empty-state');
-
-            // 分页
-            const paged = getPagedData(filtered, listPage, listPageSize);
-            listPage = paged.page;
-            const pageItems = paged.pageItems;
 
             if (filtered.length === 0) {
                 grid.innerHTML = '';
-                empty.classList.remove('hidden');
-                empty.classList.add('flex');
-            } else {
-                empty.classList.add('hidden');
-                empty.classList.remove('flex');
-                grid.innerHTML = pageItems.map(e => {
-                    const isEnabled = e.status === 'enabled';
-                    const catTags = renderCategoryTags(e.categoryIds);
-                    const sourceTag = renderSourceTag(e.source);
-                    const isClient = e.source === 'client';
-				
-				
-                    const editBtn = !isClient ?
-                        `<button onclick="event.stopPropagation();openEdit(${e.id})" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="编辑">
-                                <iconify-icon icon="mdi:pencil-outline" class="text-base"></iconify-icon>
-                            </button>` :
-                        '';
-						
-
-                    return `
-                    <div class="entry-card bg-white rounded-xl border border-gray-200 p-5 cursor-pointer relative" onclick="openDetail(${e.id})">
-                        <div class="card-hover-actions absolute top-3 right-3 flex items-center gap-1" onclick="event.stopPropagation()">
-                            <button onclick="event.stopPropagation();exportEntry(${e.id})" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" title="导出">
-                                <iconify-icon icon="mdi:download-outline" class="text-base"></iconify-icon>
-                            </button>
-                            ${editBtn}
-                            <button onclick="event.stopPropagation();openDeleteConfirm([${e.id}])" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="删除">
-                                <iconify-icon icon="mdi:trash-can-outline" class="text-base"></iconify-icon>
-                            </button>
-                        </div>
-                        <div class="flex items-start gap-3 mb-3">
-                            <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${renderIconHtml(e.icon, 'w-9 h-9')}</div>
-                            <div class="flex-1 min-w-0 pr-12">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <h3 class="font-semibold text-gray-900 text-base truncate">${e.name}</h3>
-                                    ${sourceTag}
-                                </div>
-                                <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-                                    ${catTags}
-                                </div>
-                            </div>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-4 line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:calc(14px * 1.5 * 2)">${e.intro}</p>
-                        <div class="flex items-center justify-between pt-3 border-t border-gray-100">
-                            <div class="flex items-center gap-2 text-xs text-gray-400">
-                                <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline" class="text-sm"></iconify-icon> ${e.updatedBy}</span>
-                                <span class="text-gray-300">|</span>
-                                <span>更新: ${e.updatedAt.split(' ')[0]}</span>
-                            </div>
-                            <label class="toggle-switch ${isClient ? 'toggle-disabled' : ''}" onclick="if(${isClient}){event.stopPropagation();showToast('客户端来源的专家团不可修改状态','error');}else{event.stopPropagation();}">
-                                <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="if(!${isClient}){toggleEntryStatus(${e.id})}" ${isClient ? 'disabled' : ''}/>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                    </div>`;
-                }).join('');
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('empty-state').classList.add('flex');
+                return;
             }
 
-            // 更新分页控件
-            updateListPagination(paged);
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('empty-state').classList.remove('flex');
+
+            grid.innerHTML = filtered.map(e => {
+                const isEnabled = e.status === 'enabled';
+                const catTags = renderCategoryTags(e.categoryIds);
+                const sourceTag = renderSourceTag(e.source);
+                const isClient = e.source === 'client';
+
+                const editBtn = !isClient ?
+                    `<button onclick="event.stopPropagation();openEdit(${e.id})" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="编辑">
+                            <iconify-icon icon="mdi:pencil-outline" class="text-base"></iconify-icon>
+                        </button>` :
+                    '';
+
+                return `
+                <div class="entry-card bg-white rounded-xl border border-gray-200 p-5 cursor-pointer relative" onclick="openDetail(${e.id})">
+                    <div class="card-hover-actions absolute top-3 right-3 flex items-center gap-1" onclick="event.stopPropagation()">
+                        <button onclick="event.stopPropagation();exportEntry(${e.id})" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" title="导出">
+                            <iconify-icon icon="mdi:download-outline" class="text-base"></iconify-icon>
+                        </button>
+                        ${editBtn}
+                        <button onclick="event.stopPropagation();openDeleteConfirm([${e.id}])" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="删除">
+                            <iconify-icon icon="mdi:trash-can-outline" class="text-base"></iconify-icon>
+                        </button>
+                    </div>
+                    <div class="flex items-start gap-3 mb-3">
+                        <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${renderIconHtml(e.icon, 'w-9 h-9')}</div>
+                        <div class="flex-1 min-w-0 pr-12">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="font-semibold text-gray-900 text-base truncate">${e.name}</h3>
+                                ${sourceTag}
+                            </div>
+                            <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                                ${catTags}
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4 line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:calc(14px * 1.5 * 2)">${e.intro}</p>
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div class="flex items-center gap-2 text-xs text-gray-400">
+                            <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline" class="text-sm"></iconify-icon> ${e.updatedBy}</span>
+                            <span class="text-gray-300">|</span>
+                            <span>更新: ${e.updatedAt.split(' ')[0]}</span>
+                        </div>
+                        <label class="toggle-switch ${isClient ? 'toggle-disabled' : ''}" onclick="if(${isClient}){event.stopPropagation();showToast('客户端来源的专家团不可修改状态','error');}else{event.stopPropagation();}">
+                            <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="if(!${isClient}){toggleEntryStatus(${e.id})}" ${isClient ? 'disabled' : ''}/>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
-        function updateListPagination(paged) {
-            const total = paged.total;
-            const start = total === 0 ? 0 : paged.start + 1;
-            const end = paged.end;
-            const page = paged.page;
-            const totalPages = paged.totalPages;
-
-            document.getElementById('list-total').textContent = total;
-            document.getElementById('list-start').textContent = start;
-            document.getElementById('list-end').textContent = end;
-
-            document.getElementById('list-prev-page').disabled = page <= 1;
-            document.getElementById('list-next-page').disabled = page >= totalPages;
-
-            // 同步下拉
-            const sel = document.getElementById('list-page-size');
-            if (parseInt(sel.value) !== listPageSize) {
-                sel.value = listPageSize;
-            }
-        }
-
-        function filterEntries() {
-            listPage = 1;
-            renderEntryGrid();
-        }
+        function filterEntries() { renderEntryGrid(); }
 
         // ============================================================
-        //  渲染回收站（带分页）
+        //  渲染回收站
         // ============================================================
         function renderRecycleGrid() {
             const search = document.getElementById('recycle-search').value.toLowerCase();
@@ -2103,85 +1940,57 @@
             const grid = document.getElementById('recycle-grid');
             document.getElementById('recycle-count').textContent = deletedEntries.length;
 
-            const paged = getPagedData(filtered, recyclePage, recyclePageSize);
-            recyclePage = paged.page;
-            const pageItems = paged.pageItems;
-
             if (filtered.length === 0) {
                 grid.innerHTML = '';
                 document.getElementById('recycle-empty').classList.remove('hidden');
                 document.getElementById('recycle-empty').classList.add('flex');
-            } else {
-                document.getElementById('recycle-empty').classList.add('hidden');
-                document.getElementById('recycle-empty').classList.remove('flex');
-
-                grid.innerHTML = pageItems.map(e => {
-                    const isSelected = recycleDeleteTargetIds.includes(e.id);
-                    const catTags = renderCategoryTags(e.categoryIds);
-                    const sourceTag = renderSourceTag(e.source || 'admin');
-                    return `
-                    <div class="entry-card bg-white rounded-xl border ${isSelected ? 'border-red-300 ring-2 ring-red-100' : 'border-gray-200'} p-5 relative">
-                        <div class="absolute top-4 right-4">
-                            <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleRecycleSelect(${e.id})" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
-                        </div>
-                        <div class="flex items-start gap-3 mb-3">
-                            <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${renderIconHtml(e.icon, 'w-9 h-9')}</div>
-                            <div class="flex-1 min-w-0 pr-6">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <h3 class="font-semibold text-gray-900 text-base truncate">${e.name}</h3>
-                                    ${sourceTag}
-                                </div>
-                                <div class="flex flex-wrap gap-1 mt-1">${catTags}</div>
-                            </div>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-4 line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${e.intro}</p>
-                        <div class="flex items-center pt-3 gap-3 border-t border-gray-100 text-xs text-gray-400">
-                            <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline" class="text-sm"></iconify-icon> ${e.deletedBy}</span>
-                            <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon>删除: ${e.deletedAt}</span>
-                            <div class="ml-auto flex items-center gap-2 recycle-card-actions">
-                                <button onclick="restoreEntry(${e.id})" class="flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-                                    <iconify-icon icon="mdi:restore"></iconify-icon>
-                                    <span>还原</span>
-                                </button>
-                                <button onclick="openPermanentDelete([${e.id}])" class="flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
-                                    <iconify-icon icon="mdi:trash-can"></iconify-icon>
-                                    <span>彻底删除</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('');
+                return;
             }
 
-            // 更新回收站分页
-            updateRecyclePagination(paged);
+            document.getElementById('recycle-empty').classList.add('hidden');
+            document.getElementById('recycle-empty').classList.remove('flex');
+
+            grid.innerHTML = filtered.map(e => {
+                const isSelected = recycleDeleteTargetIds.includes(e.id);
+                const catTags = renderCategoryTags(e.categoryIds);
+                const sourceTag = renderSourceTag(e.source || 'admin');
+                return `
+                <div class="entry-card bg-white rounded-xl border ${isSelected ? 'border-red-300 ring-2 ring-red-100' : 'border-gray-200'} p-5 relative">
+                    <div class="absolute top-4 right-4">
+                        <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleRecycleSelect(${e.id})" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                    </div>
+                    <div class="flex items-start gap-3 mb-3">
+                        <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${renderIconHtml(e.icon, 'w-9 h-9')}</div>
+                        <div class="flex-1 min-w-0 pr-6">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="font-semibold text-gray-900 text-base truncate">${e.name}</h3>
+                                ${sourceTag}
+                            </div>
+                            <div class="flex flex-wrap gap-1 mt-1">${catTags}</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4 line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${e.intro}</p>
+                    <div class="flex items-center pt-3 gap-3 border-t border-gray-100 text-xs text-gray-400">
+                        <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline" class="text-sm"></iconify-icon> ${e.deletedBy}</span>
+                        <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon>删除: ${e.deletedAt}</span>
+                        <div class="ml-auto flex items-center gap-2 recycle-card-actions">
+                            <button onclick="restoreEntry(${e.id})" class="flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                                <iconify-icon icon="mdi:restore"></iconify-icon>
+                                <span>还原</span>
+                            </button>
+                            <button onclick="openPermanentDelete([${e.id}])" class="flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                                <iconify-icon icon="mdi:trash-can"></iconify-icon>
+                                <span>彻底删除</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+
             updateRecycleSelectedCount();
         }
 
-        function updateRecyclePagination(paged) {
-            const total = paged.total;
-            const start = total === 0 ? 0 : paged.start + 1;
-            const end = paged.end;
-            const page = paged.page;
-            const totalPages = paged.totalPages;
-
-            document.getElementById('recycle-total').textContent = total;
-            document.getElementById('recycle-start').textContent = start;
-            document.getElementById('recycle-end').textContent = end;
-
-            document.getElementById('recycle-prev-page').disabled = page <= 1;
-            document.getElementById('recycle-next-page').disabled = page >= totalPages;
-
-            const sel = document.getElementById('recycle-page-size');
-            if (parseInt(sel.value) !== recyclePageSize) {
-                sel.value = recyclePageSize;
-            }
-        }
-
-        function filterRecycle() {
-            recyclePage = 1;
-            renderRecycleGrid();
-        }
+        function filterRecycle() { renderRecycleGrid(); }
 
         // ============================================================
         //  回收站选择
@@ -2243,7 +2052,7 @@
         }
 
         // ============================================================
-        //  多选分类渲染
+        //  多选分类渲染（新增/编辑弹窗）
         // ============================================================
         function renderCategoryCheckboxes(selectedIds) {
             const container = document.getElementById('category-checkbox-group');
@@ -2337,6 +2146,7 @@
                 detailEditBtn.style.display = 'flex';
             }
 
+            // 擅长领域
             const expertiseContainer = document.getElementById('detail-expertise');
             if (e.expertise && e.expertise.length > 0) {
                 expertiseContainer.innerHTML = e.expertise.map(t =>
@@ -2346,6 +2156,7 @@
                 expertiseContainer.innerHTML = '<span class="detail-empty">暂无</span>';
             }
 
+            // 团队成员
             const teamContainer = document.getElementById('detail-team');
             if (e.teamMembers && e.teamMembers.length > 0) {
                 teamContainer.innerHTML = e.teamMembers.map(m => {
@@ -2402,9 +2213,11 @@
             document.getElementById('modal-title').textContent = '新增专家团';
             document.getElementById('entry-name').value = '';
             document.getElementById('entry-intro').value = '';
+            document.getElementById('entry-detail').innerHTML = '';
             document.getElementById('entry-status').checked = true;
             document.getElementById('intro-count').textContent = '0';
             document.getElementById('name-hint').innerHTML = '<span class="text-gray-400">同一类别下不可重名，最大 50 字符</span>';
+            document.querySelector('input[name="entry-source"][value="admin"]').checked = true;
             selectedIcon = '';
             renderIconPreview();
             renderCategoryCheckboxes([]);
@@ -2422,9 +2235,15 @@
             document.getElementById('modal-title').textContent = '编辑专家团 - ' + e.name;
             document.getElementById('entry-name').value = e.name;
             document.getElementById('entry-intro').value = e.intro;
+            document.getElementById('entry-detail').innerHTML = e.detail || '';
             document.getElementById('entry-status').checked = e.status === 'enabled';
             document.getElementById('intro-count').textContent = e.intro.length;
             document.getElementById('name-hint').innerHTML = '<span class="text-gray-400">同一类别下不可重名，最大 50 字符</span>';
+            if (e.source === 'admin') {
+                document.querySelector('input[name="entry-source"][value="admin"]').checked = true;
+            } else {
+                document.querySelector('input[name="entry-source"][value="client"]').checked = true;
+            }
             selectedIcon = e.icon || '';
             renderIconPreview();
             const enabledIds = (e.categoryIds || []).filter(cid => {
@@ -2508,7 +2327,9 @@
             const name = document.getElementById('entry-name').value.trim();
             const categoryIds = getSelectedCategoryIds();
             const intro = document.getElementById('entry-intro').value.trim();
+            const detail = document.getElementById('entry-detail').innerHTML;
             const status = document.getElementById('entry-status').checked ? 'enabled' : 'disabled';
+            const sourceRadio = document.querySelector('input[name="entry-source"]:checked');
             const source = sourceRadio ? sourceRadio.value : 'admin';
 
             if (!name) { showToast('请输入专家团名称', 'error'); return; }
@@ -2594,7 +2415,6 @@
             }
 
             closeModal('addModal');
-            listPage = 1;
             renderEntryGrid();
             updateCategoryFilter();
         }
@@ -2645,7 +2465,6 @@
             });
             deleteTargetIds = [];
             closeModal('deleteConfirmModal');
-            listPage = 1;
             renderEntryGrid();
             updateRecycleBadge();
             showToast('删除成功', 'success');
@@ -2699,7 +2518,6 @@
                     });
                 }
             }
-            recyclePage = 1;
             renderRecycleGrid();
             updateRecycleBadge();
             showToast('恢复成功', 'success');
@@ -2724,7 +2542,6 @@
             });
             recycleDeleteTargetIds = [];
             closeModal('permanentDeleteModal');
-            recyclePage = 1;
             renderRecycleGrid();
             updateRecycleBadge();
             showToast('已彻底删除', 'success');
@@ -2826,7 +2643,6 @@
             closeModal('deleteConfirmModal');
             renderCategoryTable();
             updateCategoryFilter();
-            listPage = 1;
             renderEntryGrid();
             if (!document.getElementById('addModal').classList.contains('hidden')) {
                 const selected = getSelectedCategoryIds();
@@ -2850,6 +2666,7 @@
                 renderCategoryCheckboxes(enabledIds);
             }
             if (id === 'importModal') {
+                // 确保导入弹窗类别渲染
                 renderImportCategories();
             }
         }
@@ -2866,52 +2683,11 @@
         }
 
         // ============================================================
-        //  分页事件绑定
-        // ============================================================
-        function initPaginationEvents() {
-            // ---- 列表分页 ----
-            document.getElementById('list-prev-page').addEventListener('click', function() {
-                if (listPage > 1) { listPage--;
-                    renderEntryGrid(); }
-            });
-            document.getElementById('list-next-page').addEventListener('click', function() {
-                const filtered = getFilteredEntries();
-                const totalPages = Math.max(1, Math.ceil(filtered.length / listPageSize));
-                if (listPage < totalPages) { listPage++;
-                    renderEntryGrid(); }
-            });
-            document.getElementById('list-page-size').addEventListener('change', function() {
-                listPageSize = parseInt(this.value);
-                listPage = 1;
-                renderEntryGrid();
-            });
-
-            // ---- 回收站分页 ----
-            document.getElementById('recycle-prev-page').addEventListener('click', function() {
-                if (recyclePage > 1) { recyclePage--;
-                    renderRecycleGrid(); }
-            });
-            document.getElementById('recycle-next-page').addEventListener('click', function() {
-                const search = document.getElementById('recycle-search').value.toLowerCase();
-                const filtered = deletedEntries.filter(e => !search || e.name.toLowerCase().includes(search));
-                const totalPages = Math.max(1, Math.ceil(filtered.length / recyclePageSize));
-                if (recyclePage < totalPages) { recyclePage++;
-                    renderRecycleGrid(); }
-            });
-            document.getElementById('recycle-page-size').addEventListener('change', function() {
-                recyclePageSize = parseInt(this.value);
-                recyclePage = 1;
-                renderRecycleGrid();
-            });
-        }
-
-        // ============================================================
         //  初始化
         // ============================================================
         renderEntryGrid();
         updateCategoryFilter();
         updateRecycleBadge();
-        initPaginationEvents();
 
         document.querySelectorAll('.modal-overlay').forEach(el => {
             el.addEventListener('click', function(e) {
@@ -2921,6 +2697,7 @@
             });
         });
 
+        // 导入弹窗类别变化监听（使用事件委托）
         document.addEventListener('change', function(e) {
             if (e.target.closest && e.target.closest('#import-category-grid')) {
                 updateImportCategoryHint();
