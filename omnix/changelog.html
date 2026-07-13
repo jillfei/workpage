@@ -4,13 +4,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>版本更新日志</title>
-    <script src="https://cdn.tailwindcss.com">
-    </script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js">
-    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
-
         :root {
             --bg: oklch(0.975 0.005 260);
             --bg-card: oklch(1 0 0);
@@ -40,14 +34,9 @@
             --radius: 0.75rem;
         }
 
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
 
-        html,
-        body {
+        html, body {
             height: 100%;
             overflow: hidden;
             margin: 0;
@@ -69,19 +58,10 @@
         }
 
         /* Custom scrollbar */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 5px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: oklch(0.82 0.005 260);
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: oklch(0.72 0.01 260);
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: oklch(0.82 0.005 260); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: oklch(0.72 0.01 260); }
 
         /* Header */
         .header {
@@ -119,7 +99,7 @@
             box-shadow: 0 0 0 2px var(--accent), 0 0 12px oklch(0.55 0.18 255 / 0.3);
         }
 
-        /* Version card — always expanded */
+        /* Version card */
         .version-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -141,46 +121,19 @@
         }
 
         /* Tag styles */
-        .tag-new {
-            background: var(--violet-soft);
-            color: var(--violet-fg);
-        }
-        .tag-fix {
-            background: var(--amber-soft);
-            color: var(--amber-fg);
-        }
-        .tag-break {
-            background: var(--red-soft);
-            color: var(--red-fg);
-        }
-        .tag-optimize {
-            background: var(--green-soft);
-            color: var(--green-fg);
-        }
-        .tag-feature {
-            background: var(--accent-soft);
-            color: var(--accent-fg);
-        }
+        .tag-new { background: var(--violet-soft); color: var(--violet-fg); }
+        .tag-fix { background: var(--amber-soft); color: var(--amber-fg); }
+        .tag-break { background: var(--red-soft); color: var(--red-fg); }
+        .tag-optimize { background: var(--green-soft); color: var(--green-fg); }
+        .tag-feature { background: var(--accent-soft); color: var(--accent-fg); }
 
         /* Status badge */
-        .status-planned {
-            background: oklch(0.95 0.005 260);
-            color: var(--fg-subtle);
-        }
-        .status-dev {
-            background: var(--accent-soft);
-            color: var(--accent-fg);
-        }
-        .status-done {
-            background: var(--green-soft);
-            color: var(--green-fg);
-        }
-        .status-review {
-            background: var(--amber-soft);
-            color: var(--amber-fg);
-        }
+        .status-planned { background: oklch(0.95 0.005 260); color: var(--fg-subtle); }
+        .status-dev { background: var(--accent-soft); color: var(--accent-fg); }
+        .status-done { background: var(--green-soft); color: var(--green-fg); }
+        .status-review { background: var(--amber-soft); color: var(--amber-fg); }
 
-        /* Change detail — always expanded, no toggle */
+        /* Change detail */
         .change-detail {
             max-height: 2000px;
             opacity: 1;
@@ -252,9 +205,7 @@
             box-shadow: 0 0 0 3px oklch(0.55 0.18 255 / 0.1);
             background: var(--bg-card);
         }
-        .search-input::placeholder {
-            color: var(--fg-subtle);
-        }
+        .search-input::placeholder { color: var(--fg-subtle); }
 
         /* Section label */
         .section-label {
@@ -266,7 +217,7 @@
 
         /* Version badge mono */
         .version-badge {
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
             font-weight: 500;
             font-size: 17px;
             letter-spacing: -0.02em;
@@ -275,43 +226,21 @@
 
         /* Fade-in animation */
         @keyframes fadeSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .version-item {
-            animation: fadeSlideIn 0.4s ease-out both;
-        }
-        .version-item:nth-child(2) {
-            animation-delay: 0.08s;
-        }
-        .version-item:nth-child(3) {
-            animation-delay: 0.16s;
-        }
-        .version-item:nth-child(4) {
-            animation-delay: 0.24s;
-        }
+        .version-item { animation: fadeSlideIn 0.4s ease-out both; }
+        .version-item:nth-child(2) { animation-delay: 0.08s; }
+        .version-item:nth-child(3) { animation-delay: 0.16s; }
+        .version-item:nth-child(4) { animation-delay: 0.24s; }
 
         /* Pulse dot */
         @keyframes pulse-ring {
-            0% {
-                box-shadow: 0 0 0 0 oklch(0.65 0.14 75 / 0.4);
-            }
-            70% {
-                box-shadow: 0 0 0 6px oklch(0.65 0.14 75 / 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 oklch(0.65 0.14 75 / 0);
-            }
+            0% { box-shadow: 0 0 0 0 oklch(0.65 0.14 75 / 0.4); }
+            70% { box-shadow: 0 0 0 6px oklch(0.65 0.14 75 / 0); }
+            100% { box-shadow: 0 0 0 0 oklch(0.65 0.14 75 / 0); }
         }
-        .pulse-dot {
-            animation: pulse-ring 2s infinite;
-        }
+        .pulse-dot { animation: pulse-ring 2s infinite; }
 
         /* Filter button */
         .filter-btn {
@@ -333,7 +262,7 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* ----- 原有链接样式 (保留) ----- */
+        /* Doc links */
         .doc-link {
             display: inline-flex;
             align-items: center;
@@ -353,9 +282,6 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* ----- 新增 3 种链接样式 ----- */
-
-        /* 样式 1：紫色渐变 — 醒目、现代 */
         .doc-link-primary {
             display: inline-flex;
             align-items: center;
@@ -376,11 +302,8 @@
             box-shadow: 0 6px 20px oklch(0.55 0.22 290 / 0.35);
             border-color: oklch(0.60 0.22 290 / 0.6);
         }
-        .doc-link-primary:active {
-            transform: translateY(0);
-        }
+        .doc-link-primary:active { transform: translateY(0); }
 
-        /* 样式 2：绿色边框 — 清爽、克制 */
         .doc-link-secondary {
             display: inline-flex;
             align-items: center;
@@ -401,11 +324,8 @@
             box-shadow: 0 4px 12px oklch(0.55 0.15 155 / 0.15);
             transform: translateY(-2px);
         }
-        .doc-link-secondary:active {
-            transform: translateY(0);
-        }
+        .doc-link-secondary:active { transform: translateY(0); }
 
-        /* 样式 3：琥珀色标签 — 温暖、友好 */
         .doc-link-tertiary {
             display: inline-flex;
             align-items: center;
@@ -426,11 +346,9 @@
             box-shadow: 0 4px 12px oklch(0.65 0.12 75 / 0.15);
             transform: translateY(-2px);
         }
-        .doc-link-tertiary:active {
-            transform: translateY(0);
-        }
+        .doc-link-tertiary:active { transform: translateY(0); }
 
-        /* Card header — no pointer, no toggle */
+        /* Card header */
         .card-header {
             padding: 16px 24px;
             border-bottom: 1px solid var(--border-light);
@@ -440,7 +358,7 @@
             cursor: default;
         }
 
-        /* 链接组之间的间距微调 */
+        /* Link group */
         .link-group {
             display: flex;
             flex-wrap: wrap;
@@ -453,48 +371,57 @@
         .link-group .doc-link-tertiary {
             flex-shrink: 0;
         }
+
+        /* Inline icon helper */
+        .icon {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
     <div class="page-wrap">
 
         <!-- 顶部栏 -->
-        <header class="header px-8 flex items-center justify-between flex-shrink-0" style="height: 60px;">
-            <div class="flex items-center gap-3">
+        <header class="header" style="height: 60px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 12px;">
                 <div style="width: 32px; height: 32px; background: linear-gradient(135deg, oklch(0.55 0.18 255), oklch(0.50 0.20 280)); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                    <i data-lucide="git-branch" style="width: 16px; height: 16px; color: white;"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
                 </div>
-                <span class="text-base font-bold" style="color: var(--fg); letter-spacing: -0.01em;">版本更新日志</span>
+                <span style="font-size: 1rem; font-weight: 700; color: var(--fg); letter-spacing: -0.01em;">版本更新日志</span>
                 <span style="font-size: 11px; padding: 2px 8px; border-radius: 6px; background: oklch(0.93 0.01 260); color: var(--fg-subtle); font-weight: 500;">Changelog</span>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="relative">
-                    <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--fg-subtle);"></i>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="position: relative;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--fg-subtle);"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     <input class="search-input" placeholder="搜索版本或变更内容..." type="text" id="searchInput" />
                 </div>
                 <button class="filter-btn">
-                    <i data-lucide="sliders-horizontal" style="width: 14px; height: 14px;"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="4" x2="3" y2="4"/><line x1="18" y1="12" x2="6" y2="12"/><line x1="15" y1="20" x2="9" y2="20"/></svg>
                     <span>筛选</span>
                 </button>
             </div>
         </header>
 
         <!-- 内容滚动区 -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar" style="padding: 28px 32px;">
+        <div style="flex: 1; overflow-y: auto; padding: 28px 32px;" class="custom-scrollbar">
 
             <!-- 时间线 -->
-            <div class="relative">
+            <div style="position: relative;">
                 <div class="timeline-line"></div>
 
                 <!-- ========== v2.2 ========== -->
-                <div class="version-item mb-6 relative" style="padding-left: 48px;" data-version="v2.1">
+                <div class="version-item" style="margin-bottom: 24px; position: relative; padding-left: 48px;" data-version="v2.2">
                     <div class="timeline-dot"></div>
 
-                    <div class="version-card is-expanded" id="card-v21">
+                    <div class="version-card is-expanded" id="card-v22">
                         <div class="card-header">
-                            <div class="flex items-center gap-4">
+                            <div style="display: flex; align-items: center; gap: 16px;">
                                 <div>
-                                    <div class="flex items-center gap-3">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
                                         <span class="version-badge">v2.2</span>
                                     </div>
                                     <div style="font-size: 13px; color: var(--fg-subtle); margin-top: 4px;">2026-07-13 · 专家管理 &amp; 专家团管理</div>
@@ -508,38 +435,37 @@
                             <p style="font-size: 13px; color: var(--fg-muted); line-height: 1.7; margin: 0;">
                                 专家管理：统一专家（智能体）全生命周期管理，专家创建、导入、配置、预览调试、AI调优、发布、下架、删除、回收站
                             </p>
-							<p style="font-size: 13px; color: var(--fg-muted); line-height: 1.7; margin: 0;">
-							    专家团管理：管理端专家团全生命周期管理：查看、导入、发布、下架、回收站
-							</p>
+                            <p style="font-size: 13px; color: var(--fg-muted); line-height: 1.7; margin: 0;">
+                                专家团管理：管理端专家团全生命周期管理：查看、导入、发布、下架、回收站
+                            </p>
                         </div>
 
-                        <!-- Detailed changes — always expanded -->
-                        <div class="change-detail expanded" id="detail-v21">
+                        <!-- Detailed changes -->
+                        <div class="change-detail expanded" id="detail-v22">
                             <div style="padding: 20px 24px;">
                                 <div style="display: flex; flex-direction: column; gap: 24px;">
 
                                     <!-- 相关链接 -->
                                     <div>
                                         <div class="section-label">
-                                            <i data-lucide="link" style="width: 14px; height: 14px; color: var(--fg-subtle);"></i>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--fg-subtle);"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                                             <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">相关链接</span>
                                         </div>
                                         <div class="link-group">
-                                            <!-- 原有链接 -->
                                             <a href="./prd/v2.2 专家管理-prd.html" target="_blank" class="doc-link">
-                                                <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                                                 <span>v2.1 专家管理-PRD</span>
                                             </a>
                                             <a href="./prd/v2.2 专家团管理-prd.html" target="_blank" class="doc-link">
-                                                <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                                                 <span>v2.1 专家团管理-PRD</span>
                                             </a>
                                             <a href="./qyznt/zjgl.html" class="doc-link-tertiary">
-                                                <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                                                 <span>专家管理</span>
                                             </a>
                                             <a href="./qyznt/zjtgl.html" class="doc-link-tertiary">
-                                                <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                                                 <span>专家团管理</span>
                                             </a>
                                         </div>
@@ -551,87 +477,81 @@
                     </div>
                 </div>
                 <!-- ========== v2.2 end ========== -->
-				
-				
-				
-				
-				
-				
-				<!-- ========== v2.1 ========== -->
-				<div class="version-item mb-6 relative" style="padding-left: 48px;" data-version="v2.1">
-				    <div class="timeline-dot"></div>
-				
-				    <div class="version-card is-expanded" id="card-v21">
-				        <div class="card-header">
-				            <div class="flex items-center gap-4">
-				                <div>
-				                    <div class="flex items-center gap-3">
-				                        <span class="version-badge">v2.1</span>
-				                    </div>
-				                    <div style="font-size: 13px; color: var(--fg-subtle); margin-top: 4px;">2026-07-07 · 技能管理 &amp; 专家词库</div>
-				                </div>
-				            </div>
-				        </div>
-				
-				        <!-- Change summary -->
-				        <div style="padding: 14px 24px; background: oklch(0.985 0.003 260); border-bottom: 1px solid var(--border-light);">
-				            <div style="font-size: 13px; font-weight: 600; color: var(--fg-muted); margin-bottom: 6px;">📋 版本概述</div>
-				            <p style="font-size: 13px; color: var(--fg-muted); line-height: 1.7; margin: 0;">
-				                技能管理：技能全生命周期管理 · 创建 · 编辑 · 发布 · 删除
-				            </p>
-							<p style="font-size: 13px; color: var(--fg-muted); line-height: 1.7; margin: 0;">
-							    专家词库：统一领域术语管理 · 知识沉淀与复用
-							</p>
-				        </div>
-				
-				        <!-- Detailed changes — always expanded -->
-				        <div class="change-detail expanded" id="detail-v21">
-				            <div style="padding: 20px 24px;">
-				                <div style="display: flex; flex-direction: column; gap: 24px;">
-				
-				                    <!-- 相关链接 -->
-				                    <div>
-				                        <div class="section-label">
-				                            <i data-lucide="link" style="width: 14px; height: 14px; color: var(--fg-subtle);"></i>
-				                            <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">相关链接</span>
-				                        </div>
-				                        <div class="link-group">
-				                            <!-- 原有链接 -->
-				                            <a href="./prd/v2.1 技能管理模块-PRD.html" target="_blank" class="doc-link">
-				                                <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
-				                                <span>v2.1 技能管理模块-PRD</span>
-				                            </a>
-				                            <a href="./prd/v2.1 专家词库模块-PRD.html" target="_blank" class="doc-link">
-				                                <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
-				                                <span>v2.1 专家词库模块-PRD</span>
-				                            </a>
-				                            <a href="./zygl/jngl.html" class="doc-link-tertiary">
-				                                <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
-				                                <span>技能管理</span>
-				                            </a>
-				                            <a href="./zygl/zjck.html" class="doc-link-tertiary">
-				                                <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
-				                                <span>专家词库</span>
-				                            </a>
-				                        </div>
-				                    </div>
-				
-				                </div>
-				            </div>
-				        </div>
-				    </div>
-				</div>
-				<!-- ========== v2.1 end ========== -->
+
+                <!-- ========== v2.1 ========== -->
+                <div class="version-item" style="margin-bottom: 24px; position: relative; padding-left: 48px;" data-version="v2.1">
+                    <div class="timeline-dot"></div>
+
+                    <div class="version-card is-expanded" id="card-v21">
+                        <div class="card-header">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="version-badge">v2.1</span>
+                                    </div>
+                                    <div style="font-size: 13px; color: var(--fg-subtle); margin-top: 4px;">2026-07-07 · 技能管理 &amp; 专家词库</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Change summary -->
+                        <div style="padding: 14px 24px; background: oklch(0.985 0.003 260); border-bottom: 1px solid var(--border-light);">
+                            <div style="font-size: 13px; font-weight: 600; color: var(--fg-muted); margin-bottom: 6px;">📋 版本概述</div>
+                            <p style="font-size: 13px; color: var(--fg-muted); line-height: 1.7; margin: 0;">
+                                技能管理：技能全生命周期管理 · 创建 · 编辑 · 发布 · 删除
+                            </p>
+                            <p style="font-size: 13px; color: var(--fg-muted); line-height: 1.7; margin: 0;">
+                                专家词库：统一领域术语管理 · 知识沉淀与复用
+                            </p>
+                        </div>
+
+                        <!-- Detailed changes -->
+                        <div class="change-detail expanded" id="detail-v21">
+                            <div style="padding: 20px 24px;">
+                                <div style="display: flex; flex-direction: column; gap: 24px;">
+
+                                    <!-- 相关链接 -->
+                                    <div>
+                                        <div class="section-label">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--fg-subtle);"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                            <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">相关链接</span>
+                                        </div>
+                                        <div class="link-group">
+                                            <a href="./prd/v2.1 技能管理模块-PRD.html" target="_blank" class="doc-link">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                                                <span>v2.1 技能管理模块-PRD</span>
+                                            </a>
+                                            <a href="./prd/v2.1 专家词库模块-PRD.html" target="_blank" class="doc-link">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                                                <span>v2.1 专家词库模块-PRD</span>
+                                            </a>
+                                            <a href="./zygl/jngl.html" class="doc-link-tertiary">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                                                <span>技能管理</span>
+                                            </a>
+                                            <a href="./zygl/zjck.html" class="doc-link-tertiary">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                                                <span>专家词库</span>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ========== v2.1 end ========== -->
 
                 <!-- ========== v2.0 ========== -->
-                <div class="version-item mb-6 relative" style="padding-left: 48px;" data-version="v2.0">
+                <div class="version-item" style="margin-bottom: 24px; position: relative; padding-left: 48px;" data-version="v2.0">
                     <div class="timeline-dot active"></div>
 
                     <div class="version-card is-expanded" id="card-v20">
                         <div class="card-header">
-                            <div class="flex items-center gap-4">
+                            <div style="display: flex; align-items: center; gap: 16px;">
                                 <div>
-                                    <div class="flex items-center gap-3">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
                                         <span class="version-badge">v2.0</span>
                                     </div>
                                     <div style="font-size: 13px; color: var(--fg-subtle); margin-top: 4px;">2026-06-24 · 角色权限管理模块 PRD v2.0</div>
@@ -648,7 +568,7 @@
                             </p>
                         </div>
 
-                        <!-- Detailed changes — always expanded -->
+                        <!-- Detailed changes -->
                         <div class="change-detail expanded" id="detail-v20">
                             <div style="padding: 20px 24px;">
                                 <div style="display: flex; flex-direction: column; gap: 24px;">
@@ -656,23 +576,20 @@
                                     <!-- 相关链接 -->
                                     <div>
                                         <div class="section-label">
-                                            <i data-lucide="link" style="width: 14px; height: 14px; color: var(--fg-subtle);"></i>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--fg-subtle);"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                                             <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">相关链接</span>
                                         </div>
                                         <div class="link-group">
-                                            <!-- 原有链接 -->
                                             <a href="./prd/v2.0 角色权限管理模块-PRD-v2.html" target="_blank" class="doc-link">
-                                                <i data-lucide="file-text" style="width: 14px; height: 14px;"></i>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                                                 <span>角色权限管理模块-PRD-v2.0.html</span>
                                             </a>
-
-
                                             <a href="./qygl/qycy.html" class="doc-link-tertiary">
-                                                <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                                                 <span>用户管理</span>
                                             </a>
                                             <a href="./qygl/bmgl.html" class="doc-link-tertiary">
-                                                <i data-lucide="book-open" style="width: 14px; height: 14px;"></i>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                                                 <span>部门管理</span>
                                             </a>
                                         </div>
@@ -699,9 +616,6 @@
                 item.style.display = text.includes(keyword) ? '' : 'none';
             });
         });
-
-        // 初始化 Lucide 图标
-        lucide.createIcons();
     </script>
 </body>
 </html>
