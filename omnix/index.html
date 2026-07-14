@@ -11,11 +11,21 @@
             padding: 0;
         }
 
-        .nav-icon {
+        /* ── 导航图标统一尺寸调小 ── */
+        .sidebar-nav .nav-icon {
             display: inline-block;
             flex-shrink: 0;
-            width: 17px;
-            height: 17px;
+            font-size: 12px;       /* 从 18px 调小至 14px */
+            line-height: 1;
+            text-align: center;
+			margin-top:-2px;
+        }
+
+		.gray-icon {
+            /* 使 Emoji 变为灰色 */
+            filter: grayscale(100%);
+            opacity: 0.8;
+            color: #6b7280;  /* 对部分 Unicode 符号生效，Emoji 由 filter 控制 */
         }
 
         html,
@@ -30,7 +40,6 @@
             color: #1f2937;
         }
 
-        /* ── 外层布局容器 ── */
         .layout-shell {
             display: flex;
             width: 100vw;
@@ -71,6 +80,8 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            font-size: 18px;
+            color: #fff;
         }
 
         .logo-title {
@@ -90,7 +101,6 @@
             flex-shrink: 0;
         }
 
-        /* 导航菜单滚动区 */
         .sidebar-nav {
             flex: 1;
             overflow-y: auto;
@@ -108,7 +118,6 @@
             border-radius: 4px;
         }
 
-        /* 菜单分组标题 */
         .nav-group-label {
             font-size: 10px;
             font-weight: 600;
@@ -122,7 +131,6 @@
             padding-top: 6px;
         }
 
-        /* ── 菜单项基础 ── */
         .nav-item {
             display: flex;
             align-items: center;
@@ -140,23 +148,11 @@
             position: relative;
         }
 
-        .nav-item .nav-icon {
-            font-size: 17px;
-            flex-shrink: 0;
-            color: #6b7280;
-            transition: color 0.15s;
-        }
-
         .nav-item:hover {
             background: #f3f4f6;
             color: #111827;
         }
 
-        .nav-item:hover .nav-icon {
-            color: #374151;
-        }
-
-        /* 激活状态 */
         .nav-item.active {
             background: #eff6ff;
             color: #2563eb;
@@ -164,28 +160,19 @@
             border: 1px solid #bfdbfe;
         }
 
-        .nav-item.active .nav-icon {
-            color: #2563eb;
-        }
 
-        /* ── 待规划菜单项 ── */
         .nav-item.planning {
             cursor: default;
             color: #b0b8c4;
         }
 
-        .nav-item.planning .nav-icon {
-            color: #c5cdd8;
-        }
 
         .nav-item.planning:hover {
             background: transparent;
             color: #b0b8c4;
         }
 
-        .nav-item.planning:hover .nav-icon {
-            color: #c5cdd8;
-        }
+
 
         .nav-item.planning .planning-badge {
             display: inline-block;
@@ -202,11 +189,6 @@
             border: 1px solid #e9edf0;
         }
 
-        .nav-item.planning{
-            color: #b0b8c4;
-        }
-
-        /* 底部用户区 */
         .sidebar-footer {
             padding: 12px 14px;
             border-top: 1px solid #e5e7eb;
@@ -255,10 +237,15 @@
             cursor: pointer;
             transition: color 0.15s;
             flex-shrink: 0;
-            font-size: 17px;
+            font-size: 14px;    /* 与菜单图标大小一致 */
             background: none;
             border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+
 
         .logout-btn:hover {
             color: #2563eb;
@@ -282,7 +269,6 @@
             background: #f9fafb;
         }
 
-        /* iframe 加载遮罩 */
         .iframe-loader {
             position: absolute;
             inset: 0;
@@ -328,9 +314,7 @@
 
             <!-- Logo -->
             <div class="sidebar-logo">
-                <div class="logo-icon">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;color:#fff;"><path d="M20 4h-2V3h2.5c.28 0 .5.22.5.5v2c0 .28-.22.5-.5.5H20v1h-1V5h1zm-1 5h1V8h-1zm-2-6h-1v4h1zm6 12v3c0 .55-.45 1-1 1h-1v1c0 1.11-.89 2-2 2H5a2 2 0 0 1-2-2v-1H2c-.55 0-1-.45-1-1v-3c0-.55.45-1 1-1h1c0-3.87 3.13-7 7-7h1V5.73c-.6-.34-1-.99-1-1.73c0-1.1.9-2 2-2s2 .9 2 2c0 .74-.4 1.39-1 1.73V7h1c.34 0 .67.03 1 .08V10h4.74A6.94 6.94 0 0 1 21 14h1c.55 0 1 .45 1 1m-13 .5a2.5 2.5 0 0 0-5 0a2.5 2.5 0 0 0 5 0m9 0a2.5 2.5 0 0 0-5 0a2.5 2.5 0 0 0 5 0M17 8h-1v1h1z"/></svg>
-                </div>
+                <div class="logo-icon">🚀</div>
                 <span class="logo-title">OmniX</span>
                 <span class="logo-badge">SVITE</span>
             </div>
@@ -342,46 +326,46 @@
                 <div class="nav-group-label">企业智能体</div>
 
                 <a class="nav-item" data-src="./qyznt/zjgl.html" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M11 13.5v8H3v-8zm-2 2H5v4h4zM12 2l5.5 9h-11zm0 3.86L10.08 9h3.84zM17.5 13c2.5 0 4.5 2 4.5 4.5S20 22 17.5 22S13 20 13 17.5s2-4.5 4.5-4.5m0 2a2.5 2.5 0 0 0-2.5 2.5a2.5 2.5 0 0 0 2.5 2.5a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5"/></svg>
+                    <span class="nav-icon gray-icon">🤖</span>
                     <span>专家管理</span>
                 </a>
                 <a class="nav-item" data-src="./qyznt/zjtgl.html" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 4H3a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2M3 19V6h8v13zm18 0h-8V6h8zm-7-9.5h6V11h-6zm0 2.5h6v1.5h-6zm0 2.5h6V16h-6z"/></svg>
+                    <span class="nav-icon gray-icon">👥</span>
                     <span>专家团管理</span>
                 </a>
                 <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C7.58 3 4 4.79 4 7v10c0 2.21 3.59 4 8 4s8-1.79 8-4V7c0-2.21-3.58-4-8-4m6 14c0 .5-2.13 2-6 2s-6-1.5-6-2v-2.23c1.61.78 3.72 1.23 6 1.23s4.39-.45 6-1.23zm0-4.55c-1.3.95-3.58 1.55-6 1.55s-4.7-.6-6-1.55V9.64c1.47.83 3.61 1.36 6 1.36s4.53-.53 6-1.36zM12 9C8.13 9 6 7.5 6 7s2.13-2 6-2s6 1.5 6 2s-2.13 2-6 2"/></svg>
+                    <span class="nav-icon gray-icon">📊</span>
                     <span>智能体评测</span>
                 </a>
                 <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2zM4 4v13.17L5.17 16H20V4zm2 3h12v2H6zm0 4h9v2H6z"/></svg>
+                    <span class="nav-icon gray-icon">👁️</span>
                     <span>Agent观测</span>
                 </a>
                 <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="m21.71 20.29l-1.42 1.42a1 1 0 0 1-1.41 0L7 9.85A3.8 3.8 0 0 1 6 10a4 4 0 0 1-3.78-5.3l2.54 2.54l.53-.53l1.42-1.42l.53-.53L4.7 2.22A4 4 0 0 1 10 6a3.8 3.8 0 0 1-.15 1l11.86 11.88a1 1 0 0 1 0 1.41M2.29 18.88a1 1 0 0 0 0 1.41l1.42 1.42a1 1 0 0 0 1.41 0l5.47-5.46l-2.83-2.83M20 2l-4 2v2l-2.17 2.17l2 2L18 8h2l2-4Z"/></svg>
+                    <span class="nav-icon gray-icon">☁️</span>
                     <span>智能体云端</span>
                 </a>
 
                 <div class="nav-group-label">资源管理</div>
 
                 <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2zm-7.2 2l1.2-1.2V4h4v8.8l1.2 1.2z"/></svg>
+                    <span class="nav-icon gray-icon">🧠</span>
                     <span>模型管理</span>
                 </a>
                 <a class="nav-item planning" data-planning="true" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M11 2v20c-5.1-.5-9-4.8-9-10s3.9-9.5 9-10m2 0v9h9c-.5-4.8-4.2-8.5-9-9m0 11v9c4.7-.5 8.5-4.2 9-9z"/></svg>
+                    <span class="nav-icon gray-icon">🔌</span>
                     <span>MCP管理</span>
                 </a>
                 <a class="nav-item" data-src="./zygl/jngl.html" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h14m0-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m-5.04 9.29l-2.75 3.54l-1.96-2.36L6.5 17h11z"/></svg>
+                    <span class="nav-icon gray-icon">⚙️</span>
                     <span>技能管理</span>
                 </a>
                 <a class="nav-item" data-src="./zygl/zjck.html" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M14.19 14.19L6 18l3.81-8.19L18 6m-6-4A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 8.9a1.1 1.1 0 0 0-1.1 1.1a1.1 1.1 0 0 0 1.1 1.1a1.1 1.1 0 0 0 1.1-1.1a1.1 1.1 0 0 0-1.1-1.1"/></svg>
+                    <span class="nav-icon gray-icon">📚</span>
                     <span>专家词库</span>
                 </a>
                 <a class="nav-item planning" data-planning="true" data-src="./agent-content.html" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M11 13.5v8H3v-8zm-2 2H5v4h4zM12 2l5.5 9h-11zm0 3.86L10.08 9h3.84zM17.5 13c2.5 0 4.5 2 4.5 4.5S20 22 17.5 22S13 20 13 17.5s2-4.5 4.5-4.5m0 2a2.5 2.5 0 0 0-2.5 2.5a2.5 2.5 0 0 0 2.5 2.5a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5"/></svg>
+                    <span class="nav-icon gray-icon">🗂️</span>
                     <span>企业知识库</span>
                 </a>
 
@@ -389,27 +373,27 @@
                 <div class="nav-group-label">企业管理</div>
 
                 <a class="nav-item" data-src="./qygl/qycy.html" onclick="navigate(this)" id="navAgent">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5A2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5a2.5 2.5 0 0 0 2.5 2.5a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5"/></svg>
+                    <span class="nav-icon gray-icon">👤</span>
                     <span>用户管理</span>
                 </a>
                 <a class="nav-item" data-src="./qygl/bmgl.html" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M11 9.47V11h3.76L13 14.53V13H9.24zM13 1L6 15h5v8l7-14h-5z"/></svg>
+                    <span class="nav-icon gray-icon">🏢</span>
                     <span>部门管理</span>
                 </a>
                 <a class="nav-item planning" data-planning="true" data-src="./qygl/jsqx.html" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="m22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9c-2-2-5-2.4-7.4-1.3L9 6L6 9L1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
+                    <span class="nav-icon gray-icon">🔑</span>
                     <span>角色权限</span>
                 </a>
                 <a class="nav-item planning" data-planning="true" data-src="./qygl/cdgl.html" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 13h12v-2H6M3 6v2h18V6M10 18h4v-2h-4z"/></svg>
+                    <span class="nav-icon gray-icon">📋</span>
                     <span>菜单管理</span>
                 </a>
                 <a class="nav-item planning" data-planning="true" data-src="./mcp.html" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M21.4 7.5c.8.8.8 2.1 0 2.8l-2.8 2.8l-7.8-7.8l2.8-2.8c.8-.8 2.1-.8 2.8 0l1.8 1.8l3-3l1.4 1.4l-3 3zm-5.8 5.8l-1.4-1.4l-2.8 2.8l-2.1-2.1l2.8-2.8l-1.4-1.4l-2.8 2.8l-1.5-1.4l-2.8 2.8c-.8.8-.8 2.1 0 2.8l1.8 1.8l-4 4l1.4 1.4l4-4l1.8 1.8c.8.8 2.1.8 2.8 0l2.8-2.8l-1.4-1.4z"/></svg>
+                    <span class="nav-icon gray-icon">🎨</span>
                     <span>品牌设置</span>
                 </a>
                 <a class="nav-item planning" data-planning="true" data-src="./mcp.html" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="m16.5 9l-3 3l3 3H22V9M9 16.5V22h6v-5.5l-3-3M7.5 9H2v6h5.5l3-3M15 7.5V2H9v5.5l3 3z"/></svg>
+                    <span class="nav-icon gray-icon">🔄</span>
                     <span>组织架构同步</span>
                 </a>
 
@@ -417,7 +401,7 @@
                 <div class="nav-group-label">版本管理</div>
 
                 <a class="nav-item active" data-src="./changelog.html" onclick="navigate(this)">
-                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 15.5c0 1.11-.89 2-2 2s-2-.89-2-2s.9-2 2-2s2 .9 2 2m-9-2c-1.1 0-2 .9-2 2s.9 2 2 2s2-.89 2-2s-.89-2-2-2M23 15v3c0 .55-.45 1-1 1h-1v1c0 1.11-.89 2-2 2H5a2 2 0 0 1-2-2v-1H2c-.55 0-1-.45-1-1v-3c0-.55.45-1 1-1h1c0-3.87 3.13-7 7-7h1V5.73c-.6-.34-1-.99-1-1.73c0-1.1.9-2 2-2s2 .9 2 2c0 .74-.4 1.39-1 1.73V7h1c3.87 0 7 3.13 7 7h1c.55 0 1 .45 1 1m-2 1h-2v-2c0-2.76-2.24-5-5-5h-4c-2.76 0-5 2.24-5 5v2H3v1h2v3h14v-3h2z"/></svg>
+                    <span class="nav-icon">📜</span>
                     <span>版本日志</span>
                 </a>
 
@@ -434,7 +418,7 @@
                         <p class="user-email">slf-31338@zhink.cc</p>
                     </div>
                     <button class="logout-btn" title="退出登录">
-                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor"><path d="m17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5M4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4z"/></svg>
+                        <span class="nav-icon">🚪</span>
                     </button>
                 </div>
             </div>
