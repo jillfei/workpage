@@ -214,7 +214,7 @@
     <li><a href="#sec1" data-target="sec1" class="">一、背景与目标</a></li>
     <li><a href="#sec2" data-target="sec2" class="">二、用户画像</a></li>
     <li><a href="#sec3" data-target="sec3" class="">三、用户故事</a></li>
-    <li><a href="#sec4" data-target="sec4" class="">四、功能架构</a></li>
+    <li><a href="#sec4" data-target="sec4" class="active">四、功能架构</a></li>
     <li>
       <a href="#sec5" data-target="sec5" class="">五、子模块详细设计</a>
       <ul class="nav-sub">
@@ -225,7 +225,7 @@
       </ul>
     </li>
     <li><a href="#sec6" data-target="sec6" class="">六、关键交互流程</a></li>
-    <li><a href="#sec7" data-target="sec7" class="active">七、边界与异常</a></li>
+    <li><a href="#sec7" data-target="sec7" class="">七、边界与异常</a></li>
   </ul>
 </nav>
 
@@ -406,11 +406,11 @@
         <text x="225" y="395" text-anchor="middle" fill="#DC2626" font-size="12">回收站暂存</text>
         <text x="315" y="395" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
         <text x="385" y="395" text-anchor="middle" fill="#059669" font-size="12">恢复(下架) / 彻底删除</text>
-        <text x="540" y="395" text-anchor="middle" fill="#6B7280" font-size="15"><br></text>
+        <text x="540" y="395" text-anchor="middle" fill="#6B7280" font-size="15"></text></svg><br>
         <text x="590" y="395" text-anchor="middle" fill="#92400E" font-size="11"><br></text>
 
         <text x="390" y="418" text-anchor="middle" fill="#B45309" font-size="11">发布后专家在客户端可见可调用；下架后调用入口关闭但专家记录保留；删除后进入回收站可恢复</text>
-      </svg>
+      
     </div>
 
     <h3>核心链路说明</h3>
@@ -450,11 +450,11 @@
     <ul class="feature-list">
       <li><strong>列表展示：</strong>默认按更新时间倒序，支持列表 / 卡片两种视图切换；展示头像、名称、描述、来源标签、类别、状态、创建人、调用次数等关键字段。</li>
       <li><strong>搜索筛选：</strong>支持按名称、描述模糊搜索；支持按分类、来源、状态、创建人组合筛选；筛选条件可重置。</li>
-      <li><strong>新增专家（AI 创建，默认）：</strong>点击「创建专家」弹出创建弹窗，输入一段需求描述（创建文案，如「一个能解答员工社保公积金问题的 HR 助手」），点击「AI 生成」后系统调用 AI 能力自动生成专家全部配置参数（含名称、简介、分类、模型、提示词、开场白问题、推荐工具 / 技能 / MCP、使用权限、对话体验等），并跳转至专家配置工作台（5.2），所有参数已预填，用户可在此基础上微调；新建草稿并自动保存。</li>
+      <li><strong>新增专家（AI 创建，默认）：</strong>点击「创建专家」弹出创建弹窗，输入一段需求描述（创建文案，如「一个能解答员工社保公积金问题的 HR 助手」），点击「AI 生成」后系统调用 AI 能力自动生成专家全部配置参数（含名称、简介、分类、模型、提示词、开场白问题、技能 / MCP等），并跳转至专家配置工作台（5.2），所有参数已预填，用户可在此基础上微调；新建草稿并自动保存。</li>
       <li><strong>新增专家（手动创建）：</strong>在创建弹窗中点击「手动创建」，直接进入空白配置工作台，逐项配置。</li>
       <li><strong>编辑专家：</strong>点击专家行进入配置工作台，加载已有配置；客户端来源专家仅可查看基本信息，核心配置不可编辑。</li>
       <li><strong>发布 / 下架：</strong>对单个或批量专家切换状态；下架后客户端调用入口关闭，专家记录与配置保留。</li>
-      <li><strong>删除专家：</strong>删除前二次确认，提示「删除后专家将进入回收站，可在 30 天内恢复」；确认后专家从列表移除并进入回收站暂存（非物理删除）；客户端来源专家删除将同步移除客户端调用入口。</li>
+      <li><strong>删除专家：</strong>删除前二次确认，提示「删除后专家将进入回收站」；确认后专家从列表移除并进入回收站暂存（非物理删除）；客户端来源专家删除将同步移除客户端调用入口。</li>
       <li><strong>批量操作：</strong>勾选多个专家后支持批量发布 / 下架、批量删除（删除后统一进入回收站）、批量调整分类。</li>
       <li><strong>调用统计：</strong>列表展示调用次数列，点击可下钻查看该专家的调用趋势（预留扩展）。</li>
       <li><strong>回收站入口：</strong>列表页顶部或筛选区提供「回收站」入口，点击进入回收站页面（见 5.4）。</li>
@@ -469,7 +469,7 @@
 
     <h4>创建入口与初始化</h4>
     <ul class="feature-list">
-      <li><strong>AI 创建（默认入口）：</strong>由专家列表「创建专家」弹窗输入需求描述后进入。AI 根据创建文案一次性生成并预填以下参数：名称、简介、分类、模型、提示词、开场白、开场白问题（≥3 条）、自动追问开关、@技能开关、输入框能力与提示文案、推荐工具 / 技能 / MCP、使用权限、记忆开关。进入工作台后，<strong>AI 智能调优区默认展开</strong>，展示本次创建的输入与生成结果，便于回看 AI 的配置思路并继续对话微调。</li>
+      <li><strong>AI 创建（默认入口）：</strong>由专家列表「创建专家」弹窗输入需求描述后进入。AI 根据创建文案一次性生成并预填以下参数：名称、简介、分类、模型、提示词、技能 / MCP。进入工作台后，<strong>AI 智能调优区默认展开</strong>，展示本次创建的输入与生成结果，便于回看 AI 的配置思路并继续对话微调。</li>
       <li><strong>手动创建：</strong>进入空白工作台，所有配置项留空，由用户逐项填写；模型默认选中上次使用模型。</li>
       <li><strong>可微调可回退：</strong>无论哪种入口，进入工作台后所有 AI 预填参数均为可编辑状态；用户可在 AI 智能调优区要求「重置为初始 AI 配置」回退到首次生成结果。</li>
       <li><strong>自动保存：</strong>无论哪种入口，进入工作台即新建草稿并开始自动保存（详见整体布局规则）。</li>
@@ -501,7 +501,7 @@
 
     <!-- 5.2.2 专家配置区域 -->
     <h4>② 专家配置区域</h4>
-    <p>专家能力的核心配置入口，分为「核心配置」「使用权限」「对话体验」「扩展能力」「记忆相关」五个配置组。</p>
+    <p>专家能力的核心配置入口，分为「核心配置」「扩展能力」配置组。</p>
 
     <h4 style="color:var(--text);">核心配置</h4>
     <table>
@@ -581,7 +581,7 @@
 
     <!-- 5.4 回收站 -->
     <h3 id="sec5-4">🔹 5.4 回收站</h3>
-    <p>回收站用于暂存被删除的专家，提供「恢复」与「彻底删除」两类操作，避免误删导致专家资产不可逆丢失。专家从列表删除后自动进入回收站，<strong>保留期默认 30 天</strong>（可由管理员在系统设置中配置），超过保留期未处理将自动彻底删除。</p>
+    <p>回收站用于暂存被删除的专家，提供「恢复」与「彻底删除」两类操作，避免误删导致专家资产不可逆丢失。专家从列表删除后自动进入回收站，超过保留期未处理将自动彻底删除。</p>
 
     <h4>字段设计</h4>
     <table>
@@ -596,7 +596,7 @@
       <tr><td>创建时间</td><td>时间</td><td>✅</td><td>专家原创建时间，只读</td></tr>
       <tr><td>删除人</td><td>关联</td><td>✅</td><td>执行删除操作的用户，系统自动记录</td></tr>
       <tr><td>删除时间</td><td>时间</td><td>✅</td><td>进入回收站的时间，系统自动记录</td></tr>
-      <tr><td>剩余保留期</td><td>计算字段</td><td>✅</td><td>系统按「删除时间 + 保留期（默认 30 天）- 当前时间」计算；剩余天数 ≤ 7 天时高亮提醒</td></tr>
+      <tr><td>剩余保留期</td><td>计算字段</td><td>✅</td><td>无</td></tr>
       <tr><td>调用次数</td><td>数字</td><td>—</td><td>删除前累计调用次数，只读；恢复后从该值继续统计</td></tr>
     </tbody></table>
 
@@ -628,8 +628,8 @@
     <h3>6.2 创建并发布专家完整流程</h3>
     <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><h4>进入配置工作台</h4><p>通过 6.1 的 AI 创建流程（参数已预填）或手动创建进入配置工作台，自动新建草稿并开始自动保存。</p></div></div>
     <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><h4>填写头部信息</h4><p>上传头像、填写名称与简介、选择分类；系统实时校验名称唯一性。</p></div></div>
-    <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><h4>配置核心能力</h4><p>选择模型、编写提示词、按需添加 MCP / 技能，配置使用权限。</p></div></div>
-    <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><h4>预览调试</h4><p>在预览调试区发起对话，验证开场白、问题建议、回答质量与 token 消耗。</p></div></div>
+    <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><h4>配置核心能力</h4><p>选择模型、编写提示词、按需添加 MCP / 技能。</p></div></div>
+    <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><h4>预览调试</h4><p>在预览调试区发起对话，验证回答质量与 token 消耗。</p></div></div>
     <div class="flow-step"><div class="flow-num">6</div><div class="flow-content"><h4>AI 智能调优</h4><p>在 AI 调优区描述优化诉求，逐条审阅改动建议，点击「应用」采纳有效改动。</p></div></div>
     <div class="flow-step"><div class="flow-num">7</div><div class="flow-content"><h4>查看运行日志 / 产物</h4><p>按需切换运行日志区，查看大模型 / 工具 / 技能 / MCP 执行链路与产物文件。</p></div></div>
     <div class="flow-step"><div class="flow-num">8</div><div class="flow-content"><h4>发布上线</h4><p>调试达标后在头部操作中将状态切换为「已发布」，专家在客户端可见可调用。</p></div></div>
@@ -648,7 +648,7 @@
     <h3>6.5 专家删除与回收站流程</h3>
     <h4>6.5.1 删除专家（进入回收站）</h4>
     <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><h4>选择专家</h4><p>在专家列表勾选一个或多个专家，或对单个专家点击操作菜单中的「删除」。</p></div></div>
-    <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><h4>二次确认</h4><p>弹出确认弹窗，提示「删除后专家将进入回收站，可在 30 天内恢复，超期将自动彻底删除」；若包含已发布专家，额外提示「已发布专家删除后客户端调用入口将立即关闭」。</p></div></div>
+    <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><h4>二次确认</h4><p>弹出确认弹窗，提示「删除后专家将进入回收站」；若包含已发布专家，额外提示「已发布专家删除后客户端调用入口将立即关闭」。</p></div></div>
     <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><h4>移入回收站</h4><p>确认后专家从列表移除，进入回收站暂存；记录删除人、删除时间、删除前状态；客户端调用入口同步关闭。</p></div></div>
 
     <h4>6.5.2 恢复专家</h4>
@@ -680,11 +680,11 @@
       <tr><td>9</td><td>导入数据校验失败</td><td>逐行校验，失败行返回错误详情（行号 + 原因）；全部失败则回滚，部分失败则成功部分入库；失败明细可导出修正重导</td><td>单次上限 1000 行</td></tr>
       <tr><td>10</td><td>预览调试中模型超时 / 报错</td><td>聊天框展示错误提示与重试按钮；运行日志同步记录失败原因与耗时</td><td>不中断配置</td></tr>
       <tr><td>11</td><td>下架有调用中的专家</td><td>允许下架，下架后客户端新会话入口关闭；进行中的会话提示「专家已下架」并结束</td><td>调用次数统计保留</td></tr>
-      <tr><td>12</td><td>使用权限变更为「仅自己可见」</td><td>已发布但对他人不可见；他人客户端列表与调用入口即时移除</td><td>权限变更记录审计日志</td></tr>
+      <tr><td>12</td><td>-</td><td>-</td><td>-</td></tr>
       <tr><td>13</td><td>自动保存失败（网络异常）</td><td>头部展示「保存失败」并保留本地草稿，网络恢复后自动重试；未保存成功前禁止发布</td><td>避免配置丢失</td></tr>
       <tr><td>14</td><td>创建文案为空或过短</td><td>弹窗内「AI 生成」按钮在文案为空或不足 5 字时置灰；提交时校验，提示「请输入更详细的需求描述（至少 5 字）」</td><td>前端校验</td></tr>
       <tr><td>15</td><td>AI 生成失败 / 超时</td><td>弹窗内展示失败原因与「重试」按钮；重试仍失败则提示「AI 生成失败，可手动创建或稍后再试」，并保留已输入文案；不产生脏草稿</td><td>不自动创建空草稿</td></tr>
-      <tr><td>16</td><td>AI 生成的模型 / 工具 / 技能 / MCP 不存在或无权限</td><td>对预填的模型与扩展能力项做存在性与权限校验；不存在或无权限的项标记「已失效 / 无权限」并置灰，支持移除与手动替换；预览调试时跳过并提示</td><td>沿用失效项处理策略</td></tr>
+      <tr><td>16</td><td>-</td><td>-</td><td>-</td></tr>
       <tr><td>17</td><td>AI 预填配置需人工复核</td><td>进入工作台后顶部提示「当前配置由 AI 生成，请复核后发布」；开场白问题不足 3 个、输入框能力未启用等校验规则同样适用，不达标不允许发布</td><td>复用既有校验</td></tr>
       <tr><td>18</td><td>恢复专家时名称已被占用</td><td>恢复前校验名称全局唯一（含专家列表与回收站中同名专家）；冲突时提示「名称已被占用，请重命名」，支持在确认弹窗中逐个输入新名称后恢复</td><td>前端校验 + 后端兜底</td></tr>
       <tr><td>19</td><td>恢复客户端来源专家</td><td>允许恢复；恢复后状态置为「下架」，客户端调用入口不自动恢复，需重新发布后才可在客户端使用</td><td>沿用来源规则</td></tr>
