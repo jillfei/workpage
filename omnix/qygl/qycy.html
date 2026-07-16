@@ -91,6 +91,26 @@
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
 
+        /* Import result animation */
+        .import-result-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; border-radius: 10px; font-size: 13px;
+            opacity: 0; transform: translateY(10px);
+            animation: resultSlideIn 0.35s ease forwards;
+        }
+        .import-result-item.success { background: #f0fdf4; color: #166534; }
+        .import-result-item.fail { background: #fef2f2; color: #991b1b; }
+        @keyframes resultSlideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .import-result-icon {
+            width: 22px; height: 22px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; font-size: 13px; font-weight: 700;
+        }
+        .import-result-item.success .import-result-icon { background: #bbf7d0; color: #15803d; }
+        .import-result-item.fail .import-result-icon { background: #fecaca; color: #dc2626; }
+
         /* Toast */
         .toast-container {
             position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
@@ -746,11 +766,11 @@
             </button>
         </div>
         <div class="px-6 py-6">
-            <div class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer" onclick="document.getElementById('importFileInput').click()">
+            <div id="importDropZone" class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer" onclick="document.getElementById('importFileInput').click()" ondragover="event.preventDefault();event.stopPropagation();this.classList.add('border-blue-400','bg-blue-50')" ondragleave="event.preventDefault();event.stopPropagation();this.classList.remove('border-blue-400','bg-blue-50')" ondrop="event.preventDefault();event.stopPropagation();this.classList.remove('border-blue-400','bg-blue-50');handleDropFile(event)">
                 <iconify-icon icon="mdi:cloud-upload-outline" class="text-5xl text-gray-300 mb-3"></iconify-icon>
                 <p class="text-sm text-gray-600 mb-1">点击或拖拽文件到此区域上传</p>
                 <p class="text-xs text-gray-400">支持 .xlsx 格式文件</p>
-                <input type="file" id="importFileInput" accept=".xlsx," class="hidden" onchange="handleImportFile(this)"/>
+                <input type="file" id="importFileInput" accept=".xlsx" class="hidden" onchange="handleImportFile(this)"/>
             </div>
             <div id="importFileName" class="mt-3 text-sm text-gray-500 hidden">
                 <div class="flex items-center space-x-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg">
@@ -761,17 +781,26 @@
                     </button>
                 </div>
             </div>
-            <div class="flex items-start space-x-2 text-xs text-gray-400" style="margin-top: 1rem;">
+            <div id="importTips" class="flex items-start space-x-2 text-xs text-gray-400" style="margin-top: 1rem;">
                 <iconify-icon icon="mdi:information-outline" class="text-gray-400 mt-0.5 flex-shrink-0"></iconify-icon>
                 <div>
-                    <p>请先<a href="#" class="text-blue-500 hover:underline">下载导入模板</a>，按模板格式填写后上传。</p>
+                    <p>请先<a href="../style/excel/用户导入模板.xlsx" class="text-blue-500 hover:underline">下载导入模板</a>，按模板格式填写后上传。</p>
                     <p class="mt-1">单次导入不超过 500 条数据。</p>
                 </div>
             </div>
+            <div id="importResultList" class="hidden mt-4 space-y-2 max-h-56 overflow-y-auto custom-scrollbar"></div>
+            <div id="importSummary" class="hidden mt-3 flex items-center justify-between text-xs px-1">
+                <span id="importSummaryText"></span>
+                <a id="exportFailedBtn" href="../style/excel/用户导入失败数据.xlsx" download class="inline-flex items-center gap-1 px-3 py-1.5 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors">
+                    <iconify-icon icon="mdi:download-outline" class="text-sm"></iconify-icon>
+                    导出失败数据
+                </a>
+            </div>
         </div>
         <div class="flex items-center justify-end space-x-3 px-6 py-4 border-t border-gray-100 bg-gray-50/50">
-            <button onclick="closeImportModal()" class="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
-            <button onclick="doImport()" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">开始导入</button>
+            <button onclick="closeImportModal()" id="importCancelBtn" class="px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+            <button onclick="doImport()" id="importStartBtn" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">开始导入</button>
+            <button onclick="closeImportModal()" id="importDoneBtn" class="hidden px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">完成</button>
         </div>
     </div>
 </div>
@@ -930,6 +959,14 @@ function openImportModal() {
 function closeImportModal() {
     document.getElementById('importModal').classList.remove('active');
     clearImportFile();
+    document.getElementById('importDropZone').classList.remove('hidden');
+    document.getElementById('importTips').classList.remove('hidden');
+    document.getElementById('importResultList').classList.add('hidden');
+    document.getElementById('importResultList').innerHTML = '';
+    document.getElementById('importSummary').classList.add('hidden');
+    document.getElementById('importStartBtn').classList.remove('hidden');
+    document.getElementById('importCancelBtn').classList.remove('hidden');
+    document.getElementById('importDoneBtn').classList.add('hidden');
 }
 
 function handleImportFile(input) {
@@ -939,14 +976,84 @@ function handleImportFile(input) {
     }
 }
 
+function handleDropFile(event) {
+    var files = event.dataTransfer.files;
+    if (!files || !files.length) return;
+    var file = files[0];
+    var name = file.name.toLowerCase();
+    if (!name.endsWith('.xlsx')) {
+        showToast('仅支持 .xlsx 格式文件');
+        return;
+    }
+    var input = document.getElementById('importFileInput');
+    var dt = new DataTransfer();
+    dt.items.add(file);
+    input.files = dt.files;
+    document.getElementById('importFileName').classList.remove('hidden');
+    document.getElementById('importFileNameText').textContent = file.name;
+}
+
 function clearImportFile() {
     document.getElementById('importFileInput').value = '';
     document.getElementById('importFileName').classList.add('hidden');
 }
 
 function doImport() {
-    closeImportModal();
-    showToast('导入成功');
+    var input = document.getElementById('importFileInput');
+    if (!input.files || !input.files[0]) {
+        showToast('请先选择文件');
+        return;
+    }
+    var dropZone = document.getElementById('importDropZone');
+    var tips = document.getElementById('importTips');
+    var resultList = document.getElementById('importResultList');
+    var summary = document.getElementById('importSummary');
+    var startBtn = document.getElementById('importStartBtn');
+    var cancelBtn = document.getElementById('importCancelBtn');
+    var doneBtn = document.getElementById('importDoneBtn');
+
+    dropZone.classList.add('hidden');
+    tips.classList.add('hidden');
+    resultList.classList.remove('hidden');
+    resultList.innerHTML = '';
+    summary.classList.add('hidden');
+    startBtn.classList.add('hidden');
+    cancelBtn.classList.add('hidden');
+
+    var rows = [
+        { name: '张三', success: true },
+        { name: '李四', success: true },
+        { name: '王五', success: false, reason: '手机号格式错误' },
+        { name: '赵六', success: true },
+        { name: '孙七', success: false, reason: '邮箱格式错误' },
+        { name: '周八', success: false, reason: '部门不存在' }
+    ];
+    var idx = 0;
+
+    function showNext() {
+        if (idx >= rows.length) {
+            var successCount = rows.filter(function(r) { return r.success; }).length;
+            var failCount = rows.length - successCount;
+            summary.classList.remove('hidden');
+            document.getElementById('importSummaryText').innerHTML =
+                '共 ' + rows.length + ' 条，<span style="color:#16a34a">成功 ' + successCount + '</span>，<span style="color:#dc2626">失败 ' + failCount + '</span>';
+            doneBtn.classList.remove('hidden');
+            return;
+        }
+        var row = rows[idx];
+        var item = document.createElement('div');
+        item.className = 'import-result-item ' + (row.success ? 'success' : 'fail');
+        if (row.success) {
+            item.innerHTML = '<div class="import-result-icon">✓</div><span>第 ' + (idx + 1) + ' 行 <b>' + row.name + '</b> 导入成功</span>';
+        } else {
+            item.innerHTML = '<div class="import-result-icon">✕</div><span>第 ' + (idx + 1) + ' 行 <b>' + row.name + '</b> 导入失败 — ' + row.reason + '</span>';
+        }
+        resultList.appendChild(item);
+        resultList.scrollTop = resultList.scrollHeight;
+        idx++;
+        setTimeout(showNext, 500);
+    }
+    showNext();
 }
 
 // ============ Dropdown Filters ============
