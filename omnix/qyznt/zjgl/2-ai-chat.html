@@ -291,6 +291,47 @@
   }
   .copy-btn:hover { border-color: #667eea; color: #667eea; }
 
+  /* ===== File Card (可点击文件预览卡片) ===== */
+  .file-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 10px 16px;
+    background: #fff;
+    border: 1px solid #e8ecf0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+    max-width: 320px;
+  }
+  .file-card:hover {
+    border-color: #667eea;
+    box-shadow: 0 2px 8px rgba(102,126,234,0.1);
+  }
+  .file-card .file-icon {
+    width: 32px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .file-card .file-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .file-card .file-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+  }
+  .file-card .file-hint {
+    font-size: 11px;
+    color: #aaa;
+  }
+
   /* ===== Input Area ===== */
   .input-area {
     padding: 16px 20px;
@@ -401,7 +442,7 @@
     <div class="avatar-icon"></div>
     <h1 class="welcome-title">产品调研、设计专家</h1>
     <p class="welcome-desc">
-      您可以点击下面的示例问题快速开始。
+      您可以点击下面的示例问题快速开始，也可在链接后加 <b>?h=0 / ?h=1 / ?h=2</b> 直接打开对应的预设聊天历史。
     </p>
     <div class="example-list">
       <div class="example-item" onclick="startChat(0)">
@@ -450,97 +491,90 @@
 })();
 
 let chatStarted = false;
-let isProcessing = false;
 
-const examples = [
-  '帮我识别一下这张身份证信息',
-  '这个表格里的数据怎么提取出来',
-  '我想查询一下产品的最新优惠活动'
-];
-
-function toggleSendBtn() {
-  const input = document.getElementById('chatInput');
-  const btn = document.getElementById('sendBtn');
-  if (input.value.trim()) {
-    btn.classList.add('visible');
-  } else {
-    btn.classList.remove('visible');
-  }
-}
-
-function startChat(index) {
-  if (chatStarted) return;
-  chatStarted = true;
-
-  const welcome = document.getElementById('welcomeScreen');
-  const chatArea = document.getElementById('chatArea');
-
-  welcome.classList.add('hidden');
-  chatArea.classList.add('active');
-
-  // Simulate flow for example 3 (优惠活动)
-  simulateFullFlow();
-}
-
-function addMessage(type, content, extra) {
-  const chatArea = document.getElementById('chatArea');
-  const row = document.createElement('div');
-  row.className = `msg-row ${type} animate-in`;
-
-  if (type === 'user') {
-    row.innerHTML = `<div class="msg-bubble">${content}</div>`;
-  } else {
-    row.innerHTML = content;
-  }
-
-  chatArea.appendChild(row);
-  chatArea.scrollTop = chatArea.scrollHeight;
-  return row;
-}
-
-function simulateFullFlow() {
-  const chatArea = document.getElementById('chatArea');
-
-  // Step 1: User message
-  setTimeout(() => {
-    addMessage('user', '我想查询一下产品的最新优惠活动');
-  }, 600);
-
-  // Step 2: Bot thinking
-  setTimeout(() => {
-    const thinkingHTML = `
-      <div class="thinking-section animate-in">
-        <div class="thinking-header" onclick="toggleThinking(this)">
-          <span class="chevron open">▸</span> 深度思考
+// ===== 预设聊天历史（通过不同参数触发）=====
+// 参数来源：
+//   1) 欢迎页示例点击 → startChat(0 | 1 | 2)
+//   2) URL 参数       → ?h=0 / ?h=1 / ?h=2  （也支持 #0 / #1 / #2）
+const presetHistories = [
+  {
+    // 历史 0：身份证信息识别
+    query: '帮我识别一下这张身份证信息',
+    thinkingText: '我来帮您识别这张身份证上的信息，请稍等~',
+    toolCall: '调用了1次工具',
+    kbNotice: '知识库中暂未收录相关',
+    response: `
+      <div class="final-response animate-in">
+        <div class="section-title"><span class="icon">🪪</span> 身份证信息识别结果</div>
+        <ul>
+          <li>姓名：张**</li>
+          <li>性别：男　民族：汉</li>
+          <li>出生：1990年05月12日</li>
+          <li>住址：浙江省杭州市********</li>
+          <li>公民身份号码：3301**********1234</li>
+        </ul>
+        <div class="closing">
+          识别已完成，以上信息已做脱敏处理。出于隐私保护，建议不要在不可信页面上传证件原件照片，办理业务请通过官方渠道进行~ 🔒
         </div>
-        <div class="thinking-body">
-          <div>我来帮您查询最新的产品优惠活动信息，请稍等~</div>
-          <div class="tool-call">调用了1次工具</div>
-          <div class="kb-notice">知识库中暂未收录相关</div>
+        <a class="file-card" href="id-card-result.html" target="_blank" rel="noopener noreferrer">
+          <span class="file-icon">📄</span>
+          <span class="file-info">
+            <span class="file-name">id-card-result.html</span>
+            <span class="file-hint">点击在浏览器预览</span>
+          </span>
+        </a>
+        <div class="response-meta">
+          <span>📋</span>
+          <span>04:01:12</span>
+          <button class="copy-btn" onclick="copyResponse(this)">复制</button>
         </div>
       </div>
-    `;
-    addMessage('bot', thinkingHTML);
-  }, 1800);
-
-  // Step 3: Loading
-  setTimeout(() => {
-    const loadingHTML = `
-      <div class="loading-row animate-in" id="loadingRow">
-        <div class="spinner"></div>
-        <span>正在输出中..</span>
+    `
+  },
+  {
+    // 历史 1：表格数据提取
+    query: '这个表格里的数据怎么提取出来',
+    thinkingText: '我来帮您梳理几种表格数据提取的方法，请稍等~',
+    toolCall: '调用了1次工具',
+    kbNotice: '知识库中暂未收录相关',
+    response: `
+      <div class="final-response animate-in">
+        <div class="section-title"><span class="icon">📊</span> 表格数据提取方案</div>
+        <ul>
+          <li><span class="highlight">方式一 · 直接复制</span>：选中表格复制到 Excel / WPS，适合规整的电子表格</li>
+          <li><span class="highlight">方式二 · 导出文件</span>：来自网页或系统时，优先找"导出 Excel / CSV"按钮</li>
+          <li><span class="highlight">方式三 · OCR 识别</span>：图片 / 截图类表格，用 OCR 工具转成结构化数据</li>
+          <li><span class="highlight">方式四 · 公式清洗</span>：导入后用分列、TRIM、TEXT 等函数规整字段</li>
+        </ul>
+        <div class="section-title"><span class="icon">⚡</span> 快捷操作</div>
+        <ul>
+          <li>把表格文件或截图发给我，我可以直接帮您提取并整理成清单</li>
+        </ul>
+        <div class="closing">
+          您想用哪种方式？也可以直接上传文件，我帮您处理~ 😊
+        </div>
+        <a class="file-card" href="table-extract-result.html" target="_blank" rel="noopener noreferrer">
+          <span class="file-icon">📄</span>
+          <span class="file-info">
+            <span class="file-name">table-extract-result.html</span>
+            <span class="file-hint">点击在浏览器预览</span>
+          </span>
+        </a>
+        <div class="response-meta">
+          <span>📋</span>
+          <span>04:02:25</span>
+          <button class="copy-btn" onclick="copyResponse(this)">复制</button>
+        </div>
       </div>
-    `;
-    addMessage('bot', loadingHTML);
-  }, 3000);
-
-  // Step 4: Final response
-  setTimeout(() => {
-    // Remove loading
-    const loadingRow = document.getElementById('loadingRow');
-    if (loadingRow) loadingRow.remove();
-
-    const responseHTML = `
+    `
+  },
+  {
+    // 历史 2：产品优惠活动查询（原示例）
+    query: '我想查询一下产品的最新优惠活动',
+    thinkingText: '我来帮您查询最新的产品优惠活动信息，请稍等~',
+    toolCall: '调用了1次工具',
+    kbNotice: '知识库中暂未收录相关',
+    response: `
       <div class="final-response animate-in">
         <div class="section-title"><span class="icon">📱</span> 数码与家电全品类优惠</div>
         <ul>
@@ -580,14 +614,125 @@ function simulateFullFlow() {
         <div class="closing">
           请问您对哪类产品的优惠活动比较感兴趣？我可以帮您进一步查询更详细的信息~ 😊
         </div>
+        <a class="file-card" href="promo-activity.html" target="_blank" rel="noopener noreferrer">
+          <span class="file-icon">📄</span>
+          <span class="file-info">
+            <span class="file-name">promo-activity.html</span>
+            <span class="file-hint">点击在浏览器预览</span>
+          </span>
+        </a>
         <div class="response-meta">
           <span></span>
           <span>04:03:31</span>
           <button class="copy-btn" onclick="copyResponse(this)">复制</button>
         </div>
       </div>
+    `
+  }
+];
+
+function toggleSendBtn() {
+  const input = document.getElementById('chatInput');
+  const btn = document.getElementById('sendBtn');
+  if (input.value.trim()) {
+    btn.classList.add('visible');
+  } else {
+    btn.classList.remove('visible');
+  }
+}
+
+function startChat(index) {
+  if (chatStarted) return;
+  if (index === undefined || index < 0 || index >= presetHistories.length) {
+    index = 2; // 默认走优惠活动示例
+  }
+  chatStarted = true;
+
+  const welcome = document.getElementById('welcomeScreen');
+  const chatArea = document.getElementById('chatArea');
+  welcome.classList.add('hidden');
+  chatArea.classList.add('active');
+
+  runFlowAnimated(presetHistories[index]);
+}
+
+function addMessage(type, content) {
+  const chatArea = document.getElementById('chatArea');
+  const row = document.createElement('div');
+  row.className = `msg-row ${type} animate-in`;
+
+  if (type === 'user') {
+    row.innerHTML = `<div class="msg-bubble">${content}</div>`;
+  } else {
+    row.innerHTML = content;
+  }
+
+  chatArea.appendChild(row);
+  chatArea.scrollTop = chatArea.scrollHeight;
+  return row;
+}
+
+// 直显版：一次渲染整段预设聊天历史（用于 URL 参数访问，无动画交互）
+function runFlowDirect(history) {
+  addMessage('user', history.query);
+
+  const thinkingHTML = `
+    <div class="thinking-section animate-in">
+      <div class="thinking-header" onclick="toggleThinking(this)">
+        <span class="chevron open">▸</span> 深度思考
+      </div>
+      <div class="thinking-body">
+        <div>${history.thinkingText}</div>
+        <div class="tool-call">${history.toolCall}</div>
+        <div class="kb-notice">${history.kbNotice}</div>
+      </div>
+    </div>
+  `;
+  addMessage('bot', thinkingHTML);
+
+  addMessage('bot', history.response);
+}
+
+// 动画版：点击预设问题时的交互式播放（用户提问 → 深度思考 → 加载中 → 最终回复）
+function runFlowAnimated(history) {
+  // Step 1: 用户消息
+  setTimeout(() => {
+    addMessage('user', history.query);
+  }, 600);
+
+  // Step 2: 深度思考
+  setTimeout(() => {
+    const thinkingHTML = `
+      <div class="thinking-section animate-in">
+        <div class="thinking-header" onclick="toggleThinking(this)">
+          <span class="chevron open">▸</span> 深度思考
+        </div>
+        <div class="thinking-body">
+          <div>${history.thinkingText}</div>
+          <div class="tool-call">${history.toolCall}</div>
+          <div class="kb-notice">${history.kbNotice}</div>
+        </div>
+      </div>
     `;
-    addMessage('bot', responseHTML);
+    addMessage('bot', thinkingHTML);
+  }, 1800);
+
+  // Step 3: 加载中
+  setTimeout(() => {
+    const loadingHTML = `
+      <div class="loading-row animate-in" id="loadingRow">
+        <div class="spinner"></div>
+        <span>正在输出中..</span>
+      </div>
+    `;
+    addMessage('bot', loadingHTML);
+  }, 3000);
+
+  // Step 4: 最终回复
+  setTimeout(() => {
+    const loadingRow = document.getElementById('loadingRow');
+    if (loadingRow) loadingRow.remove();
+    addMessage('bot', history.response);
   }, 5500);
 }
 
@@ -653,6 +798,13 @@ function handleSend() {
         <div class="closing">
           感谢您的提问！关于"${text}"，我目前还在持续学习中，暂时无法给出详细回答。建议您尝试其他问题，或联系人工客服获取帮助。😊
         </div>
+        <a class="file-card" href="chat-result.html" target="_blank" rel="noopener noreferrer">
+          <span class="file-icon">📄</span>
+          <span class="file-info">
+            <span class="file-name">chat-result.html</span>
+            <span class="file-hint">点击在浏览器预览</span>
+          </span>
+        </a>
         <div class="response-meta">
           <span>📋</span>
           <span>${new Date().toLocaleTimeString('zh-CN', {hour12: false})}</span>
@@ -671,6 +823,25 @@ document.getElementById('chatInput').addEventListener('keydown', function(e) {
     handleSend();
   }
 });
+
+// 通过 URL 参数 ?h=0/1/2（或 #0/#1/#2）直接触发对应预设聊天历史
+// 带参数访问时不显示欢迎/初始化界面，直接进入历史内容
+(function autoStartFromParam() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    let h = params.get('h');
+    if (h === null) h = window.location.hash.replace('#', '');
+    if (h !== null && h !== '') {
+      const idx = parseInt(h, 10);
+      if (!isNaN(idx) && idx >= 0 && idx < presetHistories.length) {
+        chatStarted = true;
+        document.getElementById('welcomeScreen').classList.add('hidden');
+        document.getElementById('chatArea').classList.add('active');
+        runFlowDirect(presetHistories[idx]);
+      }
+    }
+  } catch (e) { /* 忽略解析异常 */ }
+})();
 </script>
 </body>
 </html>
