@@ -9,8 +9,6 @@
     <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js">
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
         *,
         *::before,
         *::after {
@@ -350,6 +348,100 @@
             font-size: 13px;
             padding: 8px 0;
         }
+
+        /* 分页页脚（固定底部，不随内容滚动） */
+        .pagination-footer {
+            flex-shrink: 0;
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            padding: 10px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .pagination-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+        .pagination-info strong { color: #1f2937; font-weight: 600; }
+        .pagination-divider { color: #e5e7eb; }
+        .pagination-size {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pagination-size span { white-space: nowrap; }
+        .pagination-size select {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 2px 4px;
+            font-size: 13px;
+            color: #374151;
+            background: #ffffff;
+            cursor: pointer;
+            outline: none;
+        }
+        .pagination-size select:focus { border-color: #4f46e5; }
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pagination-btn {
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+        .pagination-btn:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+        .pagination-pages {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pagination-page {
+            min-width: 30px;
+            height: 30px;
+            padding: 0 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all .15s;
+            user-select: none;
+        }
+        .pagination-page:hover { background: #f3f4f6; }
+        .pagination-page.active {
+            background: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+        }
+        .pagination-ellipsis {
+            color: #9ca3af;
+            padding: 0 2px;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
@@ -471,8 +563,38 @@
                 </div>
             </div>
 
+        </div><!-- end 内容滚动区 -->
+
+        <!-- 分页页脚（列表页 + 回收站共用，按当前视图独立分页） -->
+        <div id="pagination-footer" class="pagination-footer">
+            <div class="pagination-info">
+                <span>共 <strong id="pg-total">0</strong> 条</span>
+                <span class="pagination-divider">|</span>
+                <span>第 <span id="pg-range">1-0</span> 条</span>
+                <span class="pagination-divider">|</span>
+                <div class="pagination-size">
+                    <span>每页</span>
+                    <select id="pg-size" onchange="changePageSize(this.value)">
+                        <option value="100">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <span>条</span>
+                </div>
+            </div>
+            <div class="pagination-controls">
+                <button id="pg-prev" class="pagination-btn" onclick="changePage('prev')" aria-label="上一页">
+                    <iconify-icon icon="mdi:chevron-left"></iconify-icon>
+                </button>
+                <div id="pg-pages" class="pagination-pages"></div>
+                <button id="pg-next" class="pagination-btn" onclick="changePage('next')" aria-label="下一页">
+                    <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                </button>
+            </div>
         </div>
-    </div>
+
+    </div><!-- end page-wrap -->
 
     <!-- 新增/编辑词条弹窗 -->
     <div id="addModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('addModal')">
@@ -885,6 +1007,12 @@
         let editingEntryId = null;
         let deleteTargetIds = [];
         let recycleDeleteTargetIds = [];
+
+        // 分页状态（列表页与回收站各自独立）
+        let listCurrentPage = 1;
+        let listPageSize = 10;
+        let recycleCurrentPage = 1;
+        let recyclePageSize = 10;
         let selectedIcon = '📖';
         let iconPickerOpen = false;
         const iconList = ['', '⚙️', '📊', '📦', '🔧', '📈', '🌐', '📋', '💡', '🐳', '🚀', '🔍', '🏷️', '🔑', '⚡', '🔗', '📱', '💻', '🤖', '🛠️'];
@@ -955,19 +1083,25 @@
 
         function renderEntryGrid() {
             const filtered = getFilteredEntries();
+            const total = filtered.length;
+            const totalPages = Math.max(1, Math.ceil(total / listPageSize));
+            if (listCurrentPage > totalPages) listCurrentPage = totalPages;
+            const start = (listCurrentPage - 1) * listPageSize;
+            const pageItems = filtered.slice(start, start + listPageSize);
             const grid = document.getElementById('entry-grid');
 
-            if (filtered.length === 0) {
+            if (total === 0) {
                 grid.innerHTML = '';
                 document.getElementById('empty-state').classList.remove('hidden');
                 document.getElementById('empty-state').classList.add('flex');
+                renderPagination(total, listCurrentPage, listPageSize);
                 return;
             }
 
             document.getElementById('empty-state').classList.add('hidden');
             document.getElementById('empty-state').classList.remove('flex');
 
-            grid.innerHTML = filtered.map(e => {
+            grid.innerHTML = pageItems.map(e => {
                 const isEnabled = e.status === 'enabled';
                 const catTags = renderCategoryTags(e.categoryIds);
                 return `
@@ -1004,9 +1138,10 @@
                     </div>
                 </div>`;
             }).join('');
+            renderPagination(total, listCurrentPage, listPageSize);
         }
 
-        function filterEntries() { renderEntryGrid(); }
+        function filterEntries() { listCurrentPage = 1; renderEntryGrid(); }
 
         // ═══════════════════════════════════════════════
         // 渲染回收站卡片
@@ -1014,20 +1149,26 @@
         function renderRecycleGrid() {
             const search = document.getElementById('recycle-search').value.toLowerCase();
             const filtered = deletedEntries.filter(e => !search || e.name.toLowerCase().includes(search));
+            const total = filtered.length;
+            const totalPages = Math.max(1, Math.ceil(total / recyclePageSize));
+            if (recycleCurrentPage > totalPages) recycleCurrentPage = totalPages;
+            const start = (recycleCurrentPage - 1) * recyclePageSize;
+            const pageItems = filtered.slice(start, start + recyclePageSize);
             const grid = document.getElementById('recycle-grid');
             document.getElementById('recycle-count').textContent = deletedEntries.length;
 
-            if (filtered.length === 0) {
+            if (total === 0) {
                 grid.innerHTML = '';
                 document.getElementById('recycle-empty').classList.remove('hidden');
                 document.getElementById('recycle-empty').classList.add('flex');
+                renderPagination(total, recycleCurrentPage, recyclePageSize);
                 return;
             }
 
             document.getElementById('recycle-empty').classList.add('hidden');
             document.getElementById('recycle-empty').classList.remove('flex');
 
-            grid.innerHTML = filtered.map(e => {
+            grid.innerHTML = pageItems.map(e => {
                 const isSelected = recycleDeleteTargetIds.includes(e.id);
                 const catTags = renderCategoryTags(e.categoryIds);
                 return `
@@ -1061,9 +1202,97 @@
             }).join('');
 
             updateRecycleSelectedCount();
+            renderPagination(total, recycleCurrentPage, recyclePageSize);
         }
 
-        function filterRecycle() { renderRecycleGrid(); }
+        function filterRecycle() { recycleCurrentPage = 1; renderRecycleGrid(); }
+
+        // ═══════════════════════════════════════════════
+        // 分页（列表页 / 回收站 共用底部页脚，按当前视图独立分页）
+        // ═══════════════════════════════════════════════
+        function getListTotalPages() {
+            return Math.max(1, Math.ceil(getFilteredEntries().length / listPageSize));
+        }
+        function getRecycleTotalPages() {
+            const search = document.getElementById('recycle-search').value.toLowerCase();
+            const total = deletedEntries.filter(e => !search || e.name.toLowerCase().includes(search)).length;
+            return Math.max(1, Math.ceil(total / recyclePageSize));
+        }
+
+        function buildPageNumbers(current, totalPages) {
+            if (totalPages <= 1) return `<span class="pagination-page active">1</span>`;
+            const pages = [];
+            const add = (n, active) => pages.push(
+                `<span class="pagination-page ${active ? 'active' : ''}" onclick="goToPage(${n})">${n}</span>`);
+            if (totalPages <= 7) {
+                for (let i = 1; i <= totalPages; i++) add(i, i === current);
+            } else {
+                add(1, current === 1);
+                if (current > 3) pages.push('<span class="pagination-ellipsis">…</span>');
+                const from = Math.max(2, current - 1);
+                const to = Math.min(totalPages - 1, current + 1);
+                for (let i = from; i <= to; i++) add(i, i === current);
+                if (current < totalPages - 2) pages.push('<span class="pagination-ellipsis">…</span>');
+                add(totalPages, current === totalPages);
+            }
+            return pages.join('');
+        }
+
+        function renderPagination(total, currentPage, pageSize) {
+            const footer = document.getElementById('pagination-footer');
+            footer.style.display = total === 0 ? 'none' : 'flex';
+            const totalPages = Math.max(1, Math.ceil(total / pageSize));
+            document.getElementById('pg-total').textContent = total;
+            const start = total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+            const end = Math.min(total, currentPage * pageSize);
+            document.getElementById('pg-range').textContent = start + '-' + end;
+            const sizeSel = document.getElementById('pg-size');
+            if (parseInt(sizeSel.value) !== pageSize) sizeSel.value = String(pageSize);
+            document.getElementById('pg-pages').innerHTML = buildPageNumbers(currentPage, totalPages);
+            document.getElementById('pg-prev').disabled = currentPage <= 1;
+            document.getElementById('pg-next').disabled = currentPage >= totalPages;
+        }
+
+        function changePage(dir) {
+            if (currentView === 'recycle') {
+                const tp = getRecycleTotalPages();
+                const p = recycleCurrentPage + (dir === 'prev' ? -1 : 1);
+                if (p < 1 || p > tp) return;
+                recycleCurrentPage = p;
+                renderRecycleGrid();
+            } else {
+                const tp = getListTotalPages();
+                const p = listCurrentPage + (dir === 'prev' ? -1 : 1);
+                if (p < 1 || p > tp) return;
+                listCurrentPage = p;
+                renderEntryGrid();
+            }
+        }
+
+        function goToPage(n) {
+            if (currentView === 'recycle') {
+                if (n < 1 || n > getRecycleTotalPages()) return;
+                recycleCurrentPage = n;
+                renderRecycleGrid();
+            } else {
+                if (n < 1 || n > getListTotalPages()) return;
+                listCurrentPage = n;
+                renderEntryGrid();
+            }
+        }
+
+        function changePageSize(v) {
+            v = parseInt(v);
+            if (currentView === 'recycle') {
+                recyclePageSize = v;
+                recycleCurrentPage = 1;
+                renderRecycleGrid();
+            } else {
+                listPageSize = v;
+                listCurrentPage = 1;
+                renderEntryGrid();
+            }
+        }
 
         // ═══════════════════════════════════════════════
         // 回收站选择操作
