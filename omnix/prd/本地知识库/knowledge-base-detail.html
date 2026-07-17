@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>知识库详情</title>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --bg: #f3f4f6;
+      --surface: #ffffff;
+      --text-main: #111827;
+      --text-secondary: #6b7280;
+      --border: #e5e7eb;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .page { min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Top navigation */
+    .top-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .top-nav svg { width: 18px; height: 18px; color: var(--text-secondary); cursor: pointer; }
+
+    /* Header */
+    .header {
+      background: var(--surface);
+      padding: 24px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .kb-icon {
+      width: 72px; height: 72px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: #fff; font-size: 32px;
+    }
+    .kb-info { flex: 1; min-width: 0; }
+    .kb-title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .kb-name { font-size: 20px; font-weight: 600; }
+    .kb-edit-btn {
+      width: 28px; height: 28px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: #fff; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-secondary);
+    }
+    .kb-edit-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .kb-status {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 2px 10px; border-radius: 12px;
+      background: #dcfce7; color: #166534;
+      font-size: 12px; font-weight: 500;
+    }
+    .kb-status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .kb-meta {
+      display: flex; align-items: center; gap: 24px;
+      color: var(--text-secondary); font-size: 13px; margin-bottom: 10px;
+    }
+    .kb-meta-item { display: flex; align-items: center; gap: 6px; }
+    .kb-desc { color: var(--text-secondary); font-size: 13px; line-height: 1.6; }
+
+    /* Tabs */
+    .tabs {
+      background: var(--surface);
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; gap: 24px;
+    }
+    .tab {
+      padding: 12px 0; border-bottom: 2px solid transparent;
+      cursor: pointer; color: var(--text-secondary); font-weight: 500;
+    }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* Main body */
+    .main { flex: 1; display: flex; overflow: hidden; padding: 16px 24px 24px; gap: 16px; }
+
+    /* Sidebar tree */
+    .sidebar {
+      width: 260px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      display: flex; flex-direction: column; flex-shrink: 0;
+    }
+    .sidebar-header {
+      padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border); font-weight: 600;
+    }
+    .sidebar-header svg { cursor: pointer; color: var(--text-secondary); }
+    .tree-search { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .tree-search input {
+      width: 100%; padding: 8px 12px; border: 1px solid var(--border);
+      border-radius: 6px; font-size: 13px; outline: none;
+    }
+    .tree-search input:focus { border-color: var(--primary); }
+    .tree-body { padding: 8px 0; overflow: auto; flex: 1; }
+    .tree-node {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 16px; cursor: pointer; font-size: 13px; color: var(--text-main);
+    }
+    .tree-node:hover { background: #f9fafb; }
+    .tree-node.active { background: #eef2ff; color: var(--primary-dark); }
+    .tree-node-left { display: flex; align-items: center; gap: 8px; }
+    .tree-toggle { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); }
+    .tree-icon { color: var(--primary); }
+    .tree-count { color: var(--text-secondary); font-size: 12px; margin-left: 4px; }
+    .tree-more { color: var(--text-secondary); opacity: 0; cursor: pointer; }
+    .tree-node:hover .tree-more { opacity: 1; }
+    .tree-children .tree-node { padding-left: 32px; }
+    .tree-children .tree-children .tree-node { padding-left: 48px; }
+    .tree-children .tree-children .tree-children .tree-node { padding-left: 64px; }
+
+    /* Content */
+    .content {
+      flex: 1; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      display: flex; flex-direction: column; min-width: 0;
+    }
+    .toolbar {
+      padding: 16px; display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .stats {
+      display: flex; align-items: center; gap: 16px; font-size: 13px;
+      color: var(--text-secondary); flex-wrap: wrap;
+    }
+    .stats strong { color: var(--text-main); font-weight: 600; }
+    .stat-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+    .dot-success { background: var(--success); }
+    .dot-processing { background: var(--info); }
+    .dot-failed { background: var(--danger); }
+    .dot-unsupported { background: #9ca3af; }
+    .dot-pending { background: #8b5cf6; }
+    .toolbar-right { display: flex; align-items: center; gap: 12px; }
+    .capacity { color: var(--text-secondary); font-size: 13px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 6px;
+      border: 1px solid var(--border); background: #fff; color: var(--text-main);
+      font-size: 13px; cursor: pointer;
+    }
+    .btn:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-danger {
+      background: #fff; color: var(--danger); border-color: #fecaca;
+      display: none;
+    }
+    .btn-danger.show { display: inline-flex; }
+    .btn-danger:hover { background: #fef2f2; border-color: var(--danger); color: var(--danger); }
+
+    .filters { padding: 12px 16px; display: flex; gap: 12px; border-bottom: 1px solid var(--border); }
+    .search-box { position: relative; flex: 1; max-width: 260px; }
+    .search-box input {
+      width: 100%; padding: 7px 12px 7px 32px; border: 1px solid var(--border);
+      border-radius: 6px; font-size: 13px; outline: none;
+    }
+    .search-box input:focus { border-color: var(--primary); }
+    .search-box svg {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      color: var(--text-secondary); width: 14px; height: 14px;
+    }
+    .select {
+      padding: 7px 28px 7px 12px; border: 1px solid var(--border); border-radius: 6px;
+      font-size: 13px; background: #fff; color: var(--text-main);
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+    }
+
+    /* Table */
+    .table-wrap { flex: 1; overflow: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    th {
+      color: var(--text-secondary); font-weight: 500; background: #fafafa;
+      position: sticky; top: 0; user-select: none; cursor: pointer;
+    }
+    th:hover { color: var(--primary); }
+    th .sort { display: inline-flex; flex-direction: column; margin-left: 4px; color: var(--border); vertical-align: middle; }
+    th .sort .arrow { font-size: 10px; line-height: 1; }
+    th .sort.active { color: var(--primary); }
+    td { color: var(--text-main); }
+    .file-name { display: flex; align-items: center; gap: 8px; color: var(--text-main); }
+    .file-name svg { color: var(--info); flex-shrink: 0; }
+    .file-name .sub { display: block; color: var(--text-secondary); font-size: 12px; }
+    .status-cell { display: flex; align-items: center; gap: 6px; }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+    .status-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .status-success { color: var(--success); }
+    .status-processing { color: var(--info); }
+    .status-failed { color: var(--danger); }
+    .status-unsupported { color: #9ca3af; }
+    .status-pending { color: #8b5cf6; }
+
+    /* Warn icon + tooltip */
+    .warn-icon {
+      color: var(--danger); cursor: pointer; display: inline-flex; align-items: center;
+      position: relative;
+    }
+    .warn-icon:hover .tooltip { display: block; }
+    .tooltip {
+      display: none; position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
+      background: #1f2937; color: #fff; padding: 8px 10px; border-radius: 6px;
+      font-size: 12px; white-space: nowrap; z-index: 20; box-shadow: var(--shadow-lg);
+    }
+    .tooltip::after {
+      content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      border: 5px solid transparent; border-top-color: #1f2937;
+    }
+    .reparse-link { color: var(--primary); cursor: pointer; font-size: 13px; }
+    .reparse-link:hover { text-decoration: underline; }
+
+    .actions { display: flex; align-items: center; gap: 12px; }
+    .action-link { color: var(--primary); cursor: pointer; font-size: 13px; }
+    .action-link:hover { text-decoration: underline; }
+    .action-more { color: var(--text-secondary); cursor: pointer; position: relative; }
+    .action-more:hover { color: var(--primary); }
+    .dropdown-menu {
+      position: absolute; right: 0; top: 120%;
+      background: #fff; border: 1px solid var(--border); border-radius: 6px;
+      box-shadow: var(--shadow-lg); min-width: 140px; z-index: 10; display: none;
+    }
+    .dropdown-menu.show { display: block; }
+    .dropdown-menu div { padding: 8px 12px; cursor: pointer; }
+    .dropdown-menu div:hover { background: #f9fafb; }
+
+    /* Pagination */
+    .pagination {
+      padding: 14px 16px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; color: var(--text-secondary);
+    }
+    .pagination-right { display: flex; align-items: center; gap: 12px; }
+    .page-btn {
+      width: 28px; height: 28px; border: 1px solid var(--border); background: #fff;
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-secondary);
+    }
+    .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .page-input { width: 44px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 4px; text-align: center; font-size: 13px; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      display: none; align-items: center; justify-content: center; z-index: 100;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: #fff; border-radius: 12px; width: 560px; max-width: 90vw; max-height: 90vh;
+      overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-lg);
+    }
+    .modal-header {
+      padding: 18px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 16px; font-weight: 600;
+    }
+    .modal-close { cursor: pointer; color: var(--text-secondary); }
+    .modal-body { padding: 20px 24px; overflow: auto; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 6px; }
+    .form-label .required { color: var(--danger); margin-left: 2px; }
+    .form-hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+    .form-input, .form-textarea {
+      width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; outline: none;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--primary); }
+    .form-textarea { min-height: 80px; resize: vertical; }
+    .form-input[disabled] { background: #f9fafb; color: var(--text-secondary); }
+    .alert {
+      background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px;
+      padding: 12px 14px; margin-bottom: 18px; display: flex; gap: 10px; align-items: flex-start;
+    }
+    .alert-icon { color: var(--warning); flex-shrink: 0; margin-top: 1px; }
+    .alert-title { font-weight: 600; font-size: 13px; color: #92400e; }
+    .alert-body { font-size: 12px; color: #a16207; margin-top: 2px; line-height: 1.5; }
+    .icon-upload { display: flex; align-items: center; gap: 14px; }
+    .icon-preview {
+      width: 56px; height: 56px; border-radius: 12px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 24px; overflow: hidden;
+    }
+    .icon-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .icon-text { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+    .model-section { border-top: 1px solid var(--border); padding-top: 18px; margin-top: 4px; }
+    .model-option {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; cursor: pointer;
+    }
+    .model-option:hover { border-color: var(--primary); }
+    .model-option.selected { border-color: var(--primary); background: #eef2ff; }
+    .model-option-left { display: flex; align-items: center; gap: 10px; }
+    .model-option input { accent-color: var(--primary); }
+    .model-option-title { font-weight: 500; font-size: 13px; }
+    .model-option-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .add-model-btn { display: inline-flex; align-items: center; gap: 4px; color: var(--primary); font-size: 13px; cursor: pointer; margin-top: 8px; }
+    .model-list { margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .model-row {
+      display: flex; align-items: center; justify-content: space-between; padding: 10px 12px;
+      border-bottom: 1px solid var(--border); font-size: 13px;
+    }
+    .model-row:last-child { border-bottom: none; }
+    .model-row .tag { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #eef2ff; color: var(--primary-dark); }
+    .model-row .remove { color: var(--danger); cursor: pointer; font-size: 12px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="top-nav">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span>知识库详情</span>
+    </div>
+
+    <div class="header">
+      <div class="kb-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/></svg>
+      </div>
+      <div class="kb-info">
+        <div class="kb-title-row">
+          <span class="kb-name" id="displayName">个人知识库</span>
+          <button class="kb-edit-btn" onclick="openEditModal()" title="编辑">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <span class="kb-status"><span class="kb-status-dot"></span>已完成</span>
+        </div>
+        <div class="kb-meta">
+          <div class="kb-meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span>D:\Projects\TechDocs</span>
+          </div>
+          <div class="kb-meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>更新于：2026-07-16 08:40</span>
+          </div>
+        </div>
+        <div class="kb-desc" id="displayDesc">腾讯文档（docs.qq.com）-在线云文档平台，是创建、编辑、管理文档的首选 skill。涉及“新建/创建/编辑/读取/查看/搜索文档”、“保存文件”、“云文档”、“腾讯文档”等场景。</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this, 'doc')">文档</div>
+      <div class="tab" onclick="switchTab(this, 'graph')">知识图谱</div>
+    </div>
+
+    <div class="main" id="docPanel">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <span>目录</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </div>
+        <div class="tree-search"><input type="text" placeholder="目录名称" /></div>
+        <div class="tree-body">
+          <div class="tree-node active" onclick="selectNode(this)">
+            <div class="tree-node-left">
+              <span class="tree-toggle" onclick="toggleTree(event, this)">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              </span>
+              <span class="tree-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+              <span>知识库文件夹</span><span class="tree-count">12</span>
+            </div>
+            <span class="tree-more" title="打开文件夹"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span>
+          </div>
+          <div class="tree-children">
+            <div class="tree-node" onclick="selectNode(this)">
+              <div class="tree-node-left">
+                <span class="tree-toggle" onclick="toggleTree(event, this)">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                </span>
+                <span class="tree-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+                <span>周报</span><span class="tree-count">8</span>
+              </div>
+            </div>
+            <div class="tree-children">
+              <div class="tree-node" onclick="selectNode(this)">
+                <div class="tree-node-left">
+                  <span class="tree-toggle" onclick="toggleTree(event, this)">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                  </span>
+                  <span class="tree-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+                  <span>2026</span><span class="tree-count">4</span>
+                </div>
+              </div>
+              <div class="tree-children">
+                <div class="tree-node" onclick="selectNode(this)">
+                  <div class="tree-node-left">
+                    <span style="width:16px"></span>
+                    <span class="tree-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+                    <span>6月份</span><span class="tree-count">4</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tree-node" onclick="selectNode(this)">
+              <div class="tree-node-left">
+                <span style="width:16px"></span>
+                <span class="tree-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+                <span>未分类</span><span class="tree-count">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="toolbar">
+          <div class="stats" id="statsBar"></div>
+          <div class="toolbar-right">
+            <span class="capacity">知识库使用容量：220KB</span>
+            <button class="btn btn-danger" id="reparseAllBtn" onclick="reparseAll()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              重新解析
+            </button>
+            <button class="btn" onclick="openSettingsModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              设置
+            </button>
+          </div>
+        </div>
+
+        <div class="filters">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" placeholder="文件名" id="fileSearch" onkeyup="filterFiles()" />
+          </div>
+          <select class="select" id="statusFilter" onchange="filterFiles()">
+            <option value="">文档状态</option>
+            <option value="待解析">待解析</option>
+            <option value="解析中">解析中</option>
+            <option value="已完成">已完成</option>
+            <option value="解析失败">解析失败</option>
+            <option value="暂不支持">暂不支持</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-key="name" onclick="sortTable('name')">文件名称<span class="sort active"><span class="arrow">▼</span></span></th>
+                <th data-key="sizeNum" onclick="sortTable('sizeNum')">文档大小<span class="sort"><span class="arrow">▼</span></span></th>
+                <th data-key="status" onclick="sortTable('status')">文档状态<span class="sort"><span class="arrow">▼</span></span></th>
+                <th data-key="time" onclick="sortTable('time')">更新时间<span class="sort"><span class="arrow">▼</span></span></th>
+                <th data-key="user" onclick="sortTable('user')">修改人<span class="sort"><span class="arrow">▼</span></span></th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="fileTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <span id="pageInfo">共 0 项，每页显示 <strong>15</strong></span>
+          <div class="pagination-right">
+            <button class="page-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+            <span>跳至 <input class="page-input" value="1" /> 页</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main hidden" id="graphPanel" style="align-items:center;justify-content:center;color:var(--text-secondary);">
+      <div>知识图谱预览区域</div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="editModal" onclick="closeModalOnOverlay(event, 'editModal')">
+    <div class="modal">
+      <div class="modal-header">
+        <span>编辑知识库</span>
+        <span class="modal-close" onclick="closeEditModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+      </div>
+      <div class="modal-body">
+        <div class="alert">
+          <svg class="alert-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <div>
+            <div class="alert-title">支持的文件格式</div>
+            <div class="alert-body">Markdown (.md) · PDF (.pdf) · Word (.docx) · Excel (.xlsx) · PPT (.pptx) · 代码文件<br/>不支持：.exe / .dll / .zip / 视频等二进制大文件（将标记为“暂不支持”）</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">名称 <span class="required">*</span></label>
+          <input class="form-input" type="text" id="editName" maxlength="50" value="个人知识库" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">图标</label>
+          <div class="icon-upload">
+            <div class="icon-preview" id="editIconPreview"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="icon-text">支持 JPG、PNG、GIF 格式，图片大小不超过 1MB，建议尺寸 128×128px</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">知识库路径 <span class="required">*</span></label>
+          <input class="form-input" type="text" value="D:\\ComateHtml\\GitHtml\\workpage\\omnix\\prd\\个人知识库" disabled />
+          <div class="form-hint">仅支持本地文件夹，绑定后不可修改</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">描述 <span style="color:var(--text-secondary);font-weight:400">（可选）</span></label>
+          <textarea class="form-textarea" id="editDesc" placeholder="简单描述这个知识库的用途..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeEditModal()">取消</button>
+        <button class="btn btn-primary" onclick="saveEdit()">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal" onclick="closeModalOnOverlay(event, 'settingsModal')">
+    <div class="modal">
+      <div class="modal-header">
+        <span>知识库设置</span>
+        <span class="modal-close" onclick="closeSettingsModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">文档解析默认模型</label>
+          <div class="model-option selected" onclick="selectModel(this, 'enterprise')">
+            <div class="model-option-left">
+              <input type="radio" name="parseModel" checked onclick="event.stopPropagation()" />
+              <div>
+                <div class="model-option-title">企业默认模型</div>
+                <div class="model-option-desc">使用企业管理员统一配置的默认解析模型，适合大多数文档场景。</div>
+              </div>
+            </div>
+          </div>
+          <div class="model-option" onclick="selectModel(this, 'custom')">
+            <div class="model-option-left">
+              <input type="radio" name="parseModel" onclick="event.stopPropagation()" />
+              <div>
+                <div class="model-option-title">自定义模型</div>
+                <div class="model-option-desc">指定自己的解析模型，优先级高于企业默认模型。</div>
+              </div>
+            </div>
+          </div>
+          <div class="model-section" id="customModelSection" style="display:none;">
+            <div class="form-label" style="margin-bottom:10px;">已添加模型</div>
+            <div class="model-list" id="modelList">
+              <div class="model-row"><div><strong>DeepSeek-V3-Parser</strong><span class="tag">文档解析</span></div><span class="remove" onclick="removeModel(this)">移除</span></div>
+              <div class="model-row"><div><strong>GPT-4o-Mini-Parser</strong><span class="tag">文档解析</span></div><span class="remove" onclick="removeModel(this)">移除</span></div>
+            </div>
+            <div class="add-model-btn" onclick="addModel()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              添加模型
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">知识库向量化模型</label>
+          <div class="model-option selected">
+            <div class="model-option-left">
+              <input type="radio" name="embeddingModel" checked onclick="event.stopPropagation()" />
+              <div>
+                <div class="model-option-title">企业默认向量模型</div>
+                <div class="model-option-desc">使用企业配置的默认 Embedding 模型。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeSettingsModal()">取消</button>
+        <button class="btn btn-primary" onclick="saveSettings()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Data ----------
+    const STATUS_ORDER = { '待解析': 0, '解析中': 1, '已完成': 2, '暂不支持': 3, '解析失败': 4 };
+    const STATUS_CLASS = {
+      '已完成': 'status-success',
+      '解析中': 'status-processing',
+      '解析失败': 'status-failed',
+      '暂不支持': 'status-unsupported',
+      '待解析': 'status-pending'
+    };
+    let files = [
+      { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月22日', size: '39.45KB', sizeNum: 39.45, status: '已完成', time: '2026-07-14 13:24', user: '孙里菲' },
+      { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月01日', size: '99.40KB', sizeNum: 99.40, status: '解析失败', reason: '文档包含受密码保护的加密内容，解析引擎无法读取正文', time: '2026-07-14 13:24', user: '孙里菲' },
+      { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月08日', size: '40.33KB', sizeNum: 40.33, status: '暂不支持', time: '2026-07-14 13:24', user: '孙里菲' },
+      { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月15日', size: '40.74KB', sizeNum: 40.74, status: '解析中', time: '2026-07-14 13:24', user: '孙里菲' },
+      { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月29日', size: '41.20KB', sizeNum: 41.20, status: '待解析', time: '2026-07-14 13:24', user: '孙里菲' },
+      { name: '信息管理部周工作总结及计划（孙礼飞）2026年07月06日', size: '38.90KB', sizeNum: 38.90, status: '待解析', time: '2026-07-14 13:24', user: '孙里菲' },
+      { name: '信息管理部周工作总结及计划（孙礼飞）2026年07月06日', size: '38.30KB', sizeNum: 38.30, status: '解析失败', reason: '文件被损坏，无法读取',  time: '2026-07-14 13:14', user: '孙里菲' }
+    ];
+
+    let sortKey = 'name';
+    let sortAsc = true;
+
+    // ---------- Render ----------
+    function renderTable() {
+      const keyword = document.getElementById('fileSearch').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      let rows = files.filter(f => {
+        const matchName = f.name.toLowerCase().includes(keyword);
+        const matchStatus = !statusFilter || f.status === statusFilter;
+        return matchName && matchStatus;
+      });
+
+      rows.sort((a, b) => {
+        let va, vb;
+        if (sortKey === 'status') { va = STATUS_ORDER[a.status]; vb = STATUS_ORDER[b.status]; }
+        else if (sortKey === 'sizeNum') { va = a.sizeNum; vb = b.sizeNum; }
+        else if (sortKey === 'time') { va = a.time; vb = b.time; }
+        else { va = a[sortKey]; vb = b[sortKey]; }
+        let r;
+        if (typeof va === 'string') r = va.localeCompare(vb, 'zh');
+        else r = va - vb;
+        return sortAsc ? r : -r;
+      });
+
+      const tbody = document.getElementById('fileTableBody');
+      tbody.innerHTML = rows.map(f => {
+        const sc = STATUS_CLASS[f.status];
+        let statusCell = `<span class="status-badge ${sc}">${f.status}</span>`;
+        if (f.status === '解析失败') {
+          statusCell = `
+            <span class="status-cell">
+              <span class="status-badge ${sc}">解析失败</span>
+              <span class="warn-icon" onclick="reparseOne('${f.name.replace(/'/g, "\\'")}')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span class="tooltip">解析失败：${f.reason || '未知错误'}<br/></span>
+              </span>
+            </span>`;
+        }
+        const reparseAction = `<span class="action-link">删除</span>`;
+        return `
+          <tr data-name="${f.name}">
+            <td>
+              <div class="file-name">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <div>${f.name}</div>
+              </div>
+            </td>
+            <td>${f.size}</td>
+            <td>${statusCell}</td>
+            <td>${f.time}</td>
+            <td>${f.user}</td>
+            <td>
+              <div class="actions">
+                ${reparseAction}
+                <span class="action-more" onclick="toggleDropdown(event)">更多
+                  <div class="dropdown-menu" onclick="event.stopPropagation()">
+                    ${f.status === '解析失败' ? `<div onclick="reparseOne('${f.name.replace(/'/g, "\\'")}')">重新解析</div>` : ''}<div>复制路径</div><div>文件管理器中打开</div>
+                  </div>
+                </span>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+
+      renderStats();
+      updateSortHeaders();
+      document.getElementById('pageInfo').innerHTML = `共 ${rows.length} 项，每页显示 <strong>15</strong>`;
+    }
+
+    function renderStats() {
+      const count = k => files.filter(f => f.status === k).length;
+      const total = files.length;
+      document.getElementById('statsBar').innerHTML = `
+        <span>文件数：共 <strong>${total}</strong> 个</span>
+        <span><span class="stat-dot dot-pending"></span>待解析：${count('待解析')} 个</span>
+        <span><span class="stat-dot dot-processing"></span>解析中：${count('解析中')} 个</span>
+        <span><span class="stat-dot dot-success"></span>已完成：${count('已完成')} 个</span>
+        <span><span class="stat-dot dot-unsupported"></span>暂不支持：${count('暂不支持')} 个</span>
+        <span><span class="stat-dot dot-failed"></span>解析失败：${count('解析失败')} 个</span>`;
+
+      const failed = count('解析失败');
+      document.getElementById('reparseAllBtn').classList.toggle('show', failed > 0);
+    }
+
+    function updateSortHeaders() {
+      document.querySelectorAll('th[data-key]').forEach(th => {
+        const span = th.querySelector('.sort');
+        if (th.dataset.key === sortKey) {
+          span.classList.add('active');
+          span.querySelector('.arrow').textContent = sortAsc ? '▼' : '▲';
+        } else {
+          span.classList.remove('active');
+          span.querySelector('.arrow').textContent = '▼';
+        }
+      });
+    }
+
+    // ---------- Sort ----------
+    function sortTable(key) {
+      if (sortKey === key) sortAsc = !sortAsc;
+      else { sortKey = key; sortAsc = true; }
+      renderTable();
+    }
+
+    // ---------- Reparse ----------
+    function reparseOne(name) {
+      const f = files.find(x => x.name === name);
+      if (f && f.status === '解析失败') {
+        f.status = '待解析';
+        delete f.reason;
+        renderTable();
+      }
+    }
+    function reparseAll() {
+      files.forEach(f => { if (f.status === '解析失败') { f.status = '待解析'; delete f.reason; } });
+      renderTable();
+    }
+
+    function filterFiles() { renderTable(); }
+
+    // ---------- Tabs & Tree ----------
+    function switchTab(el, panel) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('docPanel').classList.toggle('hidden', panel !== 'doc');
+      document.getElementById('graphPanel').classList.toggle('hidden', panel !== 'graph');
+    }
+    function toggleTree(e, toggle) {
+      e.stopPropagation();
+      const node = toggle.closest('.tree-node');
+      const children = node.nextElementSibling;
+      if (children && children.classList.contains('tree-children')) {
+        const isOpen = children.style.display !== 'none';
+        children.style.display = isOpen ? 'none' : 'block';
+        toggle.innerHTML = isOpen
+          ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>'
+          : '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+      }
+    }
+    function selectNode(node) {
+      document.querySelectorAll('.tree-node').forEach(n => n.classList.remove('active'));
+      node.classList.add('active');
+    }
+    function toggleDropdown(e) {
+      e.stopPropagation();
+      const menu = e.currentTarget.querySelector('.dropdown-menu');
+      document.querySelectorAll('.dropdown-menu').forEach(m => { if (m !== menu) m.classList.remove('show'); });
+      menu.classList.toggle('show');
+    }
+    document.addEventListener('click', () => { document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show')); });
+
+    // ---------- Modals ----------
+    function openEditModal() {
+      document.getElementById('editName').value = document.getElementById('displayName').innerText;
+      document.getElementById('editDesc').value = document.getElementById('displayDesc').innerText;
+      document.getElementById('editModal').classList.add('show');
+    }
+    function closeEditModal() { document.getElementById('editModal').classList.remove('show'); }
+    function saveEdit() {
+      document.getElementById('displayName').innerText = document.getElementById('editName').value || '个人知识库';
+      document.getElementById('displayDesc').innerText = document.getElementById('editDesc').value;
+      closeEditModal();
+    }
+    function openSettingsModal() { document.getElementById('settingsModal').classList.add('show'); }
+    function closeSettingsModal() { document.getElementById('settingsModal').classList.remove('show'); }
+    function saveSettings() { closeSettingsModal(); }
+    function selectModel(el, type) {
+      document.querySelectorAll('input[name="parseModel"]').forEach(r => r.checked = false);
+      el.querySelector('input[type="radio"]').checked = true;
+      document.querySelectorAll('.model-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('customModelSection').style.display = type === 'custom' ? 'block' : 'none';
+    }
+    function addModel() {
+      const names = ['Qwen-Parser-2.5', 'ERNIE-Parser-4', 'Claude-Parser-3.5'];
+      const name = names[Math.floor(Math.random() * names.length)];
+      const list = document.getElementById('modelList');
+      const row = document.createElement('div');
+      row.className = 'model-row';
+      row.innerHTML = `<div><strong>${name}</strong><span class="tag">文档解析</span></div><span class="remove" onclick="removeModel(this)">移除</span>`;
+      list.appendChild(row);
+    }
+    function removeModel(btn) { btn.closest('.model-row').remove(); }
+    function closeModalOnOverlay(e, id) {
+      if (e.target.id === id) document.getElementById(id).classList.remove('show');
+    }
+
+    // init
+    renderTable();
+  </script>
+</body>
+</html>

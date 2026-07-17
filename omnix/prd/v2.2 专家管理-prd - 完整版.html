@@ -220,7 +220,8 @@
       <ul class="nav-sub">
         <li><a href="#sec5-1" data-target="sec5-1" class="">5.1 专家列表</a></li>
         <li><a href="#sec5-2" data-target="sec5-2" class="">5.2 专家新增 / 编辑</a></li>
-        <li><a href="#sec5-3" data-target="sec5-3" class="">5.3 回收站</a></li>
+        <li><a href="#sec5-3" data-target="sec5-3" class="">5.3 专家导入</a></li>
+        <li><a href="#sec5-4" data-target="sec5-4" class="">5.4 回收站</a></li>
       </ul>
     </li>
     <li><a href="#sec6" data-target="sec6" class="">六、关键交互流程</a></li>
@@ -256,14 +257,14 @@
 
     <h3>1.2 核心目标</h3>
     <div class="card-grid">
-      <div class="card"><h4>统一管理</h4><p>提供专家列表、新增、编辑一体化入口，集中沉淀企业专家资产。</p></div>
-      <div class="card"><h4>低门槛配置</h4><p>配置即所见即所得，预览调试让非技术角色也能构建高质量专家。</p></div>
-      <div class="card"><h4>可观测可追溯</h4><p>专家调用次数可统计、可分析，发布与下架状态全程可追溯。</p></div>
+      <div class="card"><h4>统一管理</h4><p>提供专家列表、新增、编辑、导入一体化入口，集中沉淀企业专家资产。</p></div>
+      <div class="card"><h4>低门槛配置</h4><p>配置即所见即所得，预览调试 + AI 智能调优，让非技术角色也能构建高质量专家。</p></div>
+      <div class="card"><h4>可观测可追溯</h4><p>运行日志全链路透明，产物可下载，专家调用次数可统计、可分析。</p></div>
     </div>
 
     
     <h3>1.3 目标用户</h3>
-    <p>本模块主要服务于<strong>管理端</strong>两类角色：<strong>专家管理员</strong>（负责专家全生命周期管控、发布下架）与<strong>专家配置员</strong>（负责专家创建、配置、调试、调优）。终端用户在客户端使用已发布专家。</p>
+    <p>本模块主要服务于<strong>管理端</strong>两类角色：<strong>专家管理员</strong>（负责专家全生命周期管控、发布下架、批量导入）与<strong>专家配置员</strong>（负责专家创建、配置、调试、调优）。终端用户在客户端使用已发布专家。</p>
   </div>
 
   <!-- 2. 用户画像 -->
@@ -274,13 +275,13 @@
       <div class="role-card admin">
         <div class="role-icon">🛡️</div>
         <h4>专家管理员</h4>
-        <p>负责专家资产的统筹管理，把控发布准入与下架回收，主导全局搜索，关注专家可用性与调用情况。</p>
+        <p>负责专家资产的统筹管理，把控发布准入与下架回收，主导批量导入与全局搜索，关注专家可用性与调用情况。</p>
         <span class="role-tag">管理端 · 全局管控</span>
       </div>
       <div class="role-card builder">
         <div class="role-icon">🛠️</div>
         <h4>专家配置员</h4>
-        <p>负责单个专家的搭建，组合模型 / 提示词 / 工具 / 技能 / MCP，通过预览调试反复验证效果。</p>
+        <p>负责单个专家的搭建与调优，组合模型 / 提示词 / 工具 / 技能 / MCP，通过预览调试与 AI 智能调优反复验证效果。</p>
         <span class="role-tag">管理端 · 搭建调试</span>
       </div>
       <div class="role-card user">
@@ -296,14 +297,14 @@
       <tr>
         <td><span class="tag tag-admin">专家管理员</span></td>
         <td>运营负责人 / IT</td>
-        <td>统筹专家准入、发布、下架，监控专家调用情况</td>
+        <td>统筹专家准入、发布、下架，批量导入历史专家，监控专家调用情况</td>
         <td>高效检索、批量操作、发布可控、调用可统计</td>
       </tr>
       <tr>
         <td><span class="tag tag-builder">专家配置员</span></td>
         <td>业务专家 / Prompt 工程师</td>
-        <td>从零搭建专家，配置模型与提示词，调试效果，达标后发布</td>
-        <td>配置即所见、实时调试、一键发布</td>
+        <td>从零搭建专家，配置模型与提示词，调试效果，借助 AI 调优快速达标后发布</td>
+        <td>配置即所见、实时调试、AI 辅助调优、一键发布</td>
       </tr>
       <tr>
         <td><span class="tag tag-user">终端用户</span></td>
@@ -321,6 +322,8 @@
     <div class="story"><span class="actor">作为专家配置员，</span><span class="want">我希望只需输入一段需求描述，系统即可调用 AI 自动生成专家的全部配置参数（模型、提示词、开场白、开场白问题、推荐工具 / 技能 / MCP 等）并跳转至配置工作台，</span><span class="goal">以便无需从零逐项配置，即可快速获得一个开箱即用、可微调的专家。</span></div>
     <div class="story"><span class="actor">作为专家配置员，</span><span class="want">我希望能够创建专家并配置模型、提示词、技能、MCP 等能力，</span><span class="goal">以便构建出具备特定领域能力的智能体。</span></div>
     <div class="story"><span class="actor">作为专家配置员，</span><span class="want">我希望在配置过程中实时预览调试对话，</span><span class="goal">以便快速验证专家效果、随时发现配置问题。</span></div>
+    <div class="story"><span class="actor">作为专家配置员，</span><span class="want">我希望使用 AI 智能调优来优化提示词与开场白，并一键应用建议改动，</span><span class="goal">以便降低配置门槛、提升专家质量。</span></div>
+    <div class="story"><span class="actor">作为专家配置员，</span><span class="want">我希望查看运行日志和运行产物，</span><span class="goal">以便定位大模型 / 工具 / 技能 / MCP 的执行细节与耗时、token 消耗。</span></div>
     <div class="story"><span class="actor">作为专家管理员，</span><span class="want">我希望在专家列表中按名称、描述、分类、来源、状态、创建人多维度搜索筛选，</span><span class="goal">以便快速定位目标专家。</span></div>
     <div class="story"><span class="actor">作为专家管理员，</span><span class="want">我希望能够发布和下架专家，</span><span class="goal">以便控制专家对终端用户的可用性。</span></div>
     <div class="story"><span class="actor">作为专家管理员，</span><span class="want">我希望看到专家的调用次数等统计，</span><span class="goal">以便评估专家价值、识别高价值专家。</span></div>
@@ -332,7 +335,7 @@
   <div class="section" id="sec4">
     <h2>四、功能架构</h2>
 
-    <p>专家管理模块以「专家（智能体）」为核心对象，向下拆分为三个子模块：专家列表（检索与批量管理）、专家新增 / 编辑（配置工作台）、回收站（删除暂存与恢复 / 彻底删除）。其中新增 / 编辑页面是配置工作台，由三个区域协同完成「配置 → 调试」的闭环。</p>
+    <p>专家管理模块以「专家（智能体）」为核心对象，向下拆分为四个子模块：专家列表（检索与批量管理）、专家新增 / 编辑（配置工作台）、专家导入（批量初始化）、回收站（删除暂存与恢复 / 彻底删除）。其中新增 / 编辑页面是配置工作台，由六个区域协同完成「配置 → 调试 → 调优 → 产物 → 日志」的闭环。</p>
 
     <div style="text-align:center; margin: 20px 0;">
       <svg width="100%" height="440" viewBox="0 0 780 440" xmlns="http://www.w3.org/2000/svg">
@@ -340,53 +343,63 @@
         <rect x="210" y="10" width="360" height="50" rx="10" fill="#4F46E5"></rect>
         <text x="390" y="42" text-anchor="middle" fill="white" font-size="17" font-weight="700">专家管理模块</text>
 
-        <!-- Lines from top to 3 boxes -->
-        <line x1="330" y1="60" x2="108" y2="110" stroke="#4F46E5" stroke-width="2"></line>
-        <line x1="390" y1="60" x2="391" y2="110" stroke="#4F46E5" stroke-width="2"></line>
-        <line x1="450" y1="60" x2="672" y2="110" stroke="#4F46E5" stroke-width="2"></line>
+        <!-- Lines from top to 4 boxes -->
+        <line x1="300" y1="60" x2="102" y2="110" stroke="#4F46E5" stroke-width="2"></line>
+        <line x1="350" y1="60" x2="287" y2="110" stroke="#4F46E5" stroke-width="2"></line>
+        <line x1="430" y1="60" x2="472" y2="110" stroke="#4F46E5" stroke-width="2"></line>
+        <line x1="480" y1="60" x2="657" y2="110" stroke="#4F46E5" stroke-width="2"></line>
 
-        <!-- 3 sub-module boxes -->
-        <rect x="25" y="110" width="165" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
-        <text x="108" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">专家列表</text>
-        <text x="108" y="156" text-anchor="middle" fill="#6B7280" font-size="11">检索 · 筛选 · 批量</text>
+        <!-- 4 sub-module boxes -->
+        <rect x="20" y="110" width="165" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="102" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">专家列表</text>
+        <text x="102" y="156" text-anchor="middle" fill="#6B7280" font-size="11">检索 · 筛选 · 批量</text>
 
-        <rect x="308" y="110" width="165" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
-        <text x="391" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">专家新增 / 编辑</text>
-        <text x="391" y="156" text-anchor="middle" fill="#6B7280" font-size="11">配置工作台（三区域）</text>
+        <rect x="205" y="110" width="165" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="287" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">专家新增 / 编辑</text>
+        <text x="287" y="156" text-anchor="middle" fill="#6B7280" font-size="11">配置工作台（六区域）</text>
 
-        <rect x="590" y="110" width="165" height="60" rx="10" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"></rect>
-        <text x="672" y="136" text-anchor="middle" fill="#DC2626" font-size="14" font-weight="700">回收站</text>
-        <text x="672" y="156" text-anchor="middle" fill="#6B7280" font-size="11">恢复 · 彻底删除</text>
+        <rect x="390" y="110" width="165" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="472" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">专家导入</text>
+        <text x="472" y="156" text-anchor="middle" fill="#6B7280" font-size="11">模板 · 校验 · 入库</text>
+
+        <rect x="575" y="110" width="165" height="60" rx="10" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"></rect>
+        <text x="657" y="136" text-anchor="middle" fill="#DC2626" font-size="14" font-weight="700">回收站</text>
+        <text x="657" y="156" text-anchor="middle" fill="#6B7280" font-size="11">恢复 · 彻底删除</text>
 
         <!-- 列表 ↔ 回收站 删除/恢复关系 -->
-        <path d="M 190 140 Q 390 80 590 140" fill="none" stroke="#DC2626" stroke-width="1.5" stroke-dasharray="5 4"></path>
-        <polygon points="587,136 597,140 587,144" fill="#DC2626"></polygon>
-        <text x="390" y="92" text-anchor="middle" fill="#DC2626" font-size="10">删除→进回收站</text>
-        <path d="M 590 150 Q 390 188 190 150" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 4"></path>
-        <polygon points="193,146 183,150 193,154" fill="#059669"></polygon>
-        <text x="390" y="184" text-anchor="middle" fill="#059669" font-size="10">←恢复(下架)</text>
+        <path d="M 185 140 Q 380 80 575 140" fill="none" stroke="#DC2626" stroke-width="1.5" stroke-dasharray="5 4"></path>
+        <polygon points="572,136 582,140 572,144" fill="#DC2626"></polygon>
+        <text x="380" y="92" text-anchor="middle" fill="#DC2626" font-size="10">删除→进回收站</text>
+        <path d="M 575 150 Q 380 188 185 150" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 4"></path>
+        <polygon points="188,146 178,150 188,154" fill="#059669"></polygon>
+        <text x="380" y="184" text-anchor="middle" fill="#059669" font-size="10">←恢复(下架)</text>
 
-        <!-- Workbench 3 areas (under 新增/编辑) -->
-        <line x1="391" y1="170" x2="391" y2="200" stroke="#4F46E5" stroke-width="1.5" stroke-dasharray="4 4"></line>
+        <!-- Workbench 6 areas (under 新增/编辑) -->
+        <line x1="287" y1="170" x2="287" y2="200" stroke="#4F46E5" stroke-width="1.5" stroke-dasharray="4 4"></line>
         <rect x="20" y="200" width="760" height="70" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"></rect>
-        <text x="390" y="221" text-anchor="middle" fill="#5B21B6" font-size="12" font-weight="700">配置工作台三区域</text>
-        <text x="160" y="253" text-anchor="middle" fill="#6D28D9" font-size="11">页面头部</text>
-        <text x="390" y="253" text-anchor="middle" fill="#6D28D9" font-size="11">专家配置区</text>
-        <text x="620" y="253" text-anchor="middle" fill="#6D28D9" font-size="11">预览调试区</text>
+        <text x="390" y="221" text-anchor="middle" fill="#5B21B6" font-size="12" font-weight="700">配置工作台六区域</text>
+        <text x="110" y="253" text-anchor="middle" fill="#6D28D9" font-size="11">页面头部</text>
+        <text x="240" y="253" text-anchor="middle" fill="#6D28D9" font-size="11">专家配置区</text>
+        <text x="370" y="253" text-anchor="middle" fill="#6D28D9" font-size="11">预览调试区</text>
+        <text x="500" y="253" text-anchor="middle" fill="#6D28D9" font-size="11">AI智能调优区</text>
+        <text x="610" y="253" text-anchor="middle" fill="#6D28D9" font-size="11">产物区</text>
+        <text x="700" y="253" text-anchor="middle" fill="#6D28D9" font-size="11">运行日志区</text>
 
         <!-- Bottom lifecycle -->
         <rect x="20" y="300" width="760" height="140" rx="10" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5"></rect>
         <text x="390" y="326" text-anchor="middle" fill="#92400E" font-size="14" font-weight="700">专家生命周期核心链路</text>
 
         <text x="100" y="360" text-anchor="middle" fill="#D97706" font-size="12">创建</text>
-        <text x="170" y="360" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
-        <text x="245" y="360" text-anchor="middle" fill="#D97706" font-size="12">配置能力</text>
-        <text x="330" y="360" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
-        <text x="410" y="360" text-anchor="middle" fill="#D97706" font-size="12">预览调试</text>
-        <text x="490" y="360" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
-        <text x="565" y="360" text-anchor="middle" fill="#D97706" font-size="12">发布</text>
-        <text x="640" y="360" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
-        <text x="715" y="360" text-anchor="middle" fill="#D97706" font-size="12">调用</text>
+        <text x="160" y="360" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
+        <text x="225" y="360" text-anchor="middle" fill="#D97706" font-size="12">配置能力</text>
+        <text x="295" y="360" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
+        <text x="360" y="360" text-anchor="middle" fill="#D97706" font-size="12">预览调试</text>
+        <text x="430" y="360" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
+        <text x="495" y="360" text-anchor="middle" fill="#D97706" font-size="12">AI调优</text>
+        <text x="555" y="360" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
+        <text x="625" y="360" text-anchor="middle" fill="#D97706" font-size="12">发布</text>
+        <text x="680" y="360" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
+        <text x="730" y="360" text-anchor="middle" fill="#D97706" font-size="12">调用</text>
 
         <text x="100" y="395" text-anchor="middle" fill="#DC2626" font-size="12">删除</text>
         <text x="160" y="395" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
@@ -402,9 +415,9 @@
 
     <h3>核心链路说明</h3>
     <ul class="feature-list">
-      <li><strong>列表入口：</strong>专家列表是所有操作的统一入口，承载搜索、筛选、新增、发布 / 下架、删除（进回收站）、导出，并提供回收站入口。</li>
+      <li><strong>列表入口：</strong>专家列表是所有操作的统一入口，承载搜索、筛选、新增、导入、发布 / 下架、删除（进回收站）、导出，并提供回收站入口。</li>
       <li><strong>AI 一键创建：</strong>点击「创建专家」后弹窗输入需求描述，系统调用 AI 能力自动生成专家全部配置参数并跳转至配置工作台（参数已预填）；用户可在工作台继续微调、调试、发布。同时保留「手动创建」入口，进入空白工作台逐项配置。</li>
-      <li><strong>配置工作台：</strong>新增与编辑共用同一页面，左侧专家配置区、中间预览调试区两栏默认展开；页面头部固定显示于顶部。</li>
+      <li><strong>配置工作台：</strong>新增与编辑共用同一页面，左侧配置、中间预览调试、右侧 AI 调优三栏默认展开；产物区与运行日志区按需唤起，与 AI 调优区互斥。</li>
       <li><strong>状态流转：</strong>专家状态为「下架 / 发布」；新建默认下架，调试调优达标后由管理员 / 配置员发布，发布后客户端可调用，可随时下架。</li>
     </ul>
   </div>
@@ -415,7 +428,7 @@
 
     <!-- 5.1 专家列表 -->
     <h3 id="sec5-1">🔹 5.1 专家列表</h3>
-    <p>专家列表是专家资产的统一检索与管理入口，展示所有专家（含管理端与客户端来源）记录，并承载新增、批量操作与状态管控。</p>
+    <p>专家列表是专家资产的统一检索与管理入口，展示所有专家（含管理端与客户端来源）记录，并承载新增、导入、批量操作与状态管控。</p>
 
     <h4>字段设计</h4>
     <table>
@@ -437,38 +450,38 @@
     <ul class="feature-list">
       <li><strong>列表展示：</strong>默认按更新时间倒序，支持列表 / 卡片两种视图切换；展示头像、名称、描述、来源标签、类别、状态、创建人、调用次数等关键字段。</li>
       <li><strong>搜索筛选：</strong>支持按名称、描述模糊搜索；支持按分类、来源、状态、创建人组合筛选；筛选条件可重置。</li>
-      <li><strong>新增专家（AI 创建，默认）：</strong>点击「创建专家」弹出创建弹窗，输入一段需求描述（创建文案，如「一个能解答员工社保公积金问题的 HR 助手」），点击「AI 生成」后系统调用 AI 能力自动生成专家全部配置参数（含名称、简介、分类、模型、提示词、开场白问题、技能 / MCP等），并跳转至专家配置工作台（5.2），所有参数已预填，用户可在此基础上微调；新建草稿并启动自动保存（配置信息修改后 20 秒无改动则自动保存）。</li>
+      <li><strong>新增专家（AI 创建，默认）：</strong>点击「创建专家」弹出创建弹窗，输入一段需求描述（创建文案，如「一个能解答员工社保公积金问题的 HR 助手」），点击「AI 生成」后系统调用 AI 能力自动生成专家全部配置参数（含名称、简介、分类、模型、提示词、开场白问题、技能 / MCP等），并跳转至专家配置工作台（5.2），所有参数已预填，用户可在此基础上微调；新建草稿并自动保存。</li>
       <li><strong>新增专家（手动创建）：</strong>在创建弹窗中点击「手动创建」，直接进入空白配置工作台，逐项配置。</li>
       <li><strong>编辑专家：</strong>点击专家行进入配置工作台，加载已有配置；客户端来源专家仅可查看基本信息，核心配置不可编辑。</li>
       <li><strong>发布 / 下架：</strong>对单个或批量专家切换状态；下架后客户端调用入口关闭，专家记录与配置保留。</li>
       <li><strong>删除专家：</strong>删除前二次确认，提示「删除后专家将进入回收站」；确认后专家从列表移除并进入回收站暂存（非物理删除）；客户端来源专家删除将同步移除客户端调用入口。</li>
       <li><strong>批量操作：</strong>勾选多个专家后支持批量发布 / 下架、批量删除（删除后统一进入回收站）、批量调整分类。</li>
       <li><strong>调用统计：</strong>列表展示调用次数列，点击可下钻查看该专家的调用趋势（预留扩展）。</li>
-      <li><strong>回收站入口：</strong>列表页顶部或筛选区提供「回收站」入口，点击进入回收站页面（见 5.3）。</li>
+      <li><strong>回收站入口：</strong>列表页顶部或筛选区提供「回收站」入口，点击进入回收站页面（见 5.4）。</li>
     </ul>
 
-    <div class="note">💡 列表页顶部固定操作区：「创建」「导出」按钮常驻；搜索框 + 筛选下拉随筛选条件动态展示为标签。</div>
+    <div class="note">💡 列表页顶部固定操作区：「创建」「导入」「导出」按钮常驻；搜索框 + 筛选下拉随筛选条件动态展示为标签。</div>
     <hr>
 
     <!-- 5.2 专家新增/编辑 -->
     <h3 id="sec5-2">🔹 5.2 专家新增 / 编辑（配置工作台）</h3>
-    <p>新增与编辑共用同一配置工作台页面，是专家管理的核心。页面由三个区域协同完成配置与调试的闭环：页面头部、专家配置区、预览调试区。</p>
+    <p>新增与编辑共用同一配置工作台页面，是专家管理的核心。页面由六个区域协同完成配置、调试、调优、产物、日志的闭环。</p>
 
     <h4>创建入口与初始化</h4>
     <ul class="feature-list">
-      <li><strong>AI 创建（默认入口）：</strong>由专家列表「创建专家」弹窗输入需求描述后进入。AI 根据创建文案一次性生成并预填以下参数：名称、简介、分类、模型、提示词、技能 / MCP。进入工作台后所有参数已预填，用户可直接在专家配置区复核与微调。</li>
+      <li><strong>AI 创建（默认入口）：</strong>由专家列表「创建专家」弹窗输入需求描述后进入。AI 根据创建文案一次性生成并预填以下参数：名称、简介、分类、模型、提示词、技能 / MCP。进入工作台后，<strong>AI 智能调优区默认展开</strong>，展示本次创建的输入与生成结果，便于回看 AI 的配置思路并继续对话微调。</li>
       <li><strong>手动创建：</strong>进入空白工作台，所有配置项留空，由用户逐项填写；模型默认选中上次使用模型。</li>
-      <li><strong>可微调可回退：</strong>无论哪种入口，进入工作台后所有 AI 预填参数均为可编辑状态；如需回退到首次 AI 生成结果，可点击页面头部操作菜单中的「重置为初始 AI 配置」。</li>
-      <li><strong>自动保存：</strong>无论哪种入口，进入工作台即新建草稿并启动自动保存；规则：配置信息修改后 20 秒无改动则自动保存（详见整体布局规则）。</li>
+      <li><strong>可微调可回退：</strong>无论哪种入口，进入工作台后所有 AI 预填参数均为可编辑状态；用户可在 AI 智能调优区要求「重置为初始 AI 配置」回退到首次生成结果。</li>
+      <li><strong>自动保存：</strong>无论哪种入口，进入工作台即新建草稿并开始自动保存（详见整体布局规则）。</li>
     </ul>
 
     <h4>整体布局规则</h4>
     <ul class="feature-list">
       <li><strong>页面头部：</strong>始终固定显示在顶部，不随区域切换而隐藏。</li>
-      <li><strong>两栏默认布局：</strong>默认显示左、中两栏——左侧「专家配置区域」、中间「预览调试区域」。</li>
-      <li><strong>两栏均为独立 iframe：</strong>支持鼠标拖拽区域间分割线左右调整宽度，单个区域最小占屏 20%。</li>
-      <li><strong>预览调试区操作：</strong>预览调试区顶部仅保留「清空会话记录」按钮，点击即清空当前调试会话的全部聊天内容，便于重新验证专家效果。</li>
-      <li><strong>自动保存：</strong>配置信息（模型、提示词、技能、MCP 等）修改后，若 <strong>20 秒内无新的改动</strong>，系统自动保存草稿，并在页面头部展示「已自动保存于 HH:MM:SS」。每次改动都会重置 20 秒计时器，计时结束无新改动即落盘。</li>
+      <li><strong>三栏默认布局：</strong>默认显示左、中、右三栏——左侧「专家配置区域」、中间「预览调试区域」、右侧「AI 智能调优区域」。</li>
+      <li><strong>三栏均为独立 iframe：</strong>支持鼠标拖拽区域间分割线左右调整宽度，单个区域最小占屏 20%。</li>
+      <li><strong>可切换区域互斥：</strong>AI 智能调优区域、产物区域、运行日志区域三者支持打开与隐藏，<strong>同一时刻只能存在其中一个</strong>；打开其一将自动关闭其他两个。</li>
+      <li><strong>自动保存：</strong>配置区域内容变更后自动保存(配置信息修改后，<strong>20s</strong>无改动，则自动保存)（页面头部展示自动保存时间）。</li>
     </ul>
 
     <!-- 5.2.1 页面头部 -->
@@ -483,7 +496,7 @@
       <tr><td>分类</td><td>专家分类标签</td></tr>
       <tr><td>创建人</td><td>创建者，只读</td></tr>
       <tr><td>自动保存时间</td><td>展示「已自动保存于 HH:MM:SS」</td></tr>
-      <tr><td>操作（…）</td><td>点击展开操作列表：<strong>版本历史</strong>、<strong>分析</strong>、<strong>导出专家</strong>、<strong>重置为初始 AI 配置</strong>、<strong>日志</strong></td></tr>
+      <tr><td>操作（…）</td><td>点击展开操作列表：<strong>版本历史</strong>、<strong>分析</strong>、<strong>导出专家</strong>、<strong>日志</strong></td></tr>
     </tbody></table>
 
     <!-- 5.2.2 专家配置区域 -->
@@ -510,19 +523,65 @@
     <p>配置即所见即所得的实时调试窗口，用于验证专家效果。</p>
     <table>
       <tbody><tr><th style="width:20%">区域</th><th>说明</th></tr>
-      <tr><td>顶部</td><td>标题 + 按钮：<strong>清空会话记录</strong></td></tr>
-      <tr><td>清空会话记录</td><td>点击清空当前调试会话的全部聊天内容（含开场白、历史问答、已上传文件），便于重新验证专家效果；清空后聊天框回到初始状态（展示 AI 智能生成的开场白问题）</td></tr>
-      <tr><td>聊天框（默认）</td><td>展示 AI 智能生成的开场白问题；开场白问题点击可自动输入并提交</td></tr>
+      <tr><td>顶部</td><td>标题 + 按钮：新会话、历史、产物、AI 智能调优、运行日志</td></tr>
+      <tr><td>新会话</td><td>点击将聊天框内容初始化为新会话</td></tr>
+      <tr><td>历史</td><td>点击下拉展示历史会话清单（名称、时间）；点击某条自动切换聊天窗口为历史内容</td></tr>
+      <tr><td>产物</td><td>点击弹出产物区域；同时关闭 AI 智能调优、运行日志区域</td></tr>
+      <tr><td>AI 智能调优</td><td>点击关闭产物或运行日志区域，打开 AI 智能调优区域</td></tr>
+      <tr><td>运行日志</td><td>点击打开运行日志区域；同时关闭产物、AI 智能调优区域</td></tr>
+      <tr><td>聊天框（默认）</td><td>展示AI智能生成的开场白问题；开场白问题点击可自动输入并提交</td></tr>
       <tr><td>聊天框（对话后）</td><td>展示我的输入内容与输入时间；智能体回答内容、回答时间、消耗秒数、消耗 tokens</td></tr>
       <tr><td>输入框</td><td>默认显示提示语；支持输入文本、上传文件 / 图片；发送按钮未填写文本时置灰，填写后高亮可点击</td></tr>
     </tbody></table>
 
+    <!-- 5.2.4 AI智能调优区域 -->
+    <h4>④ AI 智能调优区域</h4>
+    <p>通过自然语言对话驱动专家配置调优，降低配置门槛。</p>
+    <table>
+      <tbody><tr><th style="width:20%">区域</th><th>说明</th></tr>
+      <tr><td>顶部</td><td>标题 + 按钮（清空）；清空按钮点击清空聊天框内容</td></tr>
+      <tr><td>聊天框（默认）</td><td>显示创建专家时的输入与输出</td></tr>
+      <tr><td>聊天框（对话后）</td><td>每次输入要求后，智能体回答并<strong>列出需要改动的内容</strong>，每条改动给出「应用」「取消」按钮；点击「应用」专家配置自动应用该改动，点击「取消」则不改动；重复对话自动读取上下文思考，并持续列出需要改动的内容；<br>可调范围：<br>名称、类别、图标、描述、模型、系统提示词、开场白问题、MCP、技能；</td></tr>
+      <tr><td>输入框</td><td>默认显示提示语；支持输入文本；发送按钮未填写时置灰，填写后高亮可点击</td></tr>
+    </tbody></table>
+
+    <!-- 5.2.5 产物区域 -->
+    <h4>⑤ 产物区域</h4>
+    <p>展示专家执行过程中产出的文件，支持预览与下载。</p>
+    <table>
+      <tbody><tr><th style="width:20%">区域</th><th>说明</th></tr>
+      <tr><td>顶部</td><td>标题（产物文件）+ 按钮：下载、全屏、浏览器打开、关闭</td></tr>
+      <tr><td>内容布局</td><td>左右两栏：左侧文件列表，右侧文件预览窗口</td></tr>
+      <tr><td>文件列表</td><td>每个文件显示文件 icon、文件名、文件大小、创建时间（时分秒）；点击文件将内容显示到预览窗口</td></tr>
+      <tr><td>预览窗口</td><td>支持多文件同时预览，标签页可切换；可点击关闭单个标签页</td></tr>
+    </tbody></table>
+
+    <!-- 5.2.6 运行日志区域 -->
+    <h4>⑥ 运行日志区域</h4>
+    <p>全链路执行日志，用于定位专家执行问题与性能分析。</p>
+    <table>
+      <tbody><tr><th style="width:20%">区域</th><th>说明</th></tr>
+      <tr><td>顶部</td><td>标题（运行日志）+ 按钮：全屏、关闭</td></tr>
+      <tr><td>标签页</td><td>「运行详情」「运行产物」两个标签页</td></tr>
+      <tr><td>运行详情</td><td>竖向时间线，每个时间点对应一次执行（大模型 / 工具 / MCP / 技能）；每次执行含类型、描述、输入 token、输出 token、耗时、状态；可点击展开查看详情</td></tr>
+    </tbody></table>
+
+    <p>不同类别执行的展开详情如下：</p>
+    <table>
+      <tbody><tr><th style="width:16%">类别</th><th>展开详情字段</th></tr>
+      <tr><td>大模型</td><td>模型、开始时间、结束时间、token 消耗（输入 / 输出 / 总计）、输入 prompt、输出 response</td></tr>
+      <tr><td>工具</td><td>工具名称、开始时间、结束时间、请求参数、返回结果</td></tr>
+      <tr><td>技能</td><td>技能名称、开始时间、结束时间、描述、步骤、执行步骤内容</td></tr>
+      <tr><td>MCP</td><td>MCP 名称、开始时间、结束时间、请求参数、返回结果</td></tr>
+    </tbody></table>
+
+    <div class="note">💡 AI 智能调优区、产物区、运行日志区三者互斥；预览调试区顶部的「产物 / AI 智能调优 / 运行日志」按钮是切换这三个区域的统一入口。</div>
     <hr>
 
 
-    <!-- 5.3 回收站 -->
-    <h3 id="sec5-3">🔹 5.3 回收站</h3>
-    <p>回收站用于暂存被删除的专家，提供「恢复」与「彻底删除」两类操作，避免误删导致专家资产不可逆丢失。专家从列表删除后自动进入回收站，永久保留直至用户手动恢复或彻底删除。</p>
+    <!-- 5.4 回收站 -->
+    <h3 id="sec5-4">🔹 5.4 回收站</h3>
+    <p>回收站用于暂存被删除的专家，提供「恢复」与「彻底删除」两类操作，避免误删导致专家资产不可逆丢失。专家从列表删除后自动进入回收站，超过保留期未处理将自动彻底删除。</p>
 
     <h4>字段设计</h4>
     <table>
@@ -537,17 +596,18 @@
       <tr><td>创建时间</td><td>时间</td><td>✅</td><td>专家原创建时间，只读</td></tr>
       <tr><td>删除人</td><td>关联</td><td>✅</td><td>执行删除操作的用户，系统自动记录</td></tr>
       <tr><td>删除时间</td><td>时间</td><td>✅</td><td>进入回收站的时间，系统自动记录</td></tr>
+      <tr><td>剩余保留期</td><td>计算字段</td><td>✅</td><td>无</td></tr>
       <tr><td>调用次数</td><td>数字</td><td>—</td><td>删除前累计调用次数，只读；恢复后从该值继续统计</td></tr>
     </tbody></table>
 
     <h4>功能清单</h4>
     <ul class="feature-list">
-      <li><strong>列表展示：</strong>默认按删除时间倒序，展示头像、名称、描述、来源、删除前状态、删除人、删除时间、调用次数等字段；支持列表 / 卡片两种视图切换（与专家列表一致）。</li>
+      <li><strong>列表展示：</strong>默认按删除时间倒序，展示头像、名称、描述、来源、删除前状态、删除人、删除时间、剩余保留期、调用次数等字段；支持列表 / 卡片两种视图切换（与专家列表一致）。</li>
       <li><strong>搜索筛选：</strong>支持按名称、描述模糊搜索；支持按来源、删除前状态、删除人组合筛选；支持按删除时间区间筛选；筛选条件可重置。</li>
       <li><strong>恢复专家：</strong>单个或批量勾选后点击「恢复」，弹出二次确认；确认后专家从回收站移除并回到专家列表，<strong>状态统一置为「下架」</strong>（无论删除前是否已发布），需由管理员 / 配置员重新发布后客户端才可调用；恢复时若专家名称已被占用，提示「名称已被占用，请先重命名」，支持在确认弹窗中输入新名称。</li>
       <li><strong>彻底删除：</strong>单个或批量勾选后点击「彻底删除」，弹出二次确认并<strong>红色高亮警示「彻底删除后不可恢复，专家配置与调用记录将永久丢失」</strong>；确认后物理删除专家及其配置，操作不可逆。</li>
       <li><strong>批量操作：</strong>勾选多个专家后支持批量恢复、批量彻底删除；批量操作前统一展示影响清单与数量，确认后执行。</li>
-      <li><strong>清空回收站：</strong>页面顶部提供「清空回收站」入口，一次性彻底删除回收站内全部专家；操作前需二次确认并展示待清空数量，操作不可逆。</li>
+      <li><strong>清空回收站：</strong>页面顶部提供「清空回收站」入口，一次性彻底删除回收站内全部专家；操作前需二次确认并展示待清空数量，操作不可逆；清空时自动跳过保留期未满且管理员明确标记「禁止自动清理」的专家（可选保护项）。</li>
       <li><strong>查看详情：</strong>点击专家行可查看删除前的配置快照（只读），便于确认是否需要恢复；不可在回收站内直接编辑配置。</li>
       <li><strong>导出：</strong>支持按当前筛选条件导出回收站列表为 Excel；单个专家可导出专家配置包（用于备份）。</li>
     </ul>
@@ -561,35 +621,43 @@
     <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><h4>点击创建专家</h4><p>在专家列表点击「创建专家」，弹出创建弹窗。</p></div></div>
     <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><h4>输入需求描述</h4><p>在弹窗中输入一段创建文案，描述期望专家的能力与场景（如「一个能解答员工社保公积金问题的 HR 助手」）；支持示例文案一键填充。也可点击「手动创建」跳过 AI 直接进入空白工作台。</p></div></div>
     <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><h4>AI 自动生成配置</h4><p>点击「AI 生成」，系统调用 AI 能力解析创建文案，一次性生成专家全部配置参数（名称、简介、分类、模型、提示词、开场白问题、推荐技能 / MCP）；弹窗内展示生成进度。</p></div></div>
-    <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><h4>跳转配置工作台（参数已预填）</h4><p>生成完成后自动跳转至专家配置工作台（5.2），所有参数已预填；新建草稿并启动自动保存（配置信息修改后 20 秒无改动则自动保存）。用户可直接在专家配置区复核与微调。</p></div></div>
-    <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><h4>复核与微调</h4><p>用户检视预填参数，可手动修改任意配置项，并在预览调试区验证调整效果（如「开场白更口语化」「去掉图片上传能力」）。</p></div></div>
+    <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><h4>跳转配置工作台（参数已预填）</h4><p>生成完成后自动跳转至专家配置工作台（5.2），所有参数已预填；新建草稿并开始自动保存。AI 智能调优区默认展开，展示本次创建的输入与生成结果，便于回看与继续微调。</p></div></div>
+    <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><h4>复核与微调</h4><p>用户检视预填参数，可手动修改任意配置项，或继续在 AI 智能调优区用自然语言要求调整（如「开场白更口语化」「去掉图片上传能力」）。</p></div></div>
     <div class="flow-step"><div class="flow-num">6</div><div class="flow-content"><h4>预览调试并发布</h4><p>在预览调试区验证效果，达标后在头部将状态切换为「已发布」完成专家创建（详见 6.2 完整流程）。</p></div></div>
 
     <h3>6.2 创建并发布专家完整流程</h3>
-    <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><h4>进入配置工作台</h4><p>通过 6.1 的 AI 创建流程（参数已预填）或手动创建进入配置工作台，自动新建草稿并启动自动保存（配置信息修改后 20 秒无改动则自动保存）。</p></div></div>
+    <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><h4>进入配置工作台</h4><p>通过 6.1 的 AI 创建流程（参数已预填）或手动创建进入配置工作台，自动新建草稿并开始自动保存。</p></div></div>
     <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><h4>填写头部信息</h4><p>上传头像、填写名称与简介、选择分类；系统实时校验名称唯一性。</p></div></div>
     <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><h4>配置核心能力</h4><p>选择模型、编写提示词、按需添加 MCP / 技能。</p></div></div>
-    <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><h4>预览调试</h4><p>在预览调试区发起对话，验证回答质量与 token 消耗；可点击「清空会话记录」重置调试会话。</p></div></div>
-    <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><h4>发布上线</h4><p>调试达标后在头部操作中将状态切换为「已发布」，专家在客户端可见可调用。</p></div></div>
+    <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><h4>预览调试</h4><p>在预览调试区发起对话，验证回答质量与 token 消耗。</p></div></div>
+    <div class="flow-step"><div class="flow-num">6</div><div class="flow-content"><h4>AI 智能调优</h4><p>在 AI 调优区描述优化诉求，逐条审阅改动建议，点击「应用」采纳有效改动。</p></div></div>
+    <div class="flow-step"><div class="flow-num">7</div><div class="flow-content"><h4>查看运行日志 / 产物</h4><p>按需切换运行日志区，查看大模型 / 工具 / 技能 / MCP 执行链路与产物文件。</p></div></div>
+    <div class="flow-step"><div class="flow-num">8</div><div class="flow-content"><h4>发布上线</h4><p>调试达标后在头部操作中将状态切换为「已发布」，专家在客户端可见可调用。</p></div></div>
 
-    <h3>6.3 专家发布 / 下架流程</h3>
+    <h3>6.3 AI 智能调优应用流程</h3>
+    <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><h4>提出调优诉求</h4><p>在 AI 调优区输入框描述期望（如「让回答更简洁」），发送。</p></div></div>
+    <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><h4>AI 给出改动建议</h4><p>智能体读取当前配置上下文，列出需要改动的内容清单，每条附「应用 / 取消」。</p></div></div>
+    <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><h4>逐条决策</h4><p>点击「应用」则专家配置自动应用该改动；点击「取消」则不改动。</p></div></div>
+    <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><h4>持续迭代</h4><p>继续输入新诉求，AI 自动读取上下文思考，持续输出改动建议直至满意。</p></div></div>
+
+    <h3>6.4 专家发布 / 下架流程</h3>
     <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><h4>选择专家</h4><p>在专家列表勾选一个或多个专家。</p></div></div>
     <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><h4>切换状态</h4><p>点击「发布」或「下架」，弹出二次确认。</p></div></div>
     <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><h4>确认生效</h4><p>确认后状态即时变更，记录操作审计日志；发布后客户端可调用，下架后调用入口关闭。</p></div></div>
 
-    <h3>6.4 专家删除与回收站流程</h3>
-    <h4>6.4.1 删除专家（进入回收站）</h4>
+    <h3>6.5 专家删除与回收站流程</h3>
+    <h4>6.5.1 删除专家（进入回收站）</h4>
     <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><h4>选择专家</h4><p>在专家列表勾选一个或多个专家，或对单个专家点击操作菜单中的「删除」。</p></div></div>
     <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><h4>二次确认</h4><p>弹出确认弹窗，提示「删除后专家将进入回收站」；若包含已发布专家，额外提示「已发布专家删除后客户端调用入口将立即关闭」。</p></div></div>
     <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><h4>移入回收站</h4><p>确认后专家从列表移除，进入回收站暂存；记录删除人、删除时间、删除前状态；客户端调用入口同步关闭。</p></div></div>
 
-    <h4>6.4.2 恢复专家</h4>
+    <h4>6.5.2 恢复专家</h4>
     <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><h4>进入回收站</h4><p>从专家列表「回收站」入口进入回收站页面。</p></div></div>
     <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><h4>选择并恢复</h4><p>勾选一个或多个专家，点击「恢复」，弹出二次确认，展示待恢复专家清单。</p></div></div>
     <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><h4>名称冲突处理</h4><p>若存在专家名称已被列表中其他专家占用，提示「名称已被占用，请重命名」，支持在弹窗中逐个输入新名称；无冲突则跳过此步。</p></div></div>
     <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><h4>恢复完成</h4><p>确认后专家从回收站移除并回到专家列表，状态统一置为「下架」，需重新发布后客户端才可调用；调用次数沿用删除前累计值。</p></div></div>
 
-    <h4>6.4.3 彻底删除</h4>
+    <h4>6.5.3 彻底删除</h4>
     <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><h4>选择并彻底删除</h4><p>在回收站勾选一个或多个专家（或使用「清空回收站」），点击「彻底删除」。</p></div></div>
     <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><h4>红色警示确认</h4><p>弹出二次确认，红色高亮警示「彻底删除后不可恢复，专家配置与调用记录将永久丢失」，并列出待删除专家数量与清单。</p></div></div>
     <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><h4>物理删除</h4><p>确认后物理删除专家及其配置、调用记录，操作不可逆；写入审计日志。</p></div></div>
@@ -601,15 +669,16 @@
 
     <table>
       <tbody><tr><th style="width:6%">序号</th><th style="width:26%">场景</th><th style="width:34%">处理策略</th><th>备注</th></tr>
-      <tr><td>1</td><td>专家名称重复</td><td>新建 / 编辑时实时校验全局唯一；重复时提示「专家名称已存在」并阻止保存</td><td>前端实时校验 + 后端兜底</td></tr>
+      <tr><td>1</td><td>专家名称重复</td><td>新建 / 编辑 / 导入时实时校验全局唯一；重复时提示「专家名称已存在」并阻止保存</td><td>前端实时校验 + 后端兜底</td></tr>
       <tr><td>2</td><td>删除已发布专家</td><td>允许删除但需二次确认，提示「该专家已发布，删除后客户端调用入口将立即关闭，专家将进入回收站；删除后进入回收站暂存，非物理删除</td><td>记录审计日志</td></tr>
       <tr><td>3</td><td>客户端来源专家在管理端编辑</td><td>核心配置不可编辑，仅可查看基本信息与调用统计；编辑入口置灰提示「客户端来源专家不可在管理端编辑核心配置」</td><td>后端同步拦截</td></tr>
       <tr><td>4</td><td>选择的模型不可用 / 已下线</td><td>配置时下拉中标记不可用模型并禁选；已配置模型下线后在编辑页顶部告警提示「当前模型已下线，请更换」</td><td>预览调试同步阻断</td></tr>
       <tr><td>5</td><td>已添加的工具 / MCP / 技能被删除</td><td>配置区域对应项标记「已失效」并置灰，支持移除；预览调试时跳过失效项并提示</td><td>避免调用报错</td></tr>
-      <tr><td>6</td><td>预览调试会话需重置</td><td>提供「清空会话记录」按钮，一键清空调试聊天内容；清空后不可恢复，操作前可二次确认</td><td>避免历史调试干扰新验证</td></tr>
+      <tr><td>6</td><td>AI 智能调优 / 产物 / 运行日志同时打开</td><td>三者互斥，打开其一自动关闭其他两个；同一时刻仅存在一个</td><td>通过预览调试区顶部按钮统一切换</td></tr>
       <tr><td>7</td><td>配置区域拖拽分割线超出边界</td><td>单个区域最小占屏 20%，达到最小值后不可继续压缩</td><td>前端限制拖拽范围</td></tr>
       <tr><td>8</td><td>并发编辑同一专家</td><td>乐观锁，后提交者收到冲突提示，需刷新后重新编辑</td><td>基于版本号 / update_time</td></tr>
-      <tr><td>9</td><td>预览调试中模型超时 / 报错</td><td>聊天框展示错误提示与重试按钮；失败原因与耗时写入系统运行日志供排查，不在前端展示运行日志区</td><td>不中断配置</td></tr>
+      <tr><td>9</td><td>导入数据校验失败</td><td>逐行校验，失败行返回错误详情（行号 + 原因）；全部失败则回滚，部分失败则成功部分入库；失败明细可导出修正重导</td><td>单次上限 1000 行</td></tr>
+      <tr><td>10</td><td>预览调试中模型超时 / 报错</td><td>聊天框展示错误提示与重试按钮；运行日志同步记录失败原因与耗时</td><td>不中断配置</td></tr>
       <tr><td>11</td><td>下架有调用中的专家</td><td>允许下架，下架后客户端新会话入口关闭；进行中的会话提示「专家已下架」并结束</td><td>调用次数统计保留</td></tr>
       <tr><td>12</td><td>-</td><td>-</td><td>-</td></tr>
       <tr><td>13</td><td>自动保存失败（网络异常）</td><td>头部展示「保存失败」并保留本地草稿，网络恢复后自动重试；未保存成功前禁止发布</td><td>避免配置丢失</td></tr>
@@ -619,7 +688,8 @@
       <tr><td>17</td><td>AI 预填配置需人工复核</td><td>进入工作台后顶部提示「当前配置由 AI 生成，请复核后发布」；开场白问题不足 3 个、输入框能力未启用等校验规则同样适用，不达标不允许发布</td><td>复用既有校验</td></tr>
       <tr><td>18</td><td>恢复专家时名称已被占用</td><td>恢复前校验名称全局唯一（含专家列表与回收站中同名专家）；冲突时提示「名称已被占用，请重命名」，支持在确认弹窗中逐个输入新名称后恢复</td><td>前端校验 + 后端兜底</td></tr>
       <tr><td>19</td><td>恢复客户端来源专家</td><td>允许恢复；恢复后状态置为「下架」，客户端调用入口不自动恢复，需重新发布后才可在客户端使用</td><td>沿用来源规则</td></tr>
-      <tr><td>20</td><td>批量彻底删除中部分失败</td><td>逐条执行，失败的专家保留在回收站并返回失败原因；成功的正常物理删除；展示成功 / 失败数量统计，支持重试失败项</td><td>部分成功不回滚</td></tr>
+      <tr><td>20</td><td>回收站自动清理前专家被手动处理</td><td>定时任务执行前再次校验专家是否仍在回收站；已被手动恢复或彻底删除的跳过，避免重复操作</td><td>幂等处理</td></tr>
+      <tr><td>21</td><td>批量彻底删除中部分失败</td><td>逐条执行，失败的专家保留在回收站并返回失败原因；成功的正常物理删除；展示成功 / 失败数量统计，支持重试失败项</td><td>部分成功不回滚</td></tr>
     </tbody></table>
 
   </div>

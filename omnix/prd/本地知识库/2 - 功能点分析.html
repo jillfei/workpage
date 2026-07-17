@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OmniX 本地知识库 · PRD 功能点分析</title>
+<style>
+  :root{
+    --bg:#f6f8fb; --card:#ffffff; --ink:#1c2433; --sub:#5b6678;
+    --line:#e6ebf2; --brand:#3b6cf6; --brand-soft:#eaf0ff;
+    --green:#1f9d6b; --green-soft:#e6f6ef; --amber:#c8881a; --amber-soft:#fdf3e0;
+    --red:#d2514e; --red-soft:#fdeaea; --purple:#7a5bd0; --purple-soft:#f0ebfb;
+    --shadow:0 1px 3px rgba(20,30,50,.06),0 8px 24px rgba(20,30,50,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+  a{color:var(--brand);text-decoration:none}
+  .wrap{max-width:1120px;margin:0 auto;padding:32px 24px 80px}
+
+  /* Hero */
+  .hero{background:linear-gradient(135deg,#3b6cf6,#6a4cf0);color:#fff;border-radius:18px;
+    padding:38px 40px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;
+    background:radial-gradient(circle,rgba(255,255,255,.18),transparent 70%);border-radius:50%}
+  .hero .tag{display:inline-block;font-size:12px;letter-spacing:1px;background:rgba(255,255,255,.18);
+    padding:4px 12px;border-radius:20px;margin-bottom:14px}
+  .hero h1{font-size:30px;font-weight:700;letter-spacing:.5px}
+  .hero p{margin-top:12px;font-size:15px;opacity:.92;max-width:760px}
+  .hero .q{margin-top:18px;font-size:13px;background:rgba(0,0,0,.16);display:inline-block;
+    padding:6px 14px;border-radius:8px}
+
+  /* Stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:22px}
+  .stat{background:var(--card);border-radius:14px;padding:20px 22px;box-shadow:var(--shadow)}
+  .stat .n{font-size:30px;font-weight:800;color:var(--brand)}
+  .stat .l{font-size:13px;color:var(--sub);margin-top:4px}
+  .stat:nth-child(2) .n{color:var(--green)}
+  .stat:nth-child(3) .n{color:var(--amber)}
+  .stat:nth-child(4) .n{color:var(--purple)}
+
+  /* Controls */
+  .controls{display:flex;gap:12px;align-items:center;margin:34px 0 10px;flex-wrap:wrap}
+  .search{flex:1;min-width:240px;position:relative}
+  .search input{width:100%;padding:12px 14px 12px 40px;border:1px solid var(--line);
+    border-radius:10px;font-size:14px;background:#fff;outline:none;transition:.2s}
+  .search input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.5}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{font-size:13px;padding:8px 14px;border:1px solid var(--line);border-radius:20px;
+    background:#fff;cursor:pointer;color:var(--sub);transition:.18s;user-select:none}
+  .chip:hover{border-color:var(--brand);color:var(--brand)}
+  .chip.active{background:var(--brand);border-color:var(--brand);color:#fff}
+
+  /* Module */
+  .module{background:var(--card);border-radius:16px;padding:26px 28px;margin-top:18px;
+    box-shadow:var(--shadow);border:1px solid var(--line)}
+  .module-head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+  .module-idx{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;
+    justify-content:center;font-weight:800;font-size:16px;color:#fff;flex:none}
+  .module h2{font-size:20px;font-weight:700}
+  .module .desc{color:var(--sub);font-size:13.5px;margin:4px 0 18px;padding-left:52px}
+  .m1{background:var(--brand)} .m2{background:var(--green)} .m3{background:var(--amber)}
+  .m4{background:var(--purple)} .m5{background:var(--red)} .m6{background:#2a8fb8}
+  .m7{background:#b5589a} .m8{background:#5a8a3a} .m9{background:#c0792e}
+
+  /* FP item */
+  .fp{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;
+    transition:.18s;background:#fff}
+  .fp:hover{box-shadow:0 4px 14px rgba(20,30,50,.07);border-color:#cdd8ee}
+  .fp-top{display:flex;align-items:flex-start;gap:10px}
+  .fp-name{font-weight:650;font-size:15px;flex:1}
+  .fp-src{font-size:11.5px;color:var(--sub);background:var(--bg);border:1px solid var(--line);
+    padding:2px 8px;border-radius:6px;white-space:nowrap;flex:none;margin-top:3px}
+  .fp-desc{color:var(--sub);font-size:13.5px;margin-top:7px;padding-left:0}
+  .badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:6px;
+    margin-left:8px;vertical-align:middle}
+  .b-v1{background:var(--green-soft);color:var(--green)}
+  .b-v11{background:var(--amber-soft);color:var(--amber)}
+  .b-v2{background:var(--purple-soft);color:var(--purple)}
+  .b-core{background:var(--brand-soft);color:var(--brand)}
+
+  .hide{display:none!important}
+  .empty{text-align:center;color:var(--sub);padding:40px;font-size:14px}
+
+  /* Status machine */
+  .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin-top:8px}
+  .step{background:var(--brand-soft);border:1px solid #cfe0ff;border-radius:10px;padding:12px 14px;
+    flex:1;min-width:150px;position:relative}
+  .step .s-n{font-size:11px;color:var(--brand);font-weight:700}
+  .step .s-t{font-weight:650;font-size:14px;margin-top:2px}
+  .step .s-d{font-size:12px;color:var(--sub);margin-top:4px}
+  .step.alt{background:var(--red-soft);border-color:#f3c9c8}
+  .step.alt .s-n{color:var(--red)}
+
+  /* Roadmap */
+  .road{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}
+  .ver{border-radius:14px;padding:20px;border:1px solid var(--line);background:#fff}
+  .ver h3{font-size:17px;display:flex;align-items:center;gap:8px}
+  .ver .dot{width:10px;height:10px;border-radius:50%}
+  .ver ul{margin:14px 0 0 18px;font-size:13.5px;color:var(--sub)}
+  .ver li{margin-bottom:7px}
+  .v1{border-top:4px solid var(--green)} .v1 .dot{background:var(--green)}
+  .v11{border-top:4px solid var(--amber)} .v11 .dot{background:var(--amber)}
+  .v2{border-top:4px solid var(--purple)} .v2 .dot{background:var(--purple)}
+
+  /* Principles */
+  .prin{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}
+  .pr{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fff;font-size:13.5px}
+  .pr b{color:var(--brand)}
+
+  footer{text-align:center;color:var(--sub);font-size:12.5px;margin-top:40px;line-height:1.8}
+  .count-tip{font-size:13px;color:var(--sub);margin:6px 0 0}
+
+  @media(max-width:760px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .road{grid-template-columns:1fr}.prin{grid-template-columns:1fr}
+    .hero{padding:28px 22px}.module{padding:20px 18px}.module .desc{padding-left:0}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <span class="tag">OmniX 本地知识库 · 产品需求文档分析</span>
+    <h1>功能点全景分析</h1>
+    <p>基于《OmniX 本地知识库产品需求文档（内部版）》系统梳理，覆盖知识库管理、写入链、搜索链、隔离权限、维护运营等九大模块，共 50+ 具体功能点。</p>
+    <div class="q">一句话定义：让 AI Agent 拥有长期记忆、结构化知识和可信检索能力的本地优先知识底座</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n">9</div><div class="l">功能模块</div></div>
+    <div class="stat"><div class="n">52</div><div class="l">具体功能点</div></div>
+    <div class="stat"><div class="n">8</div><div class="l">写入状态</div></div>
+    <div class="stat"><div class="n">3</div><div class="l">版本路线</div></div>
+  </div>
+
+  <div class="controls">
+    <div class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="text" placeholder="搜索功能点，如：向量、隔离、重排、缓存…">
+    </div>
+    <div class="filters" id="filters">
+      <span class="chip active" data-cat="all">全部</span>
+      <span class="chip" data-cat="m1">知识库管理</span>
+      <span class="chip" data-cat="m2">写入链</span>
+      <span class="chip" data-cat="m3">状态机</span>
+      <span class="chip" data-cat="m4">搜索链</span>
+      <span class="chip" data-cat="m5">隔离权限</span>
+      <span class="chip" data-cat="m6">维护运营</span>
+      <span class="chip" data-cat="m7">体验界面</span>
+      <span class="chip" data-cat="m8">版本路线</span>
+      <span class="chip" data-cat="m9">产品原则</span>
+    </div>
+  </div>
+  <div class="count-tip" id="countTip">显示全部 52 个功能点</div>
+
+  <!-- 模块一 -->
+  <div class="module" data-cat="m1">
+    <div class="module-head"><div class="module-idx m1">01</div><h2>知识库与资料源管理</h2></div>
+    <div class="desc">把"用户本地目录"登记为可管理的知识库实例，并约定资料源边界。</div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">创建知识库</div><span class="fp-src">10.3 节点0</span></div><div class="fp-desc">用户输入名称并绑定一个本地文件夹绝对路径，系统创建知识库实例。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">多知识库实例<span class="badge b-v2">V2扩展</span></div><span class="fp-src">8</span></div><div class="fp-desc">支持同时存在多套知识库数据，按"知识库实例 + 资料源"两层轴组织认知模型。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">资料源注册</div><span class="fp-src">10.3 节点0</span></div><div class="fp-desc">绑定目录自动登记为"默认资料源根目录"，界面只展示这一条绑定关系。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">重新绑定目录</div><span class="fp-src">10.3 节点0</span></div><div class="fp-desc">用户修改目录位置必须显式重新绑定，系统不得静默改扫其他目录。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">目录权限校验</div><span class="fp-src">10.3 节点0</span></div><div class="fp-desc">校验目录存在、可读、路径可规范化；失败则不创建半成品知识库。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">扩展：多资料源 / 多用户</div><span class="fp-src">3.2 / 8</span></div><div class="fp-desc">后续支持多资料源、小团队共享、外部智能体接入场景。</div></div>
+  </div>
+
+  <!-- 模块二 -->
+  <div class="module" data-cat="m2">
+    <div class="module-head"><div class="module-idx m2">02</div><h2>写入链（资料导入与知识化）</h2></div>
+    <div class="desc">把本地文件从"原文件"转为"可搜索、可提问、可追溯"的页面体系，分八节点推进。</div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">文件夹绑定导入</div><span class="fp-src">10.1</span></div><div class="fp-desc">仅支持"选文件夹绑定"入口，不提供逐文件上传 / 手工粘贴入口。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">首次全量扫描</div><span class="fp-src">10.1</span></div><div class="fp-desc">客户端首次全量扫描绑定目录，形成初始文件清单。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">持续监听 / 增量扫描<span class="badge b-v11">V1.1</span></div><span class="fp-src">10.1 / 13</span></div><div class="fp-desc">之后持续监听或增量扫描发现变更（目录监听在 V1.1 补齐）。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">变更识别</div><span class="fp-src">10.3 节点1</span></div><div class="fp-desc">依据路径、文件状态、内容哈希识别新增 / 修改 / 重命名 / 删除 / 无变化。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">文件路由</div><span class="fp-src">10.3 节点2</span></div><div class="fp-desc">Markdown 直连解析；代码按同步策略；PDF/Word/Excel/PPT 路由 MinerU。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">不支持 / 失败处理</div><span class="fp-src">10.1</span></div><div class="fp-desc">无解析器文件标记"暂不支持 / 等待解析"，不得伪装为已知识化。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">解析器 / 噪声隔离</div><span class="fp-src">10.3 节点2</span></div><div class="fp-desc">高置信度噪声内容隔离并排除检索；失败保留待修复记录。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">标准化内部 Markdown</div><span class="fp-src">10.3 节点3</span></div><div class="fp-desc">统一标题/正文/元数据/时间/来源定位；PDF 留页码、PPT 留幻灯片、Excel 留工作表。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">原文件零改动<span class="badge b-core">核心</span></div><span class="fp-src">10.1</span></div><div class="fp-desc">原文件始终留在绑定目录，不移动、不改写、不生成解析副本。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">完整页面建立</div><span class="fp-src">10.3 节点4</span></div><div class="fp-desc">持久化正文、frontmatter、时间线、页面标识，作为可完整阅读的读模型。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">Compiled Truth 生成</div><span class="fp-src">10.3 节点4</span></div><div class="fp-desc">证据充分时形成"当前最佳理解"；无回溯证据不得写入 Compiled Truth。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">内容切分为片段</div><span class="fp-src">10.3 节点5</span></div><div class="fp-desc">按段落/语义边界生成带页内位置与来源定位的 content_chunks。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">关键词索引</div><span class="fp-src">10.3 节点5</span></div><div class="fp-desc">片段原文进入关键词（全文）索引，不依赖嵌入服务，必须始终可用。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">向量化（可选）</div><span class="fp-src">10.3 节点5</span></div><div class="fp-desc">按配置生成向量；不可用时标记"向量待完成"而非报告完全可用。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">知识图谱补建</div><span class="fp-src">10.3 节点6</span></div><div class="fp-desc">页面/实体为节点，带类型、可回原文的链接为边，提供关系证据。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">标签 / 别名 / 时间证据</div><span class="fp-src">10.3 节点6</span></div><div class="fp-desc">从 frontmatter、链接、时间信息写入对应索引，增强检索排序。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">同步收敛与幂等</div><span class="fp-src">10.3 节点7</span></div><div class="fp-desc">对增改删重做幂等收敛、软删除、回填安排，返回批次级状态。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">失败重试 / 定向回填</div><span class="fp-src">10.3 / 12.1</span></div><div class="fp-desc">可重试失败项、仅执行回填，不必重做整个目录。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">解析器版本重建</div><span class="fp-src">10.3 节点7</span></div><div class="fp-desc">解析器升级或源文件变化后，据哈希与版本重新解析。</div></div>
+  </div>
+
+  <!-- 模块三 -->
+  <div class="module" data-cat="m3">
+    <div class="module-head"><div class="module-idx m3">03</div><h2>写入状态机（进度可见性）</h2></div>
+    <div class="desc">强制区分八个状态，用可解释的最终状态替代模糊的"导入成功"。</div>
+    <div class="flow">
+      <div class="step"><div class="s-n">状态 1</div><div class="s-t">待扫描</div><div class="s-d">已绑定，尚未形成本轮清单</div></div>
+      <div class="step"><div class="s-n">状态 2</div><div class="s-t">待解析</div><div class="s-d">已进入清单，尚未形成标准页面</div></div>
+      <div class="step"><div class="s-n">状态 3</div><div class="s-t">等待解析器 / 暂不支持</div><div class="s-d">无对应解析器，等待能力接入</div></div>
+      <div class="step"><div class="s-n">状态 4</div><div class="s-t">页面已写入</div><div class="s-d">页面与来源凭据已持久化</div></div>
+      <div class="step"><div class="s-n">状态 5</div><div class="s-t">关键词可检索</div><div class="s-d">已切分，可做全文 / 关键词召回</div></div>
+      <div class="step"><div class="s-n">状态 6</div><div class="s-t">向量待完成</div><div class="s-d">页面存在但尚未嵌入</div></div>
+      <div class="step"><div class="s-n">状态 7</div><div class="s-t">完全可用</div><div class="s-d">页面/关键词/向量就绪，可问答追溯</div></div>
+      <div class="step alt"><div class="s-n">状态 8</div><div class="s-t">已隔离 / 待修复</div><div class="s-d">质量或解析问题要求处理</div></div>
+    </div>
+  </div>
+
+  <!-- 模块四 -->
+  <div class="module" data-cat="m4">
+    <div class="module-head"><div class="module-idx m4">04</div><h2>搜索链（检索与回答）</h2></div>
+    <div class="desc">以"关键词 + 语义 + 知识图谱 + 时间证据"为混合检索基础，拆分为检索层与回答层。</div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">范围与权限前置<span class="badge b-core">核心</span></div><span class="fp-src">11.2</span></div><div class="fp-desc">检索前锁定知识库、资料范围、外部调用方权限。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">多入口路由</div><span class="fp-src">11.1</span></div><div class="fp-desc">直达页面 / 快速搜索 / 混合检索 / 回答，按用户意图分流。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">意图识别</div><span class="fp-src">11.2 步骤1</span></div><div class="fp-desc">识别实体、关系、事件、时间、一般问题，确定检索深度与时间偏好。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">多查询扩展</div><span class="fp-src">11.2 步骤2</span></div><div class="fp-desc">扩展为等价表达，原问题必保留；扩展失败仅用原问题。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">语义向量召回</div><span class="fp-src">11.2 步骤3</span></div><div class="fp-desc">在 content_chunks 按相似度召回，每页仅保留最强片段。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">关键词召回<span class="badge b-core">核心</span></div><span class="fp-src">11.2 步骤4</span></div><div class="fp-desc">全文索引匹配名称/术语/文件线索/精确短语，必须始终可用。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">知识图谱召回</div><span class="fp-src">11.2 步骤8</span></div><div class="fp-desc">关系问题沿带类型边有限跳数遍历，返回路径证据，不得猜测关系。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">时间证据召回</div><span class="fp-src">11.1 / 11.2</span></div><div class="fp-desc">关系/时间问题补充时间线与时间范围，不淹没近期事件。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">RRF 融合<span class="badge b-core">核心</span></div><span class="fp-src">11.2 步骤5</span></div><div class="fp-desc">互惠排名融合合并多路候选，不直接相加不同算法原始分数。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">Compiled Truth 权重</div><span class="fp-src">11.2 步骤6</span></div><div class="fp-desc">权威页面受限提升（时间/事件问题关闭或降低该提升）。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">Backlink 图谱权重</div><span class="fp-src">11.2 步骤7</span></div><div class="fp-desc">按被其他可信页面引用程度温和提升连接度。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">来源质量权重</div><span class="fp-src">11.2 步骤9</span></div><div class="fp-desc">目录策略对高价值/低信号资料排序调整，可配置可审计。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">多层去重</div><span class="fp-src">11.2 步骤10</span></div><div class="fp-desc">限制同页片段数、删除相似片段、保页面类型多样性。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">重排与上下文裁剪</div><span class="fp-src">11.2 步骤11</span></div><div class="fp-desc">启用重排器时交叉编码重排，按预算裁剪证据数量。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">回答与引用<span class="badge b-core">核心</span></div><span class="fp-src">11.2 步骤12</span></div><div class="fp-desc">读完整页面后生成结论、引用、冲突、信息缺口，不编造。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">语义缓存</div><span class="fp-src">11.2</span></div><div class="fp-desc">同范围/同嵌入空间/同检索配置直接返回证据包，故障不阻断。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">降级机制<span class="badge b-core">核心</span></div><span class="fp-src">11.4</span></div><div class="fp-desc">嵌入不可用→仅关键词+图谱；增强失败→回退候选；缓存不跨源复用。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">三类空结果区分<span class="badge b-core">核心</span></div><span class="fp-src">11.4</span></div><div class="fp-desc">无权限=拒绝、无命中=未找到、证据不足=无法确认，三者不混。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">搜索输出契约</div><span class="fp-src">11.3</span></div><div class="fp-desc">结果含标题/片段/匹配理由/命中路径/来源定位/图谱时间证据/降级说明。</div></div>
+  </div>
+
+  <!-- 模块五 -->
+  <div class="module" data-cat="m5">
+    <div class="module-head"><div class="module-idx m5">05</div><h2>隔离与权限（安全边界）</h2></div>
+    <div class="desc">多库、多源或外部接入场景下，保证查询、写入、可见范围受约束，避免串库越权。</div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">单用户默认无显式权限</div><span class="fp-src">6（原则5）</span></div><div class="fp-desc">单用户场景默认无显式权限管理，降低上手门槛。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">多库 / 多源隔离<span class="badge b-core">核心</span></div><span class="fp-src">2 / 6 / 8</span></div><div class="fp-desc">查询、写入、可见范围同时受知识库与资料源两层约束，避免串库越权。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">智能体授权访问</div><span class="fp-src">5.2 / 10</span></div><div class="fp-desc">智能体只能访问被授权的知识库和资料源。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">外部调用方权限校验</div><span class="fp-src">11.2</span></div><div class="fp-desc">检索前置校验外部调用方权限，无权限返回拒绝。</div></div>
+  </div>
+
+  <!-- 模块六 -->
+  <div class="module" data-cat="m6">
+    <div class="module-head"><div class="module-idx m6">06</div><h2>维护与持续运营</h2></div>
+    <div class="desc">让知识库随时间累积而非重复构建，健康状态持续暴露。</div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">增量同步</div><span class="fp-src">4.2 / 10.3</span></div><div class="fp-desc">绑定后新资料自动进入已有知识体系，不每次重建。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">健康状态暴露</div><span class="fp-src">10.3 节点7</span></div><div class="fp-desc">资料源仍有失败/隔离/未嵌入时持续暴露健康状态，不容忍"扫描完成=可用"。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">向量失效与回填</div><span class="fp-src">10.3 节点5</span></div><div class="fp-desc">更换嵌入模型/维度后旧向量失效并回填，不混用向量空间。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">异步质量记录</div><span class="fp-src">11.2</span></div><div class="fp-desc">记录缓存命中、召回臂启用、耗时、降级原因用于评估，不改当前回答。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">夜间维护<span class="badge b-v2">V2</span></div><span class="fp-src">13</span></div><div class="fp-desc">补强自动维护、冲突整理，建立在 V1 追溯链之上。</div></div>
+  </div>
+
+  <!-- 模块七 -->
+  <div class="module" data-cat="m7">
+    <div class="module-head"><div class="module-idx m7">07</div><h2>体验与界面</h2></div>
+    <div class="desc">产品语言面向普通用户，但复杂步骤全部可见，可回到原文核验。</div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">清晰主路径</div><span class="fp-src">12.3</span></div><div class="fp-desc">创建库 → 绑定文件夹 → 等待同步 → 搜索 / 提问，主路径一目了然。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">不强迫理解底层概念</div><span class="fp-src">6 / 12.3</span></div><div class="fp-desc">普通用户不需懂 Markdown/向量/RRF/资料源即可开始使用。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">失败原因与状态可见</div><span class="fp-src">12.3</span></div><div class="fp-desc">用户可看文件状态、失败原因、来源定位，不只有"黑盒处理中"。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">返回原文件入口</div><span class="fp-src">12.3</span></div><div class="fp-desc">页面、搜索结果、答案均提供回到原文件入口，始终知道资料处理到哪一步。</div></div>
+    <div class="fp"><div class="fp-top"><div class="fp-name">本地优先<span class="badge b-core">核心</span></div><span class="fp-src">6 / 7.2</span></div><div class="fp-desc">默认数据落在用户机器或受控数据库，非强依赖云托管。</div></div>
+  </div>
+
+  <!-- 模块九 -->
+  <div class="module" data-cat="m9">
+    <div class="module-head"><div class="module-idx m9">09</div><h2>产品原则</h2></div>
+    <div class="desc">贯穿全文档的七条设计准则，是功能取舍的判据。</div>
+    <div class="prin">
+      <div class="pr"><b>1. 本地优先。</b>默认数据落在用户机器或受控数据库。</div>
+      <div class="pr"><b>2. 先让资料进来。</b>再谈更复杂的智能能力。</div>
+      <div class="pr"><b>3. 复杂步骤必可见。</b>不能只有"黑盒处理中"。</div>
+      <div class="pr"><b>4. 搜索结果可追溯。</b>必须能追到页面和来源。</div>
+      <div class="pr"><b>5. 隔离能力必存在。</b>进入多库/多源/外部接入后生效。</div>
+      <div class="pr"><b>6. 面向普通用户。</b>不强迫理解底层实现。</div>
+      <div class="pr"><b>7. 高级用户看细节。</b>但不能把复杂度强塞给所有人。</div>
+      <div class="pr"><b>闭环目标。</b>本地目录 → 可持续进入 → 可被找到 → 可回原文核验。</div>
+    </div>
+  </div>
+
+  <div class="empty hide" id="empty">没有匹配的功能点，换个关键词试试。</div>
+
+  <footer>
+    数据来源：《OmniX 本地知识库产品需求文档（内部版）》· 共 15 章节 395 行<br>
+    本页为功能点结构化分析产物，交互支持关键词搜索与模块筛选 · 生成于 2026-07-14
+  </footer>
+
+</div>
+
+<script>
+  const q = document.getElementById('q');
+  const chips = document.querySelectorAll('.chip');
+  const modules = document.querySelectorAll('.module');
+  const tip = document.getElementById('countTip');
+  const empty = document.getElementById('empty');
+  let curCat = 'all';
+
+  function apply(){
+    const term = q.value.trim().toLowerCase();
+    let shown = 0;
+    modules.forEach(m=>{
+      const cat = m.dataset.cat;
+      const catOk = (curCat==='all' || curCat===cat);
+      let mShown = 0;
+      m.querySelectorAll('.fp').forEach(fp=>{
+        const txt = fp.textContent.toLowerCase();
+        const ok = catOk && (!term || txt.includes(term));
+        fp.classList.toggle('hide', !ok);
+        if(ok) mShown++;
+      });
+      // 状态机/版本/原则模块在无 fp 时按整块判断
+      const hasFp = m.querySelectorAll('.fp').length>0;
+      if(!hasFp){
+        const txt = m.textContent.toLowerCase();
+        const ok = catOk && (!term || txt.includes(term));
+        m.classList.toggle('hide', !ok);
+        if(ok) shown += 1;
+      } else {
+        m.classList.toggle('hide', mShown===0);
+        shown += mShown;
+      }
+    });
+    tip.textContent = term || curCat!=='all'
+      ? `匹配到 ${shown} 个功能点` : `显示全部 ${shown} 个功能点`;
+    empty.classList.toggle('hide', shown!==0);
+  }
+
+  q.addEventListener('input', apply);
+  chips.forEach(c=>c.addEventListener('click',()=>{
+    chips.forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+    curCat = c.dataset.cat;
+    apply();
+  }));
+  apply();
+</script>
+</body>
+</html>

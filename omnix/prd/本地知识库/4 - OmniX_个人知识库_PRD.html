@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OmniX 个人知识库 - PRD v1.0</title>
+<style>
+  :root {
+    --primary: #4F46E5;
+    --primary-light: #EEF2FF;
+    --text: #1F2937;
+    --text-secondary: #6B7280;
+    --bg: #F9FAFB;
+    --card-bg: #FFFFFF;
+    --border: #E5E7EB;
+    --success: #059669;
+    --warning: #D97706;
+    --danger: #DC2626;
+    --sidebar-width: 270px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  /* ========== Sidebar Navigation ========== */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: #FFFFFF;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 24px 0;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+  }
+  .sidebar-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary);
+    padding: 0 20px 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+  .sidebar-title span {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    display: block;
+    margin-top: 4px;
+  }
+  .nav-list { list-style: none; padding: 0; }
+  .nav-list > li { margin-bottom: 2px; }
+  .nav-list > li > a {
+    display: block;
+    padding: 9px 20px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+  }
+  .nav-list > li > a:hover { background: var(--primary-light); color: var(--primary); }
+  .nav-list > li > a.active {
+    border-left-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-sub { list-style: none; padding: 0; }
+  .nav-sub li a {
+    display: block;
+    padding: 6px 20px 6px 36px;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+  }
+  .nav-sub li a:hover { background: #F3F4F6; color: var(--primary); }
+  .nav-sub li a.active {
+    border-left-color: var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+    background: var(--primary-light);
+  }
+
+  /* ========== Main Content ========== */
+  .main-content { margin-left: var(--sidebar-width); padding: 40px; }
+  .container { max-width: 100%; margin: 0 auto; }
+
+  .hero {
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    color: white;
+    text-align: center;
+    padding: 60px 40px;
+    border-radius: 16px;
+    margin-bottom: 40px;
+  }
+  .hero h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
+  .hero p { font-size: 16px; opacity: 0.85; }
+
+  .meta-bar {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 32px;
+    margin-bottom: 32px;
+  }
+  .meta-item { text-align: center; }
+  .meta-item .label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+  .meta-item .value { font-size: 15px; font-weight: 600; color: var(--text); margin-top: 4px; }
+
+  .section {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px;
+    margin-bottom: 24px;
+    scroll-margin-top: 24px;
+  }
+  .section h2 {
+    font-size: 22px;
+    color: var(--primary);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--primary-light);
+    scroll-margin-top: 24px;
+  }
+  .section h3 {
+    font-size: 17px;
+    color: var(--text);
+    margin: 28px 0 12px;
+    scroll-margin-top: 24px;
+  }
+  .section h3:first-of-type { margin-top: 0; }
+  .section h4 {
+    font-size: 15px;
+    color: var(--primary);
+    margin: 22px 0 10px;
+    font-weight: 700;
+  }
+  .section p { margin-bottom: 12px; color: var(--text-secondary); }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 20px 0;
+  }
+  .card {
+    background: var(--primary-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+  }
+  .card h4 { font-size: 15px; color: var(--primary); margin-bottom: 8px; margin-top:0; }
+  .card p { font-size: 14px; color: var(--text-secondary); margin: 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  tr:hover td { background: #FAFAFA; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .tag-p0 { background: #FEE2E2; color: var(--danger); }
+  .tag-p1 { background: #FEF3C7; color: var(--warning); }
+  .tag-p2 { background: #D1FAE5; color: var(--success); }
+  .tag-info { background: var(--primary-light); color: var(--primary); }
+
+  .feature-list { list-style: none; padding: 0; }
+  .feature-list li {
+    padding: 14px 16px;
+    border-left: 3px solid var(--primary);
+    margin-bottom: 10px;
+    background: var(--primary-light);
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .feature-list li strong { color: var(--primary); }
+
+  .story {
+    background: #FFFBEB;
+    border-left: 4px solid var(--warning);
+    padding: 16px 20px;
+    margin: 12px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .story .actor { color: var(--warning); font-weight: 700; }
+  .story .want { color: var(--text); }
+  .story .goal { color: var(--text-secondary); }
+
+  .note {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-left: 4px solid #3B82F6;
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 14px;
+    color: #1E40AF;
+  }
+  .warn {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-left: 4px solid #EF4444;
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 14px;
+    color: #991B1B;
+  }
+  .principle {
+    background: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    border-left: 4px solid var(--success);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 12px 0;
+    font-size: 14px;
+    color: #14532D;
+  }
+  .principle strong { color: #15803D; }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* SVG flow containers */
+  .svg-wrap {
+    background: #F9FAFB;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 16px 0 24px;
+    overflow-x: auto;
+  }
+  .svg-wrap svg { display: block; margin: 0 auto; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main-content { margin-left: 0; }
+  }
+  @media (max-width: 640px) {
+    .container { padding: 0 12px; }
+    .hero { padding: 40px 20px; }
+    .hero h1 { font-size: 24px; }
+    .section { padding: 24px; }
+    .meta-bar { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== Sidebar ========== -->
+<nav class="sidebar">
+  <div class="sidebar-title">
+    📚 目录导航
+  </div>
+  <ul class="nav-list">
+    <li>
+      <a href="#sec1" data-target="sec1" class="">一、概述</a>
+      <ul class="nav-sub">
+        <li><a href="#sec1-1" data-target="sec1-1" class="active">1.1 背景与问题</a></li>
+        <li><a href="#sec1-2" data-target="sec1-2" class="">1.2 产品目标</a></li>
+        <li><a href="#sec1-3" data-target="sec1-3" class="">1.3 三条产品原则</a></li>
+        <li><a href="#sec1-4" data-target="sec1-4" class="">1.4 核心闭环</a></li>
+        <li><a href="#sec1-5" data-target="sec1-5" class="">1.5 用户画像</a></li>
+        <li><a href="#sec1-6" data-target="sec1-6" class="">1.6 非目标（Non-goals）</a></li>
+        <li><a href="#sec1-7" data-target="sec1-7" class="">1.7 用户故事</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#sec2" data-target="sec2" class="">二、功能架构&amp;流程图</a>
+      <ul class="nav-sub">
+        <li><a href="#sec2-1" data-target="sec2-1" class="">2.1 功能架构总览</a></li>
+        <li><a href="#sec2-2" data-target="sec2-2" class="">2.2 创建知识库与绑定目录流程</a></li>
+        <li><a href="#sec2-3" data-target="sec2-3" class="">2.3 写入链（资料导入与知识化）流程</a></li>
+        <li><a href="#sec2-4" data-target="sec2-4" class="">2.4 状态机流转（知识库+文件）</a></li>
+        <li><a href="#sec2-5" data-target="sec2-5" class="">2.5 搜索链（检索与回答）流程</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#sec3" data-target="sec3" class="">三、子模块详细设计</a>
+      <ul class="nav-sub">
+        <li><a href="#sec3-1" data-target="sec3-1" class="">3.1 知识库与资料源管理</a></li>
+        <li><a href="#sec3-2" data-target="sec3-2" class="">3.2 写入链（导入与知识化）</a></li>
+        <li><a href="#sec3-3" data-target="sec3-3" class="">3.3 状态机（知识库+文件）</a></li>
+        <li><a href="#sec3-4" data-target="sec3-4" class="">3.4 搜索链（检索与回答）</a></li>
+        <li><a href="#sec3-5" data-target="sec3-5" class="">3.5 隔离与权限</a></li>
+        <li><a href="#sec3-6" data-target="sec3-6" class="">3.6 维护与持续运营</a></li>
+        <li><a href="#sec3-7" data-target="sec3-7" class="">3.7 体验与界面</a></li>
+      </ul>
+    </li>
+    <li><a href="#sec4" data-target="sec4" class="">四、边界与异常情况</a></li>
+  </ul>
+</nav>
+
+<!-- ========== Main Content ========== -->
+<div class="main-content">
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>OmniX 个人知识库</h1>
+    <p>本地优先 · 可追溯 · 不编造 —— 产品需求文档 v1.0</p>
+  </div>
+
+  <!-- Meta -->
+  <div class="meta-bar" style="display:block;">
+    <table style="margin:0;">
+      <tbody><tr><th style="width:12%">文档版本</th><th style="width:12%">修改日期</th><th style="width:15%">修改人</th><th>修改说明</th></tr>
+      <tr>
+        <td>v1.0</td>
+        <td>2026-07-15</td>
+        <td>孙礼飞</td>
+        <td>初稿，包含概述、功能架构、流程图、7 个子模块详细设计（字段/功能清单/交互细节/特殊说明）、边界与异常情况</td>
+      </tr>
+      <tr>
+        <td>v1.1</td>
+        <td>2026-07-15</td>
+        <td>孙礼飞</td>
+        <td>状态体系重构：将原单一"状态"拆分为"知识库状态(kb_status)"与"文件状态(file_status)"两级；新增知识库三态（待处理/处理中/已完成）及聚合推导规则；更新 2.4 状态机流转图（新增知识库级流转）、3.1 字段表、3.3 状态机节、架构图标签</td>
+      </tr>
+    </tbody></table>
+  </div>
+
+  <!-- ========== 1. 概述 ========== -->
+  <div class="section" id="sec1">
+    <h2>一、概述</h2>
+
+    <h3 id="sec1-1">1.1 背景与问题</h3>
+    <p>知识工作者（研究者、写作者、开发者、法务/咨询等）的知识资产大量沉淀在本地文件系统中：Markdown 笔记、PDF 论文/合同、Word 文档、Excel 表格、代码仓库、PPT 材料等。当前这些资料存在三大痛点：</p>
+    <ul class="feature-list">
+      <li><strong>散而难查</strong>：资料分散在多个目录，靠记忆和文件名检索，跨文件、跨语义的"第二跳"问题几乎无法回答。</li>
+      <li><strong>不可问答</strong>：用户想要的是"基于我自己的资料回答我"，而不是再去搜索一遍；但通用大模型没有这些私有资料，且极易编造。</li>
+      <li><strong>不愿上云</strong>：资料往往含敏感/私有内容，用户不希望被强制上传到第三方云端，要求数据留在本地、可追溯源头。</li>
+    </ul>
+
+    <h3 id="sec1-2">1.2 产品目标</h3>
+    <p>OmniX 个人知识库的目标是：把用户<strong>本地的任意文件夹</strong>登记为一个可管理的知识库实例，将其中的文件自动转化为"可搜索、可提问、可追溯"的页面体系，并以<strong>混合检索 + 引用回答</strong>的方式让用户用自然语言提问，回答始终带来源定位、不编造。</p>
+
+    <h3 id="sec1-3">1.3 三条产品原则 ★核心</h3>
+    <div class="principle"><strong>本地优先（Local First）</strong>：默认数据落在用户机器或受控数据库，非强依赖云托管；原文件始终留在绑定目录，不移动、不改写、不生成解析副本。</div>
+    <div class="principle"><strong>可追溯（Traceable）</strong>：每一段回答、每一条检索命中都能回原文核验；页面、搜索结果、答案均提供回到原文件的入口；状态机强制暴露真实进度。</div>
+    <div class="principle"><strong>不编造（No Hallucination）</strong>：检索与回答严格基于证据；证据不足时返回"无法确认"而非硬编；无回溯证据不得写入 Compiled Truth。</div>
+
+    <h3 id="sec1-4">1.4 核心闭环</h3>
+    <p>个人知识库以一条端到端闭环组织能力，而非零散功能堆叠：</p>
+    <div class="card-grid">
+      <div class="card"><h4>① 本地目录</h4><p>用户绑定一个本地文件夹，作为知识库的资料源根目录。</p></div>
+      <div class="card"><h4>② 写入链</h4><p>页面 + 片段 + 图谱 + 时间线，把原文件转化为可检索的知识。</p></div>
+      <div class="card"><h4>③ 搜索链</h4><p>混合检索（关键词+语义+图谱+时间）+ 引用回答，回答带来源。</p></div>
+      <div class="card"><h4>④ 持续维护</h4><p>增量同步、健康暴露、向量回填，知识库随时间累积而非重复构建。</p></div>
+    </div>
+
+    <h3 id="sec1-5">1.5 用户画像</h3>
+    <table>
+      <tbody><tr><th style="width:18%">角色</th><th style="width:20%">典型场景</th><th>对产品的核心诉求</th></tr>
+      <tr><td>研究者 / 写作者</td><td>管理大量 PDF / Markdown 文献，常需跨文档对比观点</td><td>问答带引用、可追溯原文页码、不被编造</td></tr>
+      <tr><td>开发者</td><td>把代码仓库、设计文档、Wiki 纳入知识库</td><td>代码按同步策略解析、本地优先、不污染原仓库</td></tr>
+      <tr><td>法务 / 咨询 / 普通用户</td><td>合同、案例、资料混杂，只想"问一句就拿答案"</td><td>不需懂向量/RRF/资料源即可上手，失败原因可见</td></tr>
+    </tbody></table>
+
+    <h3 id="sec1-6">1.6 非目标（Non-goals）★范围控制</h3>
+    <div class="warn">
+      <ul style="margin:0; padding-left:20px;">
+        <li><strong>不做逐文件上传 / 手工粘贴导入</strong>：V1 仅支持"选文件夹绑定"入口，保持资料源边界清晰、可监听。</li>
+        <li><strong>不做多用户团队共享（V1）</strong>：V1 为单用户本地优先；多用户、共享、外部智能体接入作为后续扩展，但权限隔离框架需在 V1 预留。</li>
+        <li><strong>不做自动内容生成 / 写作</strong>：知识库只"组织与回答"用户已有资料，不替用户创作新内容（回答层可基于资料生成结论，但须引用，不编造）。</li>
+        <li><strong>不做强依赖云托管</strong>：嵌入/重排等可选能力可本地或受控部署，但不得因云端不可用而阻断关键词检索这一基础能力。</li>
+      </ul>
+    </div>
+
+    <h3 id="sec1-7">1.7 用户故事</h3>
+    <div class="story"><span class="actor">作为</span> <span class="want">知识工作者</span>，<span class="actor">我希望</span> <span class="want">把一个本地资料文件夹绑定为知识库并等待自动同步</span>，<span class="actor">以便</span> <span class="goal">之后能用自然语言提问并获得带来源引用的回答，而不必手动翻找文件。</span></div>
+    <div class="story"><span class="actor">作为</span> <span class="want">普通用户</span>，<span class="actor">我希望</span> <span class="want">清楚看到每个文件当前处理到哪一步、为什么失败</span>，<span class="actor">以便</span> <span class="goal">在不理解底层技术概念的情况下也能安心使用与排查。</span></div>
+    <div class="story"><span class="actor">作为</span> <span class="want">注重隐私的用户</span>，<span class="actor">我希望</span> <span class="want">原文件始终留在我的机器上且不被改动</span>，<span class="actor">以便</span> <span class="goal">确信我的私有资料没有被上传或破坏。</span></div>
+  </div>
+
+  <!-- ========== 2. 功能架构&流程图 ========== -->
+  <div class="section" id="sec2">
+    <h2>二、功能架构&amp;流程图</h2>
+
+    <h3 id="sec2-1">2.1 功能架构总览</h3>
+    <p>个人知识库由 7 个模块构成：前 4 个为能力主干（管理 → 写入 → 状态 → 搜索），后 3 个为横切支撑（隔离权限、持续运营、体验界面）。下方架构图展示模块层级与核心链路。</p>
+
+    <div class="svg-wrap">
+      <svg width="940" height="470" viewBox="0 0 940 470" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L8,3 L0,6 Z" fill="#4F46E5"></path>
+          </marker>
+        </defs>
+
+        <!-- Root -->
+        <rect x="320" y="10" width="300" height="50" rx="10" fill="#4F46E5"></rect>
+        <text x="470" y="42" text-anchor="middle" fill="white" font-size="17" font-weight="700">OmniX 个人知识库</text>
+
+        <!-- 7 module boxes (single row, y=110) -->
+        <!-- i=0 -->
+        <rect x="10" y="110" width="125" height="80" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="72.5" y="138" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="700">知识库与</text>
+        <text x="72.5" y="156" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="700">资料源管理</text>
+        <text x="72.5" y="172" text-anchor="middle" fill="#6B7280" font-size="9">创建·绑定·校验</text>
+        <!-- i=1 -->
+        <rect x="143" y="110" width="125" height="80" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="205.5" y="138" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="700">写入链</text>
+        <text x="205.5" y="156" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="700">导入与知识化</text>
+        <text x="205.5" y="172" text-anchor="middle" fill="#6B7280" font-size="9">扫描·解析·切分</text>
+        <!-- i=2 -->
+        <rect x="276" y="110" width="125" height="80" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="338.5" y="138" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="700">写入状态机</text>
+        <text x="338.5" y="156" text-anchor="middle" fill="#6B7280" font-size="9">两级状态可见</text>
+        <!-- i=3 -->
+        <rect x="409" y="110" width="125" height="80" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="471.5" y="138" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="700">搜索链</text>
+        <text x="471.5" y="156" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="700">检索与回答</text>
+        <text x="471.5" y="172" text-anchor="middle" fill="#6B7280" font-size="9">混合·引用·降级</text>
+        <!-- i=4 -->
+        <rect x="542" y="110" width="125" height="80" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="2"></rect>
+        <text x="604.5" y="138" text-anchor="middle" fill="#7C3AED" font-size="13" font-weight="700">隔离与权限</text>
+        <text x="604.5" y="156" text-anchor="middle" fill="#6B7280" font-size="9">横切·安全边界</text>
+        <!-- i=5 -->
+        <rect x="675" y="110" width="125" height="80" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="2"></rect>
+        <text x="737.5" y="138" text-anchor="middle" fill="#7C3AED" font-size="13" font-weight="700">维护与</text>
+        <text x="737.5" y="156" text-anchor="middle" fill="#7C3AED" font-size="13" font-weight="700">持续运营</text>
+        <text x="737.5" y="172" text-anchor="middle" fill="#6B7280" font-size="9">增量·健康·回填</text>
+        <!-- i=6 -->
+        <rect x="808" y="110" width="125" height="80" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="2"></rect>
+        <text x="870.5" y="138" text-anchor="middle" fill="#7C3AED" font-size="13" font-weight="700">体验与界面</text>
+        <text x="870.5" y="156" text-anchor="middle" fill="#6B7280" font-size="9">主路径·可见性</text>
+
+        <!-- connectors root -> boxes -->
+        <line x1="470" y1="60" x2="72.5" y2="110" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#arrow)"></line>
+        <line x1="470" y1="60" x2="205.5" y2="110" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#arrow)"></line>
+        <line x1="470" y1="60" x2="338.5" y2="110" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#arrow)"></line>
+        <line x1="470" y1="60" x2="471.5" y2="110" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#arrow)"></line>
+        <line x1="470" y1="60" x2="604.5" y2="110" stroke="#7C3AED" stroke-width="1.5" marker-end="url(#arrow)"></line>
+        <line x1="470" y1="60" x2="737.5" y2="110" stroke="#7C3AED" stroke-width="1.5" marker-end="url(#arrow)"></line>
+        <line x1="470" y1="60" x2="870.5" y2="110" stroke="#7C3AED" stroke-width="1.5" marker-end="url(#arrow)"></line>
+
+        <!-- core loop box -->
+        <rect x="20" y="220" width="900" height="220" rx="12" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5"></rect>
+        <text x="470" y="250" text-anchor="middle" fill="#92400E" font-size="15" font-weight="700">核心闭环：本地目录 → 写入链 → 写入状态机 → 搜索链 → 持续维护（循环）</text>
+
+        <!-- loop nodes -->
+        <rect x="55" y="285" width="150" height="60" rx="10" fill="#FFFFFF" stroke="#D97706" stroke-width="1.5"></rect>
+        <text x="130" y="312" text-anchor="middle" fill="#92400E" font-size="13" font-weight="600">本地目录</text>
+        <text x="130" y="332" text-anchor="middle" fill="#6B7280" font-size="10">绑定资料源</text>
+
+        <rect x="262" y="285" width="150" height="60" rx="10" fill="#FFFFFF" stroke="#D97706" stroke-width="1.5"></rect>
+        <text x="337" y="312" text-anchor="middle" fill="#92400E" font-size="13" font-weight="600">写入链</text>
+        <text x="337" y="332" text-anchor="middle" fill="#6B7280" font-size="10">页面+片段+图谱</text>
+
+        <rect x="469" y="285" width="150" height="60" rx="10" fill="#FFFFFF" stroke="#D97706" stroke-width="1.5"></rect>
+        <text x="544" y="312" text-anchor="middle" fill="#92400E" font-size="13" font-weight="600">写入状态机</text>
+        <text x="544" y="332" text-anchor="middle" fill="#6B7280" font-size="10">两级状态可见</text>
+
+        <rect x="676" y="285" width="150" height="60" rx="10" fill="#FFFFFF" stroke="#D97706" stroke-width="1.5"></rect>
+        <text x="751" y="312" text-anchor="middle" fill="#92400E" font-size="13" font-weight="600">搜索链</text>
+        <text x="751" y="332" text-anchor="middle" fill="#6B7280" font-size="10">混合检索+回答</text>
+
+        <rect x="650" y="380" width="200" height="44" rx="10" fill="#FFFFFF" stroke="#D97706" stroke-width="1.5"></rect>
+        <text x="755" y="407" text-anchor="middle" fill="#92400E" font-size="13" font-weight="600">持续维护（增量/健康/回填）</text>
+
+        <!-- loop arrows -->
+        <line x1="205" y1="315" x2="258" y2="315" stroke="#D97706" stroke-width="2" marker-end="url(#arrow)"></line>
+        <line x1="412" y1="315" x2="465" y2="315" stroke="#D97706" stroke-width="2" marker-end="url(#arrow)"></line>
+        <line x1="619" y1="315" x2="672" y2="315" stroke="#D97706" stroke-width="2" marker-end="url(#arrow)"></line>
+        <!-- down to maintenance -->
+        <line x1="751" y1="345" x2="751" y2="378" stroke="#D97706" stroke-width="2" marker-end="url(#arrow)"></line>
+        <!-- maintenance back to source (left curve) -->
+        <path d="M650,402 C100,450 130,360 130,347" fill="none" stroke="#D97706" stroke-width="2" stroke-dasharray="5" marker-end="url(#arrow)"></path>
+      </svg>
+    </div>
+
+    <h3 id="sec2-2">2.2 创建知识库与绑定目录流程</h3>
+    <div class="svg-wrap">
+      <svg width="760" height="560" viewBox="0 0 760 560" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="a1" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#4F46E5"></path></marker>
+        </defs>
+        <!-- start -->
+        <rect x="260" y="20" width="240" height="46" rx="23" fill="#4F46E5"></rect>
+        <text x="380" y="48" text-anchor="middle" fill="white" font-size="14" font-weight="600">用户：新建知识库</text>
+        <!-- input name -->
+        <rect x="250" y="100" width="260" height="46" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="380" y="128" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">填写名称（≤50字符）</text>
+        <!-- pick dir -->
+        <rect x="250" y="180" width="260" height="46" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="380" y="208" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">选择本地文件夹（绝对路径）</text>
+        <!-- decision: valid -->
+        <polygon points="380,270 470,300 380,330 290,300" fill="#FEF3C7" stroke="#D97706" stroke-width="2"></polygon>
+        <text x="380" y="296" text-anchor="middle" fill="#92400E" font-size="12" font-weight="600">目录校验</text>
+        <text x="380" y="312" text-anchor="middle" fill="#92400E" font-size="10">存在·可读·可规范化</text>
+        <!-- fail branch -->
+        <rect x="540" y="280" width="200" height="46" rx="8" fill="#FEE2E2" stroke="#DC2626" stroke-width="2"></rect>
+        <text x="640" y="308" text-anchor="middle" fill="#991B1B" font-size="12" font-weight="600">失败：提示原因不创建</text>
+        <!-- success: create instance -->
+        <rect x="250" y="370" width="260" height="46" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="380" y="398" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">创建知识库实例 + 注册资料源</text>
+        <!-- first scan -->
+        <rect x="250" y="450" width="260" height="46" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="380" y="478" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">触发首次全量扫描（写入链）</text>
+
+        <line x1="380" y1="66" x2="380" y2="98" stroke="#4F46E5" stroke-width="2" marker-end="url(#a1)"></line>
+        <line x1="380" y1="146" x2="380" y2="178" stroke="#4F46E5" stroke-width="2" marker-end="url(#a1)"></line>
+        <line x1="380" y1="226" x2="380" y2="268" stroke="#4F46E5" stroke-width="2" marker-end="url(#a1)"></line>
+        <line x1="470" y1="300" x2="538" y2="303" stroke="#DC2626" stroke-width="2" marker-end="url(#a1)"></line>
+        <line x1="380" y1="330" x2="380" y2="368" stroke="#4F46E5" stroke-width="2" marker-end="url(#a1)"></line>
+        <line x1="380" y1="416" x2="380" y2="448" stroke="#4F46E5" stroke-width="2" marker-end="url(#a1)"></line>
+        <text x="495" y="290" fill="#DC2626" font-size="11">否</text>
+        <text x="392" y="262" fill="#4F46E5" font-size="11">是</text>
+      </svg>
+    </div>
+
+    <h3 id="sec2-3">2.3 写入链（资料导入与知识化）流程</h3>
+    <div class="svg-wrap">
+      <svg width="760" height="640" viewBox="0 0 760 640" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="a2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#4F46E5"></path></marker>
+        </defs>
+        <rect x="250" y="20" width="260" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="380" y="47" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">扫描绑定目录生成文件清单</text>
+
+        <rect x="250" y="100" width="260" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="380" y="127" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">变更识别（增/改/重命名/删）</text>
+
+        <!-- route decision -->
+        <polygon points="380,180 480,212 380,244 280,212" fill="#FEF3C7" stroke="#D97706" stroke-width="2"></polygon>
+        <text x="380" y="209" text-anchor="middle" fill="#92400E" font-size="12" font-weight="600">文件路由</text>
+
+        <rect x="40" y="180" width="170" height="64" rx="8" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="125" y="205" text-anchor="middle" fill="#4F46E5" font-size="12" font-weight="600">Markdown</text>
+        <text x="125" y="224" text-anchor="middle" fill="#6B7280" font-size="10">直连解析</text>
+
+        <rect x="300" y="290" width="160" height="64" rx="8" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="380" y="315" text-anchor="middle" fill="#4F46E5" font-size="12" font-weight="600">代码</text>
+        <text x="380" y="334" text-anchor="middle" fill="#6B7280" font-size="10">按同步策略</text>
+
+        <rect x="540" y="180" width="180" height="64" rx="8" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="630" y="205" text-anchor="middle" fill="#4F46E5" font-size="12" font-weight="600">PDF/Word/Excel/PPT</text>
+        <text x="630" y="224" text-anchor="middle" fill="#6B7280" font-size="10">路由 MinerU</text>
+
+        <!-- no parser -->
+        <rect x="40" y="300" width="180" height="64" rx="8" fill="#FEE2E2" stroke="#DC2626" stroke-width="1.5"></rect>
+        <text x="130" y="325" text-anchor="middle" fill="#991B1B" font-size="12" font-weight="600">无解析器</text>
+        <text x="130" y="344" text-anchor="middle" fill="#6B7280" font-size="10">标记"暂不支持"</text>
+
+        <!-- converge to standardize -->
+        <rect x="250" y="400" width="260" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="380" y="427" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">标准化内部 Markdown</text>
+
+        <rect x="250" y="470" width="260" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="380" y="497" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">切分片段 + 关键词索引</text>
+
+        <rect x="250" y="540" width="260" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="380" y="567" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">可选向量化 + 图谱补建</text>
+
+        <line x1="380" y1="64" x2="380" y2="98" stroke="#4F46E5" stroke-width="2" marker-end="url(#a2)"></line>
+        <line x1="380" y1="144" x2="380" y2="178" stroke="#4F46E5" stroke-width="2" marker-end="url(#a2)"></line>
+        <line x1="295" y1="212" x2="210" y2="212" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#a2)"></line>
+        <line x1="465" y1="212" x2="540" y2="212" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#a2)"></line>
+        <line x1="380" y1="244" x2="380" y2="288" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#a2)"></line>
+        <line x1="125" y1="244" x2="125" y2="298" stroke="#DC2626" stroke-width="1.5" marker-end="url(#a2)"></line>
+        <line x1="130" y1="364" x2="130" y2="378" stroke="#DC2626" stroke-width="1.5"></line>
+        <line x1="130" y1="378" x2="250" y2="422" stroke="#DC2626" stroke-width="1.5" marker-end="url(#a2)"></line>
+        <line x1="380" y1="354" x2="380" y2="398" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#a2)"></line>
+        <line x1="630" y1="244" x2="630" y2="378" stroke="#4F46E5" stroke-width="1.5"></line>
+        <line x1="630" y1="378" x2="510" y2="422" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#a2)"></line>
+        <line x1="380" y1="444" x2="380" y2="468" stroke="#4F46E5" stroke-width="2" marker-end="url(#a2)"></line>
+        <line x1="380" y1="514" x2="380" y2="538" stroke="#4F46E5" stroke-width="2" marker-end="url(#a2)"></line>
+      </svg>
+    </div>
+
+    <h3 id="sec2-4">2.4 状态机流转</h3>
+    <p>状态机分两级流转：<strong>知识库级</strong>（kb_status，三态聚合）反映整体进度，<strong>文件级</strong>（file_status，六态推进）反映单文件处理进度。</p>
+
+    <h4>知识库状态流转</h4>
+    <p>kb_status 由知识库内所有文件状态聚合推导，无需手动设置。增量同步新增文件会触发回流：</p>
+    <div class="svg-wrap">
+      <svg width="760" height="180" viewBox="0 0 760 180" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="ak" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#4F46E5"></path></marker>
+          <marker id="ak2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#D97706"></path></marker>
+        </defs>
+        <!-- 待处理 -->
+        <rect x="30" y="40" width="160" height="56" rx="10" fill="#F3F4F6" stroke="#6B7280" stroke-width="2"></rect>
+        <text x="110" y="66" text-anchor="middle" fill="#374151" font-size="14" font-weight="700">待处理</text>
+        <text x="110" y="84" text-anchor="middle" fill="#6B7280" font-size="10">已绑定·未开始扫描</text>
+        <!-- 处理中 -->
+        <rect x="300" y="40" width="160" height="56" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="380" y="66" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">处理中</text>
+        <text x="380" y="84" text-anchor="middle" fill="#6B7280" font-size="10">扫描/解析/向量化进行中</text>
+        <!-- 已完成 -->
+        <rect x="570" y="40" width="160" height="56" rx="10" fill="#D1FAE5" stroke="#059669" stroke-width="2"></rect>
+        <text x="650" y="66" text-anchor="middle" fill="#047857" font-size="14" font-weight="700">已完成</text>
+        <text x="650" y="84" text-anchor="middle" fill="#6B7280" font-size="10">全部文件到达终态</text>
+        <!-- arrows forward -->
+        <line x1="190" y1="68" x2="298" y2="68" stroke="#4F46E5" stroke-width="2" marker-end="url(#ak)"></line>
+        <text x="244" y="58" text-anchor="middle" fill="#4F46E5" font-size="10">触发扫描</text>
+        <line x1="460" y1="68" x2="568" y2="68" stroke="#4F46E5" stroke-width="2" marker-end="url(#ak)"></line>
+        <text x="514" y="58" text-anchor="middle" fill="#4F46E5" font-size="10">全部到达终态</text>
+        <!-- reflux arrow: 已完成 → 处理中 (new files added) -->
+        <path d="M650,96 C650,180 380,180 380,98" fill="none" stroke="#D97706" stroke-width="2" stroke-dasharray="6" marker-end="url(#ak2)"></path>
+        <text x="515" y="135" text-anchor="middle" fill="#D97706" font-size="11" font-weight="600">增量同步新增文件 → 回流</text>
+      </svg>
+    </div>
+
+    <h4>文件状态流转</h4>
+    <div class="svg-wrap">
+      <svg width="820" height="200" viewBox="0 20 820 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="a3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#4F46E5"></path></marker>
+          <marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#ef0000"></path></marker>
+        </defs>
+        <!-- states row 1 -->
+
+        <rect x="30" y="40" width="160" height="50" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="110" y="60" text-anchor="middle" fill="#4F46E5" font-size="12" font-weight="600">待解析</text>
+        <text x="110" y="78" text-anchor="middle" fill="#6B7280" font-size="9">入清单未成页</text>
+
+        <rect x="330" y="40" width="160" height="50" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="410" y="60" text-anchor="middle" fill="#4F46E5" font-size="12" font-weight="600">解析中</text>
+        <text x="410" y="78" text-anchor="middle" fill="#6B7280" font-size="9">解析/向量化/存储</text>
+		
+        <rect x="640" y="40" width="160" height="50" rx="10" fill="#D1FAE5" stroke="#059669" stroke-width="2"></rect>
+        <text x="715" y="60" text-anchor="middle" fill="#047857" font-size="12" font-weight="600">已完成</text>
+        <text x="715" y="78" text-anchor="middle" fill="#6B7280" font-size="9">页面+来源凭据</text>
+
+        <!-- states row 2 -->
+        
+        <rect x="30" y="150" width="160" height="50" rx="10" fill="#FEF3C7" stroke="#D97706" stroke-width="2"></rect>
+        <text x="110" y="170" text-anchor="middle" fill="#92400E" font-size="12" font-weight="600">暂不支持</text>
+        <text x="110" y="188" text-anchor="middle" fill="#6B7280" font-size="9">无对应解析器</text>
+
+        <rect x="640" y="150" width="160" height="50" rx="10" fill="#FEE2E2" stroke="#DC2626" stroke-width="2"></rect>
+        <text x="720" y="170" text-anchor="middle" fill="#991B1B" font-size="12" font-weight="600">解析失败</text>
+        <text x="720" y="188" text-anchor="middle" fill="#6B7280" font-size="9">质量/解析问题</text>
+
+        <!-- transitions -->
+        <line x1="190" y1="65" x2="330" y2="65" stroke="#4F46E5" stroke-width="2" marker-end="url(#a3)"></line>
+        <line x1="110" y1="90" x2="110" y2="148" stroke="#D97706" stroke-width="2" marker-end="url(#ak2)"></line>
+        <line x1="490" y1="65" x2="640" y2="65" stroke="#4F46E5" stroke-width="2" marker-end="url(#a3)"></line>
+        <!-- word-wrap fallback: from 页面已写入 to 关键词 -->
+        <!-- 向量待完成 -> 完全可用 -->
+        <!-- 暂不支持 / 待修复 -> 重试修复 -> 待解析 -->
+        <path d="M410,90 C420,170 560,180 640,174" fill="none" stroke="#DC2626" stroke-width="1.5" stroke-dasharray="4" marker-end="url(#ar)"></path>
+
+      </svg>
+    </div>
+
+    <h3 id="sec2-5">2.5 搜索链（检索与回答）流程</h3>
+    <div class="svg-wrap">
+      <svg width="800" height="660" viewBox="0 0 800 660" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="a4" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#4F46E5"></path></marker>
+        </defs>
+
+        <rect x="270" y="20" width="260" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="400" y="47" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">锁定范围与权限（知识库/资料源/调用方）</text>
+
+        <rect x="270" y="100" width="260" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="400" y="127" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">意图识别 + 多查询扩展</text>
+
+        <!-- three recall arms -->
+        <rect x="40" y="180" width="200" height="50" rx="8" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="140" y="200" text-anchor="middle" fill="#4F46E5" font-size="12" font-weight="600">关键词召回</text>
+        <text x="140" y="218" text-anchor="middle" fill="#6B7280" font-size="9">★必须始终可用</text>
+
+        <rect x="300" y="180" width="200" height="50" rx="8" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="400" y="200" text-anchor="middle" fill="#4F46E5" font-size="12" font-weight="600">语义向量召回</text>
+        <text x="400" y="218" text-anchor="middle" fill="#6B7280" font-size="9">可选·不可用时降级</text>
+
+        <rect x="560" y="180" width="200" height="50" rx="8" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="660" y="200" text-anchor="middle" fill="#4F46E5" font-size="12" font-weight="600">图谱+时间证据召回</text>
+        <text x="660" y="218" text-anchor="middle" fill="#6B7280" font-size="9">关系/时间问题</text>
+
+        <!-- RRF -->
+        <rect x="270" y="280" width="260" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="400" y="307" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">RRF 融合 + 多层去重 + 重排</text>
+
+        <rect x="270" y="360" width="260" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="400" y="387" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">证据裁剪 → 生成回答与引用</text>
+
+        <!-- decision: results -->
+        <polygon points="400,440 500,472 400,504 300,472" fill="#FEF3C7" stroke="#D97706" stroke-width="2"></polygon>
+        <text x="400" y="468" text-anchor="middle" fill="#92400E" font-size="12" font-weight="600">结果判定</text>
+
+        <rect x="40" y="450" width="200" height="50" rx="8" fill="#FEE2E2" stroke="#DC2626" stroke-width="1.5"></rect>
+        <text x="140" y="470" text-anchor="middle" fill="#991B1B" font-size="11" font-weight="600">无权限 → 拒绝</text>
+        <text x="140" y="488" text-anchor="middle" fill="#6B7280" font-size="9">三者不混</text>
+
+        <rect x="300" y="540" width="200" height="50" rx="8" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"></rect>
+        <text x="400" y="560" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">无命中 → 未找到</text>
+        <text x="400" y="578" text-anchor="middle" fill="#6B7280" font-size="9">明确告知</text>
+
+        <rect x="560" y="450" width="200" height="50" rx="8" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"></rect>
+        <text x="660" y="470" text-anchor="middle" fill="#92400E" font-size="11" font-weight="600">证据不足 → 无法确认</text>
+        <text x="660" y="488" text-anchor="middle" fill="#6B7280" font-size="9">不编造</text>
+
+        <rect x="300" y="610" width="200" height="40" rx="8" fill="#D1FAE5" stroke="#059669" stroke-width="2"></rect>
+        <text x="400" y="635" text-anchor="middle" fill="#047857" font-size="12" font-weight="600">输出：引用+冲突+缺口</text>
+
+        <line x1="400" y1="64" x2="400" y2="98" stroke="#4F46E5" stroke-width="2" marker-end="url(#a4)"></line>
+        <line x1="400" y1="144" x2="400" y2="178" stroke="#4F46E5" stroke-width="2" marker-end="url(#a4)"></line>
+        <line x1="140" y1="230" x2="140" y2="278" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#a4)"></line>
+        <line x1="400" y1="230" x2="400" y2="278" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#a4)"></line>
+        <line x1="660" y1="230" x2="660" y2="278" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#a4)"></line>
+        <line x1="140" y1="280" x2="270" y2="302" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#a4)"></line>
+        <line x1="660" y1="280" x2="530" y2="302" stroke="#4F46E5" stroke-width="1.5" marker-end="url(#a4)"></line>
+        <line x1="400" y1="324" x2="400" y2="358" stroke="#4F46E5" stroke-width="2" marker-end="url(#a4)"></line>
+        <line x1="400" y1="404" x2="400" y2="438" stroke="#4F46E5" stroke-width="2" marker-end="url(#a4)"></line>
+        <line x1="300" y1="472" x2="242" y2="472" stroke="#DC2626" stroke-width="1.5" marker-end="url(#a4)"></line>
+        <line x1="400" y1="504" x2="400" y2="538" stroke="#D97706" stroke-width="1.5" marker-end="url(#a4)"></line>
+        <line x1="500" y1="472" x2="558" y2="472" stroke="#D97706" stroke-width="1.5" marker-end="url(#a4)"></line>
+        <line x1="400" y1="590" x2="400" y2="608" stroke="#059669" stroke-width="2" marker-end="url(#a4)"></line>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ========== 3. 子模块详细设计 ========== -->
+  <div class="section" id="sec3">
+    <h2>三、详细设计</h2>
+    <h3 id="sec3-1">🔹 3.1 知识库与资料源管理</h3>
+    <h4>功能描述</h4>
+    <p>把"用户本地目录"登记为可管理的知识库实例，并约定资料源边界。系统以"知识库实例 + 资料源"两层轴组织数据；绑定目录后自动登记为默认资料源根目录，界面只展示这一条绑定关系，不可修改。</p>
+
+    <h4>字段设计（知识库实例 KB_Instance）</h4>
+    <table>
+      <tbody><tr><th style="width:16%">字段</th><th style="width:12%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+      <tr><td>知识库ID (kb_id)</td><td>UUID</td><td>✅</td><td>系统生成，全局唯一，作为所有页面/片段/索引的外键</td></tr>
+      <tr><td>名称 (name)</td><td>文本</td><td>✅</td><td>用户自定义，最大 50 字符；支持中英文、数字、下划线；同用户下唯一</td></tr>
+      <tr><td>图标</td><td>img</td><td>✅</td><td>知识库的视觉标识，支持上传图标，未上传时显示默认图标（标题首字+随机色生成的图标，保存），支持 JPG、PNG、GIF 格式，图片大小不超过 1MB，建议尺寸 128×128px（限制500x500px以内）</td></tr>
+      <tr><td><span style="background-color: rgb(255, 255, 255);">绑定目录绝对路径 (bound_path)</span></td><td>文本(绝对路径)</td><td>✅</td><td>用户选择的本地文件夹绝对路径，规范化（去 trailing slash、解析符号链接）后存储</td></tr>
+      <tr><td>资料源类型 (source_type)</td><td>枚举</td><td>✅</td><td>本地文件夹</td></tr>
+      <tr><td>同步策略 (sync_strategy)</td><td>系统固定</td><td>系统</td><td>系统统一同步机制：①首次绑定触发全量扫描；②绑定后持续监听目录变更；③每 1 分钟自动执行增量更新；④全程支持手动"立即同步"。以上四项共同构成知识库的完整同步策略。</td></tr>
+      <tr><td>知识库状态 (kb_status)</td><td>枚举</td><td>✅</td><td>知识库整体处理状态（聚合推导），三态：<strong>待处理</strong> / <strong>处理中</strong> / <strong>已完成</strong>（详见 3.3 知识库状态定义）</td></tr>
+      <tr><td>文件状态 (file_status)</td><td>枚举</td><td>✅</td><td>知识库内每个文件的独立处理状态：<strong>待解析 / 解析中 / 已完成 / 暂不支持 / 解析失败</strong>（详见 3.3 文件状态定义）</td></tr>
+	  <tr><td>创建人</td><td>系统记录</td><td>自动</td><td>记录词条创建者的用户名，新增时自动填充，不可编辑</td></tr>
+	  <tr><td>创建时间</td><td>系统记录</td><td>自动</td><td>记录词条创建时间（精确到秒），新增时自动填充，不可编辑</td></tr>
+	  <tr><td>更新人</td><td>系统记录</td><td>自动</td><td>记录最后一次编辑者的用户名，编辑时自动更新，不可手动修改</td></tr>
+	  <tr><td>更新时间</td><td>系统记录</td><td>自动</td><td>记录最后一次编辑时间（精确到秒），编辑时自动更新，不可手动修改</td></tr>
+    </tbody></table>
+
+    <h4>功能清单</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:20%">功能名称</th><th style="width:8%">优先级</th><th>功能描述</th></tr>
+      <tr><td>1</td><td>创建知识库</td><td><span class="tag tag-p0">P0</span></td><td>用户输入名称并绑定一个本地文件夹绝对路径，系统创建知识库实例并注册默认资料源，随后触发首次全量扫描（同路径提示已存在）</td></tr>
+      <tr><td>2</td><td>多知识库实例</td><td><span class="tag tag-p0">P0</span></td><td>支持同时存在多套知识库数据，按"知识库实例 + 资料源"两层轴组织，列表与检索均受此约束</td></tr>
+      <tr><td>3</td><td>资料源注册</td><td><span class="tag tag-p0">P0</span></td><td>绑定目录自动登记为"默认资料源根目录"，界面只展示这一条绑定关系，不暴露内部多源复杂度</td></tr>
+      <tr><td>5</td><td>目录权限校验</td><td><span class="tag tag-p0">P0</span></td><td>校验目录存在、可读、路径可规范化；任一失败则不创建半成品知识库，并提示具体原因</td></tr>
+      <tr><td>6</td><td>多资料源/多用户（扩展）</td><td><span class="tag tag-p2">P2</span></td><td>后续支持多资料源、小团队共享、外部智能体接入；V1 仅预留 axis 与权限隔离框架</td></tr>
+    </tbody></table>
+
+    <h4>交互细节</h4>
+    <ul class="feature-list">
+      <li><strong>新建入口</strong>：知识库列表页右上角"新建知识库"按钮 → 弹出表单（名称输入 + 文件夹选择器）。</li>
+      <li><strong>文件夹选择</strong>：调用系统原生文件夹选择器，仅返回绝对路径；禁止手动粘贴相对路径或网络盘挂载以外的非法路径。</li>
+      <li><strong>实时校验</strong>：名称输入框失焦时实时校验同用户唯一性；路径选择后即时做存在性/可读性预检，预检失败按钮置灰。</li>
+      <li><strong>提交反馈</strong>：提交成功后跳转到知识库详情，顶部显示"正在首次扫描…"状态条，可后台运行。</li>
+    </ul>
+
+    <h4>特殊说明</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:22%">规则</th><th>说明</th></tr>
+      <tr><td>1</td><td>不静默改扫</td><td>不可修改目录；系统绝不因为原目录不可达而自动去扫"相似目录"，避免越权与数据混乱</td></tr>
+      <tr><td>2</td><td>不创建半成品</td><td>目录校验（存在/可读/可规范化）任一失败，则不落库、不建实例，返回明确错误，避免产生无法同步的僵尸知识库</td></tr>
+      <tr><td>3</td><td>两层轴约束</td><td>所有写入与检索都须同时携带 kb_id 与 source_root，确保多库多源数据隔离（详见 3.5）</td></tr>
+      <tr><td>4</td><td>原文件零改动</td><td>绑定目录内原文件只读引用，绝不移动、改写或生成解析副本（全局核心约束，贯穿所有模块）</td></tr>
+    </tbody></table>
+
+    <hr>
+
+    <!-- ========== 3.2 ========== -->
+    <h3 id="sec3-2">🔹 3.2 写入链（资料导入与知识化）</h3>
+    <h4>功能描述</h4>
+    <p>把本地文件从"原文件"转为"可搜索、可提问、可追溯"的页面体系，分八节点推进：扫描 → 变更识别 → 文件路由 → 解析 → 标准化 → 切分索引 → 向量化（可选）→ 图谱补建。原文件始终零改动，无解析器的文件标记"暂不支持/等待解析"而非伪装为已知识化。</p>
+
+    <h4>字段设计（核心数据实体）</h4>
+    <table>
+      <tbody><tr><th style="width:16%">实体.字段</th><th style="width:12%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+      <tr><td>资料源 Source.source_id</td><td>UUID</td><td>✅</td><td>资料源标识，关联 kb_id 与 source_root</td></tr>
+      <tr><td>文件清单 FileManifest.path</td><td>文本</td><td>✅</td><td>原文件相对资料源根的规范路径，作为幂等键</td></tr>
+      <tr><td>FileManifest.content_hash</td><td>文本(哈希)</td><td>✅</td><td>内容哈希，用于识别修改/重命名/无变化，驱动增量</td></tr>
+      <tr><td>FileManifest.file_status</td><td>枚举</td><td>✅</td><td>新增/已修改/重命名/已删除/无变化，对应变更识别结果</td></tr>
+      <tr><td>页面 Page.page_id</td><td>UUID</td><td>✅</td><td>标准化后的可读页面（读模型），含正文+frontmatter+时间线</td></tr>
+      <tr><td>Page.frontmatter</td><td>JSON</td><td>✅</td><td>标题/来源/时间/标签/别名等元数据，含来源定位信息</td></tr>
+      <tr><td>Page.source_loc</td><td>JSON</td><td>✅</td><td>来源定位：PDF 留页码、PPT 留幻灯片、Excel 留工作表；用于回答回溯</td></tr>
+      <tr><td>Page.is_compiled_truth</td><td>布尔</td><td>✅</td><td>证据充分时标记为"当前最佳理解"；无回溯证据不得写入</td></tr>
+      <tr><td>片段 ContentChunk.chunk_id</td><td>UUID</td><td>✅</td><td>按段落/语义边界切分，带页内位置与来源定位</td></tr>
+      <tr><td>ContentChunk.text</td><td>文本</td><td>✅</td><td>片段原文，进入关键词（全文）索引；不依赖嵌入服务</td></tr>
+      <tr><td>ContentChunk.vector</td><td>向量(可选)</td><td>—</td><td>按配置生成；不可用时标记"向量待完成"而非报告完全可用</td></tr>
+      <tr><td>解析记录 ParseRecord.status</td><td>枚举</td><td>✅</td><td>成功/失败/暂不支持/噪声隔离；失败保留待修复记录</td></tr>
+      <tr><td>ParseRecord.parser_ver</td><td>文本</td><td>✅</td><td>解析器版本，升级后据哈希与版本重新解析</td></tr>
+      <tr><td>图谱边 GraphEdge.type</td><td>枚举</td><td>✅</td><td>关系类型；带可回原文的链接，提供关系证据，不得猜测</td></tr>
+    </tbody></table>
+
+    <h4>功能清单</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:20%">功能名称</th><th style="width:8%">优先级</th><th>功能描述</th></tr>
+      <tr><td>1</td><td>文件夹绑定导入</td><td><span class="tag tag-p0">P0</span></td><td>仅支持"选文件夹绑定"入口，不提供逐文件上传 / 手工粘贴入口，保持资料源边界清晰</td></tr>
+      <tr><td>2</td><td>首次全量扫描</td><td><span class="tag tag-p0">P0</span></td><td>客户端首次全量扫描绑定目录，形成初始文件清单（FileManifest）</td></tr>
+      <tr><td>3</td><td>持续监听/增量扫描</td><td><span class="tag tag-p1">P1</span></td><td>V1.1 补齐目录监听；V1 以定时/手动增量扫描发现变更</td></tr>
+      <tr><td>4</td><td>变更识别</td><td><span class="tag tag-p0">P0</span></td><td>依据路径、文件状态、内容哈希识别 新增/修改/重命名/删除/无变化</td></tr>
+      <tr><td>5</td><td>文件路由</td><td><span class="tag tag-p0">P0</span></td><td>Markdown 直连解析；代码按同步策略；PDF/Word/Excel/PPT 路由 MinerU</td></tr>
+      <tr><td>6</td><td>不支持/失败处理</td><td><span class="tag tag-p0">P0</span></td><td>无解析器文件标记"暂不支持/等待解析"，不得伪装为已知识化</td></tr>
+      <tr><td>7</td><td>解析器/噪声隔离</td><td><span class="tag tag-p1">P1</span></td><td>高置信度噪声内容隔离并排除检索；失败保留待修复记录</td></tr>
+      <tr><td>8</td><td>标准化内部 Markdown</td><td><span class="tag tag-p0">P0</span></td><td>统一标题/正文/元数据/时间/来源定位；PDF 留页码、PPT 留幻灯片、Excel 留工作表</td></tr>
+      <tr><td>9</td><td>原文件零改动 ★</td><td><span class="tag tag-p0">P0</span></td><td>原文件始终留在绑定目录，不移动、不改写、不生成解析副本</td></tr>
+      <tr><td>10</td><td>完整页面建立</td><td><span class="tag tag-p0">P0</span></td><td>持久化正文、frontmatter、时间线、页面标识，作为可完整阅读的读模型</td></tr>
+      <tr><td>11</td><td>Compiled Truth 生成</td><td><span class="tag tag-p2">P2</span></td><td>证据充分时形成"当前最佳理解"；无回溯证据不得写入</td></tr>
+      <tr><td>12</td><td>内容切分为片段</td><td><span class="tag tag-p0">P0</span></td><td>按段落/语义边界生成带页内位置与来源定位的 content_chunks</td></tr>
+      <tr><td>13</td><td>关键词索引</td><td><span class="tag tag-p0">P0</span></td><td>片段原文进入关键词（全文）索引，不依赖嵌入服务，必须始终可用</td></tr>
+      <tr><td>14</td><td>向量化（可选）</td><td><span class="tag tag-p1">P1</span></td><td>按配置生成向量；不可用时标记"向量待完成"而非报告完全可用</td></tr>
+      <tr><td>15</td><td>知识图谱补建</td><td><span class="tag tag-p1">P1</span></td><td>页面/实体为节点，带类型、可回原文的链接为边，提供关系证据</td></tr>
+      <tr><td>16</td><td>标签/别名/时间证据</td><td><span class="tag tag-p1">P1</span></td><td>从 frontmatter、链接、时间信息写入对应索引，增强检索排序</td></tr>
+      <tr><td>17</td><td>同步收敛与幂等</td><td><span class="tag tag-p0">P0</span></td><td>对增改删重做幂等收敛、软删除、回填安排，返回批次级状态</td></tr>
+      <tr><td>18</td><td>失败重试/定向回填</td><td><span class="tag tag-p1">P1</span></td><td>可重试失败项、仅执行回填，不必重做整个目录</td></tr>
+      <tr><td>19</td><td>解析器版本重建</td><td><span class="tag tag-p1">P1</span></td><td>解析器升级或源文件变化后，据哈希与版本重新解析</td></tr>
+    </tbody></table>
+
+    <h4>交互细节</h4>
+    <ul class="feature-list">
+      <li><strong>进度可见</strong>：导入过程展示"已扫描 N / 已解析 M / 暂不支持 K / 失败 J"的实时计数，而非单一"处理中"。</li>
+      <li><strong>来源定位</strong>：每个页面顶部显示"来源：{资料源}/{相对路径}"，PDF/PPT/Excel 标注页码/幻灯片/工作表，点击可回到原文件。</li>
+      <li><strong>失败与隔离</strong>：暂不支持/失败的文件在清单中以红色/黄色标记，悬停显示原因与文件类型；用户可忽略或等待能力接入。</li>
+      <li><strong>原文件编辑</strong>：用户可直接编辑原文件，下次增量扫描识别为"已修改"并重新解析，页面随之更新。</li>
+      <li><strong>回填入口</strong>：资料源健康面板提供"重试失败项""仅回填向量"按钮，定向执行不必全量重扫。</li>
+    </ul>
+
+    <h4>特殊说明</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:22%">规则</th><th>说明</th></tr>
+      <tr><td>1</td><td>禁止伪装知识化</td><td>无解析器的文件只能处于"暂不支持/等待解析"状态，绝不进入可检索/可问答集合，避免给用户"已可用"的错觉</td></tr>
+      <tr><td>2</td><td>原文件只读</td><td>写入链对原文件只读取、只引用；任何"解析副本"都禁止写回绑定目录，确保零改动</td></tr>
+      <tr><td>3</td><td>幂等收敛</td><td>同一次扫描内对同一文件只产生一次最终状态；重命名须同时更新路径与保持页面标识，避免产生孤儿页面</td></tr>
+      <tr><td>4</td><td>噪声隔离不丢数据</td><td>被隔离的高噪声内容仍保留底层记录，可从"待修复"恢复，不静默丢弃</td></tr>
+      <tr><td>5</td><td>Compiled Truth 门槛</td><td>仅当存在充分回溯证据（多来源/明确来源定位）才可标记；否则保持为普通页面，不臆造"最佳理解"</td></tr>
+    </tbody></table>
+
+    <hr>
+
+    <!-- ========== 3.3 ========== -->
+    <h3 id="sec3-3">🔹 3.3 状态机（知识库+文件）</h3>
+    <h4>功能描述</h4>
+    <p>状态机分为两个层级：<strong>知识库状态</strong>（kb_status，宏观聚合）反映知识库整体处理进度，由其内所有文件状态聚合推导；<strong>文件状态</strong>（file_status，微观推进）反映知识库内每个文件在写入链各节点的独立处理进度。两级状态都用可解释的状态替代模糊的"导入成功"，让进度真实可见、不可夸大。</p>
+
+    <h4>知识库状态定义（字段：kb_status）</h4>
+    <p>知识库状态为<strong>聚合推导状态</strong>，不独立写入——由其内所有文件的 file_status 实时聚合计算。共三种状态：</p>
+    <table>
+      <tbody><tr><th style="width:14%">状态</th><th>含义</th><th style="width:28%">用户可做什么</th></tr>
+      <tr><td>待处理</td><td>知识库已创建并绑定目录，但尚未开始扫描与解析，知识库内无任何文件进入处理流程（文件清单为空或全部未扫描）</td><td>查看知识库配置，等待自动扫描或手动触发同步</td></tr>
+      <tr><td>处理中</td><td>知识库正在扫描/解析/向量化，存在尚未到达终态的文件（ 待解析 / 解析中）</td><td>查看实时进度，对已就绪（已完成）的文件进行检索问答</td></tr>
+      <tr><td>已完成</td><td>知识库内所有文件均已到达终态（已完成 / 暂不支持 / 解析失败），无任何待处理文件</td><td>自然语言搜索、问答、追溯；查看健康报告处理失败项</td></tr>
+    </tbody></table>
+
+    <div class="note">💡 <strong>聚合规则</strong>：当存在"待解析/解析中"的文件时 → 处理中；全部到达终态（已完成/暂不支持/解析失败）后 → 已完成；知识库未开始扫描时 → 待处理。新增文件（增量同步）会使"已完成"回流为"处理中"。</div>
+
+    <h4>文件状态定义（字段：file_status / page_status）</h4>
+    <p>文件状态针对知识库内每个独立文件，反映其在写入链各节点的处理进度。共六个状态：</p>
+    <table>
+      <tbody><tr><th style="width:14%">状态</th><th style="">含义</th><th style="width:28%">用户可做什么</th></tr>
+      <tr><td>暂不支持</td><td>无对应解析器，等待能力接入</td><td>查看文件类型和原因，忽略</td></tr>
+      <tr><td>解析中</td><td>页面已经开始解析并处理，包括文件解析，向量化处理等</td><td>查看来源定位，编辑原文件</td></tr>
+      <tr><td>已完成</td><td>页面/关键词/向量就绪，可问答追溯</td><td>自然语言搜索、问答、追溯</td></tr>
+      <tr><td>解析失败</td><td>解析或处理过程报错</td><td>查看原因、重试或忽略</td></tr>
+    </tbody></table>
+
+    <h4>功能清单</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:20%">功能名称</th><th style="width:8%">优先级</th><th>功能描述</th></tr>
+      <tr><td>1</td><td>文件状态写入与持久化</td><td><span class="tag tag-p0">P0</span></td><td>每个文件/页面在写入链各节点刷新 file_status，持久化并记录变更时间</td></tr>
+      <tr><td>2</td><td>知识库状态聚合推导</td><td><span class="tag tag-p0">P0</span></td><td>kb_status 由知识库内所有 file_status 实时聚合推导，无需独立写入；文件状态变更时自动重算</td></tr>
+      <tr><td>3</td><td>两级状态展示</td><td><span class="tag tag-p0">P0</span></td><td>知识库列表展示 kb_status 徽标（待处理/处理中/已完成），详情页内同时展示文件级 file_status；禁止用"成功"掩盖"待完成"</td></tr>
+      <tr><td>4</td><td>知识库状态回流</td><td><span class="tag tag-p0">P0</span></td><td>增量同步新增文件时，kb_status 从"已完成"自动回流为"处理中"；全部到达终态后恢复"已完成"</td></tr>
+      <tr><td>5</td><td>降级态提示</td><td><span class="tag tag-p1">P1</span></td><td>向量不可用时显式标注"向量待完成"，搜索结果注明"当前仅关键词+图谱"</td></tr>
+    </tbody></table>
+
+    <h4>交互细节</h4>
+    <ul class="feature-list">
+      <li><strong>知识库级徽标</strong>：知识库列表/卡片展示 kb_status 徽标——灰=待处理，蓝=处理中，绿=已完成；颜色与文案一致，避免歧义。</li>
+      <li><strong>文件级徽标</strong>：知识库详情内文件列表展示 file_status 徽标——灰=待解析，黄=解析中/暂不支持，绿=已完成，红=解析失败；悬停弹出"当前含义 + 你还能做什么 + 现在还不能做什么"三行说明。</li>
+      <li><strong>健康汇总</strong>：知识库详情页顶部健康条按文件状态聚合计数（如 12 已完成 / 3 解析中 / 1 暂不支持 / 1 解析失败），同时展示知识库整体状态。</li>
+      <li><strong>检索可用性提示</strong>：当用户对"关键词可检索但未向量化"的资料提问语义问题时，提示"该资料暂仅支持关键词检索，语义匹配可能不全"。</li>
+    </ul>
+
+    <h4>特殊说明</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:22%">规则</th><th>说明</th></tr>
+      <tr><td>1</td><td>回流而非删除</td><td>"已隔离/待修复"经修复后回流到"待解析/页面已写入"，不删除底层记录，保证可追溯</td></tr>
+      <tr><td>2</td><td>知识库状态不可手动设置</td><td>kb_status 为聚合推导状态，仅由文件状态实时计算，禁止任何接口或界面手动覆写；增量同步新增文件时自动从"已完成"回流为"处理中"</td></tr>
+      <tr><td>3</td><td>已完成≠全部成功</td><td>kb_status 为"已完成"仅表示所有文件到达终态（含暂不支持/解析失败），不代表零失败；健康面板仍须暴露失败项数量</td></tr>
+    </tbody></table>
+
+    <hr>
+
+    <!-- ========== 3.4 ========== -->
+    <h3 id="sec3-4">🔹 3.4 搜索链（检索与回答）</h3>
+    <h4>功能描述</h4>
+    <p>以"关键词 + 语义 + 知识图谱 + 时间证据"为混合检索基础，拆分为检索层与回答层。检索层做意图识别、多路召回、RRF 融合、多层去重与重排；回答层读完整页面生成结论、引用、冲突与信息缺口，严格不编造，并内置降级与三类空结果区分。</p>
+
+    <h4>字段设计（查询与结果契约）</h4>
+    <table>
+      <tbody><tr><th style="width:16%">实体.字段</th><th style="width:12%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+      <tr><td>查询 Query.scope</td><td>JSON</td><td>✅</td><td>锁定知识库、资料源范围、外部调用方身份，检索前置约束</td></tr>
+      <tr><td>Query.intent</td><td>枚举</td><td>✅</td><td>实体/关系/事件/时间/一般问题；决定检索深度与时间偏好</td></tr>
+      <tr><td>Query.expansions</td><td>文本数组</td><td>—</td><td>多查询扩展的等价表达；原问题必保留，扩展失败仅用原问题</td></tr>
+      <tr><td>候选 Candidate.doc_id</td><td>UUID</td><td>✅</td><td>召回页面/片段标识，携带 page_id 与 chunk_id</td></tr>
+      <tr><td>Candidate.rrf_score</td><td>数值</td><td>✅</td><td>互惠排名融合得分（多路排名换算，不直接相加原始分）</td></tr>
+      <tr><td>Candidate.match_reason</td><td>文本</td><td>✅</td><td>命中理由（关键词/语义/图谱/时间），输出契约必填</td></tr>
+      <tr><td>Candidate.hit_path</td><td>JSON</td><td>✅</td><td>命中路径与图谱/时间证据，可回原文</td></tr>
+      <tr><td>回答 Answer.citations</td><td>JSON</td><td>✅</td><td>引用列表（来源定位、页码/幻灯片/工作表）</td></tr>
+      <tr><td>Answer.conflicts</td><td>JSON</td><td>—</td><td>资料间冲突点，如实呈现而非选边</td></tr>
+      <tr><td>Answer.gaps</td><td>JSON</td><td>—</td><td>信息缺口：证据不足以回答的部分</td></tr>
+      <tr><td>回答 Answer.degraded</td><td>布尔</td><td>✅</td><td>是否处于降级模式（仅关键词+图谱等），输出须声明</td></tr>
+    </tbody></table>
+
+    <h4>功能清单</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:18%">功能名称</th><th style="width:8%">优先级</th><th>功能描述</th></tr>
+      <tr><td>1</td><td>范围与权限前置 ★</td><td><span class="tag tag-p0">P0</span></td><td>检索前锁定知识库、资料范围、外部调用方权限；无权限直接拒绝</td></tr>
+      <tr><td>2</td><td>多入口路由</td><td><span class="tag tag-p0">P0</span></td><td>直达页面 / 快速搜索 / 混合检索 / 回答，按用户意图分流</td></tr>
+      <tr><td>3</td><td>意图识别</td><td><span class="tag tag-p1">P1</span></td><td>识别实体、关系、事件、时间、一般问题，确定检索深度与时间偏好</td></tr>
+      <tr><td>4</td><td>多查询扩展</td><td><span class="tag tag-p1">P1</span></td><td>扩展为等价表达，原问题必保留；扩展失败仅用原问题</td></tr>
+      <tr><td>5</td><td>语义向量召回</td><td><span class="tag tag-p1">P1</span></td><td>在 content_chunks 按相似度召回，每页仅保留最强片段</td></tr>
+      <tr><td>6</td><td>关键词召回 ★</td><td><span class="tag tag-p0">P0</span></td><td>全文索引匹配名称/术语/文件线索/精确短语，必须始终可用</td></tr>
+      <tr><td>7</td><td>知识图谱召回</td><td><span class="tag tag-p1">P1</span></td><td>关系问题沿带类型边有限跳数遍历，返回路径证据，不得猜测关系</td></tr>
+      <tr><td>8</td><td>时间证据召回</td><td><span class="tag tag-p1">P1</span></td><td>关系/时间问题补充时间线与时间范围，不淹没近期事件</td></tr>
+      <tr><td>9</td><td>RRF 融合 ★</td><td><span class="tag tag-p0">P0</span></td><td>互惠排名融合合并多路候选，不直接相加不同算法原始分数</td></tr>
+      <tr><td>10</td><td>Compiled Truth 权重</td><td><span class="tag tag-p2">P2</span></td><td>权威页面受限提升（时间/事件问题关闭或降低该提升）</td></tr>
+      <tr><td>11</td><td>Backlink 图谱权重</td><td><span class="tag tag-p2">P2</span></td><td>按被其他可信页面引用程度温和提升连接度</td></tr>
+      <tr><td>12</td><td>来源质量权重</td><td><span class="tag tag-p1">P1</span></td><td>目录策略对高价值/低信号资料排序调整，可配置可审计</td></tr>
+      <tr><td>13</td><td>多层去重</td><td><span class="tag tag-p0">P0</span></td><td>限制同页片段数、删除相似片段、保页面类型多样性</td></tr>
+      <tr><td>14</td><td>重排与上下文裁剪</td><td><span class="tag tag-p1">P1</span></td><td>启用重排器时交叉编码重排，按预算裁剪证据数量</td></tr>
+      <tr><td>15</td><td>回答与引用 ★</td><td><span class="tag tag-p0">P0</span></td><td>读完整页面后生成结论、引用、冲突、信息缺口，不编造</td></tr>
+      <tr><td>16</td><td>语义缓存</td><td><span class="tag tag-p1">P1</span></td><td>同范围/同嵌入空间/同检索配置直接返回证据包，故障不阻断</td></tr>
+      <tr><td>17</td><td>降级机制 ★</td><td><span class="tag tag-p0">P0</span></td><td>嵌入不可用→仅关键词+图谱；增强失败→回退候选；缓存不跨源复用</td></tr>
+      <tr><td>18</td><td>三类空结果区分 ★</td><td><span class="tag tag-p0">P0</span></td><td>无权限=拒绝、无命中=未找到、证据不足=无法确认，三者不混</td></tr>
+      <tr><td>19</td><td>搜索输出契约</td><td><span class="tag tag-p0">P0</span></td><td>结果含标题/片段/匹配理由/命中路径/来源定位/图谱时间证据/降级说明</td></tr>
+    </tbody></table>
+
+    <h4>交互细节</h4>
+    <ul class="feature-list">
+      <li><strong>多入口</strong>：① 知识库内"直达页面"浏览；② 顶部"快速搜索"跳转到页面/片段；③ "混合检索"返回融合候选列表；④ "提问/回答"进入回答视图。</li>
+      <li><strong>回答视图</strong>：结论在上，引用卡片在下（含来源文件、页码/位置、"查看原文"按钮）；冲突与缺口以独立区块呈现。</li>
+      <li><strong>降级提示</strong>：处于降级时，回答区顶部黄条提示"当前仅关键词+图谱检索，语义匹配可能不全"。</li>
+      <li><strong>三类空结果文案</strong>：无权限→"你没有访问该知识库/资料的权限"；无命中→"没有找到相关内容"；证据不足→"找到相关资料，但不足以确认该问题，以下为相关信息"。</li>
+      <li><strong>缓存透明</strong>：命中语义缓存时标注"结果来自缓存（同范围/同配置）"，且缓存不跨知识库/资料源复用。</li>
+    </ul>
+
+    <h4>特殊说明</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:22%">规则</th><th>说明</th></tr>
+      <tr><td>1</td><td>RRF 而非相加</td><td>不同召回算法的原始分数量纲不同，必须换算为排名后用互惠排名融合，禁止直接相加，避免某一路分数主导</td></tr>
+      <tr><td>2</td><td>图谱不猜关系</td><td>知识图谱召回只沿已存在、带类型的边遍历并返回路径证据；不得基于共现臆测关系</td></tr>
+      <tr><td>3</td><td>不编造兜底</td><td>证据不足时返回"无法确认"并展示已有相关信息，绝不生成看似合理但无来源的断言</td></tr>
+      <tr><td>4</td><td>缓存隔离</td><td>语义缓存键须包含 scope（kb_id+source）+ 嵌入空间标识 + 检索配置；跨源复用会被视为越权/串库，严禁</td></tr>
+      <tr><td>5</td><td>权重可审计</td><td>Compiled Truth / Backlink / 来源质量等权重调整均记录配置版本，可回查某次排序受何种权重影响</td></tr>
+    </tbody></table>
+
+    <hr>
+
+    <!-- ========== 3.5 ========== -->
+    <h3 id="sec3-5">🔹 3.5 隔离与权限</h3>
+    <h4>功能描述</h4>
+    <p>多库、多源或外部接入场景下，保证查询、写入、可见范围受约束，避免串库越权。V1 单用户默认无显式权限以降低上手门槛，但必须为多库/多源隔离与外部调用方校验预留框架。</p>
+
+    <h4>字段设计（权限与授权）</h4>
+    <table>
+      <tbody><tr><th style="width:16%">实体.字段</th><th style="width:12%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+      <tr><td>调用方 Caller.type</td><td>枚举</td><td>✅</td><td>用户(UI) / 智能体 / 外部API；不同调用方走不同授权路径</td></tr>
+      <tr><td>Caller.identity</td><td>文本</td><td>✅</td><td>调用方唯一标识（用户ID / 智能体ID / API Key 指纹）</td></tr>
+      <tr><td>授权 Grant.kb_scope</td><td>UUID[]</td><td>✅</td><td>被授权可访问的知识库实例列表</td></tr>
+      <tr><td>Grant.source_scope</td><td>UUID[]</td><td>✅</td><td>被授权可访问的资料源列表，与 kb_scope 共同约束</td></tr>
+      <tr><td>Grant.perm</td><td>枚举</td><td>✅</td><td>只读 / 可写；检索默认只读，写入需显式授权</td></tr>
+    </tbody></table>
+
+    <h4>功能清单</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:20%">功能名称</th><th style="width:8%">优先级</th><th>功能描述</th></tr>
+      <tr><td>1</td><td>单用户默认无显式权限</td><td><span class="tag tag-p0">P0</span></td><td>单用户场景默认无显式权限管理，降低上手门槛；但写入/检索仍受知识库归属约束</td></tr>
+      <tr><td>2</td><td>多库/多源隔离 ★</td><td><span class="tag tag-p0">P0</span></td><td>查询、写入、可见范围同时受知识库与资料源两层约束，避免串库越权</td></tr>
+      <tr><td>3</td><td>智能体授权访问</td><td><span class="tag tag-p1">P1</span></td><td>智能体只能访问被授权的知识库和资料源；越权请求返回拒绝</td></tr>
+      <tr><td>4</td><td>外部调用方权限校验</td><td><span class="tag tag-p1">P1</span></td><td>检索前置校验外部调用方权限，无权限返回拒绝（映射三类空结果的"无权限"）</td></tr>
+    </tbody></table>
+
+    <h4>交互细节</h4>
+    <ul class="feature-list">
+      <li><strong>单用户无感</strong>：V1 单用户下不出现权限设置入口；所有操作默认限定在自己的知识库内，用户无感知。</li>
+      <li><strong>检索前置拦截</strong>：任一检索请求先校验 scope，若调用方不在 Grant 范围内，直接返回"无权限"而非"未找到"，以免泄露资料存在性。</li>
+      <li><strong>智能体授权面板（扩展）</strong>：为多知识库/团队场景提供授权配置，逐库逐源勾选只读/可写。</li>
+    </ul>
+
+    <h4>特殊说明</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:22%">规则</th><th>说明</th></tr>
+      <tr><td>1</td><td>两层同时约束</td><td>可见范围必须同时受 kb_id 与 source_root 约束；只校验一层会留下串库漏洞</td></tr>
+      <tr><td>2</td><td>拒绝≠未找到</td><td>无权限必须返回"拒绝"语义，绝不降级为"未找到"，避免通过响应差异推断越权资源的存在</td></tr>
+
+    <!-- ========== 3.6 ========== -->
+    <h3 id="sec3-6">🔹 3.6 维护与持续运营</h3>
+    <h4>功能描述</h4>
+    <p>让知识库随时间累积而非重复构建，健康状态持续暴露。增量同步避免每次全量重建；向量失效可定向回填；异步质量记录用于评估但不改变当前回答；夜间维护建立在 V1 追溯链之上。</p>
+
+    <h4>字段设计（健康与维护任务）</h4>
+    <table>
+      <tbody><tr><th style="width:16%">实体.字段</th><th style="width:12%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+      <tr><td>健康 Health.kb_id</td><td>UUID</td><td>✅</td><td>关联知识库</td></tr>
+      <tr><td>Health.fail_count</td><td>整数</td><td>✅</td><td>失败/隔离/未嵌入数量，持续暴露不容忍"扫描完=可用"</td></tr>
+      <tr><td>Health.embed_status</td><td>枚举</td><td>✅</td><td>向量空间状态：一致/部分失效/需回填</td></tr>
+      <tr><td>维护任务 MaintTask.type</td><td>枚举</td><td>✅</td><td>增量同步/向量回填/冲突整理/夜间维护</td></tr>
+      <tr><td>MaintTask.scope</td><td>JSON</td><td>✅</td><td>任务作用范围（全库/指定资料源/指定失败项）</td></tr>
+      <tr><td>质量记录 QualityLog.hit</td><td>JSON</td><td>✅</td><td>缓存命中、召回臂启用、耗时、降级原因，用于评估不改回答</td></tr>
+    </tbody></table>
+
+    <h4>功能清单</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:20%">功能名称</th><th style="width:8%">优先级</th><th>功能描述</th></tr>
+      <tr><td>1</td><td>增量同步</td><td><span class="tag tag-p0">P0</span></td><td>绑定后新资料自动进入已有知识体系，不每次重建</td></tr>
+      <tr><td>2</td><td>健康状态暴露</td><td><span class="tag tag-p0">P0</span></td><td>资料源仍有失败/隔离/未嵌入时持续暴露健康状态，不容忍"扫描完成=可用"</td></tr>
+      <tr><td>3</td><td>向量失效与回填</td><td><span class="tag tag-p1">P1</span></td><td>更换嵌入模型/维度后旧向量失效并回填，不混用向量空间</td></tr>
+      <tr><td>4</td><td>异步质量记录</td><td><span class="tag tag-p1">P1</span></td><td>记录缓存命中、召回臂启用、耗时、降级原因用于评估，不改当前回答</td></tr>
+      <tr><td>5</td><td>夜间维护</td><td><span class="tag tag-p2">P2</span></td><td>补强自动维护、冲突整理，建立在 V1 追溯链之上</td></tr>
+    </tbody></table>
+
+    <h4>交互细节</h4>
+    <ul class="feature-list">
+      <li><strong>健康面板</strong>：知识库详情常驻健康条，顶部展示 kb_status（待处理/处理中/已完成），下方按 file_status 聚合计数（如 12 已完成 / 3 解析中 / 1 暂不支持 / 1 解析失败），任一非健康项可点击下钻。</li>
+      <li><strong>增量触发</strong>：V1 支持手动"立即同步"与定时增量；V1.1 起支持目录监听自动触发。</li>
+      <li><strong>回填向导</strong>：更换嵌入模型后弹窗提示"旧向量将失效，是否立即回填？"，可后台执行并展示进度。</li>
+    </ul>
+
+    <h4>特殊说明</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:22%">规则</th><th>说明</th></tr>
+      <tr><td>1</td><td>健康不粉饰</td><td>只要存在失败/隔离/未嵌入，健康态就不得显示"全部可用"；这是状态机的延伸约束</td></tr>
+      <tr><td>2</td><td>向量空间不混</td><td>不同模型/维度的向量必须分空间存储；回填完成前，旧空间候选不得与新空间混合召回</td></tr>
+      <tr><td>3</td><td>日志不侵入</td><td>质量记录为异步旁路，任何记录失败都不得阻塞或改变当次检索/回答结果</td></tr>
+    </tbody></table>
+
+    <hr>
+
+    <!-- ========== 3.7 ========== -->
+    <h3 id="sec3-7">🔹 3.7 体验与界面</h3>
+    <h4>功能描述</h4>
+    <p>产品语言面向普通用户，但复杂步骤全部可见，可回到原文核验。让主路径一目了然、不强迫理解底层概念、失败原因与状态可见、始终提供回到原文件入口、默认本地优先。</p>
+
+    <h4>字段设计（UI 状态与展示）</h4>
+    <table>
+      <tbody><tr><th style="width:16%">实体.字段</th><th style="width:12%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+      <tr><td>UI 主路径步骤 step</td><td>枚举</td><td>✅</td><td>创建库 → 绑定文件夹 → 等待同步 → 搜索/提问，主路径高亮当前步</td></tr>
+      <tr><td>原文件入口 back_link</td><td>URL/路径</td><td>✅</td><td>页面/搜索结果/答案均带"回到原文件"入口，指向 bound_path 内原文件</td></tr>
+      <tr><td>状态文案 copy</td><td>文本</td><td>✅</td><td>面向普通用户的友好状态说明，不暴露 Markdown/向量/RRF 等术语（可折叠高级信息）</td></tr>
+      <tr><td>失败原因 reason</td><td>文本</td><td>✅</td><td>可读的失败原因与建议操作，无"黑盒处理中"</td></tr>
+    </tbody></table>
+
+    <h4>功能清单</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:20%">功能名称</th><th style="width:8%">优先级</th><th>功能描述</th></tr>
+      <tr><td>1</td><td>清晰主路径</td><td><span class="tag tag-p0">P0</span></td><td>创建库 → 绑定文件夹 → 等待同步 → 搜索/提问，主路径一目了然</td></tr>
+      <tr><td>2</td><td>不强迫理解底层概念</td><td><span class="tag tag-p0">P0</span></td><td>普通用户不需懂 Markdown/向量/RRF/资料源即可开始使用</td></tr>
+      <tr><td>3</td><td>失败原因与状态可见</td><td><span class="tag tag-p0">P0</span></td><td>用户可看文件状态、失败原因、来源定位，不只有"黑盒处理中"</td></tr>
+      <tr><td>4</td><td>返回原文件入口</td><td><span class="tag tag-p0">P0</span></td><td>页面、搜索结果、答案均提供回到原文件入口，始终知道资料处理到哪一步</td></tr>
+      <tr><td>5</td><td>本地优先 ★</td><td><span class="tag tag-p0">P0</span></td><td>默认数据落在用户机器或受控数据库，非强依赖云托管</td></tr>
+    </tbody></table>
+
+    <h4>交互细节</h4>
+    <ul class="feature-list">
+      <li><strong>分层面板</strong>：默认展示友好视图（状态+原因+回到原文）；高级用户可展开"技术详情"（解析器版本、向量空间、RRF 得分）。</li>
+      <li><strong>原文件直达</strong>：点击"回到原文件"用系统文件管理器打开 bound_path 内对应文件，PDF/PPT/Excel 定位到页码/幻灯片/工作表。</li>
+      <li><strong>空状态引导</strong>：新建知识库后展示"正在同步，你可以先了解…"的引导，而非空白或报错。</li>
+    </ul>
+
+    <h4>特殊说明</h4>
+    <table>
+      <tbody><tr><th style="width:6%">序号</th><th style="width:22%">规则</th><th>说明</th></tr>
+      <tr><td>1</td><td>术语分层</td><td>"向量待完成"对普通用户表述为"正在建立语义索引，目前可用关键词搜索"；不强制暴露技术词</td></tr>
+      <tr><td>2</td><td>本地优先兜底</td><td>即使可选的云端嵌入/重排不可用，本地关键词+图谱仍可回答，体验不中断</td></tr>
+      <tr><td>3</td><td>原文件入口恒在</td><td>无论页面处于何种状态，"回到原文件"入口始终可用（只要 bound_path 仍可访问），保证可追溯</td></tr>
+    </tbody></table>
+  </div>
+
+  <!-- ========== 4. 边界与异常 ========== -->
+  <div class="section" id="sec4">
+    <h2>四、边界与异常情况</h2>
+    <p>以下梳理 24 个核心边界/异常场景，覆盖目录校验、解析失败、向量降级、串库越权、原文件变更、并发与缓存等风险点。建议开发阶段逐一编写测试用例。</p>
+
+    <table>
+      <tbody><tr><th style="width:5%">序号</th><th style="width:24%">场景</th><th style="width:36%">处理策略</th><th>备注</th></tr>
+      <tr><td>1</td><td>绑定目录不存在</td><td>目录校验失败，不创建知识库实例，提示"所选目录不存在，请重新选择"</td><td>前端预检 + 后端兜底</td></tr>
+      <tr><td>2</td><td>绑定目录无读取权限</td><td>提示"没有该目录的读取权限，请以有权限的账户重新选择"</td><td>不创建半成品</td></tr>
+      <tr><td>3</td><td>绑定路径含非法/不可规范化字符</td><td>路径规范化失败，提示"路径无法规范化，请选择标准本地目录"</td><td>拒绝创建</td></tr>
+      <tr><td>4</td><td>重名知识库</td><td>名称失焦实时校验，提示"知识库名称已存在"；后端兜底拦截</td><td>同用户唯一</td></tr>
+      <tr><td>5</td><td>文件无对应解析器</td><td>标记"暂不支持/等待解析"，不进入可检索集合，清单红色展示并说明文件类型</td><td>禁止伪装知识化</td></tr>
+      <tr><td>6</td><td>解析失败（格式损坏）</td><td>ParseRecord 标记失败并保留待修复记录；健康面板计入待修复；可重试</td><td>不静默丢弃</td></tr>
+      <tr><td>7</td><td>高噪声内容</td><td>隔离并排除检索，状态置"已隔离/待修复"；保留底层记录可恢复</td><td>可回退</td></tr>
+      <tr><td>8</td><td>向量化服务不可用</td><td>页面状态标"向量待完成"，搜索降级为仅关键词+图谱，结果声明降级</td><td>不报完全可用</td></tr>
+      <tr><td>9</td><td>嵌入模型/维度更换</td><td>旧向量标失效，触发定向回填；回填完成前不混用向量空间</td><td>空间隔离</td></tr>
+      <tr><td>10</td><td>检索无权限（外部调用方）</td><td>返回"拒绝"语义，不返回"未找到"，避免泄露资源存在性</td><td>拒绝≠未找到</td></tr>
+      <tr><td>11</td><td>检索无命中</td><td>返回"未找到相关内容"，明确告知而非空泛报错</td><td>三类空结果之一</td></tr>
+      <tr><td>12</td><td>检索证据不足</td><td>返回"无法确认"并附已有相关信息与缺口，绝不编造结论</td><td>不编造</td></tr>
+      <tr><td>13</td><td>多库查询串库</td><td>强制 scope(kb_id+source_root) 校验，越权请求返回拒绝</td><td>两层约束</td></tr>
+      <tr><td>14</td><td>智能体越权访问</td><td>校验 Grant 授权范围，超出则返回拒绝且不暴露被拒资源</td><td>授权前置</td></tr>
+      <tr><td>15</td><td>原文件被外部删除</td><td>增量扫描识别"已删除"，页面软删除并保留来源凭据；检索不再召回该页</td><td>可追溯</td></tr>
+      <tr><td>16</td><td>原文件被外部移动/重命名</td><td>据 content_hash 识别为"重命名"，更新路径并保持页面标识，不重建</td><td>幂等</td></tr>
+      <tr><td>17</td><td>原文件被外部修改</td><td>哈希变更识别"已修改"，重新解析并更新页面与时间线</td><td>增量更新</td></tr>
+      <tr><td>18</td><td>绑定目录整体不可达（盘卸载）</td><td>知识库健康标记"资料源不可访问"，提示用户；kb_status 保持当前值（不新增异常态），文件状态不变，增量扫描暂停；不自动改扫其他目录</td><td>不静默改扫</td></tr>
+      <tr><td>19</td><td>超大目录性能</td><td>首次扫描分批进行，实时上报进度；超限文件单独标记，不阻塞整体</td><td>异步+批处理</td></tr>
+      <tr><td>20</td><td>语义缓存故障</td><td>缓存读取失败直接回退实时检索，不阻断回答</td><td>故障不阻断</td></tr>
+      <tr><td>21</td><td>缓存跨源复用风险</td><td>缓存键含 scope+嵌入空间+检索配置，跨源/跨空间不命中</td><td>防串库</td></tr>
+      <tr><td>22</td><td>并发回填冲突</td><td>同一资料源回填按批次锁串行；失败项可单独重试，不必全量</td><td>幂等</td></tr>
+      <tr><td>23</td><td>夜间维护与用户操作冲突</td><td>维护任务低优先级，遇用户主动操作让行；冲突整理基于追溯链可回滚</td><td>V1.1</td></tr>
+      <tr><td>24</td><td>解析器升级后行为变化</td><td>据 parser_ver+哈希判定需重解析项，仅对变更项重建，不重做全目录</td><td>版本重建</td></tr>
+    </tbody></table>
+
+    <div class="note">💡 以上 24 个边界场景覆盖了目录校验、解析失败、向量降级、串库越权、原文件外部变更、并发与缓存等核心风险点。其中 ★ 标记项（无权限拒绝、不编造、不静默改扫、禁止伪装知识化、本地优先兜底）是防幻觉与防数据事故的高压线，须写入验收用例。</div>
+  </div>
+
+  <div style="text-align:center; padding:40px 0; color: var(--text-secondary); font-size:13px;">
+    — 文档结束 · 欢迎评审讨论 —
+  </div>
+
+</div>
+</div>
+
+<!-- ========== Scroll Spy & Smooth Scroll ========== -->
+<script>
+(function() {
+  document.querySelectorAll('.sidebar a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var targetId = this.getAttribute('href').substring(1);
+      var target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  var sections = [];
+  document.querySelectorAll('[id^="sec"]').forEach(function(el) {
+    sections.push({ id: el.id, el: el });
+  });
+
+  var navLinks = {};
+  document.querySelectorAll('.sidebar a[data-target]').forEach(function(link) {
+    navLinks[link.getAttribute('data-target')] = link;
+  });
+
+  function onScroll() {
+    var scrollTop = window.scrollY + 60;
+    var current = '';
+    for (var i = sections.length - 1; i >= 0; i--) {
+      var offsetTop = sections[i].el.offsetTop;
+      if (scrollTop >= offsetTop) {
+        current = sections[i].id;
+        break;
+      }
+    }
+    Object.values(navLinks).forEach(function(link) {
+      link.classList.remove('active');
+    });
+    if (current && navLinks[current]) {
+      navLinks[current].classList.add('active');
+    }
+  }
+
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+})();
+</script>
+
+
+</body></html>

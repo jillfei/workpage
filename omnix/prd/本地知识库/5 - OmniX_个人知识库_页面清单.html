@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OmniX 个人知识库 · 客户端页面清单与信息架构</title>
+<style>
+  :root{
+    --primary:#4F46E5; --primary-light:#EEF2FF; --text:#1F2937; --text-secondary:#6B7280;
+    --bg:#F9FAFB; --card:#FFFFFF; --border:#E5E7EB; --success:#059669; --warning:#D97706; --danger:#DC2626;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+  /* top tab nav */
+  .topnav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;gap:4px;padding:10px 20px;flex-wrap:wrap;}
+  .topnav a{font-size:13px;font-weight:600;color:var(--text-secondary);text-decoration:none;padding:7px 14px;border-radius:8px;transition:.15s;white-space:nowrap;}
+  .topnav a:hover{background:var(--primary-light);color:var(--primary);}
+  .topnav a.active{background:var(--primary);color:#fff;}
+  .main{max-width:1180px;margin:0 auto;padding:32px 24px 80px;}
+  .hero{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;text-align:center;padding:48px 30px;border-radius:16px;margin-bottom:28px;}
+  .hero h1{font-size:30px;font-weight:700;margin-bottom:8px;}
+  .hero p{font-size:15px;opacity:.88;}
+  .section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:30px;margin-bottom:22px;scroll-margin-top:70px;}
+  .section h2{font-size:21px;color:var(--primary);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--primary-light);}
+  .section h3{font-size:16px;color:var(--text);margin:22px 0 10px;}
+  p.lead{color:var(--text-secondary);margin-bottom:14px;font-size:14px;}
+  table{width:100%;border-collapse:collapse;margin:14px 0 20px;font-size:13.5px;}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+  th{background:var(--primary-light);color:var(--primary);font-weight:600;font-size:12.5px;}
+  tr:hover td{background:#FAFAFA;}
+  .tag{display:inline-block;padding:2px 9px;border-radius:14px;font-size:11.5px;font-weight:700;}
+  .p0{background:#FEE2E2;color:var(--danger);} .p1{background:#FEF3C7;color:var(--warning);} .p2{background:#D1FAE5;color:var(--success);}
+  .pill{display:inline-block;padding:2px 9px;border-radius:14px;font-size:11.5px;font-weight:600;background:var(--primary-light);color:var(--primary);}
+  .tree{background:#F9FAFB;font-size:14px;font-family:"SF Mono",Consolas,Menlo,monospace;line-height:1.9;color:#374151;}
+  .tree .lv1{font-weight:700;color:var(--primary);}
+  .tree .lv2{color:#1F2937;}
+  .tree .lv3{color:var(--text-secondary);}
+  .tree .mod{color:#7C3AED;font-weight:600;}
+  .card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:16px 0;}
+  .kpi{background:var(--primary-light);border:1px solid var(--border);border-radius:10px;padding:18px;text-align:center;}
+  .kpi .num{font-size:28px;font-weight:700;color:var(--primary);}
+  .kpi .lbl{font-size:12.5px;color:var(--text-secondary);margin-top:4px;}
+  .note{background:#EFF6FF;border:1px solid #BFDBFE;border-left:4px solid #3B82F6;padding:14px 18px;border-radius:0 8px 8px 0;margin:14px 0;font-size:13.5px;color:#1E40AF;}
+  .warn{background:#FEF2F2;border:1px solid #FECACA;border-left:4px solid #EF4444;padding:14px 18px;border-radius:0 8px 8px 0;margin:14px 0;font-size:13.5px;color:#991B1B;}
+  .principle{background:#F0FDF4;border:1px solid #BBF7D0;border-left:4px solid var(--success);padding:12px 16px;border-radius:0 8px 8px 0;margin:10px 0;font-size:13.5px;color:#14532D;}
+  .principle strong{color:#15803D;}
+  ul.feat{list-style:none;padding:0;}
+  ul.feat li{padding:10px 14px;border-left:3px solid var(--primary);margin-bottom:8px;background:var(--primary-light);border-radius:0 8px 8px 0;font-size:13.5px;}
+  code{background:#F3F4F6;padding:1px 6px;border-radius:4px;font-size:12.5px;color:#B91C1C;}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="#ia" class="active">① 信息架构</a>
+  <a href="#list" class="">② 页面清单</a>
+  <a href="#p0" class="">③ V1 必做页</a>
+  <a href="#backend" class="">④ 非页面（后台）</a>
+  <a href="#client" class="">⑤ 客户端特殊点</a>
+  <a href="#advice" class="">⑥ 实施建议</a>
+</nav>
+
+<div class="main">
+
+  <div class="hero">
+    <h1>OmniX 个人知识库 · 客户端页面清单</h1>
+    <p>从 PRD v1.0 推导的页面/界面范围 · 信息架构 · 优先级 · 客户端实现要点</p>
+  </div>
+
+  <!-- ===== 1. IA ===== -->
+  <div class="section" id="ia">
+    <h2>① 信息架构（页面骨架）</h2>
+    <p class="lead">客户端采用"左侧知识库常驻栏 + 顶部全局搜索 + 主区域标签"的三区结构。下方树展示全部页面与层级归属（标注所属 PRD 模块）。</p>
+    <div class="tree">
+<span class="lv1">App Shell（应用骨架 · 客户端窗口）</span>&nbsp;</div><div class="tree">├─ 左侧栏：知识库列表（常驻，可建/切换/删除）          <span class="mod">← 3.1 / 3.7</span>&nbsp;</div><div class="tree">├─ 顶部栏：快速搜索框（全局命令面板）                  <span class="mod">← 3.4</span>&nbsp;</div><div class="tree">└─ 主区域（选中某知识库后渲染）：&nbsp;</div><div class="tree">&nbsp;│
+   ├─ <span class="lv2">概览页 Overview</span>                              <span class="mod">← 3.1 / 3.3 / 3.7</span>&nbsp;</div><div class="tree">&nbsp;│   ├─ 主路径步骤条（创建→绑定→同步→搜索/提问）&nbsp;</div><div class="tree">&nbsp;│   ├─ 健康条（状态聚合计数 + 下钻）&nbsp;</div><div class="tree">&nbsp;│   ├─ 同步控制（立即同步 / 定时增量）</div><div class="tree">&nbsp;│   ├─ 导入进度面板（已扫描/已解析/暂不支持/失败）&nbsp;</div><div class="tree">&nbsp;│   └─ 设置入口（→ 抽屉）&nbsp;</div><div class="tree">&nbsp;│
+   ├─ <span class="lv2">页面/文件清单页 Pages &amp; Files</span>               <span class="mod">← 3.2 / 3.3</span>&nbsp;</div><div class="tree">&nbsp;│   ├─ 状态徽标 + 来源定位 + 按状态筛选&nbsp;</div><div class="tree">&nbsp;│   └─ 点击 → 页面阅读页&nbsp;</div><div class="tree">&nbsp;│
+   ├─ <span class="lv2">页面阅读页 Page Reader</span>                      <span class="mod">← 3.2 / 3.7</span>&nbsp;</div><div class="tree">&nbsp;│   ├─ 正文 + frontmatter + 时间线 + 分层面板&nbsp;</div><div class="tree">&nbsp;│   └─ 回到原文件 / 查看原文&nbsp;</div><div class="tree">&nbsp;│
+   ├─ <span class="lv2">混合检索结果页 Search Results</span>               <span class="mod">← 3.4</span>&nbsp;</div><div class="tree">&nbsp;│   └─ 融合候选列表（匹配理由/命中路径/来源/降级说明）&nbsp;</div><div class="tree">&nbsp;│
+   ├─ <span class="lv2">问答视图页 Q&amp;A / Answer</span>                    <span class="mod">← 3.4</span>&nbsp;</div><div class="tree">&nbsp;│   └─ 结论 + 引用卡片 + 冲突 + 缺口 + 降级黄条&nbsp;</div><div class="tree">&nbsp;│
+   └─ <span class="lv2">设置抽屉 Settings（侧滑）</span>                  <span class="mod">← 3.1</span>&nbsp;</div><div class="tree">&nbsp;├─ 名称 / 图标 / 同步策略&nbsp;</div><div class="tree">&nbsp;├─ 重新绑定目录（二次确认）&nbsp;</div><div class="tree">&nbsp;└─ 删除知识库
+
+<span class="lv1">浮层 / 弹窗（跨页面）</span>&nbsp;</div><div class="tree">├─ 新建知识库弹窗（Modal）                            <span class="mod">← 3.1</span>&nbsp;</div><div class="tree">├─ 向量回填向导弹窗（Modal，模型更换时）              <span class="mod">← 3.6</span>&nbsp;</div><div class="tree">├─ 空状态 / 主路径引导（覆盖层）                      <span class="mod">← 3.7</span>&nbsp;</div><div class="tree">└─ 外部调用方 / 智能体授权页（V1.1，单独页）           <span class="mod">← 3.5</span>
+
+<span class="lv1">非页面（后台服务 / 引擎）</span>&nbsp;</div><div class="tree">└─ 写入链引擎 · 状态机引擎 · 混合检索引擎 · 解析器 · 本地库 · 权限中间件 · 增量同步
+    </div>
+    <div class="note">💡 搜索与问答在 PRD 中有"多入口"设计：① 直达页面浏览（= 页面清单页）② 快速搜索（顶栏，跳页/片段）③ 混合检索（= 检索结果页）④ 提问回答（= 问答视图页）。四类入口最终收敛到上述 5 个主区域页面。</div>
+  </div>
+
+  <!-- ===== 2. List ===== -->
+  <div class="section" id="list">
+    <h2>② 页面清单（全部界面）</h2>
+    <p class="lead">下表为客户端需构建的全部页面 / 弹窗，含优先级（依据 PRD 功能清单 P0/P1/P2）与关键 UI 元素。优先级含义：<span class="tag p0">P0</span> V1 必做 · <span class="tag p1">P1</span> V1.1 紧随 · <span class="tag p2">P2</span> 后续扩展。</p>
+    <table>
+      <thead><tr><th style="width:21%">页面 / 弹窗</th><th style="width:11%">所属模块</th><th style="width:8%">优先级</th><th style="width:34%">核心功能</th><th>关键 UI / 交互</th></tr></thead>
+      <tbody>
+        <tr><td><strong>知识库列表页</strong><br>（左侧常驻栏 / 主页）</td><td>3.1 / 3.7</td><td><span class="tag p0">P0</span></td><td>展示全部知识库实例，新建/切换/删除入口；多库两层轴组织</td><td>图标+名称+健康概要徽标；右上"新建"按钮；选中态高亮</td></tr>
+        <tr><td><strong>新建知识库弹窗</strong></td><td>3.1</td><td><span class="tag p0">P0</span></td><td>输入名称 + 绑定本地文件夹，创建实例并触发首次扫描</td><td>名称输入(≤50，失焦实时唯一校验)；系统原生文件夹选择器(绝对路径，预检存在/可读)；提交后跳概览</td></tr>
+        <tr><td><strong>知识库概览页</strong></td><td>3.1 / 3.3 / 3.7</td><td><span class="tag p0">P0</span></td><td>健康总览 + 主路径 + 同步控制 + 导入进度</td><td>主路径步骤条；健康条(聚合计数可下钻)；"正在首次扫描…"状态条；立即同步/定时增量按钮；设置入口</td></tr>
+        <tr><td><strong>知识库设置抽屉</strong></td><td>3.1</td><td><span class="tag p0">P0</span></td><td>改名/图标/同步策略/重新绑定/删除</td><td>图标上传(≤1MB)；同步策略(全量/监听/每分钟/手动)；重新绑定二次确认+差异扫描；删除</td></tr>
+        <tr><td><strong>页面/文件清单页</strong></td><td>3.2 / 3.3</td><td><span class="tag p0">P0</span></td><td>浏览全部页面与原文件，按状态管理</td><td>状态徽标(灰/黄/绿/红)；来源定位(资料源/相对路径)；按状态筛选；失败/暂不支持红黄标记+悬停原因；点击进阅读页</td></tr>
+        <tr><td><strong>页面阅读页</strong></td><td>3.2 / 3.7</td><td><span class="tag p0">P0</span></td><td>阅读知识化页面，溯源原文</td><td>正文+frontmatter+时间线；顶部来源定位(PDF页码/PPT幻灯片/Excel工作表)；"回到原文件"按钮；"查看原文"；分层面板(友好视图+折叠技术详情)</td></tr>
+        <tr><td><strong>混合检索结果页</strong></td><td>3.4</td><td><span class="tag p0">P0</span></td><td>展示融合候选列表（多路召回→RRF）</td><td>候选卡：标题/片段/匹配理由/命中路径/来源定位/图谱时间证据；降级黄条；点击进页面或原文</td></tr>
+        <tr><td><strong>问答视图页</strong></td><td>3.4</td><td><span class="tag p0">P0</span></td><td>自然语言提问→引用回答（不编造）</td><td>结论在上；引用卡片(来源/位置/查看原文)；冲突区块；缺口区块；降级黄条；三类空结果文案；缓存透明标注</td></tr>
+        <tr><td><strong>快速搜索（顶栏）</strong></td><td>3.4</td><td><span class="tag p0">P0</span></td><td>全局入口，跳转到页面/片段</td><td>命令面板式输入框；实时下拉候选；Enter 进检索结果页 / 直达页面</td></tr>
+        <tr><td><strong>导入/同步进度面板</strong></td><td>3.2 / 3.3</td><td><span class="tag p0">P0</span></td><td>实时展示写入链进度，不只有"处理中"</td><td>实时计数"已扫描N/已解析M/暂不支持K/失败J"；可后台运行</td></tr>
+        <tr><td><strong>资料源健康面板</strong></td><td>3.6</td><td><span class="tag p0">P0</span></td><td>持续暴露健康状态，拒绝"扫描完=可用"</td><td>常驻健康条；聚合计数(可用/向量待完成/暂不支持/待修复)；非健康项下钻；"重试失败项""仅回填向量"按钮</td></tr>
+        <tr><td><strong>空状态/主路径引导</strong></td><td>3.7</td><td><span class="tag p0">P0</span></td><td>新库引导，降低上手门槛</td><td>新建后"正在同步，你可以先了解…"引导；主路径步骤可视化</td></tr>
+        <tr><td><strong>向量回填向导弹窗</strong></td><td>3.6</td><td><span class="tag p1">P1</span></td><td>模型/维度更换后定向回填</td><td>弹窗"旧向量将失效，是否立即回填？"；后台进度条</td></tr>
+        <tr><td><strong>原文查看器</strong></td><td>3.2 / 3.7</td><td><span class="tag p1">P1</span></td><td>"查看原文"精确定位到页码/幻灯片/工作表</td><td>内置轻量 PDF 预览(优先) + PPT/Excel 走系统打开(best-effort 定位)；保证溯源闭环</td></tr>
+        <tr><td><strong>外部调用方/智能体授权页</strong></td><td>3.5</td><td><span class="tag p2">P2</span></td><td>逐库逐源授权只读/可写（团队/多用户）</td><td>V1 单用户无感不展示；V1.1 起提供授权勾选面板</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 3. P0 focus ===== -->
+  <div class="section" id="p0">
+    <h2>③ V1 必做页（P0 聚焦）</h2>
+    <p class="lead">V1 单用户、本地优先版本，以下 <strong>12 个界面</strong>是验收基线。它们覆盖了 PRD 中"核心闭环"的可视化：绑定目录 → 写入可见 → 搜索问答可追溯。</p>
+    <div class="card-grid">
+      <div class="kpi"><div class="num">12</div><div class="lbl">P0 界面（含 3 弹窗/浮层）</div></div>
+      <div class="kpi"><div class="num">3</div><div class="lbl">P1 紧随（回填/原文查看器）</div></div>
+      <div class="kpi"><div class="num">1</div><div class="lbl">P2 扩展（授权页）</div></div>
+    </div>
+    <h3>V1 必做清单（按用户旅程排序）</h3>
+    <ul class="feat">
+      <li><strong>① 知识库列表页</strong> — 用户第一眼看到"我有哪些知识库"。</li>
+      <li><strong>② 新建知识库弹窗</strong> — 名称 + 系统文件夹选择器 + 实时校验（高压线：不创建半成品）。</li>
+      <li><strong>③ 知识库概览页</strong> — 健康条 + 主路径 + 同步控制，首次扫描状态可见。</li>
+      <li><strong>④ 知识库设置抽屉</strong> — 改名/图标/同步策略/重新绑定（显式重绑，绝不静默改扫）。</li>
+      <li><strong>⑤ 页面/文件清单页</strong> — 6 态徽标 + 来源定位 + 筛选；失败/暂不支持不伪装知识化。</li>
+      <li><strong>⑥ 页面阅读页</strong> — 正文+溯源；"回到原文件"恒在（本地优先兜底）。</li>
+      <li><strong>⑦ 快速搜索（顶栏）</strong> — 全局入口，跳页/片段。</li>
+      <li><strong>⑧ 混合检索结果页</strong> — 融合候选 + 匹配理由 + 降级说明。</li>
+      <li><strong>⑨ 问答视图页</strong> — 引用/冲突/缺口 + 三类空结果（不编造、拒绝≠未找到）。</li>
+      <li><strong>⑩ 导入/同步进度面板</strong> — 真实计数，状态机可见。</li>
+      <li><strong>⑪ 资料源健康面板</strong> — 健康不粉饰，非健康项下钻 + 重试/回填入口。</li>
+      <li><strong>⑫ 空状态/主路径引导</strong> — 新库不空白、不报错。</li>
+    </ul>
+    <div class="principle"><strong>高压线页面级验收点：</strong>不创建半成品(②)、不静默改扫(④)、禁止伪装知识化(⑤)、不编造/拒绝≠未找到(⑨)、原文件入口恒在(⑥)、健康不粉饰(⑪)。这 6 条须写入 UI 验收用例。</div>
+  </div>
+
+  <!-- ===== 4. Backend ===== -->
+  <div class="section" id="backend">
+    <h2>④ 非页面（后台服务 / 引擎）</h2>
+    <p class="lead">以下能力支撑上述页面，但<strong>不是独立页面</strong>，应作为客户端内嵌服务/本地进程设计。列出来避免把"功能"误当成"页面"而遗漏工程量。</p>
+    <table>
+      <thead><tr><th style="width:22%">后台能力</th><th style="width:14%">对应模块</th><th>说明 / 给页面的接口</th></tr></thead>
+      <tbody>
+        <tr><td>写入链引擎</td><td>3.2</td><td>扫描→变更识别→路由→解析→标准化→切分→向量化(可选)→图谱；向"导入进度面板/健康面板"推送实时状态</td></tr>
+        <tr><td>写入状态机</td><td>3.3</td><td>8 态持久化 + 流转校验 + 降级态；页面仅消费 state + copy + reason</td></tr>
+        <tr><td>混合检索引擎</td><td>3.4</td><td>意图识别 + 多路召回(关键词★/语义/图谱/时间) + RRF 融合 + 去重 + 重排；对外暴露 Query/Answer 契约</td></tr>
+        <tr><td>解析器适配层</td><td>3.2</td><td>Markdown 直连 / 代码按策略 / PDF·Word·Excel·PPT 路由 MinerU；无解析器→返回"暂不支持"</td></tr>
+        <tr><td>本地数据库 / 受控存储</td><td>全局</td><td>页面/片段/索引的本地存储（本地优先）；原文件零改动、只读引用</td></tr>
+        <tr><td>权限 / scope 中间件</td><td>3.5</td><td>检索/写入前置校验 kb_id+source_root；无权限返回"拒绝"语义</td></tr>
+        <tr><td>增量同步 / 目录监听</td><td>3.6</td><td>V1 手动+定时增量；V1.1 目录监听；产出变更事件驱动状态机</td></tr>
+        <tr><td>可选嵌入 / 重排服务</td><td>3.4 / 3.6</td><td>本地或受控部署；不可用时检索降级（关键词+图谱），不得阻断基础能力</td></tr>
+      </tbody>
+    </table>
+    <div class="warn">⚠️ 工程提醒：PRD 明确"原文件始终零改动"是全局高压线。本地存储层与解析器适配层必须实现"只读引用 + 不生成解析副本写回绑定目录"，任何页面触发的"重新解析"都应读取原文件而非副本。</div>
+  </div>
+
+  <!-- ===== 5. Client special ===== -->
+  <div class="section" id="client">
+    <h2>⑤ 客户端软件特殊实现点</h2>
+    <p class="lead">因为是桌面客户端（本地优先），有几个页面能力依赖 OS / 本地能力，需在前端之外单独规划：</p>
+    <ul class="feat">
+      <li><strong>系统原生文件夹选择器</strong>：新建库 / 重新绑定时调用 OS 文件对话框，仅返回绝对路径；校验存在/可读/可规范化（前端预检 + 后端兜底）。</li>
+      <li><strong>"回到原文件"= 系统文件管理器</strong>：点击用 OS 打开 <code>bound_path</code> 内对应文件（非应用内页）；这是客户端专属能力。</li>
+      <li><strong>本地数据库</strong>：页面/片段/索引存本地（SQLite 或本地向量库），不强制云。</li>
+      <li><strong>可选本地推理</strong>：嵌入/重排可本地或受控部署；不可用时整条搜索降级，体验不中断（本地优先兜底）。</li>
+      <li><strong>后台进程</strong>：写入链 / 增量同步 / 回填在后台运行，前台进度面板订阅；盘卸载时知识库置"异常"而非静默改扫。</li>
+      <li><strong>托盘 / 常驻（可选）</strong>：PRD 未要求，但客户端常需后台同步常驻；如做，须保证"不静默改扫"原则。</li>
+    </ul>
+  </div>
+
+  <!-- ===== 6. Advice ===== -->
+  <div class="section" id="advice">
+    <h2>⑥ 实施建议（给你排期用）</h2>
+    <h3>建议的分期</h3>
+    <table>
+      <thead><tr><th style="width:14%">阶段</th><th style="width:22%">包含页面</th><th>目标 / 退出标准</th></tr></thead>
+      <tbody>
+        <tr><td><span class="pill">V1 基线</span></td><td>列表·新建弹窗·概览·设置·清单·阅读·快速搜索·检索结果·问答·进度·健康·引导（12 项 P0）</td><td>单用户本地优先闭环跑通：绑定→知识化可见→可溯源问答；6 条高压线验收通过</td></tr>
+        <tr><td><span class="pill">V1.1</span></td><td>向量回填向导·原文查看器(P1) + 目录监听自动同步 + 智能体授权页雏形</td><td>语义检索常态化、增量自动化、为外部接入铺框架</td></tr>
+        <tr><td><span class="pill">V2</span></td><td>多资料源/多用户共享·外部调用方授权页(P2)·夜间维护·Compiled Truth 权重</td><td>从单用户走向小团队 / 智能体生态</td></tr>
+      </tbody>
+    </table>
+    <div class="note">💡 排期提示：P0 的 12 个界面里，<strong>状态机可视化（清单页 + 健康面板 + 导入进度）</strong>与<strong>问答的三类空结果/引用卡片</strong>是 PRD 反复强调的"防幻觉第一道闸"，建议作为 V1 优先级最高、最先联调的部分，而不是留到最后。</div>
+    <div class="principle"><strong>一句话总结：</strong>客户端需要 12 个 P0 界面（含列表/概览/设置 3 个常驻区 + 清单/阅读/检索/问答 4 个主区域 + 新建/回填/引导 3 个浮层），3 个 P1、1 个 P2；后台还有 8 类引擎需配套，且"原文件零改动 / 不静默改扫 / 不编造"三条高压线必须贯穿所有页面与接口设计。</div>
+  </div>
+
+  <div style="text-align:center;padding:24px 0;color:var(--text-secondary);font-size:12.5px;">— OmniX 个人知识库 · 页面清单 v1.0 · 依据 PRD v1.0 推导 —</div>
+</div>
+
+<script>
+(function(){
+  var links=document.querySelectorAll('.topnav a');
+  links.forEach(function(l){l.addEventListener('click',function(e){
+    e.preventDefault();
+    var id=this.getAttribute('href').slice(1);
+    var el=document.getElementById(id);
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  });});
+  var secs=Array.from(document.querySelectorAll('.section')).map(function(s){return {id:s.id,el:s};});
+  function onScroll(){
+    var y=window.scrollY+90,cur='';
+    for(var i=secs.length-1;i>=0;i--){if(y>=secs[i].el.offsetTop){cur=secs[i].id;break;}}
+    links.forEach(function(l){l.classList.remove('active');});
+    var act=document.querySelector('.topnav a[href="#'+cur+'"]');
+    if(act)act.classList.add('active');
+  }
+  window.addEventListener('scroll',onScroll);onScroll();
+})();
+</script>
+
+</body></html>
