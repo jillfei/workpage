@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>欢迎使用 OmniX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background: linear-gradient(160deg, #fdf2f8 0%, #f5f0ff 30%, #eef1ff 60%, #f0f4ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 14px;
+            letter-spacing: 1px;
+        }
+
+        .header h1 .brand {
+            color: #4f6ef7;
+            font-weight: 800;
+        }
+
+        .header p {
+            font-size: 15px;
+            color: #aaa;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .tabs-container {
+            display: flex;
+            background: #f0f0f0;
+            border-radius: 28px;
+            padding: 4px;
+            position: relative;
+        }
+
+        .tab-slider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: calc(50% - 4px);
+            height: calc(100% - 8px);
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 0;
+        }
+
+        .tab-slider.right {
+            transform: translateX(100%);
+        }
+
+        .tab {
+            padding: 12px 36px;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            color: #999;
+            border: none;
+            background: transparent;
+            outline: none;
+            position: relative;
+            z-index: 1;
+            user-select: none;
+        }
+
+        .tab.active {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .tab:hover:not(.active) {
+            color: #666;
+        }
+
+        /* Form Panels */
+        .form-panel {
+            display: none;
+            animation: fadeInUp 0.35s ease;
+        }
+
+        .form-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form {
+            width: 100%;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 17px 22px;
+            font-size: 15px;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 14px;
+            outline: none;
+            transition: all 0.25s ease;
+            background: #ffffff;
+            color: #333;
+        }
+
+        .input-group input::placeholder {
+            color: #bbb;
+        }
+
+        .input-group input:focus {
+            border-color: #4f6ef7;
+            box-shadow: 0 0 0 4px rgba(79, 110, 247, 0.1);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 54px;
+        }
+
+        .eye-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #bbb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            transition: color 0.2s, transform 0.2s;
+            user-select: none;
+        }
+
+        .eye-icon:hover {
+            color: #888;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .eye-icon:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .eye-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Captcha Row */
+        .captcha-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .captcha-row .input-group {
+            flex: 1;
+            margin-bottom: 16px;
+        }
+
+        .captcha-btn {
+            flex-shrink: 0;
+            padding: 17px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4f6ef7;
+            background: rgba(79, 110, 247, 0.08);
+            border: 1.5px solid rgba(79, 110, 247, 0.2);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            margin-bottom: 16px;
+            align-self: flex-start;
+            margin-top: 0;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .captcha-btn:hover:not(.disabled) {
+            background: rgba(79, 110, 247, 0.15);
+            border-color: rgba(79, 110, 247, 0.4);
+        }
+
+        .captcha-btn.disabled {
+            color: #ccc;
+            background: #f5f5f5;
+            border-color: #e8e8e8;
+            cursor: not-allowed;
+        }
+
+        /* ===== 复选框重构 ===== */
+        .agreement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #888;
+            /* 整个行作为点击区域，由 label 接管 */
+        }
+
+        .agreement label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            /* 让 label 撑满整行，方便点击 */
+            width: 100%;
+        }
+
+        /* 原生 checkbox 隐藏，但保留焦点和语义 */
+        .agreement input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+
+        /* 自定义复选框盒子 */
+        .checkbox-custom {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        /* 选中状态：通过兄弟选择器 + 父级 label 联动 */
+        .agreement input[type="checkbox"]:checked+.checkbox-custom {
+            background: #4f6ef7;
+            border-color: #4f6ef7;
+        }
+
+        /* 对勾 */
+        .agreement input[type="checkbox"]:checked+.checkbox-custom::after {
+            content: '';
+            width: 6px;
+            height: 10px;
+            border: 2px solid #fff;
+            border-top: none;
+            border-left: none;
+            transform: rotate(45deg) translateY(-1px);
+        }
+
+        /* 链接样式保留 */
+        .agreement a {
+            color: #4f6ef7;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .agreement a:hover {
+            color: #3b5de7;
+            text-decoration: underline;
+        }
+
+        /* Login Button */
+        .login-btn {
+            width: 100%;
+            padding: 17px;
+            background: #1a1a1a;
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            background: #333;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .login-btn:active {
+            transform: translateY(0) scale(0.985);
+            box-shadow: none;
+        }
+
+        .login-btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .login-btn .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto;
+        }
+
+        .login-btn.loading .btn-text {
+            display: none;
+        }
+        .login-btn.loading .spinner {
+            display: block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Divider */
+        .divider {
+            text-align: center;
+            margin: 22px 0;
+            font-size: 14px;
+            color: #ccc;
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 35%;
+            height: 1px;
+            background: #e8e8e8;
+        }
+
+        .divider::before {
+            left: 0;
+        }
+        .divider::after {
+            right: 0;
+        }
+
+        /* Enterprise Button */
+        .enterprise-btn {
+            width: 100%;
+            padding: 16px;
+            background: #ffffff;
+            backdrop-filter: blur(10px);
+            color: #1a1a1a;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .enterprise-btn:hover {
+            border-color: #ccc;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .enterprise-btn:active {
+            transform: translateY(0) scale(0.985);
+        }
+
+        .enterprise-btn .icon {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .enterprise-btn:hover .icon {
+            transform: rotate(180deg);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+            opacity: 0;
+            transition: all 0.35s ease;
+            z-index: 1000;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        .toast.success {
+            background: rgba(34, 197, 94, 0.9);
+        }
+
+        .toast.info {
+            background: rgba(79, 110, 247, 0.9);
+        }
+
+        /* Responsive */
+        @media (max-width: 520px) {
+            .container {
+                padding: 16px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .tab {
+                padding: 10px 28px;
+                font-size: 14px;
+            }
+
+            .captcha-btn {
+                min-width: 100px;
+                padding: 17px 14px;
+                font-size: 13px;
+            }
+
+            .agreement label {
+                font-size: 13px;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>欢迎使用 <span class="brand">OmniX</span></h1>
+            <p>开启您的 AI智能体协作之旅，让工作从执行走向智能</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tabs-container">
+                <div class="tab-slider" id="tabSlider"></div>
+                <button class="tab active" data-tab="account" onclick="switchTab('account')">账号登录</button>
+                <button class="tab" data-tab="captcha" onclick="switchTab('captcha')">验证码登录</button>
+            </div>
+        </div>
+
+        <!-- ===== 账号登录 Panel ===== -->
+        <div class="form-panel active" id="panel-account">
+            <div class="form">
+                <div class="input-group">
+                    <input type="tel" placeholder="输入手机号" maxlength="11" id="phone1" oninput="this.value=this.value.replace(/\D/g,'')" />
+                </div>
+
+                <div class="input-group">
+                    <div class="password-wrapper">
+                        <input type="password" placeholder="输入密码" id="passwordInput" />
+                        <div class="eye-icon" onclick="togglePassword()">
+                            <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg id="eyeClosed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                                <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 复选框：重构为 label 包裹 input + .checkbox-custom -->
+                <div class="agreement">
+                    <label>
+                        <input type="checkbox" id="agree1" />
+                        <span class="checkbox-custom"></span>
+                        <span>
+                            我已阅读并同意
+                            <a href="#" onclick="event.stopPropagation();showToast('服务条款页面开发中','info')">服务条款</a>
+                            和
+                            <a href="#" onclick="event.stopPropagation();showToast('隐私协议页面开发中','info')">隐私协议</a>
+                        </span>
+                    </label>
+                </div>
+
+                <button class="login-btn" id="loginBtn1" onclick="handleLogin('account')">
+                    <span class="btn-text">登 录</span>
+                    <div class="spinner"></div>
+                </button>
+
+                <div class="divider">或</div>
+
+                <button class="enterprise-btn" onclick="showToast('企业版登录功能开发中','info')">
+                    <span class="icon">⇅</span>
+                    切换到企业版
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== 验证码登录 Panel ===== -->
+        <div class="form-panel" id="panel-captcha">
+            <div class="form">
+                <div class="input-group">
+                    <input type="tel" placeholder="输入手机号" maxlength="11" id="phone2" oninput="this.value=this.value.replace(/\D/g,'')" />
+                </div>
+
+                <div class="captcha-row">
+                    <div class="input-group">
+                        <input type="text" placeholder="输入验证码" maxlength="6" id="captchaInput" oninput="this.value=this.value.replace(/\D/g,'')" />
+                    </div>
+                    <button class="captcha-btn" id="captchaBtn" onclick="sendCaptcha()">获取验证码</button>
+                </div>
+
+                <!-- 复选框：重构为 label 包裹 input + .checkbox-custom -->
+                <div class="agreement">
+                    <label>
+                        <input type="checkbox" id="agree2" />
+                        <span class="checkbox-custom"></span>
+                        <span>
+                            我已阅读并同意
+                            <a href="#" onclick="event.stopPropagation();showToast('服务条款页面开发中','info')">服务条款</a>
+                            和
+                            <a href="#" onclick="event.stopPropagation();showToast('隐私协议页面开发中','info')">隐私协议</a>
+                        </span>
+                    </label>
+                </div>
+
+                <button class="login-btn" id="loginBtn2" onclick="handleLogin('captcha')">
+                    <span class="btn-text">登 录</span>
+                    <div class="spinner"></div>
+                </button>
+
+                <div class="divider">或</div>
+
+                <button class="enterprise-btn" onclick="showToast('企业版登录功能开发中','info')">
+                    <span class="icon">⇅</span>
+                    切换到企业版
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== Tab 切换 =====
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            const slider = document.getElementById('tabSlider');
+            const panels = document.querySelectorAll('.form-panel');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+
+            if (tab === 'captcha') {
+                slider.classList.add('right');
+            } else {
+                slider.classList.remove('right');
+            }
+
+            panels.forEach(p => p.classList.remove('active'));
+            document.getElementById(`panel-${tab}`).classList.add('active');
+        }
+
+        // ===== 密码显隐 =====
+        function togglePassword() {
+            const input = document.getElementById('passwordInput');
+            const eyeOpen = document.getElementById('eyeOpen');
+            const eyeClosed = document.getElementById('eyeClosed');
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeOpen.style.display = 'none';
+                eyeClosed.style.display = 'block';
+            } else {
+                input.type = 'password';
+                eyeOpen.style.display = 'block';
+                eyeClosed.style.display = 'none';
+            }
+        }
+
+        // ===== Toast =====
+        function showToast(msg, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+
+        // ===== 验证码发送 =====
+        let captchaTimer = null;
+
+        function sendCaptcha() {
+            const phone = document.getElementById('phone2').value.trim();
+            if (!phone || phone.length < 11) {
+                showToast('请输入正确的手机号', 'error');
+                return;
+            }
+            const btn = document.getElementById('captchaBtn');
+            btn.classList.add('disabled');
+            let seconds = 60;
+            btn.textContent = seconds + 's 后重新获取';
+            showToast('验证码已发送', 'success');
+
+            captchaTimer = setInterval(() => {
+                seconds--;
+                btn.textContent = seconds + 's 后重新获取';
+                if (seconds <= 0) {
+                    clearInterval(captchaTimer);
+                    btn.textContent = '获取验证码';
+                    btn.classList.remove('disabled');
+                }
+            }, 1000);
+        }
+
+        // ===== 登录逻辑 =====
+        function handleLogin(type) {
+            const agreeId = type === 'account' ? 'agree1' : 'agree2';
+            const phoneId = type === 'account' ? 'phone1' : 'phone2';
+            const btnId = type === 'account' ? 'loginBtn1' : 'loginBtn2';
+
+            const phone = document.getElementById(phoneId).value.trim();
+            const agreed = document.getElementById(agreeId).checked;
+
+            if (!phone || phone.length < 11) {
+                showToast('请输入正确的手机号', 'error');
+                return;
+            }
+
+            if (type === 'account') {
+                const pwd = document.getElementById('passwordInput').value.trim();
+                if (!pwd) {
+                    showToast('请输入密码', 'error');
+                    return;
+                }
+            } else {
+                const code = document.getElementById('captchaInput').value.trim();
+                if (!code || code.length < 4) {
+                    showToast('请输入验证码', 'error');
+                    return;
+                }
+            }
+
+            if (!agreed) {
+                showToast('请先同意服务条款和隐私协议', 'error');
+                return;
+            }
+
+            const btn = document.getElementById(btnId);
+            btn.classList.add('loading');
+
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                showToast('登录成功，欢迎回来！', 'success');
+                setTimeout(() => {
+                    const container = document.querySelector('.container');
+                    container.style.transition = 'opacity 0.6s ease';
+                    container.style.opacity = '0';
+                    setTimeout(() => {
+                        location.href = 'index.html';
+                    }, 600);
+                }, 2000);
+            }, 1500);
+        }
+
+    </script>
+
+</body>
+</html>

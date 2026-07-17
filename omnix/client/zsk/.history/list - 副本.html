@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人知识库 - OmniX</title>
+<style>
+  :root {
+    --primary: #4F46E5;
+    --primary-light: #EEF2FF;
+    --primary-hover: #4338CA;
+    --text: #1F2937;
+    --text-secondary: #6B7280;
+    --text-light: #9CA3AF;
+    --bg: #F9FAFB;
+    --card-bg: #FFFFFF;
+    --border: #E5E7EB;
+    --border-light: #F3F4F6;
+    --success: #059669;
+    --success-bg: #D1FAE5;
+    --warning: #D97706;
+    --warning-bg: #FEF3C7;
+    --danger: #DC2626;
+    --danger-bg: #FEE2E2;
+    --info: #3B82F6;
+    --info-bg: #DBEAFE;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+    --transition: all 0.2s ease;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ========== Page Container ========== */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* ========== Page Title Bar ========== */
+  .page-title-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .page-title-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .page-title-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* ========== Header Row: Tabs + New Button ========== */
+  .header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .tab-group {
+    display: flex;
+    gap: 4px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .tab-item {
+    padding: 7px 18px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: var(--transition);
+    border: none;
+    background: transparent;
+    white-space: nowrap;
+  }
+  .tab-item:hover { color: var(--text); background: var(--bg); }
+  .tab-item.active {
+    color: var(--primary);
+    background: var(--primary-light);
+    font-weight: 600;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--primary);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 1px 2px rgba(79,70,229,0.25);
+  }
+  .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 2px 6px rgba(79,70,229,0.35); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-icon { width: 16px; height: 16px; }
+
+  /* ========== Filter Row: Search + Status Filter ========== */
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .search-wrapper {
+    flex: 1;
+    position: relative;
+  }
+  .search-input {
+    width: 100%;
+    height: 42px;
+    padding: 0 16px 0 40px;
+    font-size: 13.5px;
+    color: var(--text);
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    transition: var(--transition);
+  }
+  .search-input::placeholder { color: var(--text-light); }
+  .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.12); }
+  .search-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 17px;
+    height: 17px;
+    color: var(--text-light);
+    pointer-events: none;
+  }
+  .filter-group {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+  .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .filter-btn.active {
+    color: var(--primary);
+    background: var(--primary-light);
+    border-color: rgba(79,70,229,0.3);
+  }
+  .sort-btns {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .sort-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--card-bg);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    border-right: 1px solid var(--border);
+  }
+  .sort-btn:last-child { border-right: none; }
+  .sort-btn:hover { background: var(--bg); color: var(--text); }
+  .sort-btn.active { color: var(--primary); background: var(--primary-light); font-weight: 600; }
+
+  /* ========== Card Grid ========== */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  @media (min-width: 1100px) {
+    .card-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ========== Knowledge Base Card ========== */
+  .kb-card {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    transition: var(--transition);
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .kb-card:hover .card-delete-btn { opacity: 1; pointer-events: auto; }
+  .card-delete-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .card-delete-btn:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+  .kb-card:hover {
+    border-color: rgba(79,70,229,0.3);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .kb-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .kb-icon-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+  .kb-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    overflow: hidden;
+  }
+  .kb-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+  .kb-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .kb-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .kb-name {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .kb-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 600;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .status-pending { color: #6B7280; background: #F3F4F6; }
+  .status-processing { color: var(--primary); background: var(--primary-light); }
+  .status-processing::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    animation: pulse-dot 1.4s ease-in-out infinite;
+  }
+  .status-done { color: var(--success); background: var(--success-bg); }
+  .status-done::before { content: '✓'; margin-right: 0; font-size: 11px; }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+  .kb-meta {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .kb-meta svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .kb-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 14px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .kb-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .kb-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--bg);
+    border: 1px solid var(--border-light);
+    transition: var(--transition);
+  }
+  .kb-tag:hover {
+    color: var(--primary);
+    background: var(--primary-light);
+    border-color: rgba(79,70,229,0.25);
+  }
+  .kb-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-light);
+  }
+  .kb-stats {
+    display: flex;
+    gap: 16px;
+  }
+  .kb-stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-light);
+  }
+  .kb-stat svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .kb-stat-value { color: var(--text-secondary); font-weight: 500; }
+  .kb-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .action-btn:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+  .action-btn.path-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+  /* ========== Empty State ========== */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+  }
+  .empty-icon {
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 20px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .empty-icon svg { width: 40px; height: 40px; color: var(--primary); }
+  .empty-title { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .empty-desc { font-size: 13.5px; color: var(--text-secondary); max-width: 360px; margin: 0 auto 24px; line-height: 1.6; }
+
+  /* ========== Modal Overlay ========== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-overlay.show { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ========== Modal ========== */
+  .modal {
+    background: var(--card-bg);
+    border-radius: 16px;
+    width: 520px;
+    max-width: 92vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: modalIn 0.25s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 0;
+  }
+  .modal-title { font-size: 17px; font-weight: 700; color: var(--text); }
+  .modal-close {
+    width: 32px; height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: var(--bg);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .modal-close:hover { background: var(--danger-bg); color: var(--danger); }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 0 24px 20px;
+  }
+
+  /* ========== Form Styles ========== */
+  .form-group { margin-bottom: 18px; }
+  .form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .form-label .optional { font-weight: 400; color: var(--text-light); font-size: 12px; }
+  .form-input, .form-textarea {
+    width: 100%;
+    padding: 9px 13px;
+    font-size: 13.5px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    transition: var(--transition);
+    font-family: inherit;
+  }
+  .form-input:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+  .form-textarea { resize: vertical; min-height: 72px; }
+  .form-hint {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .form-hint svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .required { color: var(--danger); margin-left: 2px; }
+
+  /* Icon Picker */
+  .icon-picker-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .icon-preview {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .icon-preview img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .icon-change-hint {
+    font-size: 11.5px;
+    color: var(--text-light);
+  }
+
+  /* Path Input Row */
+  .path-input-row {
+    display: flex;
+    gap: 8px;
+  }
+  .path-input-row .form-input { flex: 1; }
+  .btn-browse {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+    background: var(--primary-light);
+    border: 1px solid rgba(79,70,229,0.25);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .btn-browse:hover { background: rgba(79,70,229,0.15); }
+
+  /* Supported Formats */
+  .supported-formats {
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+  }
+  .supported-formats-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #92400E;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .supported-formats-title svg { width: 14px; height: 14px; }
+  .format-list {
+    font-size: 12px;
+    color: #B45309;
+    line-height: 1.8;
+  }
+
+  /* Buttons */
+  .btn-cancel {
+    padding: 9px 20px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-cancel:hover { background: var(--border-light); color: var(--text); }
+  .btn-submit {
+    padding: 9px 24px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--primary);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-submit:hover { background: var(--primary-hover); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ========== Scanning Animation ========== */
+  .scan-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .scan-overlay.show { display: flex; }
+  .scan-panel {
+    text-align: center;
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 48px 56px;
+    box-shadow: var(--shadow-lg);
+    animation: modalIn 0.3s ease;
+    min-width: 380px;
+  }
+  .scan-spinner {
+    width: 64px; height: 64px;
+    margin: 0 auto 24px;
+    position: relative;
+  }
+  .scan-spinner svg {
+    width: 100%; height: 100%;
+    animation: spin 1.2s linear infinite;
+    color: var(--primary);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .scan-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .scan-subtitle { font-size: 13.5px; color: var(--text-secondary); margin-bottom: 28px; }
+  .scan-progress {
+    background: var(--bg);
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .scan-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #7C3AED);
+    border-radius: 10px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .scan-detail { font-size: 12.5px; color: var(--text-light); }
+
+  /* ========== Scan Result Modal ========== */
+  .result-icon-wrap {
+    width: 64px; height: 64px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .result-success { background: var(--success-bg); }
+  .result-success svg { width: 32px; height: 32px; color: var(--success); }
+  .result-warning { background: var(--warning-bg); }
+  .result-warning svg { width: 32px; height: 32px; color: var(--warning); }
+  .result-title { font-size: 17px; font-weight: 700; color: var(--text); text-align: center; margin-bottom: 12px; }
+  .result-body { font-size: 13.5px; color: var(--text-secondary); line-height: 1.8; }
+  .result-stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--bg);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 13.5px;
+  }
+  .result-stat strong { color: var(--primary); font-weight: 700; }
+  .result-stat.warn strong { color: var(--warning); }
+  .result-footer {
+    display: flex;
+    justify-content: center;
+    padding: 20px 24px 24px;
+  }
+
+  /* ========== Delete Confirm Modal ========== */
+  .delete-modal .modal-body { text-align: center; padding: 28px 24px; }
+  .delete-icon-wrap {
+    width: 56px; height: 56px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: var(--danger-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .delete-icon-wrap svg { width: 26px; height: 26px; color: var(--danger); }
+  .delete-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .delete-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+  .delete-name {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--bg);
+    border-radius: 6px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .delete-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .btn-danger {
+    padding: 9px 24px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--danger);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-danger:hover { background: #B91C1C; }
+
+  /* Toast */
+  .toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: var(--shadow-md);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text);
+    animation: toastIn 0.3s ease;
+    border-left: 3px solid var(--primary);
+    max-width: 360px;
+  }
+  .toast.success { border-left-color: var(--success); }
+  .toast.error { border-left-color: var(--danger); }
+  .toast.warning { border-left-color: var(--warning); }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-light); }
+</style>
+</head>
+<body>
+
+<div class="page-container">
+
+  <!-- ===== Page Title Bar ===== -->
+  <div class="page-title-bar">
+    <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </svg>
+    <span class="page-title-text">个人知识库</span>
+  </div>
+
+  <!-- ===== Header Row: Tabs + New Button ===== -->
+  <div class="header-row">
+    <div class="tab-group" id="tabGroup">
+      <!--button class="tab-item active" data-tab="all">全部</button>
+      <button class="tab-item" data-tab="recent">最近使用</button-->
+    </div>
+    <button class="btn-primary" onclick="openAddModal()">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      新建知识库
+    </button>
+  </div>
+
+  <!-- ===== Filter Row: Search + Status + Sort ===== -->
+  <div class="filter-row">
+    <div class="search-wrapper">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" class="search-input" id="searchInput" placeholder="搜索知识库名称..." oninput="renderCards()">
+    </div>
+    <div class="filter-group">
+      <button class="filter-btn active" data-status="all" onclick="setStatusFilter('all', this)">
+        全部状态
+      </button>
+      <button class="filter-btn" data-status="processing" onclick="setStatusFilter('processing', this)">
+        处理中
+      </button>
+      <button class="filter-btn" data-status="done" onclick="setStatusFilter('done', this)">
+        已完成
+      </button>
+    </div>
+    <!--div class="sort-btns">
+      <button class="sort-btn active" data-sort="update" onclick="setSort('update', this)">最热</button>
+      <button class="sort-btn" data-sort="create" onclick="setSort('create', this)">最新</button>
+    </div-->
+  </div>
+
+  <!-- ===== Card Grid / Empty State ===== -->
+  <div class="card-grid" id="cardGrid">
+    <!-- Cards rendered by JS -->
+  </div>
+
+</div>
+
+<!-- ========== Add Knowledge Base Modal ========== -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">新建知识库</h3>
+      <button class="modal-close" onclick="closeAddModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <!-- Supported formats hint -->
+      <div class="supported-formats">
+        <div class="supported-formats-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          支持的文件格式
+        </div>
+        <div class="format-list">
+          Markdown (.md) · PDF (.pdf) · Word (.docx) · Excel (.xlsx) · PPT (.pptx) · 代码文件<br>
+          不支持：.exe / .dll / .zip / 视频等二进制大文件（将标记为"暂不支持"）
+        </div>
+      </div>
+
+      <!-- Name -->
+      <div class="form-group">
+        <label class="form-label">名称 <span class="required">*</span></label>
+        <input type="text" class="form-input" id="inputName" placeholder="请输入知识库名称，最多50个字符" maxlength="50">
+      </div>
+
+      <!-- Icon -->
+      <div class="form-group">
+        <label class="form-label">图标</label>
+        <div class="icon-picker-row">
+          <div class="icon-preview" id="iconPreview" style="background: #4F46E5;" onclick="document.getElementById('iconUpload').click()" title="点击上传图标">
+            📤
+          </div>
+          <span class="icon-change-hint">支持 JPG、PNG、GIF 格式，图片大小不超过 1MB，建议尺寸 128×128px</span>
+          <input type="file" id="iconUpload" accept=".jpg,.jpeg,.png,.gif" style="display:none" onchange="handleIconUpload(event)">
+        </div>
+      </div>
+
+      <!-- Path -->
+      <div class="form-group">
+        <label class="form-label">选择路径 <span class="required">*</span></label>
+        <div class="path-input-row">
+          <input type="text" class="form-input" id="inputPath" placeholder="请选择本地文件夹路径" readonly>
+          <button class="btn-browse" onclick="browseFolder()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            选择文件夹
+          </button>
+        </div>
+        <div class="form-hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          仅支持本地文件夹，绑定后不可修改
+        </div>
+      </div>
+
+      <!-- Description (optional) -->
+      <div class="form-group">
+        <label class="form-label">描述 <span class="optional">（可选）</span></label>
+        <textarea class="form-textarea" id="inputDesc" placeholder="简单描述这个知识库的用途..." maxlength="200"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeAddModal()">取消</button>
+      <button class="btn-submit" id="submitBtn" onclick="submitKnowledgeBase()">开始扫描</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== Scanning Overlay ========== -->
+<div class="scan-overlay" id="scanOverlay">
+  <div class="scan-panel">
+    <div class="scan-spinner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
+    </div>
+    <div class="scan-title">正在扫描文件夹...</div>
+    <div class="scan-subtitle" id="scanSubtitle">正在分析文件结构，请稍候</div>
+    <div class="scan-progress">
+      <div class="scan-progress-bar" id="scanProgress"></div>
+    </div>
+    <div class="scan-detail" id="scanDetail">已发现 0 个文件</div>
+  </div>
+</div>
+
+<!-- ========== Scan Result Modal ========== -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">扫描完成</h3>
+      <button class="modal-close" onclick="closeResultModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="result-icon-wrap result-success">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="result-title">知识库创建成功！</div>
+      <div class="result-body">
+        <div class="result-stat">
+          <span>📄 共扫描到</span><strong id="resultTotal">128</strong><span> 个文件</span>
+        </div>
+        <div class="result-stat warn" id="resultUnsupportedWrap" style="display:none;">
+          <span>⚠️ 其中</span><strong id="resultUnsupported">3</strong><span> 个文件格式暂不支持</span>
+        </div>
+        <p style="margin-top: 14px; font-size: 12.5px; color: var(--text-light);">
+          知识库当前状态：<strong style="color: var(--primary);">处理中</strong><br>
+          系统正在后台解析和向量化文件，完成后将自动变为"已完成"
+        </p>
+      </div>
+    </div>
+    <div class="result-footer">
+      <button class="btn-submit" onclick="closeResultModal()">知道了</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== Delete Confirm Modal ========== -->
+<div class="modal-overlay delete-modal" id="deleteModal">
+  <div class="modal" style="width:400px;">
+    <div class="modal-body">
+      <div class="delete-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      </div>
+      <div class="delete-title">确认删除知识库？</div>
+      <div class="delete-desc">此操作将删除知识库 <span class="delete-name" id="deleteName"></span> 及其所有索引数据。<br><br><strong style="color:var(--danger);">原文件夹中的文件不会被删除。</strong></div>
+      <div class="delete-actions">
+        <button class="btn-cancel" onclick="closeDeleteModal()">取消</button>
+        <button class="btn-danger" id="confirmDeleteBtn" onclick="confirmDelete()">确认删除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== Toast Container ========== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ==================== Data Store ====================
+let knowledgeBases = [
+  {
+    id: 'kb_001',
+    name: '产品设计资料库',
+    icon: '🎨',
+    iconColor: '#EC4899',
+    desc: '收集的产品设计规范、UI组件库文档、设计评审记录等核心资料',
+    status: 'done',
+    type: '本地文件夹',
+    path: 'D:\\Documents\\ProductDesign',
+    totalFiles: 256,
+    createTime: '2026-07-01 14:30',
+    updateTime: '2026-07-15 09:22'
+  },
+  {
+    id: 'kb_002',
+    name: '技术工程文档',
+    icon: '⚙️',
+    iconColor: '#3B82F6',
+    desc: '技术架构设计、API文档、代码规范、部署手册等技术相关资料',
+    status: 'processing',
+    type: '本地文件夹',
+    path: 'D:\\Projects\\TechDocs',
+    totalFiles: 189,
+    createTime: '2026-07-10 10:15',
+    updateTime: '2026-07-16 08:40'
+  },
+  {
+    id: 'kb_003',
+    name: '金融投资研究',
+    icon: '📊',
+    iconColor: '#059669',
+    desc: '行业研究报告、财务数据分析、宏观经济指标、投资策略笔记',
+    status: 'pending',
+    type: '本地文件夹',
+    path: 'D:\\Research\\Finance',
+    totalFiles: 342,
+    createTime: '2026-07-14 16:00',
+    updateTime: '2026-07-14 16:00'
+  },
+  {
+    id: 'kb_004',
+    name: '游戏开发资源',
+    icon: '🎮',
+    iconColor: '#8B5CF6',
+    desc: '游戏引擎文档、Shader代码、美术素材规范、关卡设计方案',
+    status: 'done',
+    type: '本地文件夹',
+    path: 'E:\\Dev\\GameAssets',
+    totalFiles: 512,
+    createTime: '2026-06-20 11:30',
+    updateTime: '2026-07-12 20:15'
+  },
+  {
+    id: 'kb_005',
+    name: '法律合同归档',
+    icon: '📋',
+    iconColor: '#D97706',
+    desc: '公司合同模板、法律文书范本、合规审查清单、知识产权资料',
+    status: 'done',
+    type: '本地文件夹',
+    path: 'D:\\Legal\\Contracts',
+    totalFiles: 98,
+    createTime: '2026-05-15 09:00',
+    updateTime: '2026-07-08 14:30'
+  },
+];
+
+let currentStatus = 'all';
+let currentSort = 'update';
+let currentTab = 'all';
+let deleteTargetId = null;
+
+// Icon colors pool for auto-generation
+const iconColors = [
+  '#4F46E5','#EC4899','#3B82F6','#059669','#8B5CF6',
+  '#D97706','#DC2626','#0891B2','#BE185D','#7C3AED'
+];
+const defaultIcons = ['📚','📁','💾','🗂️','📝','🔬','🏗️','🌐','🧠','📖','💡','🎯'];
+
+// ==================== Render ====================
+function renderCards() {
+  const grid = document.getElementById('cardGrid');
+  const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
+
+  let filtered = [...knowledgeBases];
+
+  // Status filter
+  if (currentStatus !== 'all') {
+    if (currentStatus === 'processing') {
+      filtered = filtered.filter(kb => kb.status === 'processing' || kb.status === 'pending');
+    } else {
+      filtered = filtered.filter(kb => kb.status === currentStatus);
+    }
+  }
+
+  // Tab filter
+  if (currentTab === 'recent') {
+    filtered = filtered.slice().sort((a,b) => new Date(b.updateTime) - new Date(a.updateTime)).slice(0, 4);
+  }
+
+  // Search filter
+  if (searchVal) {
+    filtered = filtered.filter(kb =>
+      kb.name.toLowerCase().includes(searchVal) ||
+      kb.desc.toLowerCase().includes(searchVal)
+    );
+  }
+
+  // Sort
+  if (currentTab !== 'recent') {
+    if (currentSort === 'update') {
+      filtered.sort((a,b) => new Date(b.updateTime) - new Date(a.updateTime));
+    } else {
+      filtered.sort((a,b) => new Date(b.createTime) - new Date(a.createTime));
+    }
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column: 1/-1;">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+        <div class="empty-title">还没有知识库</div>
+        <div class="empty-desc">点击右上角"新建知识库"，绑定一个本地文件夹开始使用吧。</div>
+        <button class="btn-primary" onclick="openAddModal()">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          创建第一个知识库
+        </button>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(kb => createCardHTML(kb)).join('');
+}
+
+function createCardHTML(kb) {
+  const statusClass = kb.status === 'done' ? 'status-done' :
+                       kb.status === 'processing' ? 'status-processing' : 'status-pending';
+  const statusLabel = kb.status === 'done' ? '已完成' :
+                      kb.status === 'processing' ? '处理中' : '待处理';
+
+  const timeDisplay = kb.status === 'pending' ? kb.createTime : kb.updateTime;
+
+  return `
+    <div class="kb-card" onclick="openDetail('${kb.id}')">
+      <button class="card-delete-btn" title="删除知识库" onclick="event.stopPropagation(); openDeleteModal('${kb.id}', '${escapeHtml(kb.name)}')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      </button>
+      <div class="kb-card-top">
+        <div class="kb-icon-wrap">
+          <div class="kb-icon" style="background:${kb.iconColor || '#4F46E5'}">${kb.icon}</div>
+        </div>
+        <div class="kb-info">
+          <div class="kb-name-row">
+            <span class="kb-name">${escapeHtml(kb.name)}</span>
+            <span class="kb-status-badge ${statusClass}">${statusLabel}</span>
+          </div>
+          <div class="kb-meta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>OmniX</span>
+			<span>
+			  @ ${escapeHtml(kb.type)}
+			</span>
+          </div>
+        </div>
+      </div>
+      <div class="kb-desc">${escapeHtml(kb.desc)}</div>
+      <div class="kb-tags">
+        <span class="kb-tag" onclick="event.stopPropagation(); openPath('${escapeHtml(kb.path)}')" style="cursor:pointer;" title="点击打开路径">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          ${escapeHtml(kb.path)}
+        </span>
+      </div>
+      <div class="kb-footer">
+        <div class="kb-stats">
+          <div class="kb-stat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span class="kb-stat-value">${kb.totalFiles} 个文件</span>
+          </div>
+          <div class="kb-stat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>创建：${timeDisplay}</span>
+          </div>
+        </div>
+        <div class="kb-actions">
+		  <div class="kb-stat">
+		    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+		    <span>更新于：${timeDisplay}</span>
+		  </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function shortenPath(path) {
+  if (!path) return '';
+  const parts = path.replace(/\\/g, '/').split('/');
+  if (parts.length <= 2) return path;
+  return '...' + parts.slice(-2).join('/');
+}
+
+// ==================== Tab Switching ====================
+document.getElementById('tabGroup').addEventListener('click', function(e) {
+  if (e.target.classList.contains('tab-item')) {
+    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+    currentTab = e.target.dataset.tab;
+    renderCards();
+  }
+});
+
+// ==================== Status Filter ====================
+function setStatusFilter(status, btn) {
+  currentStatus = status;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+// ==================== Sort ====================
+function setSort(sort, btn) {
+  currentSort = sort;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+// ==================== Add Modal ====================
+function openAddModal() {
+  document.getElementById('addModal').classList.add('show');
+  // Reset form
+  document.getElementById('inputName').value = '';
+  document.getElementById('inputPath').value = '';
+  document.getElementById('inputDesc').value = '';
+  document.getElementById('iconPreview').style.background = iconColors[Math.floor(Math.random()*iconColors.length)];
+  document.getElementById('iconPreview').textContent = defaultIcons[Math.floor(Math.random()*defaultIcons.length)];
+}
+
+function closeAddModal() {
+  document.getElementById('addModal').classList.remove('show');
+}
+
+// ==================== Icon Upload ====================
+function handleIconUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 1024*1024) {
+    showToast('图片大小不能超过 1MB', 'error'); return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const preview = document.getElementById('iconPreview');
+    preview.innerHTML = `<img src="${ev.target.result}" alt="icon">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ==================== Browse Folder (Simulated) ====================
+function browseFolder() {
+  // In a real desktop app, this would call native folder picker
+  // For demo purposes, we simulate it
+  const samplePaths = [
+    'D:\\Documents\\MyKnowledge',
+    'D:\\Work\\ProjectDocs',
+    'E:\\Research\\Papers',
+    'D:\\Notes\\ReadingList',
+    'C:\\Users\\User\\Documents\\KB'
+  ];
+  const randomPath = samplePaths[Math.floor(Math.random() * samplePaths.length)];
+  document.getElementById('inputPath').value = randomPath;
+  showToast('已选择文件夹路径', 'success');
+}
+
+// ==================== Submit & Scanning ====================
+function submitKnowledgeBase() {
+  const name = document.getElementById('inputName').value.trim();
+  const path = document.getElementById('inputPath').value.trim();
+
+  if (!name) { showToast('请输入知识库名称', 'error'); return; }
+  if (!path) { showToast('请选择文件夹路径', 'error'); return; }
+
+  closeAddModal();
+  startScanning(name, path);
+}
+
+function startScanning(name, path) {
+  const overlay = document.getElementById('scanOverlay');
+  const progressBar = document.getElementById('scanProgress');
+  const detail = document.getElementById('scanDetail');
+  const subtitle = document.getElementById('scanSubtitle');
+
+  overlay.classList.add('show');
+  progressBar.style.width = '0%';
+  detail.textContent = '已发现 0 个文件';
+
+  // Simulate scanning progress
+  let progress = 0;
+  let fileCount = 0;
+  const totalFiles = Math.floor(Math.random() * 300) + 30; // 30~330 files
+  const unsupportedCount = Math.floor(Math.random() * 8); // 0~7 unsupported
+
+  const scanInterval = setInterval(() => {
+    progress += Math.random() * 12 + 3;
+    if (progress > 100) progress = 100;
+
+    progressBar.style.width = progress + '%';
+    fileCount = Math.floor(totalFiles * (progress / 100));
+    detail.textContent = `已发现 ${fileCount} 个文件`;
+
+    if (progress >= 30 && progress < 60) {
+      subtitle.textContent = '正在解析文件内容...';
+    } else if (progress >= 60 && progress < 85) {
+      subtitle.textContent = '正在提取关键词与元数据...';
+    } else if (progress >= 85) {
+      subtitle.textContent = '即将完成...';
+    }
+
+    if (progress >= 100) {
+      clearInterval(scanInterval);
+      setTimeout(() => {
+        overlay.classList.remove('show');
+        showScanResult(totalFiles, unsupportedCount);
+
+        // Add to list
+        const previewEl = document.getElementById('iconPreview');
+        const newKb = {
+          id: 'kb_' + Date.now(),
+          name: name,
+          icon: previewEl.querySelector('img')
+            ? `<img src="${previewEl.querySelector('img').src}" alt="">`
+            : previewEl.textContent,
+          iconColor: previewEl.style.background || '#4F46E5',
+          desc: document.getElementById('inputDesc').value.trim() || `基于 ${shortenPath(path)} 创建的知识库`,
+          status: 'processing',
+          type: '本地文件夹',
+          path: path,
+          totalFiles: totalFiles,
+          createTime: formatDateTime(new Date()),
+          updateTime: formatDateTime(new Date())
+        };
+        knowledgeBases.unshift(newKb);
+        renderCards();
+        showToast(`知识库"${name}"创建成功`, 'success');
+      }, 400);
+    }
+  }, 180);
+}
+
+function showScanResult(total, unsupported) {
+  document.getElementById('resultTotal').textContent = total;
+  if (unsupported > 0) {
+    document.getElementById('resultUnsupported').textContent = unsupported;
+    document.getElementById('resultUnsupportedWrap').style.display = '';
+  } else {
+    document.getElementById('resultUnsupportedWrap').style.display = 'none';
+  }
+  document.getElementById('resultModal').classList.add('show');
+}
+
+function closeResultModal() {
+  document.getElementById('resultModal').classList.remove('show');
+}
+
+// ==================== Delete ====================
+function openDeleteModal(id, name) {
+  deleteTargetId = id;
+  document.getElementById('deleteName').textContent = name;
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+function closeDeleteModal() {
+  deleteTargetId = null;
+  document.getElementById('deleteModal').classList.remove('show');
+}
+
+function confirmDelete() {
+  if (!deleteTargetId) return;
+  const idx = knowledgeBases.findIndex(kb => kb.id === deleteTargetId);
+  if (idx !== -1) {
+    const name = knowledgeBases[idx].name;
+    knowledgeBases.splice(idx, 1);
+    renderCards();
+    showToast(`已删除知识库"${name}"`, 'success');
+  }
+  closeDeleteModal();
+}
+
+// ==================== Detail Page (Empty Link) ====================
+function openDetail(id) {
+  const kb = knowledgeBases.find(k => k.id === id);
+  if (kb) {
+    // Open detail in new tab (placeholder)
+    window.open(`about:blank`, '_blank');
+  }
+}
+
+// ==================== Open Path ====================
+function openPath(path) {
+  showToast(`正在打开路径: ${path}`, 'info');
+  // In real app: shell.openPath(path)
+}
+
+// ==================== Toast ====================
+function showToast(msg, type='info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const icons = {
+    success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    error: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    warning: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    info: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+  };
+  toast.innerHTML = `${icons[type] || icons.info}<span>${msg}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(40px)';
+    toast.style.transition = 'all 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// ==================== Utilities ====================
+function formatDateTime(d) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// Close modals on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeAddModal();
+    closeResultModal();
+    closeDeleteModal();
+    const scanOverlay = document.getElementById('scanOverlay');
+    if (scanOverlay.classList.contains('show')) scanOverlay.classList.remove('show');
+  }
+});
+
+// Close modal on overlay click
+['addModal', 'resultModal', 'deleteModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('show');
+  });
+});
+
+// ==================== Init ====================
+renderCards();
+</script>
+</body>
+</html>

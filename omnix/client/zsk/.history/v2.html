@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>知识库管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; margin: 0; padding: 0; }
+        body { font-family: 'Inter', 'Microsoft YaHei', sans-serif; background: #f8fafc; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+        /* Tab styles */
+        .tab-btn { position: relative; padding: 8px 16px; font-size: 14px; font-weight: 500; color: #6b7280; cursor: pointer; transition: all 0.2s; border: none; background: none; }
+        .tab-btn:hover { color: #4f46e5; }
+        .tab-btn.active { color: #4f46e5; font-weight: 600; }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: #4f46e5; border-radius: 1px; }
+
+        /* Status badges */
+        .status-processing { background: #fef3c7; color: #92400e; }
+        .status-ready { background: #d1fae5; color: #065f46; }
+        .status-error { background: #fee2e2; color: #991b1b; }
+        .status-paused { background: #f3f4f6; color: #4b5563; }
+
+        /* Card hover */
+        .kb-card { transition: all 0.2s ease; }
+        .kb-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); }
+
+        /* Scanning animation */
+        @keyframes scan-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .scan-pulse { animation: scan-pulse 1.5s ease-in-out infinite; }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .spin-slow { animation: spin-slow 2s linear infinite; }
+
+        /* Modal overlay */
+        .modal-overlay { background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); }
+
+        /* Path link */
+        .path-link { color: #4f46e5; text-decoration: none; }
+        .path-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="flex flex-col h-full">
+
+    <!-- Top Tabs + New Button -->
+    <div class="flex items-center justify-between px-6 pt-4 pb-2 bg-white border-b border-gray-100">
+        <div class="flex items-center space-x-1">
+            <button class="tab-btn active" data-tab="all">全部</button>
+            <button class="tab-btn" data-tab="my">我的知识库</button>
+            <button class="tab-btn" data-tab="shared">共享知识库</button>
+        </div>
+        <button onclick="openCreateModal()" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">
+            <iconify-icon icon="mdi:plus" class="text-lg"></iconify-icon>
+            新建知识库
+        </button>
+    </div>
+
+    <!-- Search Bar + Status Filter -->
+    <div class="flex items-center gap-3 px-6 py-3 bg-white border-b border-gray-100">
+        <div class="relative flex-1 max-w-md">
+            <iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></iconify-icon>
+            <input type="text" id="searchInput" placeholder="搜索知识库名称..." class="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" oninput="filterKnowledgeBases()" />
+        </div>
+        <select id="statusFilter" class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" onchange="filterKnowledgeBases()">
+            <option value="">全部状态</option>
+            <option value="处理中">处理中</option>
+            <option value="已就绪">已就绪</option>
+            <option value="有错误">有错误</option>
+            <option value="已暂停">已暂停</option>
+        </select>
+        <select id="typeFilter" class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" onchange="filterKnowledgeBases()">
+            <option value="">全部类型</option>
+            <option value="本地文件夹">本地文件夹</option>
+        </select>
+    </div>
+
+    <!-- Knowledge Base Cards Grid -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+        <div id="kbGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <!-- Cards rendered by JS -->
+        </div>
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center">
+            <iconify-icon icon="mdi:folder-open-outline" class="text-6xl text-gray-300 mb-4"></iconify-icon>
+            <p class="text-gray-500 text-lg mb-2">暂无知识库</p>
+            <p class="text-gray-400 text-sm mb-4">点击"新建知识库"开始创建你的第一个知识库</p>
+            <button onclick="openCreateModal()" class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
+                新建知识库
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================== Create Knowledge Base Modal ==================== -->
+    <div id="createModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden" style="max-height: 90vh;">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">新建知识库</h3>
+                <button onclick="closeModal('createModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6 space-y-4 overflow-y-auto" style="max-height: 60vh;">
+                <!-- Name -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">知识库名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="kbName" placeholder="请输入知识库名称" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <!-- Icon -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">图标</label>
+                    <div class="flex items-center gap-2">
+                        <div id="selectedIcon" class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 text-xl">
+                            <iconify-icon icon="mdi:book-open-page-variant-outline"></iconify-icon>
+                        </div>
+                        <div class="flex-1 grid grid-cols-8 gap-1.5" id="iconPicker">
+                            <!-- Icons rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+                <!-- Path -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">文件夹路径 <span class="text-red-500">*</span></label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="kbPath" placeholder="请选择或输入本地文件夹路径" class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" readonly />
+                        <button onclick="selectFolder()" class="px-3 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-1.5 text-gray-600">
+                            <iconify-icon icon="mdi:folder-open"></iconify-icon>
+                            浏览
+                        </button>
+                    </div>
+                </div>
+                <!-- Description -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">描述 <span class="text-gray-400 text-xs font-normal">(可选)</span></label>
+                    <textarea id="kbDesc" placeholder="简要描述知识库内容..." rows="3" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
+                </div>
+                <!-- Supported formats hint -->
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-3">
+                    <div class="flex items-start gap-2">
+                        <iconify-icon icon="mdi:information-outline" class="text-blue-500 text-lg mt-0.5"></iconify-icon>
+                        <div class="text-xs text-blue-700">
+                            <p class="font-medium mb-1">支持的文件格式</p>
+                            <p>.pdf、.docx、.doc、.xlsx、.xls、.pptx、.ppt、.txt、.md、.html、.csv、.json、.xml、.jpg、.png、.gif、.bmp</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50">
+                <button onclick="closeModal('createModal')" class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">取消</button>
+                <button onclick="submitCreate()" class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">提交创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Scanning Modal ==================== -->
+    <div id="scanningModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden text-center p-8">
+            <div class="mb-6">
+                <div class="relative w-20 h-20 mx-auto">
+                    <div class="absolute inset-0 rounded-full border-4 border-indigo-100"></div>
+                    <div class="absolute inset-0 rounded-full border-4 border-indigo-600 border-t-transparent spin-slow"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <iconify-icon icon="mdi:folder-search-outline" class="text-3xl text-indigo-600 scan-pulse"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">正在扫描文件夹</h3>
+            <p class="text-sm text-gray-500 mb-1" id="scanningPath">C:\Users\fei\Documents\知识库</p>
+            <p class="text-xs text-gray-400" id="scanningProgress">已扫描 0 个文件...</p>
+            <div class="mt-4 w-full bg-gray-200 rounded-full h-1.5">
+                <div id="scanningBar" class="bg-indigo-600 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Scan Result Modal ==================== -->
+    <div id="scanResultModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+            <div class="p-8 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+                    <iconify-icon icon="mdi:check-circle-outline" class="text-4xl text-green-600"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">扫描完成</h3>
+                <p class="text-sm text-gray-600 mb-1" id="scanTotalText">共扫描到 <span class="font-semibold text-indigo-600">128</span> 个文件</p>
+                <p class="text-sm text-gray-500 mb-4" id="scanUnsupportedText">其中 <span class="text-amber-600">3</span> 个文件格式暂不支持</p>
+                <div class="bg-gray-50 rounded-lg p-3 mb-4 text-left">
+                    <p class="text-xs font-medium text-gray-600 mb-1.5">不支持的文件格式：</p>
+                    <div id="unsupportedFormats" class="flex flex-wrap gap-1.5">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+                <p class="text-xs text-gray-400">知识库已进入<span class="text-amber-600 font-medium">处理中</span>状态，可在列表中查看处理进度</p>
+            </div>
+            <div class="px-6 pb-6">
+                <button onclick="closeModal('scanResultModal')" class="w-full px-4 py-2.5 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Delete Confirm Modal ==================== -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
+            <div class="p-8 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+                    <iconify-icon icon="mdi:alert-circle-outline" class="text-4xl text-red-600"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">确认删除知识库？</h3>
+                <p class="text-sm text-gray-500" id="deleteKbName">删除后知识库数据将无法恢复，原文件不受影响。</p>
+            </div>
+            <div class="flex items-center gap-3 px-6 pb-6">
+                <button onclick="closeModal('deleteModal')" class="flex-1 px-4 py-2.5 text-sm border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors">取消</button>
+                <button onclick="confirmDelete()" class="flex-1 px-4 py-2.5 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ==================== Mock Data ====================
+const iconOptions = [
+    'mdi:book-open-page-variant-outline', 'mdi:folder-outline', 'mdi:database-outline',
+    'mdi:file-document-outline', 'mdi:brain', 'mdi:lightbulb-outline',
+    'mdi:graduation-cap', 'mdi:code-tags', 'mdi:chart-bar', 'mdi:account-group-outline',
+    'mdi:briefcase-outline', 'mdi:home-outline', 'mdi:star-outline', 'mdi:rocket-launch-outline'
+];
+
+let selectedIconValue = 'mdi:book-open-page-variant-outline';
+let deleteTargetId = null;
+let currentTab = 'all';
+
+const kbData = [
+    {
+        id: 1, name: '产品文档库', icon: 'mdi:book-open-page-variant-outline',
+        status: '已就绪', type: '本地文件夹', path: 'C:\\Users\\fei\\Documents\\产品文档',
+        fileCount: 156, updatedAt: '2026-07-15 14:30', createdAt: '2026-06-01 09:00',
+        desc: '包含所有产品相关的PRD、设计文档和技术规格说明'
+    },
+    {
+        id: 2, name: '行业研究报告', icon: 'mdi:chart-bar',
+        status: '处理中', type: '本地文件夹', path: 'C:\\Users\\fei\\Documents\\行业研究',
+        fileCount: 43, updatedAt: '2026-07-16 10:15', createdAt: '2026-07-10 11:20',
+        desc: '收集的行业分析报告、市场调研数据'
+    },
+    {
+        id: 3, name: '技术知识库', icon: 'mdi:code-tags',
+        status: '已就绪', type: '本地文件夹', path: 'C:\\Users\\fei\\Documents\\技术文档',
+        fileCount: 89, updatedAt: '2026-07-14 16:45', createdAt: '2026-05-15 08:30',
+        desc: '技术架构文档、API文档、开发规范'
+    },
+    {
+        id: 4, name: '培训资料', icon: 'mdi:graduation-cap',
+        status: '有错误', type: '本地文件夹', path: 'C:\\Users\\fei\\Documents\\培训资料',
+        fileCount: 27, updatedAt: '2026-07-12 09:00', createdAt: '2026-07-01 14:00',
+        desc: '内部培训PPT、操作手册、视频教程'
+    },
+    {
+        id: 5, name: '合同模板库', icon: 'mdi:file-document-outline',
+        status: '已就绪', type: '本地文件夹', path: 'C:\\Users\\fei\\Documents\\合同模板',
+        fileCount: 34, updatedAt: '2026-07-10 11:30', createdAt: '2026-04-20 10:00',
+        desc: '各类合同模板、协议范本'
+    },
+    {
+        id: 6, name: '会议纪要', icon: 'mdi:account-group-outline',
+        status: '已暂停', type: '本地文件夹', path: 'C:\\Users\\fei\\Documents\\会议纪要',
+        fileCount: 12, updatedAt: '2026-07-08 17:00', createdAt: '2026-07-05 09:00',
+        desc: '部门周会、项目评审会议纪要'
+    }
+];
+
+// ==================== Render Functions ====================
+function getStatusClass(status) {
+    const map = { '处理中': 'status-processing', '已就绪': 'status-ready', '有错误': 'status-error', '已暂停': 'status-paused' };
+    return map[status] || 'status-paused';
+}
+
+function getStatusIcon(status) {
+    const map = { '处理中': 'mdi:loading', '已就绪': 'mdi:check-circle', '有错误': 'mdi:alert-circle', '已暂停': 'mdi:pause-circle' };
+    return map[status] || 'mdi:pause-circle';
+}
+
+function renderCards(data) {
+    const grid = document.getElementById('kbGrid');
+    const empty = document.getElementById('emptyState');
+
+    if (data.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        empty.classList.add('flex');
+        return;
+    }
+
+    empty.classList.add('hidden');
+    empty.classList.remove('flex');
+
+    grid.innerHTML = data.map(kb => `
+        <div class="kb-card bg-white rounded-xl border border-gray-100 p-5 cursor-pointer" onclick="openDetail(${kb.id})">
+            <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 text-xl flex-shrink-0">
+                        <iconify-icon icon="${kb.icon}"></iconify-icon>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 text-sm">${kb.name}</h4>
+                        <div class="flex items-center gap-1.5 mt-1">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${getStatusClass(kb.status)}">
+                                <iconify-icon icon="${getStatusIcon(kb.status)}" class="text-xs ${kb.status === '处理中' ? 'spin-slow' : ''}"></iconify-icon>
+                                ${kb.status}
+                            </span>
+                            <span class="text-xs text-gray-400">${kb.type}</span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="event.stopPropagation();showDeleteModal(${kb.id})" class="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors">
+                    <iconify-icon icon="mdi:trash-can-outline" class="text-lg"></iconify-icon>
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mb-3 line-clamp-2">${kb.desc}</p>
+            <div class="flex items-center gap-1.5 text-xs text-gray-400 mb-2">
+                <iconify-icon icon="mdi:folder-outline" class="text-sm"></iconify-icon>
+                <a href="javascript:void(0)" onclick="event.stopPropagation();openFolder('${kb.path}')" class="path-link truncate max-w-[280px]" title="${kb.path}">${kb.path}</a>
+            </div>
+            <div class="flex items-center justify-between text-xs text-gray-400 pt-2 border-t border-gray-50">
+                <span>共 <span class="font-medium text-gray-600">${kb.fileCount}</span> 个文件</span>
+                <div class="flex items-center gap-3">
+                    <span title="更新时间">更新 ${kb.updatedAt}</span>
+                    <span title="创建时间">创建 ${kb.createdAt}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ==================== Filter & Tab ====================
+function filterKnowledgeBases() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const status = document.getElementById('statusFilter').value;
+    const type = document.getElementById('typeFilter').value;
+
+    let filtered = kbData.filter(kb => {
+        const matchSearch = !search || kb.name.toLowerCase().includes(search) || kb.desc.toLowerCase().includes(search);
+        const matchStatus = !status || kb.status === status;
+        const matchType = !type || kb.type === type;
+        return matchSearch && matchStatus && matchType;
+    });
+
+    if (currentTab === 'my') {
+        filtered = filtered.filter(kb => kb.id <= 3);
+    } else if (currentTab === 'shared') {
+        filtered = filtered.filter(kb => kb.id > 3);
+    }
+
+    renderCards(filtered);
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentTab = this.dataset.tab;
+        filterKnowledgeBases();
+    });
+});
+
+// ==================== Modal Functions ====================
+function openCreateModal() {
+    document.getElementById('kbName').value = '';
+    document.getElementById('kbPath').value = '';
+    document.getElementById('kbDesc').value = '';
+    selectedIconValue = 'mdi:book-open-page-variant-outline';
+    renderIconPicker();
+    document.getElementById('createModal').classList.remove('hidden');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.add('hidden');
+}
+
+function renderIconPicker() {
+    const container = document.getElementById('iconPicker');
+    container.innerHTML = iconOptions.map(icon => `
+        <button onclick="selectIcon('${icon}')" class="w-8 h-8 rounded-md flex items-center justify-center text-gray-400 hover:bg-indigo-50 hover:text-indigo-600 transition-colors ${selectedIconValue === icon ? 'bg-indigo-100 text-indigo-600' : ''}">
+            <iconify-icon icon="${icon}" class="text-base"></iconify-icon>
+        </button>
+    `).join('');
+
+    document.getElementById('selectedIcon').innerHTML = `<iconify-icon icon="${selectedIconValue}"></iconify-icon>`;
+}
+
+function selectIcon(icon) {
+    selectedIconValue = icon;
+    renderIconPicker();
+}
+
+function selectFolder() {
+    // Simulate folder selection - in real app this would use a file picker API
+    const paths = [
+        'C:\\Users\\fei\\Documents\\项目资料',
+        'C:\\Users\\fei\\Desktop\\工作文档',
+        'D:\\Data\\知识库',
+        'C:\\Users\\fei\\Downloads\\参考资料'
+    ];
+    const randomPath = paths[Math.floor(Math.random() * paths.length)];
+    document.getElementById('kbPath').value = randomPath;
+}
+
+function submitCreate() {
+    const name = document.getElementById('kbName').value.trim();
+    const path = document.getElementById('kbPath').value.trim();
+
+    if (!name) { alert('请输入知识库名称'); return; }
+    if (!path) { alert('请选择文件夹路径'); return; }
+
+    closeModal('createModal');
+    startScanning(path);
+}
+
+function startScanning(path) {
+    document.getElementById('scanningPath').textContent = path;
+    document.getElementById('scanningModal').classList.remove('hidden');
+
+    let progress = 0;
+    const totalFiles = Math.floor(Math.random() * 150) + 50;
+    const unsupportedCount = Math.floor(Math.random() * 5) + 1;
+    const unsupportedFormats = ['.exe', '.zip', '.rar', '.psd', '.ai'][Math.floor(Math.random() * 3)];
+
+    const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 15) + 5;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            setTimeout(() => {
+                closeModal('scanningModal');
+                showScanResult(totalFiles, unsupportedCount, unsupportedFormats);
+            }, 500);
+        }
+        document.getElementById('scanningProgress').textContent = `已扫描 ${Math.min(progress, totalFiles)} / ${totalFiles} 个文件...`;
+        document.getElementById('scanningBar').style.width = progress + '%';
+    }, 200);
+}
+
+function showScanResult(total, unsupported, formats) {
+    document.getElementById('scanTotalText').innerHTML = `共扫描到 <span class="font-semibold text-indigo-600">${total}</span> 个文件`;
+    document.getElementById('scanUnsupportedText').innerHTML = `其中 <span class="text-amber-600">${unsupported}</span> 个文件格式暂不支持`;
+    document.getElementById('unsupportedFormats').innerHTML = `<span class="px-2 py-1 bg-amber-50 text-amber-700 rounded text-xs">${formats}</span>`;
+    document.getElementById('scanResultModal').classList.remove('hidden');
+
+    // Add new KB to data with "处理中" status
+    const newKb = {
+        id: kbData.length + 1,
+        name: document.getElementById('kbName').value.trim(),
+        icon: selectedIconValue,
+        status: '处理中',
+        type: '本地文件夹',
+        path: document.getElementById('kbPath').value.trim(),
+        fileCount: total,
+        updatedAt: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-'),
+        createdAt: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-'),
+        desc: document.getElementById('kbDesc').value.trim() || '新建知识库'
+    };
+    kbData.unshift(newKb);
+    filterKnowledgeBases();
+}
+
+function showDeleteModal(id) {
+    deleteTargetId = id;
+    const kb = kbData.find(k => k.id === id);
+    document.getElementById('deleteKbName').textContent = `删除「${kb.name}」后知识库数据将无法恢复，原文件不受影响。`;
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function confirmDelete() {
+    if (deleteTargetId) {
+        const idx = kbData.findIndex(k => k.id === deleteTargetId);
+        if (idx > -1) kbData.splice(idx, 1);
+        deleteTargetId = null;
+    }
+    closeModal('deleteModal');
+    filterKnowledgeBases();
+}
+
+function openDetail(id) {
+    // Placeholder: navigate to detail page
+    window.open('kb-detail.html?id=' + id, '_blank');
+}
+
+function openFolder(path) {
+    // In real app, this would open the folder in file explorer
+    alert('打开文件夹：' + path);
+}
+
+// ==================== Init ====================
+renderIconPicker();
+renderCards(kbData);
+</script>
+</body>
+</html>

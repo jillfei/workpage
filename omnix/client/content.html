@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OmniX - 开始使用</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: #ffffff;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      color: #1a1a1a;
+    }
+
+    /* ========== Welcome Hero ========== */
+    .welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 40px 30px;
+      text-align: center;
+    }
+    .welcome-inner {
+      max-width: 620px;
+      width: 100%;
+    }
+    .welcome-title {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #111;
+      margin-bottom: 10px;
+    }
+    .welcome-title .highlight {
+      background: linear-gradient(135deg, #4a6cf7, #6c63ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .welcome-subtitle {
+      font-size: 16px;
+      color: #888;
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+
+    /* Mascot */
+    .mascot-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+    }
+    .mascot-sparkle {
+      position: absolute;
+      top: -4px;
+      right: calc(100% + 12px);
+      font-size: 22px;
+      animation: sparkle 2s ease-in-out infinite;
+    }
+    @keyframes sparkle {
+      0%,100% { opacity: 0.3; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+    .mascot-svg {
+      width: 160px;
+      height: 160px;
+    }
+
+    /* ========== Input Area ========== */
+    .input-area {
+      padding: 0 24px 60px;
+      display: flex;
+      justify-content: center;
+    }
+    .input-card {
+      width: 100%;
+      max-width: 700px;
+      border-radius: 14px;
+      border: 1.5px solid #e5e5e5;
+      background: #fafafa;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      overflow: visible;
+    }
+
+    /* Textarea */
+    .input-textarea-wrap {
+      padding: 18px 20px 4px;
+    }
+    .input-textarea {
+      width: 100%;
+      min-height: 52px;
+      max-height: 180px;
+      border: none;
+      outline: none;
+      resize: none;
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: #222;
+      background: transparent;
+      font-family: inherit;
+    }
+    .input-textarea::placeholder {
+      color: #bbb;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 18px 14px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .toolbar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      border-radius: 7px;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      color: #555;
+      transition: all 0.15s;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .toolbar-btn:hover {
+      background: #eaeaea;
+      border-color: #ddd;
+    }
+    .toolbar-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke-width: 1.8;
+    }
+
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Model selector pill */
+    .model-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 7px;
+      border: 1px solid #e0e0e0;
+      background: #f0f0f0;
+      font-size: 12.5px;
+      color: #444;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .model-pill:hover { border-color: #ccc; background: #e8e8e8; }
+    .model-icon {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Send button */
+    .send-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      border: none;
+      background: #ccc;
+      cursor: not-allowed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .send-btn.active {
+      background: #666;
+      cursor: pointer;
+    }
+    .send-btn.active:hover { background: #444; }
+    .send-btn svg {
+      width: 17px;
+      height: 17px;
+      color: #fff;
+      transform: rotate(-45deg);
+    }
+
+    /* File attachment row */
+    .file-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 18px 14px;
+    }
+    .file-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 7px;
+      border: 1px solid #e0e0e0;
+      background: #f5f5f5;
+      cursor: pointer;
+      font-size: 13px;
+      color: #555;
+      user-select: none;
+      transition: all 0.15s;
+    }
+    .file-trigger:hover { background: #ebebeb; border-color: #d0d0d0; }
+    .file-trigger svg { width: 14px; height: 14px; }
+
+    /* Bottom status icons */
+    .bottom-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 4px 0 32px;
+    }
+    .status-icon {
+      width: 17px;
+      height: 17px;
+      color: #999;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .status-icon:hover { color: #666; }
+    .status-icon.delete-icon:hover { color: #e74c3c; }
+
+  </style>
+</head>
+<body>
+
+  <!-- ====== Welcome Section ====== -->
+  <section class="welcome">
+    <div class="welcome-inner">
+      <!-- Mascot -->
+      <div class="mascot-wrapper">
+        <span class="mascot-sparkle">✨</span>
+        <svg class="mascot-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Body -->
+          <ellipse cx="100" cy="115" rx="60" ry="58" fill="#4A6CF7"/>
+          <!-- Ears / Horns -->
+          <path d="M56 72 L48 50 Q46 42 54 45 L62 64 Z" fill="#4A6CF7"/>
+          <path d="M144 72 L152 50 Q154 42 146 45 L138 64 Z" fill="#4A6CF7"/>
+          <circle cx="51" cy="48" r="6" fill="#4A6CF7"/>
+          <circle cx="149" cy="48" r="6" fill="#4A6CF7"/>
+          <!-- Eyes (sunglasses) -->
+          <rect x="68" y="88" width="28" height="18" rx="4" fill="#222"/>
+          <rect x="104" y="88" width="28" height="18" rx="4" fill="#222"/>
+          <line x1="96" y1="96" x2="104" y2="96" stroke="#222" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Sunglasses reflection -->
+          <line x1="73" y1="93" x2="82" y2="93" stroke="#555" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+          <line x1="109" y1="93" x2="118" y2="93" stroke="#555" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+          <!-- Mouth / fangs -->
+          <path d="M85 118 Q100 130 115 118" stroke="#333" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M90 120 L86 128 L94 122 Z" fill="#fff" stroke="#333" stroke-width="1"/>
+          <path d="M110 120 L114 128 L106 122 Z" fill="#fff" stroke="#333" stroke-width="1"/>
+          <!-- Arm waving -->
+          <ellipse cx="155" cy="125" rx="14" ry="20" fill="#4A6CF7" transform="rotate(20 155 125)"/>
+          <!-- Hand -->
+          <circle cx="166" cy="114" r="8" fill="#4A6CF7"/>
+          <!-- Legs -->
+          <ellipse cx="78" cy="168" rx="16" ry="12" fill="#3B5DE7"/>
+          <ellipse cx="122" cy="168" rx="16" ry="12" fill="#3B5DE7"/>
+        </svg>
+      </div>
+
+      <h1 class="welcome-title">开始使用 <span class="highlight">OmniX</span></h1>
+      <p class="welcome-subtitle">开启您的 AI 智能体协作之旅，让工作从执行走向智能</p>
+    </div>
+  </section>
+
+  <!-- ====== Input Area ====== -->
+  <section class="input-area">
+    <div class="input-card">
+
+      <!-- Textarea -->
+      <div class="input-textarea-wrap">
+        <textarea
+          class="input-textarea"
+          placeholder="描述任务或提问 / @指令 @附件/链接"
+          rows="1"
+        ></textarea>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <button class="toolbar-btn" title="选择文件">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            选择文件
+            <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="toolbar-btn" title="技能">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            技能
+            <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="toolbar-btn" title="知识空间">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            知识空间
+            <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="toolbar-btn" title="允许编辑">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            允许编辑
+            <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+
+        <div class="toolbar-right">
+          <div class="model-pill">
+            <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+            gpt-5.5
+          </div>
+          <button class="send-btn active" title="发送">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- File attachment trigger -->
+      <div class="file-row">
+        <div class="file-trigger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+          添加文件选项
+          <svg style="width:10px;height:10px;color:#aaa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====== Bottom Status Icons ====== -->
+  <div class="bottom-status">
+    <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+    <svg class="status-icon delete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
+  </div>
+
+  <!-- Auto-resize textarea logic -->
+  <script>
+    const ta = document.querySelector('.input-textarea');
+    ta.addEventListener('input', () => {
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 180) + 'px';
+    });
+  </script>
+
+</body>
+</html>

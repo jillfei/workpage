@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知识库列表 - OmniX 个人知识库</title>
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-light: #EEF2FF;
+      --primary-hover: #4338CA;
+      --text: #1F2937;
+      --text-secondary: #6B7280;
+      --text-tertiary: #9CA3AF;
+      --bg: #F9FAFB;
+      --card-bg: #FFFFFF;
+      --border: #E5E7EB;
+      --border-light: #F3F4F6;
+      --success: #059669;
+      --success-light: #D1FAE5;
+      --warning: #D97706;
+      --warning-light: #FEF3C7;
+      --danger: #DC2626;
+      --danger-light: #FEE2E2;
+      --info: #3B82F6;
+      --info-light: #DBEAFE;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -5px rgba(0,0,0,0.04);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-full: 9999px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ========== Page Container ========== */
+    .page-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 24px 48px;
+    }
+
+    /* ========== Header Row: Tabs + Action ========== */
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tab-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+    }
+
+    .tab-item {
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      background: transparent;
+      white-space: nowrap;
+    }
+
+    .tab-item:hover {
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .tab-item.active {
+      color: var(--primary);
+      background: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ========== Buttons ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 1px 2px rgba(79, 70, 229, 0.2);
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .btn-secondary:hover {
+      background: var(--bg);
+      border-color: var(--text-tertiary);
+    }
+
+    .btn-danger {
+      background: #fff;
+      color: var(--danger);
+      border-color: var(--danger-light);
+    }
+    .btn-danger:hover {
+      background: var(--danger-light);
+      border-color: var(--danger);
+    }
+
+    .btn-sm { padding: 6px 12px; font-size: 13px; }
+    .btn .icon { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* ========== Filter Row: Search + Status Tabs + Sort ========== */
+    .filter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .filter-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+
+    .status-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .status-tab {
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: #fff;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .status-tab:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .status-tab.active {
+      color: var(--primary);
+      background: var(--primary-light);
+      border-color: var(--primary-light);
+      font-weight: 600;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 220px;
+      max-width: 340px;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 9px 12px 9px 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: #fff;
+    }
+    .search-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+    }
+    .search-box .search-icon {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
+      color: var(--text-tertiary);
+      pointer-events: none;
+    }
+
+    .sort-group {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    .sort-btn {
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: #fff;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border-right: 1px solid var(--border);
+    }
+    .sort-btn:last-child { border-right: none; }
+    .sort-btn:hover { color: var(--primary); background: var(--bg); }
+    .sort-btn.active {
+      color: var(--primary);
+      background: var(--primary-light);
+      font-weight: 600;
+    }
+
+    /* ========== Card Grid ========== */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 20px;
+    }
+
+    /* Knowledge Base Card — Expert Plaza Style */
+    .kb-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      cursor: pointer;
+    }
+    .kb-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: #D1D5DB;
+    }
+
+    /* Card top row: icon + info + actions */
+    .kb-card-top {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .kb-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .kb-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+    .kb-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .kb-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .kb-name {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .kb-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 9px;
+      border-radius: var(--radius-full);
+      font-size: 11.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .kb-status-badge::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .st-pending   { background: #F3F4F6; color: #6B7280; }
+    .st-pending::before   { background: #9CA3AF; }
+    .st-processing { background: var(--warning-light); color: #92400E; }
+    .st-processing::before { background: var(--warning); animation: pulse-dot 1.5s infinite; }
+    .st-done     { background: var(--success-light); color: #047857; }
+    .st-done::before     { background: var(--success); }
+    .st-error    { background: var(--danger-light); color: #991B1B; }
+    .st-error::before    { background: var(--danger); }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .kb-meta-line {
+      font-size: 12.5px;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+    .kb-meta-line svg {
+      width: 13px; height: 13px;
+      flex-shrink: 0;
+    }
+
+    .kb-path-row {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .kb-path-row:hover { color: var(--primary); }
+    .kb-path-row svg {
+      width: 14px; height: 14px;
+      flex-shrink: 0;
+    }
+    .kb-path-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Card description */
+    .kb-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Card tags */
+    .kb-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .kb-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      background: var(--bg);
+      border: 1px solid var(--border-light);
+    }
+    .kb-tag.type-tag {
+      color: var(--primary);
+      background: var(--primary-light);
+      border-color: transparent;
+      font-weight: 600;
+    }
+
+    /* Card footer */
+    .kb-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-light);
+    }
+    .kb-footer-left {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    .kb-footer-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .detail-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.15s;
+    }
+    .detail-link:hover { color: var(--primary-hover); text-decoration: underline; }
+
+    .icon-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .icon-btn:hover {
+      background: var(--danger-light);
+      color: var(--danger);
+      border-color: var(--danger-light);
+    }
+    .icon-btn svg { width: 15px; height: 15px; }
+
+    /* ========== Empty State ========== */
+    .empty-state {
+      text-align: center;
+      padding: 72px 24px;
+      color: var(--text-secondary);
+    }
+    .empty-icon {
+      width: 80px; height: 80px;
+      margin: 0 auto 20px;
+      background: var(--primary-light);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+    .empty-icon svg { width: 40px; height: 40px; }
+    .empty-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .empty-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; max-width: 400px; margin-left: auto; margin-right: auto; }
+
+    /* ========== Modal Overlay ========== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 24, 39, 0.45);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .modal-overlay.show { display: flex; opacity: 1; }
+
+    .modal {
+      background: #fff;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 520px;
+      max-height: calc(100vh - 40px);
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      transform: translateY(10px);
+      transition: transform 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-overlay.show .modal { transform: translateY(0); }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--text); }
+    .modal-close {
+      width: 32px; height: 32px;
+      border: none; background: transparent;
+      color: var(--text-secondary); cursor: pointer;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .modal-close:hover { background: var(--border-light); color: var(--text); }
+    .modal-close svg { width: 18px; height: 18px; }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* Form */
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .form-label .required { color: var(--danger); margin-left: 2px; }
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.08);
+    }
+    .form-input::placeholder { color: var(--text-tertiary); }
+    .form-textarea { min-height: 72px; resize: vertical; }
+    .form-hint {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+    .form-hint .format-list {
+      color: var(--warning);
+      font-weight: 600;
+    }
+    .form-error {
+      font-size: 12px;
+      color: var(--danger);
+      margin-top: 5px;
+      display: none;
+    }
+    .form-group.has-error .form-input,
+    .form-group.has-error .form-select { border-color: var(--danger); }
+    .form-group.has-error .form-error { display: block; }
+
+    .path-picker { display: flex; gap: 10px; }
+    .path-picker .form-input { flex: 1; }
+
+    /* Icon picker */
+    .icon-picker-preview {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .icon-preview-box {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 700; color: #fff;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .icon-preview-box img { width: 100%; height: 100%; object-fit: cover; }
+    .icon-picker-hint {
+      font-size: 12px; color: var(--text-tertiary);
+    }
+
+    .format-support-note {
+      margin-top: 6px;
+      padding: 8px 12px;
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #92400E;
+      line-height: 1.5;
+    }
+    .format-support-note strong { color: #D97706; }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+
+    /* ========== Scan Animation State (inside modal) ========== */
+    .scan-state { display: none; }
+    .scan-state.active { display: block; }
+
+    .scan-animation {
+      text-align: center;
+      padding: 36px 24px;
+    }
+    .scan-spinner {
+      width: 56px; height: 56px;
+      margin: 0 auto 20px;
+      position: relative;
+    }
+    .scan-spinner::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 3px solid var(--border-light);
+      border-radius: 50%;
+    }
+    .scan-spinner::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 3px solid transparent;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .scan-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .scan-subtitle {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+    .scan-progress-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--border-light);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .scan-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), #7C3AED);
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .scan-detail {
+      font-size: 12.5px;
+      color: var(--text-tertiary);
+    }
+
+    /* Scan result state */
+    .scan-result {
+      text-align: center;
+      padding: 28px 24px;
+    }
+    .result-icon {
+      width: 52px; height: 52px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .result-icon.success { background: var(--success-light); color: var(--success); }
+    .result-icon.warning { background: var(--warning-light); color: var(--warning); }
+    .result-icon svg { width: 26px; height: 26px; }
+    .result-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .result-body {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+    .result-body .num-highlight {
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .result-body .warn-text {
+      color: var(--warning);
+      font-weight: 600;
+    }
+    .result-footer {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    /* ========== Toast ========== */
+    .toast {
+      position: fixed;
+      top: 20px; right: 20px;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      background: var(--text);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      z-index: 2000;
+      transform: translateX(calc(100% + 30px));
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toast.show { transform: translateX(0); }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--danger); }
+
+    /* ========== Delete Confirm ========== */
+    .confirm-body {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .confirm-body strong { color: var(--text); }
+
+    /* ========== Responsive ========== */
+    @media (max-width: 768px) {
+      .page-container { padding: 16px 16px 40px; }
+      .header-row { flex-direction: column; align-items: stretch; }
+      .filter-row { flex-direction: column; align-items: stretch; }
+      .filter-left { flex-direction: column; }
+      .search-box { max-width: 100%; }
+      .card-grid { grid-template-columns: 1fr; }
+      .kb-card { padding: 16px; }
+      .status-tabs { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+      .sort-group { align-self: flex-start; }
+    }
+
+    /* Focus visible */
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-container">
+
+  <!-- ===== Header Row: Tabs + New Button ===== -->
+  <div class="header-row">
+    <nav class="tab-nav" role="tablist" aria-label="知识库导航">
+      <button class="tab-item active" data-tab="all" role="tab" aria-selected="true">全部</button>
+      <button class="tab-item" data-tab="recent" role="tab" aria-selected="false">最近使用</button>
+      <button class="tab-item" data-tab="starred" role="tab" aria-selected="false">已收藏</button>
+    </nav>
+    <div class="header-actions">
+      <button class="btn btn-primary" id="btnAddKb" type="button">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        新建知识库
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== Filter Row: Status Tabs + Search + Sort ===== -->
+  <div class="filter-row">
+    <div class="filter-left">
+      <div class="status-tabs" role="tablist" aria-label="状态筛选">
+        <button class="status-tab active" data-filter="all" role="tab" aria-selected="true">全部</button>
+        <button class="status-tab" data-filter="done" role="tab" aria-selected="false">已完成</button>
+        <button class="status-tab" data-filter="processing" role="tab" aria-selected="false">处理中</button>
+        <button class="status-tab" data-filter="pending" role="tab" aria-selected="false">待处理</button>
+        <button class="status-tab" data-filter="error" role="tab" aria-selected="false">异常</button>
+      </div>
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="搜索知识库名称或路径..." aria-label="搜索知识库">
+      </div>
+    </div>
+    <div class="sort-group">
+      <button class="sort-btn active" data-sort="latest" type="button">最新</button>
+      <button class="sort-btn" data-sort="name" type="button">名称</button>
+    </div>
+  </div>
+
+  <!-- ===== Card Grid ===== -->
+  <div class="card-grid" id="kbGrid" role="list" aria-label="知识库列表"></div>
+
+  <!-- ===== Empty State ===== -->
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    </div>
+    <div class="empty-title">还没有知识库</div>
+    <div class="empty-desc">新建一个知识库，绑定本地资料文件夹，即可开始构建你的个人知识库。</div>
+    <button class="btn btn-primary" id="btnEmptyAdd" type="button">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      新建知识库
+    </button>
+  </div>
+
+</div><!-- /.page-container -->
+
+
+<!-- ==================== Add/Edit Modal ==================== -->
+<div class="modal-overlay" id="kbModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+
+    <!-- Normal form state -->
+    <div id="formState">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">新建知识库</h2>
+        <button class="modal-close" id="btnModalClose" type="button" aria-label="关闭">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="kbForm" novalidate>
+        <div class="modal-body">
+          <input type="hidden" id="kbId">
+
+          <div class="form-group">
+            <label class="form-label" for="kbName">名称<span class="required">*</span></label>
+            <input type="text" class="form-input" id="kbName" maxlength="50" placeholder="例如：个人笔记、项目资料" required>
+            <div class="form-hint">最多 50 个字符，不可重名</div>
+            <div class="form-error" id="nameError"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="kbIcon">图标</label>
+            <input type="file" class="form-input" id="kbIcon" accept=".jpg,.jpeg,.png,.gif,.webp,.svg">
+            <div class="icon-picker-preview">
+              <div class="icon-preview-box" id="iconPreviewBox" style="background:#4F46E5;">?</div>
+              <span class="icon-picker-hint">支持 JPG / PNG / GIF / WebP / SVG，建议 128×128px</span>
+            </div>
+            <div class="form-error" id="iconError"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="kbPath">本地文件夹路径<span class="required">*</span></label>
+            <div class="path-picker">
+              <input type="text" class="form-input" id="kbPath" placeholder="选择本地文件夹绝对路径" readonly required>
+              <button type="button" class="btn btn-secondary btn-sm" id="btnPickDir">选择文件夹</button>
+            </div>
+            <div class="form-hint">原文件不会被移动或修改</div>
+            <div class="form-error" id="pathError"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="kbDesc">描述<span class="required">*</span></label>
+            <textarea class="form-textarea" id="kbDesc" maxlength="200" placeholder="简要描述该知识库的用途（可选）..." rows="3"></textarea>
+            <div class="form-hint">不超过 200 字符</div>
+          </div>
+
+          <div class="format-support-note">
+            <strong>⚠ 支持的文件格式：</strong>Markdown (.md)、PDF (.pdf)、Word (.docx)、Excel (.xlsx)、PPT (.pptx)、纯文本 (.txt)；<br>
+            代码文件按同步策略处理；其他格式将标记为<strong>暂不支持</strong>。
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btnCancel">取消</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmit">提交并扫描</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Scanning animation state -->
+    <div class="scan-state" id="scanState">
+      <div class="modal-header">
+        <h2 class="modal-title">正在扫描文件夹...</h2>
+      </div>
+      <div class="scan-animation">
+        <div class="scan-spinner"></div>
+        <div class="scan-title" id="scanTitle">正在扫描 <span id="scanningKbName"></span></div>
+        <div class="scan-subtitle">正在分析文件类型与结构，请稍候...</div>
+        <div class="scan-progress-bar">
+          <div class="scan-progress-fill" id="scanProgressFill"></div>
+        </div>
+        <div class="scan-detail" id="scanDetail">已发现 <span id="scanFoundCount">0</span> 个文件...</div>
+      </div>
+    </div>
+
+    <!-- Scan result state -->
+    <div class="scan-state" id="scanResultState">
+      <div class="modal-header">
+        <h2 class="modal-title">扫描完成</h2>
+        <button class="modal-close" id="btnResultClose" type="button" aria-label="关闭">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="scan-result">
+        <div class="result-icon success" id="resultIconWrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="result-title" id="resultTitle">扫描完成！</div>
+        <div class="result-body" id="resultBody"></div>
+        <div class="result-footer">
+          <button class="btn btn-primary" id="btnFinishScan">确定</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ==================== Delete Confirm Modal ==================== -->
+<div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <h2 class="modal-title" id="deleteModalTitle">确认删除</h2>
+      <button class="modal-close" id="btnDeleteClose" type="button" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="confirm-body">确定要删除知识库 <strong id="deleteTargetName"></strong> 吗？<br><br>删除后该知识库的索引与页面记录将被移除，<strong style="color:var(--danger)">原文件夹内容不会被删除</strong>。此操作不可撤销。</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="btnDeleteCancel">取消</button>
+      <button type="button" class="btn btn-danger" id="btnDeleteConfirm">确认删除</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+
+<script>
+// ============================================================
+//  STATE
+// ============================================================
+let knowledgeBases = [];
+let currentFilter = 'all';
+let currentSearch = '';
+let currentSort = 'latest';
+let currentTab = 'all';
+let deleteTargetId = null;
+
+const STATUS_MAP = {
+  pending:       { label: '待处理', cls: 'st-pending' },
+  waiting_parse: { label: '待解析', cls: 'st-pending' },
+  processing:    { label: '处理中', cls: 'st-processing' },
+  parsing:       { label: '解析中', cls: 'st-processing' },
+  done:          { label: '已完成', cls: 'st-done' },
+  unsupported:   { label: '暂不支持', cls: 'st-error' },
+  failed:        { label: '解析失败', cls: 'st-error' }
+};
+
+const ICON_COLORS = [
+  '#4F46E5','#7C3AED','#2563EB','#0891B2',
+  '#059669','#65A30D','#D97706','#DC2626','#DB2777','#EA580C'
+];
+
+const SUPPORTED_FORMATS = ['md','pdf','docx','xlsx','pptx','txt','csv','json','html','py','js','ts','java','go','rs','c','cpp','h','css','scss','xml','yaml','yml','toml','ini','sh','bat','sql','log'];
+
+// ============================================================
+//  HELPERS
+// ============================================================
+function gid() { return 'kb_' + Math.random().toString(36).substring(2, 11); }
+
+function fmt(d) {
+  if (!d) return '--';
+  const t = d instanceof Date ? d : new Date(d.replace(/\s/,'T'));
+  if (isNaN(t)) return d;
+  const p = n => String(n).padStart(2,'0');
+  return `${t.getFullYear()}-${p(t.getMonth()+1)}-${p(t.getDate())} ${p(t.getHours())}:${p(t.getMinutes())}`;
+}
+
+function iconColor(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return ICON_COLORS[Math.abs(h) % ICON_COLORS.length];
+}
+
+function firstChar(s) { return s.trim().charAt(0).toUpperCase(); }
+
+function esc(s) { return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function toast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'toast ' + type;
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+function nowStr() { return fmt(new Date()); }
+
+// ============================================================
+//  MOCK DATA
+// ============================================================
+function loadMockData() {
+  knowledgeBases = [
+    {
+      id: gid(), name: '个人学习笔记',
+      path: 'C:/Users/omnix/Documents/Notes',
+      status: 'done',
+      fileCount: 128, desc: '日常学习、读书笔记与技术文章归档',
+      iconUrl: '', createdAt: '2026-07-10T14:32:00', updatedAt: '2026-07-15T09:15:00'
+    },
+    {
+      id: gid(), name: '项目研发资料',
+      path: 'D:/Work/Projects/RD-Knowledge',
+      status: 'processing',
+      fileCount: 46, desc: '产品研发相关的需求文档、设计稿与技术方案',
+      iconUrl: '', createdAt: '2026-07-14T11:20:00', updatedAt: '2026-07-15T15:42:00'
+    },
+    {
+      id: gid(), name: '合同与法务归档',
+      path: 'D:/Work/Legal/Contracts',
+      status: 'unsupported',
+      fileCount: 12, desc: '合同文本、法务文件与合规材料',
+      iconUrl: '', createdAt: '2026-07-08T16:45:00', updatedAt: '2026-07-08T16:45:00'
+    },
+    {
+      id: gid(), name: '代码仓库 Wiki',
+      path: 'C:/Users/omnix/Projects/wiki-docs',
+      status: 'failed',
+      fileCount: 0, desc: '团队 Wiki 文档与 API 接口说明',
+      iconUrl: '', createdAt: '2026-07-12T10:10:00', updatedAt: '2026-07-13T18:22:00'
+    },
+    {
+      id: gid(), name: '待整理素材库',
+      path: 'E:/Materials/Raw',
+      status: 'pending',
+      fileCount: 0, desc: '',
+      iconUrl: '', createdAt: '2026-07-15T15:30:00', updatedAt: '2026-07-15T15:30:00'
+    },
+    {
+      id: gid(), name: '产品设计文档集',
+      path: 'D:/Work/Design/PRDs',
+      status: 'done',
+      fileCount: 67, desc: '各产品线的 PRD、交互设计稿与竞品分析报告',
+      iconUrl: '', createdAt: '2026-07-05T10:00:00', updatedAt: '2026-07-14T16:20:00'
+    }
+  ];
+  renderList();
+}
+
+// ============================================================
+//  RENDERING
+// ============================================================
+function renderList() {
+  const grid = document.getElementById('kbGrid');
+  const empty = document.getElementById('emptyState');
+
+  // Filter & search
+  let items = knowledgeBases.filter(kb => {
+    const matchSearch = kb.name.toLowerCase().includes(currentSearch.toLowerCase())
+                     || kb.path.toLowerCase().includes(currentSearch.toLowerCase());
+    const matchFilter = currentFilter === 'all'
+      || (currentFilter === 'done' && kb.status === 'done')
+      || (currentFilter === 'processing' && (kb.status === 'processing' || kb.status === 'parsing'))
+      || (currentFilter === 'pending' && kb.status === 'pending')
+      || (currentFilter === 'error' && (kb.status === 'failed' || kb.status === 'unsupported'));
+
+    // Tab filter
+    let matchTab = true;
+    if (currentTab === 'starred') matchTab = false; // no starred mock data
+    if (currentTab === 'recent') {
+      // last 3 days roughly
+      const days = (Date.now() - new Date(kb.updatedAt)) / 86400000;
+      matchTab = days <= 3;
+    }
+
+    return matchSearch && matchFilter && matchTab;
+  });
+
+  // Sort
+  if (currentSort === 'name') {
+    items.sort((a,b) => a.name.localeCompare(b.name, 'zh-CN'));
+  } else {
+    items.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+  }
+
+  if (items.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  grid.innerHTML = items.map(kb => {
+    const st = STATUS_MAP[kb.status] || STATUS_MAP.pending;
+    const ic = kb.iconUrl ? `<img src="${esc(kb.iconUrl)}" alt="">` : `<span>${firstChar(kb.name)}</span>`;
+    const ibg = kb.iconUrl ? '' : `background:${iconColor(kb.name)};`;
+    const fcTag = kb.fileCount > 0 ? `<span class="kb-tag">${kb.fileCount} 个文件</span>` : '<span class="kb-tag">暂无文件</span>';
+    const detailHref = `knowledge-base-detail.html?id=${encodeURIComponent(kb.id)}`;
+    const descHtml = kb.desc ? `<div class="kb-desc">${esc(kb.desc)}</div>` : '';
+
+    return `
+    <article class="kb-card" role="listitem" data-id="${kb.id}">
+      <div class="kb-card-top">
+        <div class="kb-icon" style="${ibg}">${ic}</div>
+        <div class="kb-info">
+          <div class="kb-title-row">
+            <span class="kb-name" title="${esc(kb.name)}">${esc(kb.name)}</span>
+            <span class="kb-status-badge ${st.cls}" title="当前状态：${st.label}">${st.label}</span>
+          </div>
+          <div class="kb-meta-line">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            更新于 ${fmt(kb.updatedAt)}
+          </div>
+          <div class="kb-path-row" title="${esc(kb.path)} （点击打开文件夹）" data-action="openPath">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span class="kb-path-text">${esc(kb.path)}</span>
+          </div>
+        </div>
+      </div>
+      ${descHtml}
+      <div class="kb-tags">
+        <span class="kb-tag type-tag">本地文件夹</span>
+        ${fcTag}
+      </div>
+      <div class="kb-footer">
+        <span class="kb-footer-left">创建于 ${fmt(kb.createdAt)}</span>
+        <div class="kb-footer-actions">
+          <a class="detail-link" href="${detailHref}" target="_blank" rel="noopener noreferrer" data-action="detail"
+             onclick="event.stopPropagation()">
+            查看详情
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </a>
+          <button class="icon-btn" type="button" data-action="delete" title="删除知识库"
+                  onclick="event.stopPropagation()"
+                  aria-label="删除 ${esc(kb.name)}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+
+  attachCardEvents();
+}
+
+function attachCardEvents() {
+  document.querySelectorAll('.kb-card').forEach(card => {
+    const id = card.dataset.id;
+
+    // Click card → open detail
+    card.addEventListener('click', e => {
+      if (e.target.closest('[data-action]')) return;
+      const kb = knowledgeBases.find(k => k.id === id);
+      if (kb) window.open(`knowledge-base-detail.html?id=${encodeURIComponent(id)}`, '_blank');
+    });
+
+    // Open folder path
+    card.querySelector('[data-action="openPath"]')?.addEventListener('click', e => {
+      e.stopPropagation();
+      const kb = knowledgeBases.find(k => k.id === id);
+      if (kb) toast(`打开文件夹: ${kb.path}`);
+    });
+
+    // Delete
+    card.querySelector('[data-action="delete"]')?.addEventListener('click', e => {
+      e.stopPropagation();
+      openDeleteModal(id);
+    });
+  });
+}
+
+// ============================================================
+//  MODAL LOGIC
+// ============================================================
+const modal         = document.getElementById('kbModal');
+const formStateEl   = document.getElementById('formState');
+const scanStateEl   = document.getElementById('scanState');
+const scanResEl     = document.getElementById('scanResultState');
+const modalTitle    = document.getElementById('modalTitle');
+const btnSubmit     = document.getElementById('btnSubmit');
+const kbForm        = document.getElementById('kbForm');
+
+function showFormState()  { formStateEl.style.display='block'; scanStateEl.classList.remove('active'); scanResEl.classList.remove('active'); }
+function showScanState()  { formStateEl.style.display='none'; scanStateEl.classList.add('active');   scanResEl.classList.remove('active'); }
+function showResultState(){ formStateEl.style.display='none'; scanStateEl.classList.remove('active'); scanResEl.classList.add('active'); }
+
+function openAddModal() {
+  kbForm.reset();
+  document.getElementById('kbId').value = '';
+  modalTitle.textContent = '新建知识库';
+  btnSubmit.textContent = '提交并扫描';
+  updateIconPreview('');
+  clearErrors();
+  showFormState();
+  modal.classList.add('show');
+  document.getElementById('kbName').focus();
+}
+
+function openEditModal(id) {
+  // Not used in v1 but kept for extensibility
+}
+
+function closeModal() { modal.classList.remove('show'); }
+
+function clearErrors() {
+  document.querySelectorAll('.form-group.has-error').forEach(g => g.classList.remove('has-error'));
+}
+
+function validateForm() {
+  clearErrors();
+  let ok = true;
+  const name = document.getElementById('kbName').value.trim();
+  const path = document.getElementById('kbPath').value.trim();
+
+  if (!name) {
+    setErr('kbName', 'nameError', '请输入知识库名称'); ok = false;
+  } else if (name.length > 50) {
+    setErr('kbName', 'nameError', '名称不能超过 50 个字符'); ok = false;
+  } else {
+    const dup = knowledgeBases.find(k => k.name === name && k.id !== (document.getElementById('kbId').value||''));
+    if (dup) { setErr('kbName', 'nameError', '该名称已被使用'); ok = false; }
+  }
+
+  if (!path) {
+    setErr('kbPath', 'pathError', '请选择本地文件夹路径'); ok = false;
+  }
+
+  return ok;
+}
+
+function setErr(inputId, errId, msg) {
+  const g = document.getElementById(inputId).closest('.form-group');
+  if (g) g.classList.add('has-error');
+  const el = document.getElementById(errId);
+  if (el) el.textContent = msg;
+}
+
+// Icon preview on file select
+let selectedIconData = null;
+document.getElementById('kbIcon')?.addEventListener('change', function(e) {
+  const f = e.target.files[0];
+  if (!f) { updateIconPreview(''); return; }
+  if (f.size > 1024 * 1024) {
+    setErr('kbIcon', 'iconError', '图标文件不能超过 1MB'); return;
+  }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    selectedIconData = ev.target.result;
+    updateIconPreview(selectedIconData);
+  };
+  reader.readAsDataURL(f);
+});
+
+function updateIconPreview(dataUrl) {
+  const box = document.getElementById('iconPreviewBox');
+  if (dataUrl) {
+    box.innerHTML = `<img src="${dataUrl}" alt="">`;
+    box.style.background = '';
+  } else {
+    box.innerHTML = '?';
+    box.style.background = '#4F46E5';
+  }
+}
+
+// Submit → start scanning simulation
+kbForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  if (!validateForm()) return;
+
+  const name  = document.getElementById('kbName').value.trim();
+  const path  = document.getElementById('kbPath').value.trim();
+  const desc  = document.getElementById('kbDesc').value.trim();
+
+  // Switch to scan animation
+  document.getElementById('scanningKbName').textContent = name;
+  document.getElementById('scanFoundCount').textContent = '0';
+  document.getElementById('scanProgressFill').style.width = '0%';
+  showScanState();
+
+  runScanSimulation(name, path, desc);
+});
+
+function runScanSimulation(name, path, desc) {
+  // Simulate scanning progress
+  let progress = 0;
+  let foundFiles = 0;
+  const totalFiles = 23 + Math.floor(Math.random() * 180); // random 23~203 files
+  const unsupportedFormats = [];
+  const unsupportedCount = Math.random() > 0.6 ? Math.floor(Math.random() * 5) : 0;
+
+  // Pick some random unsupported formats for demo
+  const UNSUPPORTED_EXTS = ['psd','ai','exe','zip','mp4','mov'];
+  for (let i = 0; i < unsupportedCount; i++) {
+    unsupportedFormats.push(UNSUPPORTED_EXTS[i % UNSUPPORTED_EXTS.length]);
+  }
+
+  const interval = setInterval(() => {
+    progress += Math.random() * 12 + 3;
+    if (progress > 100) progress = 100;
+    foundFiles = Math.floor((progress / 100) * totalFiles);
+
+    document.getElementById('scanProgressFill').style.width = progress.toFixed(0) + '%';
+    document.getElementById('scanFoundCount').textContent = foundFiles;
+
+    if (progress >= 100) {
+      clearInterval(interval);
+
+      // Show result
+      setTimeout(() => {
+        showScanResult(name, totalFiles, unsupportedFormats);
+      }, 300);
+    }
+  }, 150 + Math.random() * 100);
+}
+
+function showScanResult(name, total, unsupportedList) {
+  showResultState();
+
+  const hasWarn = unsupportedList.length > 0;
+  const iconWrap = document.getElementById('resultIconWrap');
+
+  if (hasWarn) {
+    iconWrap.className = 'result-icon warning';
+    iconWrap.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+  } else {
+    iconWrap.className = 'result-icon success';
+    iconWrap.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+  }
+
+  document.getElementById('resultTitle').textContent = hasWarn ? '扫描完成（含不支持格式）' : '扫描完成！';
+
+  let bodyHtml = `共扫描到 <span class="num-highlight">${total}</span> 个文件`;
+  if (hasWarn) {
+    bodyHtml += `，其中 <span class="warn-text">${unsupportedList.length}</span> 个文件格式不支持（${[...new Set(unsupportedList)].map(u=>'.'+u.toUpperCase()).join('、')}），将被标记为「暂不支持」`;
+  } else {
+    bodyHtml += '，所有文件均可正常解析';
+  }
+  bodyHtml += '。<br><br>知识库已进入 <span class="num-highlight">处理中</span> 状态，系统将自动进行解析与向量化处理。';
+
+  document.getElementById('resultBody').innerHTML = bodyHtml;
+
+  // Store data to create KB when user clicks confirm
+  window._pendingKb = {
+    name: document.getElementById('scanningKbName').textContent,
+    path: document.getElementById('kbPath').value.trim(),
+    desc: document.getElementById('kbDesc').value.trim(),
+    fileCount: total,
+    iconUrl: selectedIconData || ''
+  };
+}
+
+// Finish scan → add KB as "processing" status
+document.getElementById('btnFinishScan').addEventListener('click', () => {
+  const p = window._pendingKb;
+  if (!p) { closeModal(); return; }
+
+  knowledgeBases.unshift({
+    id: gid(),
+    name: p.name,
+    path: p.path,
+    status: 'processing',
+    fileCount: p.fileCount,
+    desc: p.desc,
+    iconUrl: p.iconUrl,
+    createdAt: nowStr(),
+    updatedAt: nowStr()
+  });
+
+  closeModal();
+  renderList();
+  toast(`知识库「${p.name}」创建成功，当前处于处理中状态`);
+  selectedIconData = null;
+});
+
+// Delete modal
+const deleteModal = document.getElementById('deleteModal');
+
+function openDeleteModal(id) {
+  const kb = knowledgeBases.find(k => k.id === id);
+  if (!kb) return;
+  deleteTargetId = id;
+  document.getElementById('deleteTargetName').textContent = kb.name;
+  deleteModal.classList.add('show');
+}
+
+function closeDeleteModal() {
+  deleteModal.classList.remove('show');
+  deleteTargetId = null;
+}
+
+function handleDelete() {
+  if (!deleteTargetId) return;
+  const kb = knowledgeBases.find(k => k.id === deleteTargetId);
+  knowledgeBases = knowledgeBases.filter(k => k.id !== deleteTargetId);
+  closeDeleteModal();
+  renderList();
+  toast(`知识库「${kb?.name}」已删除`);
+}
+
+// ============================================================
+//  EVENTS
+// ============================================================
+
+// Add buttons
+document.getElementById('btnAddKb').addEventListener('click', openAddModal);
+document.getElementById('btnEmptyAdd').addEventListener('click', openAddModal);
+
+// Modal close buttons
+document.getElementById('btnModalClose').addEventListener('click', closeModal);
+document.getElementById('btnCancel').addEventListener('click', closeModal);
+document.getElementById('btnResultClose').addEventListener('click', closeModal);
+document.getElementById('btnDeleteClose').addEventListener('click', closeDeleteModal);
+document.getElementById('btnDeleteCancel').addEventListener('click', closeDeleteModal);
+document.getElementById('btnDeleteConfirm').addEventListener('click', handleDelete);
+
+// Overlay click to close
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+deleteModal.addEventListener('click', e => { if (e.target === deleteModal) closeDeleteModal(); });
+
+// Escape key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (modal.classList.contains('show')) closeModal();
+    if (deleteModal.classList.contains('show')) closeDeleteModal();
+  }
+});
+
+// Tab nav
+document.querySelectorAll('.tab-item').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab-item').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+    currentTab = tab.dataset.tab;
+    renderList();
+  });
+});
+
+// Status filter tabs
+document.querySelectorAll('.status-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.status-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+    currentFilter = tab.dataset.filter;
+    renderList();
+  });
+});
+
+// Sort buttons
+document.querySelectorAll('.sort-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentSort = btn.dataset.sort;
+    renderList();
+  });
+});
+
+// Search
+document.getElementById('searchInput').addEventListener('input', e => {
+  currentSearch = e.target.value.trim();
+  renderList();
+});
+
+// Folder picker stub (demo)
+document.getElementById('btnPickDir').addEventListener('click', () => {
+  const fakePaths = [
+    'C:/Users/omnix/Documents/Research',
+    'D:/Work/Archive/2026',
+    'E:/Books/Tech-Library',
+    'C:/Users/omnix/Downloads/ReadLater',
+    'D:/Projects/Knowledge-Base'
+  ];
+  const picked = fakePaths[Math.floor(Math.random() * fakePaths.length)];
+  document.getElementById('kbPath').value = picked;
+  document.getElementById('kbPath').closest('.form-group')?.classList.remove('has-error');
+});
+
+// ============================================================
+//  INIT
+// ============================================================
+loadMockData();
+</script>
+
+</body>
+</html>
