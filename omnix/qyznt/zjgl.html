@@ -1127,17 +1127,17 @@
                     <div class="relative" id="publish-history-wrap">
                         <button id="btn-publish-history" onclick="togglePublishHistoryDropdown(event)" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                             <iconify-icon icon="mdi:history"></iconify-icon>
-                            <span>历史记录</span>
+                            <span>发布记录</span>
                             <iconify-icon icon="mdi:chevron-down" class="text-base text-gray-400"></iconify-icon>
                         </button>
                         <div id="publishHistoryDropdown" class="history-dropdown hidden">
                             <div class="history-dropdown-header">
-                                <span class="history-dropdown-title">历史记录</span>
+                                <span class="history-dropdown-title">发布记录</span>
                                 <button class="history-dropdown-close" onclick="closePublishHistoryDropdown()">
                                     <iconify-icon icon="mdi:close" class="text-sm"></iconify-icon>
                                 </button>
                             </div>
-                            <div class="history-tabs">
+                            <div class="history-tabs" style="display: none;">
                                 <button class="history-tab active" data-tab="save" onclick="switchHistoryTab('save')">保存记录</button>
                                 <button class="history-tab" data-tab="publish" onclick="switchHistoryTab('publish')">发布历史</button>
                             </div>
@@ -1336,10 +1336,10 @@
                                     <iconify-icon icon="mdi:file-document-outline" class="text-sm"></iconify-icon>
                                     产物
                                 </button-->
-                                <button id="btn-ai-tuning" class="mid-btn" data-tab="ai-tuning" onclick="switchMiddleTab(this, 'AI 智能调优'); openRightPanel('ai-tuning')">
+                                <!--button id="btn-ai-tuning" class="mid-btn" data-tab="ai-tuning" onclick="switchMiddleTab(this, 'AI 智能调优'); openRightPanel('ai-tuning')">
                                     <iconify-icon icon="mdi:robot-outline" class="text-sm"></iconify-icon>
                                     AI 智能调优
-                                </button>
+                                </button-->
                                 <!--button class="mid-btn" data-tab="run-log" onclick="switchMiddleTab(this, '运行日志'); openRightPanel('run-log')">
                                     <iconify-icon icon="mdi:console-line" class="text-sm"></iconify-icon>
                                     运行日志
@@ -3542,6 +3542,7 @@
                 dropdown.style.position = 'absolute';
                 dropdown.style.right = (wrapRect.right - btnRect.right) + 'px';
                 dropdown.style.top = (btnRect.bottom - wrapRect.top + 4) + 'px';
+				switchHistoryTab('publish')
             } else {
                 closePublishHistoryDropdown();
             }
