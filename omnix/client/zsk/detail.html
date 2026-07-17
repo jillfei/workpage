@@ -42,7 +42,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 600;
       color: var(--text-main);
     }
@@ -188,8 +188,9 @@
     .stat-card.stat-unsupported .stat-num { color: #9ca3af; }
     .stat-card.stat-failed { background: #fef2f2; border-left-color: #ef4444; }
     .stat-card.stat-failed .stat-num { color: #ef4444; }
-    .toolbar-right { display: flex; align-items: center; gap: 12px; }
-    .capacity { color: var(--text-secondary); font-size: 13px; }
+    .toolbar-right { display: flex; align-items: center; gap: 5px; }
+    .capacity { color: var(--text-secondary); font-size: 13px;cursor: pointer; padding:5px; }
+	.capacity:hover { background: #f3f4f6; color: var(--primary); }
     .btn {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 6px 14px; border-radius: 6px;
@@ -351,7 +352,7 @@
     }
     .modal-overlay.show { display: flex; }
     .modal {
-      background: #fff; border-radius: 12px; width: 560px; max-width: 90vw; max-height: 90vh;
+      background: #fff; border-radius: 12px; width: 800px; max-width: 90vw; max-height: 90vh;
       overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-lg);
     }
     .modal-header {
@@ -408,6 +409,67 @@
     .model-row:last-child { border-bottom: none; }
     .model-row .tag { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #eef2ff; color: var(--primary-dark); }
     .model-row .remove { color: var(--danger); cursor: pointer; font-size: 12px; }
+
+    .cap-hero {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+      border-radius: 12px; padding: 24px; color: #fff;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; position: relative; overflow: hidden;
+    }
+    .cap-hero::before {
+      content: ''; position: absolute; width: 120px; height: 120px;
+      background: rgba(255,255,255,0.08); border-radius: 50%;
+      top: -40px; right: -20px;
+    }
+    .cap-hero::after {
+      content: ''; position: absolute; width: 80px; height: 80px;
+      background: rgba(255,255,255,0.05); border-radius: 50%;
+      bottom: -30px; left: 40px;
+    }
+    .cap-hero-left {}
+    .cap-hero-label { font-size: 12px; opacity: 0.8; margin-bottom: 6px; letter-spacing: 0.5px; }
+    .cap-hero-value { font-size: 28px; font-weight: 700; line-height: 1.1; }
+    .cap-hero-sub { font-size: 12px; opacity: 0.7; margin-top: 6px; }
+    .cap-hero-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: rgba(255,255,255,0.18); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; z-index: 1;
+    }
+    .cap-bar-wrap { margin-bottom: 22px; }
+    .cap-bar-label-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px; font-size: 12px; color: var(--text-secondary);
+    }
+    .cap-bar {
+      display: flex; height: 10px; border-radius: 5px; overflow: hidden;
+      background: #f3f4f6; gap: 2px;
+    }
+    .cap-bar-seg { height: 100%; border-radius: 5px; min-width: 4px; transition: width .4s ease; }
+    .cap-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .cap-card {
+      border: 1px solid var(--border); border-radius: 10px; padding: 14px;
+      display: flex; flex-direction: column; gap: 8px;
+      transition: all .2s; cursor: default;
+    }
+    .cap-card:hover { border-color: #c7d2fe; box-shadow: 0 2px 8px rgba(99,102,241,0.08); }
+    .cap-card-top { display: flex; align-items: center; gap: 8px; }
+    .cap-card-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 13px; font-weight: 700; color: #fff;
+    }
+    .cap-card-name { font-size: 13px; font-weight: 600; color: var(--text-main); }
+    .cap-card-ext { font-size: 11px; color: var(--text-secondary); }
+    .cap-card-bottom { display: flex; align-items: baseline; justify-content: space-between; }
+    .cap-card-count { font-size: 20px; font-weight: 700; color: var(--text-main); }
+    .cap-card-count span { font-size: 12px; font-weight: 400; color: var(--text-secondary); margin-left: 2px; }
+    .cap-card-size { font-size: 12px; color: var(--text-secondary); }
+    .cap-card-bar { height: 3px; border-radius: 2px; background: #f3f4f6; overflow: hidden; }
+    .cap-card-bar-fill { height: 100%; border-radius: 2px; transition: width .4s ease; }
+    .cap-empty { text-align: center; padding: 20px; color: var(--text-secondary); font-size: 13px; }
 
     .hidden { display: none !important; }
   </style>
@@ -557,7 +619,9 @@
         <div class="toolbar">
           <div class="stats" id="statsBar"></div>
           <div class="toolbar-right">
-            <span class="capacity">知识库使用容量：220KB</span>
+            <span class="capacity" onclick="openCapacityDetail()" title="查看容量详情">
+				知识库使用容量：338.32 KB 📊
+			</span>
             <button class="btn btn-danger" id="reparseAllBtn" onclick="reparseAll()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
               重新解析
@@ -765,6 +829,17 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- Capacity Detail Modal -->
+  <div class="modal-overlay" id="capacityModal" onclick="closeModalOnOverlay(event, 'capacityModal')">
+    <div class="modal" style="max-width:800px">
+      <div class="modal-header">
+        <span>容量统计</span>
+        <span class="modal-close" onclick="closeCapacityDetail()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+      </div>
+      <div class="modal-body" id="capacityModalBody"></div>
+    </div>
+  </div>
+
   <!-- Confirm Modal -->
   <div class="modal-overlay" id="confirmModal" onclick="closeModalOnOverlay(event, 'confirmModal')">
     <div class="modal" style="max-width:380px">
@@ -903,6 +978,93 @@
 
       const failed = count('解析失败');
       document.getElementById('reparseAllBtn').classList.toggle('show', failed > 0);
+    }
+
+    const TYPE_CONFIG = {
+      md:     { label: 'Markdown', ext: '.md', color: '#6366f1', bg: '#eef2ff', icon: 'M' },
+      txt:    { label: '文本文件', ext: '.txt', color: '#8b5cf6', bg: '#f5f3ff', icon: 'T' },
+      pdf:    { label: 'PDF', ext: '.pdf', color: '#ef4444', bg: '#fef2f2', icon: 'P' },
+      docx:   { label: 'Word', ext: '.docx', color: '#3b82f6', bg: '#eff6ff', icon: 'W' },
+      xlsx:   { label: 'Excel', ext: '.xlsx', color: '#10b981', bg: '#ecfdf5', icon: 'X' },
+      pptx:   { label: 'PPT', ext: '.pptx', color: '#f59e0b', bg: '#fffbeb', icon: 'S' },
+      image:  { label: '图片', ext: '.jpg/.png/.webp/.gif', color: '#ec4899', bg: '#fdf2f8', icon: 'I' }
+    };
+
+    function openCapacityDetail() {
+      const stats = {};
+      let totalSize = 0;
+      let totalCount = 0;
+      files.forEach(f => {
+        if (!stats[f.type]) stats[f.type] = { count: 0, size: 0 };
+        stats[f.type].count++;
+        stats[f.type].size += f.sizeNum;
+        totalSize += f.sizeNum;
+        totalCount++;
+      });
+
+      const formatSize = kb => {
+        if (kb < 1024) return kb.toFixed(2) + ' KB';
+        return (kb / 1024).toFixed(2) + ' MB';
+      };
+
+      let html = `<div class="cap-hero">
+        <div class="cap-hero-left">
+          <div class="cap-hero-label">知识库总容量</div>
+          <div class="cap-hero-value">${formatSize(totalSize)}</div>
+          <div class="cap-hero-sub">共 ${totalCount} 个文件</div>
+        </div>
+        <div class="cap-hero-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        </div>
+      </div>`;
+
+      if (totalCount > 0) {
+        html += `<div class="cap-bar-wrap">
+          <div class="cap-bar-label-row">
+            <span>容量占比</span>
+            <span>${Object.keys(stats).filter(k => stats[k].count > 0).length} 种文件类型</span>
+          </div>
+          <div class="cap-bar">`;
+        Object.keys(TYPE_CONFIG).forEach(type => {
+          const cfg = TYPE_CONFIG[type];
+          const s = stats[type];
+          if (s && s.count > 0 && totalSize > 0) {
+            const pct = (s.size / totalSize * 100).toFixed(1);
+            html += `<div class="cap-bar-seg" style="width:${pct}%;background:${cfg.color}" title="${cfg.label} ${pct}%"></div>`;
+          }
+        });
+        html += `</div></div>`;
+      }
+
+      html += '<div class="cap-grid">';
+      Object.keys(TYPE_CONFIG).forEach(type => {
+        const cfg = TYPE_CONFIG[type];
+        const s = stats[type] || { count: 0, size: 0 };
+        const pct = totalSize > 0 ? (s.size / totalSize * 100).toFixed(1) : '0.0';
+        html += `<div class="cap-card">
+          <div class="cap-card-top">
+            <div class="cap-card-icon" style="background:${cfg.color}">${cfg.icon}</div>
+            <div>
+              <div class="cap-card-name">${cfg.label}</div>
+              <div class="cap-card-ext">${cfg.ext}</div>
+            </div>
+          </div>
+          <div class="cap-card-bottom">
+            <div class="cap-card-count">${s.count}<span>个</span></div>
+            <div class="cap-card-size">${formatSize(s.size)} · ${pct}%</div>
+          </div>
+          <div class="cap-card-bar">
+            <div class="cap-card-bar-fill" style="width:${totalSize > 0 ? (s.size / totalSize * 100) : 0}%;background:${cfg.color}"></div>
+          </div>
+        </div>`;
+      });
+      html += '</div>';
+
+      document.getElementById('capacityModalBody').innerHTML = html;
+      document.getElementById('capacityModal').classList.add('show');
+    }
+    function closeCapacityDetail() {
+      document.getElementById('capacityModal').classList.remove('show');
     }
 
     function updateSortHeaders() {
