@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OmniX</title>
+    <style>
+        /* ===== reset & base ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f5f5f5;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            height: 100vh;
+            background: #f7f7f7;
+            border-right: 1px solid #e8e8e8;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: transparent;
+        }
+        .sidebar:hover::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        /* --- Header --- */
+        .sidebar-header {
+            padding: 12px 16px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .window-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .window-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+        .dot-red {
+            background: #ff5f56;
+            border: 1px solid #e0443e;
+        }
+        .dot-yellow {
+            background: #ffbd2e;
+            border: 1px solid #dea123;
+        }
+        .dot-green {
+            background: #27ca40;
+            border: 1px solid #1aab29;
+        }
+        .header-icons {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        .header-icon {
+            width: 15px;
+            height: 15px;
+            color: #666;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.15s;
+        }
+        .header-icon:hover {
+            opacity: 1;
+        }
+
+        .app-title {
+            font-size: 13px;
+            color: #aaa;
+            padding: 0 16px 10px;
+            user-select: none;
+        }
+
+        /* --- Nav Items --- */
+        .nav-list {
+            list-style: none;
+            padding: 0 8px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 13.5px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.12s;
+            user-select: none;
+        }
+        .nav-item:hover {
+            background: #eaeaea;
+        }
+        .nav-item.active {
+            background: #e4e4e4;
+        }
+
+        /* ---- disabled state for MCP & 技能 ---- */
+        .item-disabled {
+            color: #bbb !important;
+            cursor: not-allowed;
+            pointer-events: none;
+            /* 完全阻止点击、悬停等交互 */;
+        }
+        .item-disabled .nav-icon {
+            color: #ccc !important;
+        }
+        .item-disabled:hover {
+            background: transparent;
+        }
+        .item-disabled:focus-visible {
+            outline: none;
+        }
+
+        /* --- focus-visible (non-disabled only) --- */
+        .nav-item:not(.item-disabled):focus-visible,
+        .section-header:not(.item-disabled):focus-visible,
+        .section-item:not(.item-disabled):focus-visible,
+        .sub-item:not(.item-disabled):focus-visible,
+        .user-profile:focus-visible {
+            outline: 2px solid #4a6cf7;
+            outline-offset: -2px;
+        }
+
+        .nav-icon {
+            width: 17px;
+            height: 17px;
+            flex-shrink: 0;
+            color: #555;
+        }
+
+        /* --- Section --- */
+        .section {
+            margin-top: 18px;
+            padding: 0 8px;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px 6px;
+            font-size: 12px;
+            color: #999;
+            cursor: pointer;
+            user-select: none;
+        }
+        .section-header svg {
+            width: 12px;
+            height: 12px;
+            color: #bbb;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        .section-header.open svg {
+            transform: rotate(90deg);
+        }
+        .section-title {
+            flex: 1;
+        }
+
+        .section-list {
+            list-style: none;
+            overflow: hidden;
+        }
+        .section-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 6px 12px 6px 40px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #444;
+            cursor: pointer;
+            transition: background 0.12s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            user-select: none;
+        }
+        .section-item:hover {
+            background: #eaeaea;
+        }
+        .section-item.active {
+            background: #e4e4e4;
+        }
+        .section-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            color: #777;
+        }
+
+        /* Project expandable row + nested sub-list */
+        .project-row {
+            font-weight: 500;
+        }
+        .project-chevron {
+            width: 16px;
+            height: 16px;
+            color: #999;
+            margin-left: auto;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .project-row.expanded .project-chevron {
+            transform: rotate(180deg);
+        }
+        .sub-group {
+            list-style: none;
+            margin: 2px 0 2px 20px;
+            overflow: hidden;
+        }
+        .sub-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 5px 12px 5px 32px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #444;
+            cursor: pointer;
+            transition: background 0.12s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            user-select: none;
+        }
+        .sub-item:hover {
+            background: #eaeaea;
+        }
+        .sub-item.active {
+            background: #e4e4e4;
+        }
+
+        /* --- Footer --- */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 10px 8px 12px;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.12s;
+            user-select: none;
+        }
+        .user-profile:hover {
+            background: #ebebeb;
+        }
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .user-name {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #222;
+            flex: 1;
+        }
+        .user-chevron {
+            width: 14px;
+            height: 14px;
+            color: #999;
+        }
+
+        /* ===== Main Content Area (iframe) ===== */
+        .main-area {
+            flex: 1;
+            height: 100vh;
+            overflow: hidden;
+            background: #ffffff;
+        }
+        .main-area iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ===== 工具提示 ===== */
+        .item-disabled .disabled-tooltip {
+            display: none;
+        }
+        /* 不用 tooltip，保持简洁，灰色 + 不可点击已经足够表达 */
+    </style>
+</head>
+<body>
+
+    <!-- ====== Sidebar ====== -->
+    <aside class="sidebar">
+
+        <!-- Header -->
+        <div class="sidebar-header">
+            <div class="window-controls">
+                <div class="window-dot dot-red"></div>
+                <div class="window-dot dot-yellow"></div>
+                <div class="window-dot dot-green"></div>
+            </div>
+            <div class="header-icons">
+                <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="4" width="14" height="14" rx="2" />
+                    <line x1="9" y1="4" x2="9" y2="21" />
+                </svg>
+                <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="app-title">OmniX v0.3.3</div>
+
+        <!-- Primary nav -->
+        <ul class="nav-list">
+            <li class="nav-item active" data-src="content.html?view=new-chat">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+                新会话
+            </li>
+            <li class="nav-item" data-src="./zsk/list.html">
+				<a href="./zsk/list.html"></a>
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
+                个人知识库
+            </li>
+            <!-- MCP — 未开发，置灰不可点击 -->
+            <li class="nav-item item-disabled" data-src="content.html?view=mcp">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
+                MCP
+                <span style="font-size:10px;color:#ccc;margin-left:auto;">即将推出</span>
+            </li>
+            <!-- 技能 — 未开发，置灰不可点击 -->
+            <li class="nav-item item-disabled" data-src="content.html?view=skills">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
+                技能
+                <span style="font-size:10px;color:#ccc;margin-left:auto;">即将推出</span>
+            </li>
+            <li class="nav-item" data-src="content.html?view=automation">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+                自动化
+            </li>
+        </ul>
+
+        <!-- 对话 Section -->
+        <div class="section">
+            <div class="section-header open" aria-expanded="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+                <span class="section-title">💬 对话 (4)</span>
+            </div>
+            <ul class="section-list">
+                <li class="section-item item-disabled" data-src="content.html?view=conv-1">🗋 设计一个球鞋文化介绍网站...</li>
+                <li class="section-item item-disabled" data-src="content.html?view=conv-2">🗋 设计一个人个简历网页、内...</li>
+                <li class="section-item" data-src="content.html?view=conv-4">🗋 了解 OmniX 通用场景</li>
+            </ul>
+        </div>
+
+        <!-- 项目 Section -->
+        <div class="section">
+            <div class="section-header open" aria-expanded="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+                <span class="section-title">📂️ 项目 (1)</span>
+            </div>
+            <ul class="section-list">
+                <li class="section-item project-row expanded" data-src="content.html?view=neoomni">
+                    📋 NeoOmni官网设计
+                    <svg class="project-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                </li>
+                <ul class="sub-group">
+                    <li class="sub-item" data-src="content.html?view=neoomni-1">🗋 设计一个企业管理经营首...</li>
+                    <li class="sub-item" data-src="content.html?view=neoomni-3">🗋 了解 NeoOmni官方产品</li>
+                </ul>
+            </ul>
+        </div>
+
+
+
+        <!-- User Profile -->
+        <div class="sidebar-footer">
+            <div class="user-profile" role="button" tabindex="0">
+                <div class="user-avatar">👾</div>
+                <span class="user-name">Jihyo</span>
+                <svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15" /></svg>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ====== Main Content (iframe) ====== -->
+    <main class="main-area">
+        <iframe id="content-frame" src="content.html?view=new-chat" title="OmniX 内容区"></iframe>
+    </main>
+
+    <script>
+        (function() {
+            const iframe = document.getElementById('content-frame');
+
+            // 唯一选中态管理
+            function setActive(el) {
+                document
+                    .querySelectorAll('.nav-item, .section-item, .sub-item')
+                    .forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            }
+
+            // iframe 链接切换
+            function switchTo(src) {
+                if (iframe && src) iframe.src = src;
+            }
+
+            // 可点击条目（菜单 + 对话 + 项目 + 子项 + IP）
+            document.querySelectorAll('[data-src]').forEach(el => {
+                // 如果带有 disabled 类，跳过交互绑定
+                if (el.classList.contains('item-disabled')) return;
+
+                el.setAttribute('role', 'button');
+                el.setAttribute('tabindex', '0');
+
+                const activate = () => {
+                    setActive(el);
+                    switchTo(el.getAttribute('data-src'));
+                };
+
+                el.addEventListener('click', activate);
+                el.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        activate();
+                    }
+                });
+            });
+
+            // 分区折叠 / 展开
+            document.querySelectorAll('.section-header').forEach(header => {
+                header.setAttribute('role', 'button');
+                header.setAttribute('tabindex', '0');
+                const toggle = () => {
+                    const open = header.classList.toggle('open');
+                    header.setAttribute('aria-expanded', String(open));
+                    const list = header.parentElement.querySelector(':scope > .section-list, :scope > .sub-group');
+                    if (list) list.style.display = open ? 'block' : 'none';
+                };
+                header.addEventListener('click', toggle);
+                header.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggle();
+                    }
+                });
+            });
+
+            // 项目下 NeoOmni 行的子列表折叠（点箭头切换，点整行切 iframe）
+            const projectRow = document.querySelector('.project-row');
+            const projectChevron = projectRow.querySelector('.project-chevron');
+            const subGroup = projectRow.parentElement.querySelector('.sub-group');
+            projectChevron.addEventListener('click', e => {
+                e.stopPropagation();
+                const expanded = projectRow.classList.toggle('expanded');
+                subGroup.style.display = expanded ? 'block' : 'none';
+            });
+
+        })();
+    </script>
+
+</body>
+</html>
