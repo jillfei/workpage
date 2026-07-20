@@ -276,9 +276,20 @@
     th .sort .arrow { font-size: 10px; line-height: 1; }
     th .sort.active { color: var(--primary); }
     td { color: var(--text-main); }
-    .file-name { display: flex; align-items: center; gap: 8px; color: var(--text-main); }
+    .file-name { display: flex; align-items: center; gap: 8px; color: var(--text-main); cursor: pointer; position: relative; }
+    .file-name:hover { color: var(--primary); }
     .file-name svg { color: var(--info); flex-shrink: 0; }
     .file-name .sub { display: block; color: var(--text-secondary); font-size: 12px; }
+    .file-name .file-tip {
+      display: none; position: absolute; bottom: 100%; left: 0; transform: translateY(-6px);
+      background: #1f2937; color: #fff; padding: 6px 10px; border-radius: 6px;
+      font-size: 12px; white-space: nowrap; z-index: 20; box-shadow: var(--shadow-lg);
+    }
+    .file-name .file-tip::after {
+      content: ""; position: absolute; top: 100%; left: 16px;
+      border: 5px solid transparent; border-top-color: #1f2937;
+    }
+    .file-name:hover .file-tip { display: block; }
     .status-cell { display: flex; align-items: center; gap: 6px; }
     .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
     .status-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
@@ -857,6 +868,7 @@
     </div>
   </div>
 
+
   <script>
     // ---------- Data ----------
     const STATUS_ORDER = { '待解析': 0, '解析中': 1, '已完成': 2, '暂不支持': 3, '解析失败': 4 };
@@ -936,6 +948,7 @@
               <div class="file-name">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                 <div>${f.name}${subLine}</div>
+                <span class="file-tip">点击打开本地文件</span>
               </div>
             </td>
             <td>${f.size}</td>
@@ -1414,6 +1427,7 @@
     function closeModalOnOverlay(e, id) {
       if (e.target.id === id) document.getElementById(id).classList.remove('show');
     }
+
 
     // init
     renderTable();

@@ -22,19 +22,28 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 80px 40px 30px;
+      padding: 300px 40px 30px 40px;
       text-align: center;
     }
     .welcome-inner {
-      max-width: 620px;
+      max-width: 1200px;
       width: 100%;
+      display: flex;
+      align-items: flex-end;
+      gap: 24px;
+      flex-direction: row-reverse;
+    }
+    .welcome-text {
+      flex: 1;
+      min-width: 0;
     }
     .welcome-title {
-      font-size: 36px;
+      font-size: 50px;
       font-weight: 700;
       letter-spacing: -0.5px;
       color: #111;
       margin-bottom: 10px;
+	  text-align: left;
     }
     .welcome-title .highlight {
       background: linear-gradient(135deg, #4a6cf7, #6c63ff);
@@ -43,18 +52,16 @@
       background-clip: text;
     }
     .welcome-subtitle {
-      font-size: 16px;
+      font-size: 24px;
       color: #888;
       line-height: 1.7;
-      margin-bottom: 36px;
+	  text-align: left;
     }
 
     /* Mascot */
     .mascot-wrapper {
       position: relative;
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 8px;
+      flex-shrink: 0;
     }
     .mascot-sparkle {
       position: absolute;
@@ -68,8 +75,8 @@
       50% { opacity: 1; transform: scale(1.15); }
     }
     .mascot-svg {
-      width: 160px;
-      height: 160px;
+      width: 200px;
+      height: 200px;
     }
 
     /* ========== Input Area ========== */
@@ -80,7 +87,7 @@
     }
     .input-card {
       width: 100%;
-      max-width: 700px;
+      max-width: 1200px;
       border-radius: 14px;
       border: 1.5px solid #e5e5e5;
       background: #fafafa;
@@ -108,13 +115,21 @@
     .input-textarea::placeholder {
       color: #bbb;
     }
+    .textarea-tags-area {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 0 0 4px;
+      min-height: 0;
+    }
 
     /* Toolbar */
     .toolbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 18px 14px;
+      padding: 0px 18px 8px;
       gap: 12px;
       flex-wrap: wrap;
     }
@@ -149,6 +164,692 @@
       stroke-width: 1.8;
     }
 
+    /* Knowledge base dropdown */
+    .kb-dropdown-wrapper,
+    .select-dropdown-wrapper {
+      position: relative;
+    }
+    .kb-dropdown,
+    .select-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 240px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border: 1px solid #e8e8e8;
+      padding: 8px 0;
+      display: none;
+      z-index: 100;
+    }
+    .kb-dropdown.show,
+    .select-dropdown.show { display: block; }
+    .kb-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+    .kb-dropdown-item:hover { background: #f5f5f5; }
+    .kb-dropdown-item.selected { background: #f0f4ff; }
+    .kb-dropdown-item.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .kb-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      background: #e8e8e8;
+    }
+    .kb-name {
+      font-size: 13px;
+      color: #333;
+      flex: 1;
+    }
+    .kb-dropdown-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 6px 0;
+    }
+    .kb-manage-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      color: #666;
+      font-size: 13px;
+    }
+    .kb-manage-item:hover { background: #f5f5f5; }
+    .kb-manage-item svg { width: 16px; height: 16px; }
+
+    /* Select dropdown items */
+    .select-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+    }
+    .select-dropdown-item:hover { background: #f5f5f5; }
+    .select-dropdown-item svg { width: 16px; height: 16px; color: #555; flex-shrink: 0; }
+    .select-dropdown-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 6px 0;
+    }
+    .select-dropdown-section-title {
+      padding: 6px 14px 4px;
+      font-size: 12px;
+      color: #999;
+      font-weight: 500;
+    }
+
+    /* Project dropdown */
+    .project-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 280px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border: 1px solid #e8e8e8;
+      padding: 8px 0;
+      display: none;
+      z-index: 100;
+    }
+    .project-dropdown.show { display: block; }
+    .project-search-wrap {
+      padding: 4px 10px 6px;
+    }
+    .project-search {
+      width: 100%;
+      padding: 7px 10px 7px 32px;
+      border-radius: 7px;
+      border: 1px solid #e0e0e0;
+      background: #f5f5f5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 10px center no-repeat;
+      font-size: 13px;
+      outline: none;
+      color: #333;
+    }
+    .project-search:focus { border-color: #4a6cf7; background-color: #fff; }
+    .project-search::placeholder { color: #bbb; }
+    .project-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+      position: relative;
+    }
+    .project-dropdown-item:hover { background: #f5f5f5; }
+    .project-dropdown-item.selected { background: #f0f4ff; }
+    .project-dropdown-item.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .project-dropdown-item svg { width: 16px; height: 16px; color: #555; flex-shrink: 0; }
+    .project-dropdown-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 6px 0;
+    }
+
+    /* Project tags (added projects) */
+    .project-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px 4px 8px;
+      background: #f0f4ff;
+      border-radius: 7px;
+      font-size: 12px;
+      color: #4a6cf7;
+	  border: 1px #4a6cf7;
+	  line-height: 17px;
+	  border:1px solid #d0d8ff;
+    }
+    .project-tag svg { width: 14px; height: 14px; color: #4a6cf7; flex-shrink: 0; }
+    .project-tag-remove {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      color: #999;
+      font-size: 10px;
+    }
+    .project-tag:hover .project-tag-remove { opacity: 1; }
+    .project-tag-remove:hover { background: #e0e0e0; color: #666; }
+
+    /* Skill dropdown */
+    .skill-dropdown-wrapper {
+      position: relative;
+    }
+    .skill-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 340px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+      border: 1px solid #e8e8e8;
+      padding: 10px 0;
+      display: none;
+      z-index: 100;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .skill-dropdown.show { display: block; }
+    .skill-search-wrap {
+      padding: 2px 12px 8px;
+    }
+    .skill-search {
+      width: 100%;
+      padding: 8px 10px 8px 34px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      background: #f5f5f5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 10px center no-repeat;
+      font-size: 13px;
+      outline: none;
+      color: #333;
+    }
+    .skill-search:focus { border-color: #4a6cf7; background-color: #fff; }
+    .skill-search::placeholder { color: #bbb; }
+    .skill-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .skill-item:hover { background: #f5f5f5; }
+    .skill-item.selected { background: #f0f4ff; }
+    .skill-item.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .skill-item { position: relative; }
+    .skill-icon-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+    .skill-info { flex: 1; min-width: 0; }
+    .skill-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 2px;
+    }
+    .skill-desc {
+      font-size: 12px;
+      color: #999;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .skill-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 6px 0;
+    }
+    .skill-action-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #555;
+    }
+    .skill-action-item:hover { background: #f5f5f5; }
+    .skill-action-item svg { width: 16px; height: 16px; color: #777; flex-shrink: 0; }
+
+    /* Skill tags in textarea area */
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px 3px 6px;
+      background: #f0f4ff;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #4a6cf7;
+      border: 1px solid #d0d8ff;
+      line-height: 1.4;
+    }
+    .skill-tag-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+    .skill-tag-remove {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      color: #999;
+      font-size: 9px;
+    }
+    .skill-tag:hover .skill-tag-remove { opacity: 1; }
+    .skill-tag-remove:hover { background: #e0e0e0; color: #666; }
+
+    /* File/Image tags in textarea area */
+    .file-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px 3px 6px;
+      background: #f0f4ff;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #4a6cf7;
+      border: 1px solid #d0d8ff;
+      line-height: 1.4;
+    }
+    .file-tag-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .file-tag-icon svg { width: 14px; height: 14px; }
+    .file-tag-name {
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .file-tag-remove {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      color: #999;
+      font-size: 9px;
+    }
+    .file-tag:hover .file-tag-remove { opacity: 1; }
+    .file-tag-remove:hover { background: #e0e0e0; color: #666; }
+
+    /* Expert dropdown */
+    .zj-dropdown-wrapper {
+      position: relative;
+    }
+    .zj-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 260px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+      border: 1px solid #e8e8e8;
+      padding: 0;
+      display: none;
+      z-index: 100;
+      max-height: 500px;
+      overflow: hidden;
+    }
+    .zj-dropdown.show { display: block; }
+
+    .zj-more {
+      flex: 1;
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+	  text-align: left;
+    }
+	.zj-more:hover { background: #f5f5f5; }
+    .zj-tab {
+	font-size: 11px;
+    color: #999;
+    padding: 6px 14px 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    }
+
+    .zj-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+    .zj-item:hover { background: #f5f5f5; }
+    .zj-item.selected { background: #f0f4ff; }
+    .zj-item.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .zj-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 12px;
+      background: #e8e8e8;
+	  padding-bottom:4px;
+    }
+    .zj-info { flex: 1; min-width: 0; }
+    .zj-title {
+      font-size: 13px;
+      color: #333;
+    }
+    .zj-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 0;
+    }
+    .zj-action-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #555;
+    }
+    .zj-action-item:hover { background: #f5f5f5; }
+    .zj-action-item svg { width: 16px; height: 16px; color: #777; flex-shrink: 0; }
+
+    /* Expert tags */
+    .zj-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px 3px 6px;
+      background: #f0f4ff;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #4a6cf7;
+      border: 1px solid #d0d8ff;
+      line-height: 1.7;
+    }
+    .zj-tag-avatar {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+      background: #4a6cf7;
+      color: #fff;
+    }
+    .zj-tag-remove {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      color: #999;
+      font-size: 9px;
+    }
+    .zj-tag:hover .zj-tag-remove { opacity: 1; }
+    .zj-tag-remove:hover { background: #e0e0e0; color: #666; }
+
+    /* Permission dropdown */
+    .perm-dropdown-wrapper {
+      position: relative;
+    }
+    .perm-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 400px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border: 1px solid #e8e8e8;
+      padding: 6px 0;
+      display: none;
+      z-index: 100;
+    }
+    .perm-dropdown.show { display: block; }
+    .perm-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+      position: relative;
+    }
+    .perm-item:hover { background: #f5f5f5; }
+    .perm-item.selected { background: #f0f4ff; color: #4a6cf7; }
+    .perm-item.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .perm-item-icon { width: 15px; height: 15px; color: #666; flex-shrink: 0; }
+    .perm-item.selected .perm-item-icon { color: #4a6cf7; }
+    .perm-item-content { display: flex; flex-direction: column; gap: 2px; }
+    .perm-item-label { font-size: 13px; color: #333; }
+    .perm-item.selected .perm-item-label { color: #4a6cf7; }
+    .perm-item-desc { font-size: 11px; color: #999; }
+    .perm-item.selected .perm-item-desc { color: #8a9fd4; }
+
+    /* ========== Permission Warning Modal ========== */
+    .perm-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .perm-modal-overlay.show { display: flex; }
+    .perm-modal {
+      background: #fff;
+      border-radius: 14px;
+      width: 440px;
+      max-width: 90vw;
+      padding: 28px 30px 24px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+      position: relative;
+    }
+    .perm-modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .perm-modal-close:hover { background: #f0f0f0; color: #333; }
+    .perm-modal-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .perm-modal-header svg { width: 24px; height: 24px; color: #e53e3e; flex-shrink: 0; }
+    .perm-modal-header h3 { font-size: 17px; font-weight: 600; color: #1a1a1a; }
+    .perm-modal-body {
+      font-size: 13.5px;
+      color: #666;
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+    .perm-modal-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 22px;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+    }
+    .perm-modal-checkbox input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #e53e3e;
+      cursor: pointer;
+    }
+    .perm-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .perm-modal-btn {
+      padding: 8px 22px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      background: #fff;
+      color: #333;
+      transition: all 0.15s;
+    }
+    .perm-modal-btn:hover { background: #f5f5f5; }
+    .perm-modal-btn.confirm {
+      background: #ff5555;
+      color: #fff;
+      border-color: #ff5555;
+    }
+    .perm-modal-btn.confirm:hover:not(:disabled) { background: #eb2d2d; border-color: #eb2d2d; }
+    .perm-modal-btn.confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Selected knowledge base tags */
+
+    .kb-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px 4px 6px;
+      background: #f0f4ff;
+      border-radius: 16px;
+      font-size: 12px;
+      color: #4a6cf7;
+      position: relative;
+    }
+    .kb-tag-avatar {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      background: #4a6cf7;
+      color: #fff;
+    }
+    .kb-tag-remove {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      color: #999;
+      font-size: 10px;
+    }
+    .kb-tag:hover .kb-tag-remove { opacity: 1; }
+    .kb-tag-remove:hover { background: #e0e0e0; color: #666; }
+
     .toolbar-right {
       display: flex;
       align-items: center;
@@ -172,15 +873,115 @@
       transition: all 0.15s;
     }
     .model-pill:hover { border-color: #ccc; background: #e8e8e8; }
-    .model-icon {
-      width: 14px;
-      height: 14px;
+    .model-icon { width: 14px; height: 14px; }
+    .model-dropdown-wrapper { position: relative; }
+    .model-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      right: 0;
+      width: 300px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border: 1px solid #e8e8e8;
+      padding: 6px 0;
+      display: none;
+      z-index: 100;
+    }
+    .model-dropdown.show { display: block; }
+    .model-dropdown-header {
+      font-size: 11px;
+      color: #999;
+      padding: 6px 14px 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .model-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+      position: relative;
+    }
+    .model-option:hover { background: #f5f5f5; }
+    .model-option.selected { background: #f0f4ff; color: #4a6cf7; }
+    .model-option.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .model-option-icon { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .model-option-icon svg { width: 16px; height: 16px; }
+    .model-option-content { display: flex; flex-direction: column; gap: 1px; }
+    .model-option-label { font-size: 13px; color: #333; font-weight: 500; }
+	.model-option-label-svg{display: block;width: 12px;float: right;margin-left: 2px;}
+    .model-option.selected .model-option-label { color: #4a6cf7; }
+    .model-option-desc { font-size: 11px; color: #999; width:200px;}
+    .model-option.selected .model-option-desc { color: #8a9fd4; }
+    .model-dropdown-divider { height: 1px; background: #f0f0f0; margin: 4px 0; }
+
+    .quality-dropdown-wrapper { position: relative; }
+    .quality-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 7px;
+      border: 1px solid #e0e0e0;
+      background: #f0f0f0;
+      font-size: 12.5px;
+      color: #444;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .quality-pill:hover { border-color: #ccc; background: #e8e8e8; }
+    .quality-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      right: 0;
+      width: 140px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border: 1px solid #e8e8e8;
+      padding: 6px 0;
+      display: none;
+      z-index: 100;
+    }
+    .quality-dropdown.show { display: block; }
+    .quality-option {
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+      position: relative;
+    }
+    .quality-option:hover { background: #f5f5f5; }
+    .quality-option.selected { background: #f0f4ff; color: #4a6cf7; }
+    .quality-option.selected::after {
+      content: '\2713';
+      position: absolute;
+      right: 14px;
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
     }
 
     /* Send button */
     .send-btn {
-      width: 34px;
-      height: 34px;
+      width: 26px;
+      height: 26px;
       border-radius: 9px;
       border: none;
       background: #ccc;
@@ -208,7 +1009,8 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 18px 14px;
+      padding: 0px 18px 8px;
+	  height: 35px;
     }
     .file-trigger {
       display: inline-flex;
@@ -255,7 +1057,7 @@
       <!-- Mascot -->
       <div class="mascot-wrapper">
         <span class="mascot-sparkle">✨</span>
-        <svg class="mascot-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="mascot-svg" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
           <!-- Body -->
           <ellipse cx="100" cy="115" rx="60" ry="58" fill="#4A6CF7"/>
           <!-- Ears / Horns -->
@@ -283,9 +1085,11 @@
           <ellipse cx="122" cy="168" rx="16" ry="12" fill="#3B5DE7"/>
         </svg>
       </div>
-
-      <h1 class="welcome-title">开始使用 <span class="highlight">OmniX</span></h1>
-      <p class="welcome-subtitle">开启您的 AI 智能体协作之旅，让工作从执行走向智能</p>
+	
+	  <div class="welcome-text">
+        <h1 class="welcome-title">开始使用 <span class="highlight">OmniX</span></h1>
+        <p class="welcome-subtitle">开启您的 AI 智能体协作之旅，让工作从执行走向智能</p>
+      </div>
     </div>
   </section>
 
@@ -293,8 +1097,10 @@
   <section class="input-area">
     <div class="input-card">
 
-      <!-- Textarea -->
+      <!-- Textarea with skill tags -->
       <div class="input-textarea-wrap">
+        <div class="textarea-tags-area" id="textareaTagsArea"></div>
+        <input type="file" id="fileInput" multiple accept="image/*,*/*" style="display:none" onchange="handleFileSelect(event)" />
         <textarea
           class="input-textarea"
           placeholder="描述任务或提问 / @指令 @附件/链接"
@@ -305,63 +1111,799 @@
       <!-- Toolbar -->
       <div class="toolbar">
         <div class="toolbar-left">
-          <button class="toolbar-btn" title="选择文件">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            选择文件
-            <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <button class="toolbar-btn" title="技能">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            技能
-            <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <button class="toolbar-btn" title="知识空间">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            知识空间
-            <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <button class="toolbar-btn" title="允许编辑">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            允许编辑
-            <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
+          <div class="select-dropdown-wrapper">
+            <button class="toolbar-btn" title="选择" onclick="toggleSelectDropdown()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <div class="select-dropdown" id="selectDropdown">
+              <div class="select-dropdown-item" onclick="handleSelectAction('upload-file')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+                上传照片和文件
+              </div>
+              <div class="select-dropdown-section-title">插件</div>
+              <div class="select-dropdown-item" onclick="handleSelectAction('browser')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                Goole Chrome 浏览器插件
+              </div>
+			  <div class="select-dropdown-item" onclick="handleSelectAction('browser')">
+			    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+			    Mineru 文档解析
+			  </div>
+			  <div class="select-dropdown-item" onclick="handleSelectAction('browser')">
+			    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+			    PPT 生成
+			  </div>
+            </div>
+          </div>
+          <div class="skill-dropdown-wrapper">
+            <button class="toolbar-btn" title="技能" onclick="toggleSkillDropdown()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              技能
+              <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="skill-dropdown" id="skillDropdown">
+              <div class="skill-search-wrap">
+                <input type="text" class="skill-search" placeholder="搜索技能" id="skillSearch" oninput="filterSkills()" />
+              </div>
+              <div id="skillList">
+                <div class="skill-item" data-name="腾讯文档" data-desc="腾讯文档 (docs.qq.com) -在线云文档平台，是创…" data-color="#4a6cf7" data-icon="📄" onclick="addSkill(this)">
+                  <div class="skill-icon-wrap" style="background:#4a6cf7;color:#fff">📄</div>
+                  <div class="skill-info">
+                    <div class="skill-title">腾讯文档 TENCENT DOCS</div>
+                    <div class="skill-desc">腾讯文档 (docs.qq.com) -在线云文档平台，是创…</div>
+                  </div>
+                </div>
+                <div class="skill-item" data-name="ima-skills" data-desc="ima skills，支持对笔记、知识库的读取、写入和检…" data-color="#3b82f6" data-icon="⚡" onclick="addSkill(this)">
+                  <div class="skill-icon-wrap" style="background:#3b82f6;color:#fff">⚡</div>
+                  <div class="skill-info">
+                    <div class="skill-title">ima-skills</div>
+                    <div class="skill-desc">ima skills，支持对笔记、知识库的读取、写入和检…</div>
+                  </div>
+                </div>
+                <div class="skill-item" data-name="PM Master" data-desc="需求分析、PRD编写、产品需求文档、详细设计、…" data-color="#8b5cf6" data-icon="📋" onclick="addSkill(this)">
+                  <div class="skill-icon-wrap" style="background:#8b5cf6;color:#fff">📋</div>
+                  <div class="skill-info">
+                    <div class="skill-title">产品经理综合技能（PM Master）</div>
+                    <div class="skill-desc">需求分析、PRD编写、产品需求文档、详细设计、…</div>
+                  </div>
+                </div>
+                <div class="skill-item" data-name="企微CLI" data-desc="企业微信 CLI一键安装助手。当用户提到「安装企…" data-color="#f97316" data-icon="" onclick="addSkill(this)">
+                  <div class="skill-icon-wrap" style="background:#f97316;color:#fff">🔧</div>
+                  <div class="skill-info">
+                    <div class="skill-title">企微CLI一键安装助手</div>
+                    <div class="skill-desc">企业微信 CLI一键安装助手。当用户提到「安装企…</div>
+                  </div>
+                </div>
+                <div class="skill-item" data-name="全栈开发伴侣" data-desc="ima skills，支持对笔记、知识库的读取、写入和检…" data-color="#eab308" data-icon="" onclick="addSkill(this)">
+                  <div class="skill-icon-wrap" style="background:#eab308;color:#fff"></div>
+                  <div class="skill-info">
+                    <div class="skill-title">全栈开发伴侣</div>
+                    <div class="skill-desc">ima skills，支持对笔记、知识库的读取、写入和检…</div>
+                  </div>
+                </div>
+              </div>
+              <div class="skill-divider"></div>
+              <div class="skill-action-item" onclick="handleSkillAction('add-local')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                从本地添加技能
+              </div>
+              <div class="skill-action-item" onclick="manageKb('./skill/list.html')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                管理技能
+              </div>
+            </div>
+          </div>
+		  <div style="align-items:center;gap:4px;flex-wrap:wrap;">
+		    <div class="zj-dropdown-wrapper">
+		      <button class="toolbar-btn" id="zjBtn" title="专家·专家团" onclick="toggleZjDropdown()">
+		        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M10 15h4"/><path d="M2 15l2-5"/><path d="M22 15l-2-5"/></svg>
+		        专家·专家团
+		        <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+		      </button>
+		      <div class="zj-dropdown" id="zjDropdown">
+		        <div class="zj-list-wrap">
+				  <div class="zj-more" data-tab="expert" onclick="manageKb('./zjgc/list.html')">‌↗ 召唤更多专家·专家团</div>
+				  
+				  <div class="zj-divider"></div>
+		          
+				  <div id="zjExpertList">
+		            <div class="zj-tab">专家</div>
+		            <div class="zj-item" data-name="高级开发工程师" data-desc="10年以上全栈经验，精通多种语言和框架，是团队的技术中坚" data-avatar="" data-color="#4a6cf7" onclick="selectZjItem(this)">
+		              <div class="zj-avatar" style="background:#4a6cf7;color:#fff">💻</div>
+		              <div class="zj-info">
+		                <div class="zj-title">高级开发工程师</div>
+		              </div>
+		            </div>
+		            <div class="zj-item" data-name="产品经理" data-desc="负责产品规划、需求分析和项目管理，推动产品迭代优化" data-avatar="" data-color="#8b5cf6" onclick="selectZjItem(this)">
+		              <div class="zj-avatar" style="background:#8b5cf6;color:#fff"></div>
+		              <div class="zj-info">
+		                <div class="zj-title">产品经理</div>
+		              </div>
+		            </div>
+		            <div class="zj-item" data-name="UI/UX设计师" data-desc="专注用户体验和界面设计，打造美观易用的产品界面" data-avatar="" data-color="#ec4899" onclick="selectZjItem(this)">
+		              <div class="zj-avatar" style="background:#ec4899;color:#fff"></div>
+		              <div class="zj-info">
+		                <div class="zj-title">UI/UX设计师</div>
+		              </div>
+		            </div>
+		          </div>
+				  
+				  <div class="zj-divider"></div>
+				    
+		          <div id="zjTeamList" style="">
+					<div class="zj-tab">专家团</div>
+		            <div class="zj-item" data-name="全栈开发团队" data-desc="覆盖前端、后端、移动端和DevOps的全栈开发团队" data-avatar="👥" data-color="#4a6cf7" onclick="selectZjItem(this)">
+		              <div class="zj-avatar" style="background:#4a6cf7;color:#fff">👥</div>
+		              <div class="zj-info">
+		                <div class="zj-title">全栈开发团队</div>
+		              </div>
+		            </div>
+		            <div class="zj-item" data-name="产品策划团队" data-desc="包含产品经理、UI设计师和用研专家的综合团队" data-avatar="" data-color="#8b5cf6" onclick="selectZjItem(this)">
+		              <div class="zj-avatar" style="background:#8b5cf6;color:#fff">👥</div>
+		              <div class="zj-info">
+		                <div class="zj-title">产品策划团队</div>
+		              </div>
+		            </div>
+		            <div class="zj-item" data-name="数据分析团队" data-desc="数据分析师、BI工程师和业务顾问组成的专业团队" data-avatar="" data-color="#10b981" onclick="selectZjItem(this)">
+		              <div class="zj-avatar" style="background:#10b981;color:#fff">👥</div>
+		              <div class="zj-info">
+		                <div class="zj-title">数据分析团队</div>
+		              </div>
+		            </div>
+		          </div>
+		        </div>
+		      </div>
+		    </div>
+		    <div id="zjTagsArea" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
+		  </div>
+          <div class="kb-dropdown-wrapper">
+            <button class="toolbar-btn" id="kbBtn" title="本地知识库" onclick="toggleKbDropdown()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              本地知识库
+              <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="kb-dropdown" id="kbDropdown">
+              <div class="kb-dropdown-item" data-id="1" onclick="selectKb(this)">
+                <div class="kb-avatar" style="background:#4a6cf7">👨‍💻</div>
+                <span class="kb-name">需求文档存档库</span>
+              </div>
+              <div class="kb-dropdown-item" data-id="2" onclick="selectKb(this)">
+                <div class="kb-avatar" style="background:#8b5cf6">👩‍</div>
+                <span class="kb-name">办公技巧私库</span>
+              </div>
+              <div class="kb-dropdown-item" data-id="3" onclick="selectKb(this)">
+                <div class="kb-avatar" style="background:#10b981">👨</div>
+                <span class="kb-name">会议纪要知识库</span>
+              </div>
+              <div class="kb-dropdown-item" data-id="4" onclick="selectKb(this)">
+                <div class="kb-avatar" style="background:#f59e0b">💼</div>
+                <span class="kb-name">周报知识库</span>
+              </div>
+              <div class="kb-dropdown-item" data-id="5" onclick="selectKb(this)">
+                <div class="kb-avatar" style="background:#ec4899">👩‍</div>
+                <span class="kb-name">行业调研资料库</span>
+              </div>
+              <div class="kb-dropdown-divider"></div>
+              <div class="kb-manage-item" onclick="manageKb('./zsk/list.html')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                管理知识库
+              </div>
+            </div>
+          </div>
+          <div class="perm-dropdown-wrapper">
+            <button class="toolbar-btn" id="permBtn" title="默认权限" onclick="togglePermDropdown()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span id="permBtnText">默认权限</span>
+              <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="perm-dropdown" id="permDropdown">
+              <div class="perm-item" data-value="default" onclick="selectPerm(this)">
+                <svg class="perm-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div class="perm-item-content">
+                  <span class="perm-item-label">只读</span>
+                  <span class="perm-item-desc">仅对文件内容读取，无编辑及其他权限</span>
+                </div>
+              </div>
+              <div class="perm-item selected" data-value="read" onclick="selectPerm(this)">
+                <svg class="perm-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                <div class="perm-item-content">
+                  <span class="perm-item-label">默认权限</span>
+                  <span class="perm-item-desc">支持对路径内全部文件的读写</span>
+                </div>
+              </div>
+              <div class="perm-item" data-value="edit" onclick="selectPerm(this)">
+                <svg class="perm-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <div class="perm-item-content">
+                  <span class="perm-item-label">完全访问</span>
+                  <span class="perm-item-desc">可不受限制地访问互联网和您电脑上的任何文件</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="toolbar-right">
-          <div class="model-pill">
-            <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
-            gpt-5.5
+          <div class="model-dropdown-wrapper">
+            <div class="model-pill" onclick="toggleModelDropdown()">
+              <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+              <span id="modelPillText">gpt-5.5</span>
+              <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="model-dropdown" id="modelDropdown">
+              <div class="model-dropdown-header">企业模型</div>
+              <div class="model-option selected" data-model="gpt-5.5" data-desc="最新旗舰模型，推理能力最强" onclick="selectModel(this)">
+                <div class="model-option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#4a6cf7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg></div>
+                <div class="model-option-content">
+                  <span class="model-option-label">gpt-5.5 
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+					</span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+					</span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="8" y1="20" x2="16" y2="20"/></svg>
+					</span>
+				  </span>
+                  <span class="model-option-desc">最新旗舰模型，推理能力最强</span>
+                </div>
+              </div>
+              <div class="model-option" data-model="gpt-5" data-desc="高性能通用模型，适合大多数任务" onclick="selectModel(this)">
+                <div class="model-option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg></div>
+                <div class="model-option-content">
+                  <span class="model-option-label">gpt-5
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+					</span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+					</span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="8" y1="20" x2="16" y2="20"/></svg>
+					</span>
+				  </span>
+                  <span class="model-option-desc">高性能通用模型，适合大多数任务</span>
+                </div>
+              </div>
+              <div class="model-option" data-model="gpt-4o" data-desc="多模态模型，支持图文理解" onclick="selectModel(this)">
+                <div class="model-option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg></div>
+                <div class="model-option-content">
+                  <span class="model-option-label">gpt-4o
+				  
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+					</span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="8" y1="20" x2="16" y2="20"/></svg>
+					</span>
+				  </span>
+                  <span class="model-option-desc">多模态模型，支持图文理解</span>
+                </div>
+              </div>
+              <div class="model-dropdown-divider"></div>
+              <div class="model-dropdown-header">个人模型</div>
+              <div class="model-option" data-model="claude-sonnet-4" data-desc="Anthropic 最新模型，代码能力强" onclick="selectModel(this)">
+                <div class="model-option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+                <div class="model-option-content">
+                  <span class="model-option-label">claude-sonnet-4
+				  
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+					</span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="8" y1="20" x2="16" y2="20"/></svg>
+					</span>
+				  </span>
+                  <span class="model-option-desc">Anthropic 最新模型，代码能力强</span>
+                </div>
+              </div>
+              <div class="model-option" data-model="deepseek-r1" data-desc="国产开源模型，性价比高" onclick="selectModel(this)">
+                <div class="model-option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                <div class="model-option-content">
+                  <span class="model-option-label">deepseek-r1
+				  
+				  <span class="model-option-label-svg">
+				  	<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+				  </span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="8" y1="20" x2="16" y2="20"/></svg>
+					</span>
+				  </span>
+                  <span class="model-option-desc">国产开源模型，性价比高</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <button class="send-btn active" title="发送">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          </button>
+          <div class="quality-dropdown-wrapper">
+            <div class="quality-pill" onclick="toggleQualityDropdown()">
+              <span id="qualityPillText">极高</span>
+              <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="quality-dropdown" id="qualityDropdown">
+              <div class="quality-option" data-value="轻度" onclick="selectQuality(this)">轻度</div>
+              <div class="quality-option" data-value="中" onclick="selectQuality(this)">中</div>
+              <div class="quality-option" data-value="高" onclick="selectQuality(this)">高</div>
+              <div class="quality-option selected" data-value="极高" onclick="selectQuality(this)">极高</div>
+            </div>
+          </div>
+         <button class="send-btn active" title="发送" style="color: #fff; font-size: 20px;">➚
+         </button>
+                  
         </div>
       </div>
 
       <!-- File attachment trigger -->
-      <div class="file-row">
-        <div class="file-trigger">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-          添加文件选项
-          <svg style="width:10px;height:10px;color:#aaa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      <div class="file-row" style="position:relative;">
+        <div class="project-dropdown-wrapper" style="position:relative;display:inline-block;">
+          <div class="file-trigger" id="addProjectBtn" onclick="toggleProjectDropdown()">
+		    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+		    添加项目
+            <svg style="width:10px;height:10px;color:#aaa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="project-dropdown" id="projectDropdown">
+            <div class="project-search-wrap">
+              <input type="text" class="project-search" placeholder="搜索项目" id="projectSearch" oninput="filterProjects()" />
+            </div>
+            <div id="projectList">
+              <div class="project-dropdown-item" data-name="OmniX" onclick="addProject(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                OmniX
+              </div>
+              <div class="project-dropdown-item" data-name="海报设计" onclick="addProject(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                海报设计
+              </div>
+              <div class="project-dropdown-item" data-name="PPT 生成" onclick="addProject(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                PPT 生成
+              </div>
+            </div>
+            <div class="project-dropdown-divider"></div>
+            <div class="project-dropdown-item" onclick="handleProjectAction('new-folder')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+              新建空白文件夹
+            </div>
+            <div class="project-dropdown-item" onclick="handleProjectAction('use-folder')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              使用现有文件夹
+            </div>
+          </div>
         </div>
+        <div id="projectTagsArea" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:-6px;"></div>
       </div>
 
     </div>
   </section>
 
-  <!-- ====== Bottom Status Icons ====== -->
-  <div class="bottom-status">
-    <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
-    <svg class="status-icon delete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/></svg>
-  </div>
+
 
   <!-- Auto-resize textarea logic -->
+  <!-- Permission Warning Modal -->
+  <div class="perm-modal-overlay" id="permModal">
+    <div class="perm-modal">
+      <button class="perm-modal-close" onclick="closePermModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="perm-modal-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <h3>确认允许完全访问？</h3>
+      </div>
+      <div class="perm-modal-body">
+        当您开启"完全访问"权限，AI 的确认询问会减少，并能自动完成更多操作，其中涉及敏感动作、文件变更和外部执行。此功能只建议在您信任该任务时使用。
+      </div>
+      <label class="perm-modal-checkbox">
+        <input type="checkbox" id="permRiskCheck" onchange="togglePermConfirmBtn()">
+        我已了解风险，并愿意继续
+      </label>
+      <div class="perm-modal-actions">
+        <button class="perm-modal-btn" onclick="closePermModal()">取消</button>
+        <button class="perm-modal-btn confirm" id="permConfirmBtn" disabled onclick="confirmFullAccess()">允许完全访问</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const ta = document.querySelector('.input-textarea');
     ta.addEventListener('input', () => {
       ta.style.height = 'auto';
       ta.style.height = Math.min(ta.scrollHeight, 180) + 'px';
+    });
+
+    // Knowledge base logic
+    const selectedKbs = new Map();
+
+    function toggleKbDropdown() {
+      const dropdown = document.getElementById('kbDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    function selectKb(item) {
+      const id = item.dataset.id;
+      const name = item.querySelector('.kb-name').textContent;
+      const avatar = item.querySelector('.kb-avatar');
+
+      if (item.classList.contains('selected')) {
+        item.classList.remove('selected');
+        selectedKbs.delete(id);
+        removeKbTagFromTextarea(id);
+      } else {
+        item.classList.add('selected');
+        selectedKbs.set(id, {
+          name: name,
+          avatar: avatar.innerHTML,
+          avatarBg: avatar.style.background
+        });
+        addKbTagToTextarea(id, name, avatar.innerHTML, avatar.style.background);
+      }
+    }
+
+    function removeKb(id) {
+      selectedKbs.delete(id);
+      const item = document.querySelector(`.kb-dropdown-item[data-id="${id}"]`);
+      if (item) item.classList.remove('selected');
+      removeKbTagFromTextarea(id);
+    }
+
+    function addKbTagToTextarea(id, name, avatarHtml, avatarBg) {
+      const area = document.getElementById('textareaTagsArea');
+      const tag = document.createElement('div');
+      tag.className = 'skill-tag';
+      tag.dataset.kbId = id;
+      tag.innerHTML = `
+        <div class="skill-tag-icon" style="background:${avatarBg};color:#fff">${avatarHtml}</div>
+        <span>${name}</span>
+        <div class="skill-tag-remove" onclick="removeKb('${id}')">✕</div>
+      `;
+      area.appendChild(tag);
+    }
+
+    function removeKbTagFromTextarea(id) {
+      const area = document.getElementById('textareaTagsArea');
+      const tag = area.querySelector(`.skill-tag[data-kb-id="${id}"]`);
+      if (tag) tag.remove();
+    }
+
+    function manageKb(url='') {
+		if(url){
+			if (window.parent && window.parent !== window) {
+			  window.parent.postMessage({ type: 'navigate', src: url }, '*');
+			} else {
+			  window.location.href = url;
+			}
+		}
+    }
+
+    // Select dropdown logic
+    function toggleSelectDropdown() {
+      const dropdown = document.getElementById('selectDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    function handleSelectAction(action) {
+      document.getElementById('selectDropdown').classList.remove('show');
+      if (action === 'upload-file') {
+        document.getElementById('fileInput').click();
+        return;
+      }
+      console.log('Select action:', action);
+    }
+
+    // Project dropdown logic
+    const addedProjects = new Set();
+
+    function toggleProjectDropdown() {
+      const dropdown = document.getElementById('projectDropdown');
+      dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        document.querySelectorAll('#projectList .project-dropdown-item').forEach(el => {
+          el.classList.toggle('selected', addedProjects.has(el.dataset.name));
+        });
+        setTimeout(() => document.getElementById('projectSearch').focus(), 50);
+      }
+    }
+
+    function addProject(item) {
+      const name = item.dataset.name;
+      if (addedProjects.has(name)) {
+        addedProjects.delete(name);
+        item.classList.remove('selected');
+      } else {
+        addedProjects.clear();
+        document.querySelectorAll('#projectList .project-dropdown-item').forEach(el => el.classList.remove('selected'));
+        addedProjects.add(name);
+        item.classList.add('selected');
+      }
+      document.getElementById('projectDropdown').classList.remove('show');
+      renderProjectTags();
+    }
+
+    function removeProject(name) {
+      addedProjects.delete(name);
+      renderProjectTags();
+    }
+
+    function renderProjectTags() {
+      const area = document.getElementById('projectTagsArea');
+      const btn = document.getElementById('addProjectBtn');
+      area.innerHTML = '';
+      addedProjects.forEach(name => {
+        const tag = document.createElement('div');
+        tag.className = 'project-tag';
+        tag.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          <span onclick="toggleProjectDropdown()" style="cursor: pointer;">${name}</span>
+          <div class="project-tag-remove" onclick="removeProject('${name}')">✕</div>
+        `;
+        area.appendChild(tag);
+      });
+      btn.style.display = addedProjects.size > 0 ? 'none' : 'inline-flex';
+    }
+
+    function filterProjects() {
+      const query = document.getElementById('projectSearch').value.toLowerCase();
+      document.querySelectorAll('#projectList .project-dropdown-item').forEach(item => {
+        item.style.display = item.dataset.name.toLowerCase().includes(query) ? '' : 'none';
+      });
+    }
+
+    function handleProjectAction(action) {
+      document.getElementById('projectDropdown').classList.remove('show');
+      console.log('Project action:', action);
+    }
+
+    // Skill dropdown logic
+    const addedSkills = new Set();
+
+    function toggleSkillDropdown() {
+      const dropdown = document.getElementById('skillDropdown');
+      dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        document.querySelectorAll('#skillList .skill-item').forEach(item => {
+          item.classList.toggle('selected', addedSkills.has(item.dataset.name));
+        });
+        setTimeout(() => document.getElementById('skillSearch').focus(), 50);
+      }
+    }
+
+    function addSkill(item) {
+      const name = item.dataset.name;
+      if (addedSkills.has(name)) {
+        removeSkill(name);
+        return;
+      }
+      addedSkills.add(name);
+      item.classList.add('selected');
+      renderSkillTags();
+    }
+
+    function removeSkill(name) {
+      addedSkills.delete(name);
+      const el = document.querySelector(`.skill-item[data-name="${name}"]`);
+      if (el) el.classList.remove('selected');
+      renderSkillTags();
+    }
+
+    function renderSkillTags() {
+      const area = document.getElementById('textareaTagsArea');
+      area.querySelectorAll('.skill-tag:not([data-kb-id])').forEach(el => el.remove());
+      addedSkills.forEach(name => {
+        const el = document.querySelector(`#skillList .skill-item[data-name="${name}"]`);
+        const color = el ? el.dataset.color : '#4a6cf7';
+        const icon = el ? el.dataset.icon : '⚡';
+        const tag = document.createElement('div');
+        tag.className = 'skill-tag';
+        tag.innerHTML = `
+          <div class="skill-tag-icon" style="background:${color};color:#fff">${icon}</div>
+          <span>${name}</span>
+          <div class="skill-tag-remove" onclick="removeSkill('${name}')">✕</div>
+        `;
+        area.appendChild(tag);
+      });
+    }
+
+    function filterSkills() {
+      const query = document.getElementById('skillSearch').value.toLowerCase();
+      document.querySelectorAll('#skillList .skill-item').forEach(item => {
+        const name = item.dataset.name.toLowerCase();
+        const desc = item.dataset.desc.toLowerCase();
+        item.style.display = (name.includes(query) || desc.includes(query)) ? '' : 'none';
+      });
+    }
+
+    function handleSkillAction(action) {
+      document.getElementById('skillDropdown').classList.remove('show');
+      console.log('Skill action:', action);
+    }
+
+    const uploadedFiles = [];
+
+    function handleFileSelect(event) {
+      const files = Array.from(event.target.files);
+      files.forEach(file => {
+        uploadedFiles.push(file);
+      });
+      renderFileTags();
+      event.target.value = '';
+    }
+
+    function removeFile(index) {
+      uploadedFiles.splice(index, 1);
+      renderFileTags();
+    }
+
+    function renderFileTags() {
+      const area = document.getElementById('textareaTagsArea');
+      area.querySelectorAll('.file-tag').forEach(el => el.remove());
+      uploadedFiles.forEach((file, index) => {
+        const tag = document.createElement('div');
+        tag.className = 'file-tag';
+        const isImage = file.type.startsWith('image/');
+        const iconSvg = isImage
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+        tag.innerHTML = '<span class="file-tag-icon">' + iconSvg + '</span><span class="file-tag-name">' + file.name + '</span><span class="file-tag-remove" onclick="removeFile(' + index + ')">\u2715</span>';
+        area.appendChild(tag);
+      });
+    }
+
+    // Expert dropdown logic
+    let currentZjTab = 'expert';
+    let selectedZj = null;
+
+    function toggleZjDropdown() {
+      const dropdown = document.getElementById('zjDropdown');
+      dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        updateZjSelectedState();
+        setTimeout(() => document.getElementById('zjSearch').focus(), 50);
+      }
+    }
+
+    function selectZjItem(item) {
+      const name = item.dataset.name;
+      selectedZj = {
+        name: name,
+        avatar: item.dataset.avatar,
+        color: item.dataset.color
+      };
+      document.getElementById('zjDropdown').classList.remove('show');
+      renderZjTags();
+    }
+
+    function removeZj() {
+      selectedZj = null;
+      renderZjTags();
+    }
+
+    function renderZjTags() {
+      const area = document.getElementById('zjTagsArea');
+      const btn = document.getElementById('zjBtn');
+      area.innerHTML = '';
+      if (selectedZj) {
+        const tag = document.createElement('div');
+        tag.className = 'zj-tag';
+        tag.innerHTML = `
+          <div class="zj-tag-avatar" style="background:${selectedZj.color};color:#fff">${selectedZj.avatar}</div>
+          <span onclick="toggleZjDropdown()" style="cursor: pointer;">${selectedZj.name}</span>
+          <div class="zj-tag-remove" onclick="removeZj()">✕</div>
+        `;
+        area.appendChild(tag);
+        btn.style.display = 'none';
+      } else {
+        btn.style.display = 'inline-flex';
+      }
+    }
+
+    function updateZjSelectedState() {
+      document.querySelectorAll('.zj-item').forEach(item => {
+        item.classList.toggle('selected', selectedZj && item.dataset.name === selectedZj.name);
+      });
+    }
+
+    function handleZjAction(action) {
+      document.getElementById('zjDropdown').classList.remove('show');
+      console.log('Expert action:', action);
+    }
+
+    // Permission dropdown logic
+    let currentPerm = 'default';
+
+    function togglePermDropdown() {
+      const dropdown = document.getElementById('permDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    function selectPerm(item) {
+      const val = item.dataset.value;
+      document.getElementById('permDropdown').classList.remove('show');
+      if (val === 'edit') {
+        document.getElementById('permModal').classList.add('show');
+        document.getElementById('permRiskCheck').checked = false;
+        document.getElementById('permConfirmBtn').disabled = true;
+        return;
+      }
+      currentPerm = val;
+      document.querySelectorAll('.perm-item').forEach(el => el.classList.remove('selected'));
+      item.classList.add('selected');
+      document.getElementById('permBtnText').textContent = item.querySelector('.perm-item-label').textContent.trim();
+    }
+
+    function closePermModal() {
+      document.getElementById('permModal').classList.remove('show');
+    }
+
+    function togglePermConfirmBtn() {
+      document.getElementById('permConfirmBtn').disabled = !document.getElementById('permRiskCheck').checked;
+    }
+
+    function confirmFullAccess() {
+      currentPerm = 'edit';
+      document.querySelectorAll('.perm-item').forEach(el => el.classList.remove('selected'));
+      const editItem = document.querySelector('.perm-item[data-value="edit"]');
+      editItem.classList.add('selected');
+      document.getElementById('permBtnText').textContent = '完全访问';
+      closePermModal();
+    }
+
+    // Model dropdown logic
+    function toggleModelDropdown() {
+      document.getElementById('modelDropdown').classList.toggle('show');
+    }
+
+    function selectModel(item) {
+      document.querySelectorAll('.model-option').forEach(el => el.classList.remove('selected'));
+      item.classList.add('selected');
+      document.getElementById('modelPillText').textContent = item.dataset.model;
+      document.getElementById('modelDropdown').classList.remove('show');
+    }
+
+    function toggleQualityDropdown() {
+      document.getElementById('qualityDropdown').classList.toggle('show');
+    }
+
+    function selectQuality(item) {
+      document.querySelectorAll('.quality-option').forEach(el => el.classList.remove('selected'));
+      item.classList.add('selected');
+      document.getElementById('qualityPillText').textContent = item.dataset.value;
+      document.getElementById('qualityDropdown').classList.remove('show');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const kbWrapper = document.querySelector('.kb-dropdown-wrapper');
+      if (!kbWrapper.contains(e.target)) {
+        document.getElementById('kbDropdown').classList.remove('show');
+      }
+      const selectWrapper = document.querySelector('.select-dropdown-wrapper');
+      if (!selectWrapper.contains(e.target)) {
+        document.getElementById('selectDropdown').classList.remove('show');
+      }
+      const projectWrapper = document.querySelector('.project-dropdown-wrapper');
+      const projectTagsArea = document.getElementById('projectTagsArea');
+      if (!projectWrapper.contains(e.target) && !projectTagsArea.contains(e.target)) {
+        document.getElementById('projectDropdown').classList.remove('show');
+      }
+      const skillWrapper = document.querySelector('.skill-dropdown-wrapper');
+      if (!skillWrapper.contains(e.target)) {
+        document.getElementById('skillDropdown').classList.remove('show');
+      }
+      const zjWrapper = document.querySelector('.zj-dropdown-wrapper');
+      const zjTagsArea = document.getElementById('zjTagsArea');
+      if (!zjWrapper.contains(e.target) && !zjTagsArea.contains(e.target)) {
+        document.getElementById('zjDropdown').classList.remove('show');
+      }
+      const permWrapper = document.querySelector('.perm-dropdown-wrapper');
+      if (!permWrapper.contains(e.target)) {
+        document.getElementById('permDropdown').classList.remove('show');
+      }
+      const modelWrapper = document.querySelector('.model-dropdown-wrapper');
+      if (!modelWrapper.contains(e.target)) {
+        document.getElementById('modelDropdown').classList.remove('show');
+      }
+      const qualityWrapper = document.querySelector('.quality-dropdown-wrapper');
+      if (!qualityWrapper.contains(e.target)) {
+        document.getElementById('qualityDropdown').classList.remove('show');
+      }
     });
   </script>
 

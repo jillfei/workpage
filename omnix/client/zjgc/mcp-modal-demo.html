@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>添加MCP - 演示原型</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f0f2f5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 触发按钮 */
+  .trigger-btn {
+    padding: 12px 24px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .trigger-btn:hover { background: #1d4ed8; }
+
+  /* MCP 弹窗遮罩 */
+  .mcp-modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden; transition: all 0.25s;
+  }
+  .mcp-modal-overlay.open { opacity: 1; visibility: visible; }
+
+  /* MCP 弹窗 */
+  .mcp-modal {
+    background: #fff;
+    border-radius: 16px;
+    width: 620px;
+    max-height: 75vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    transform: scale(0.92) translateY(20px);
+    transition: transform 0.25s ease;
+  }
+  .mcp-modal-overlay.open .mcp-modal { transform: scale(1) translateY(0); }
+
+  /* 弹窗头部 */
+  .mcp-modal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    flex-shrink: 0;
+  }
+  .mcp-modal-title {
+    font-size: 18px; font-weight: 700; color: #1a1a1a;
+  }
+  .mcp-modal-close {
+    width: 32px; height: 32px;
+    border: none; background: #f5f5f5;
+    border-radius: 8px; cursor: pointer;
+    font-size: 16px; color: #666;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .mcp-modal-close:hover { background: #eee; }
+
+  /* 搜索框 */
+  .mcp-modal-search {
+    padding: 16px 24px;
+    flex-shrink: 0;
+  }
+  .mcp-modal-search input {
+    width: 100%;
+    padding: 10px 16px 10px 40px;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    background: #f7f8fa url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23bbb' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 14px center no-repeat;
+    box-sizing: border-box;
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+  .mcp-modal-search input:focus {
+    border-color: #2563eb;
+    background-color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  }
+  .mcp-modal-search input::placeholder { color: #bbb; }
+
+  /* 列表区域 */
+  .mcp-modal-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 24px 16px;
+  }
+  .mcp-modal-list::-webkit-scrollbar { width: 6px; }
+  .mcp-modal-list::-webkit-scrollbar-track { background: transparent; }
+  .mcp-modal-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+
+  /* 服务行 */
+  .mcp-service-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .mcp-service-row:last-child { border-bottom: none; }
+
+  .mcp-service-info {
+    display: flex; align-items: center; gap: 14px;
+    flex: 1; min-width: 0;
+  }
+
+  .mcp-service-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    background: #f0f2f5;
+  }
+
+  .mcp-service-text { flex: 1; min-width: 0; }
+  .mcp-service-name {
+    font-size: 15px; font-weight: 600; color: #1a1a1a;
+  }
+  .mcp-service-desc {
+    font-size: 13px; color: #888; margin-top: 3px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    max-width: 320px;
+  }
+
+  .mcp-service-actions {
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* 添加全部按钮 */
+  .mcp-add-all-btn {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    background: #fff; color: #2563eb;
+    border: 1px solid #2563eb;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 4px;
+    white-space: nowrap;
+  }
+  .mcp-add-all-btn:hover { background: #eff3ff; }
+  .mcp-add-all-btn.added {
+    background: #f5f5f5; color: #999; border-color: #e0e0e0;
+    cursor: default;
+  }
+  .mcp-add-all-btn.added:hover { background: #f5f5f5; }
+
+  /* 展开按钮 */
+  .mcp-expand-btn {
+    width: 30px; height: 30px;
+    border: none; background: #f5f5f5;
+    border-radius: 8px; cursor: pointer;
+    font-size: 11px; color: #888;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .mcp-expand-btn:hover { background: #eee; }
+  .mcp-expand-btn.expanded { transform: rotate(180deg); }
+
+  /* 工具列表 */
+  .mcp-tools-list {
+    padding: 0 0 8px 58px;
+    display: none;
+    animation: slideDown 0.2s ease;
+  }
+  .mcp-tools-list.show { display: block; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .mcp-tool-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-bottom: 4px;
+  }
+  .mcp-tool-item:hover { background: #f5f7fa; }
+  .mcp-tool-item.selected { background: #eef2ff; }
+
+  .mcp-tool-name {
+    font-size: 14px; color: #1a1a1a; font-weight: 500;
+  }
+  .mcp-tool-desc {
+    font-size: 12px; color: #999; margin-top: 2px;
+  }
+
+  .mcp-tool-check {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 2px solid #ddd;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .mcp-tool-item.selected .mcp-tool-check {
+    background: #2563eb; border-color: #2563eb;
+  }
+
+  /* 弹窗底部 */
+  .mcp-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .mcp-modal-cancel {
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 14px; font-weight: 500;
+    background: #fff; color: #555;
+    border: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .mcp-modal-cancel:hover { background: #f5f5f5; }
+  .mcp-modal-confirm {
+    padding: 10px 32px;
+    border-radius: 10px;
+    font-size: 14px; font-weight: 600;
+    background: #2563eb; color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .mcp-modal-confirm:hover { background: #1d4ed8; }
+
+  /* 已选标签展示区 */
+  .selected-tags-area {
+    margin-top: 20px;
+    padding: 16px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    max-width: 620px;
+    width: 100%;
+  }
+  .selected-tags-title {
+    font-size: 14px; font-weight: 600; color: #333;
+    margin-bottom: 10px;
+  }
+  .selected-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .selected-tag {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    background: #eef2ff;
+    color: #2563eb;
+    display: flex; align-items: center; gap: 6px;
+    animation: tagIn 0.2s ease;
+  }
+  @keyframes tagIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .selected-tag .remove {
+    cursor: pointer; font-size: 14px; opacity: 0.6;
+    transition: opacity 0.15s;
+  }
+  .selected-tag .remove:hover { opacity: 1; }
+
+  /* Toast 提示 */
+  .toast {
+    position: fixed; top: 24px; left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: #1a1a1a; color: #fff;
+    padding: 12px 24px; border-radius: 10px;
+    font-size: 14px; z-index: 2000;
+    transition: transform 0.3s ease;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { background: #16a34a; }
+</style>
+</head>
+<body>
+
+<button class="trigger-btn" id="openMcpBtn">+ 点击选择MCP</button>
+
+<div class="selected-tags-area" id="selectedTagsArea">
+  <div class="selected-tags-title">已选择的 MCP 工具</div>
+  <div class="selected-tags" id="selectedTags">
+    <span style="color:#999;font-size:13px;">暂无选择，点击上方按钮添加 MCP 服务</span>
+  </div>
+</div>
+
+<!-- MCP 弹窗 -->
+<div class="mcp-modal-overlay" id="mcpModalOverlay">
+  <div class="mcp-modal">
+    <div class="mcp-modal-head">
+      <span class="mcp-modal-title">添加MCP</span>
+      <button class="mcp-modal-close" id="mcpModalClose">✕</button>
+    </div>
+    <div class="mcp-modal-search">
+      <input type="text" id="mcpModalSearch" placeholder="搜索MCP" />
+    </div>
+    <div class="mcp-modal-list" id="mcpModalList"></div>
+    <div class="mcp-modal-footer">
+      <button class="mcp-modal-cancel" id="mcpModalCancel">取消</button>
+      <button class="mcp-modal-confirm" id="mcpModalConfirm">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== 模拟 MCP 服务数据 =====
+var mcpServices = [
+  {
+    name: '证券之星',
+    desc: '面向金融投资领域的智能工具，将证券之星各项数据与服务封装为云端服务',
+    icon: '📈',
+    tools: [
+      { name: 'A股行情', desc: '实时A股行情数据查询与分析' },
+      { name: '港股行情', desc: '实时港股行情数据查询' },
+      { name: '财务分析', desc: '上市公司财务数据深度分析' },
+      { name: '行业对比', desc: '行业板块对比与趋势分析' }
+    ]
+  },
+  {
+    name: 'EdgeOne Pages',
+    desc: '零门槛生成网页，一句话即可快速生成并部署HTML页面',
+    icon: '',
+    tools: [
+      { name: 'deploy-html', desc: 'Deploy HTML content to EdgeOne Pages, return the public URL' }
+    ]
+  },
+  {
+    name: 'Arxiv 论文助手',
+    desc: '基于 arXiv 的论文解读与知识整理助手，支持搜索、PDF获取、论文解读',
+    icon: '📄',
+    tools: [
+      { name: '论文搜索', desc: '搜索 Arxiv 论文，支持关键词和分类筛选' },
+      { name: 'PDF 获取', desc: '获取论文 PDF 链接并下载' },
+      { name: '论文解读', desc: 'AI 辅助论文核心内容解读' },
+      { name: '最新论文', desc: '获取最新 AI 领域论文推送' }
+    ]
+  },
+  {
+    name: 'AntV 可视化图表',
+    desc: '基于 AntV 可视化解决方案封装的图表生成插件，支持 15+ 常用图表类型',
+    icon: '',
+    tools: [
+      { name: '折线图', desc: '生成折线趋势图表，支持多系列' },
+      { name: '柱状图', desc: '生成柱状对比图表' },
+      { name: '饼图', desc: '生成饼图占比图表' },
+      { name: '散点图', desc: '生成散点分布图表' },
+      { name: '热力图', desc: '生成热力分布图表' }
+    ]
+  },
+  {
+    name: 'Amap Maps 高德地图',
+    desc: '覆盖15大核心接口，提供全场景覆盖的地理信息服务',
+    icon: '🗺️',
+    tools: [
+      { name: '地理编码', desc: '地址转经纬度坐标' },
+      { name: '路线规划', desc: '导航路线规划与距离计算' },
+      { name: '周边搜索', desc: '搜索周边POI兴趣点信息' },
+      { name: '天气查询', desc: '实时天气与未来预报' }
+    ]
+  },
+  {
+    name: '文件管理',
+    desc: '本地文件系统读写与管理服务，支持多种文件格式',
+    icon: '',
+    tools: [
+      { name: '读取文件', desc: '读取本地文件内容' },
+      { name: '写入文件', desc: '写入内容到本地文件' },
+      { name: '列出目录', desc: '列出目录下的文件和子目录' }
+    ]
+  },
+  {
+    name: '数据库',
+    desc: '数据库连接与查询服务，支持 MySQL、PostgreSQL 等',
+    icon: '🗄️',
+    tools: [
+      { name: 'SQL 查询', desc: '执行 SQL 查询语句并返回结果' },
+      { name: '表结构', desc: '查看数据库表结构和字段信息' },
+      { name: '数据导出', desc: '导出数据为 CSV 或 JSON 格式' }
+    ]
+  },
+  {
+    name: 'AI 图像生成',
+    desc: 'AI 驱动的图像生成与编辑服务，支持多种风格',
+    icon: '🎨',
+    tools: [
+      { name: '文生图', desc: '根据文字描述生成图片' },
+      { name: '图生图', desc: '基于参考图生成新图片' },
+      { name: '图片编辑', desc: 'AI 辅助图片编辑与美化' }
+    ]
+  }
+];
+
+// ===== 状态管理 =====
+var selectedTools = []; // 已选中的工具 { name, desc, service }
+var expandedServices = {}; // 展开的服务
+var pendingTools = []; // 弹窗中的临时选择
+
+// ===== 弹窗控制 =====
+var overlay = document.getElementById('mcpModalOverlay');
+var searchInput = document.getElementById('mcpModalSearch');
+var listEl = document.getElementById('mcpModalList');
+
+function openModal() {
+  pendingTools = selectedTools.map(function(t) { return { name: t.name, desc: t.desc, service: t.service }; });
+  expandedServices = {};
+  searchInput.value = '';
+  renderList();
+  overlay.classList.add('open');
+}
+
+function closeModal() {
+  overlay.classList.remove('open');
+}
+
+function confirmModal() {
+  selectedTools = pendingTools.map(function(t) { return { name: t.name, desc: t.desc, service: t.service }; });
+  renderSelectedTags();
+  closeModal();
+  showToast('已添加 ' + selectedTools.length + ' 个 MCP 工具', 'success');
+}
+
+// ===== 渲染列表 =====
+function renderList() {
+  var keyword = searchInput.value.trim().toLowerCase();
+  var services = mcpServices;
+
+  if (keyword) {
+    services = services.filter(function(svc) {
+      if (svc.name.toLowerCase().indexOf(keyword) !== -1) return true;
+      if (svc.desc.toLowerCase().indexOf(keyword) !== -1) return true;
+      return svc.tools.some(function(t) {
+        return t.name.toLowerCase().indexOf(keyword) !== -1 || t.desc.toLowerCase().indexOf(keyword) !== -1;
+      });
+    });
+  }
+
+  var html = '';
+  services.forEach(function(svc) {
+    var isExpanded = expandedServices[svc.name] || false;
+    var allSelected = svc.tools.every(function(t) {
+      return pendingTools.some(function(p) { return p.name === t.name; });
+    });
+
+    // 服务行
+    html += '<div class="mcp-service-row">';
+    html += '<div class="mcp-service-info">';
+    html += '<div class="mcp-service-icon">' + svc.icon + '</div>';
+    html += '<div class="mcp-service-text">';
+    html += '<div class="mcp-service-name">' + svc.name + '</div>';
+    html += '<div class="mcp-service-desc">' + svc.desc + '</div>';
+    html += '</div></div>';
+    html += '<div class="mcp-service-actions">';
+    html += '<button class="mcp-add-all-btn' + (allSelected ? ' added' : '') + '" data-svc="' + svc.name + '">';
+    html += (allSelected ? '✓ 已添加' : '+ 添加');
+    html += '</button>';
+    html += '<button class="mcp-expand-btn' + (isExpanded ? ' expanded' : '') + '" data-svc="' + svc.name + '">▼</button>';
+    html += '</div></div>';
+
+    // 工具列表
+    html += '<div class="mcp-tools-list' + (isExpanded ? ' show' : '') + '">';
+    svc.tools.forEach(function(tool) {
+      var isSelected = pendingTools.some(function(p) { return p.name === tool.name; });
+      html += '<div class="mcp-tool-item' + (isSelected ? ' selected' : '') + '" data-svc="' + svc.name + '" data-tool="' + tool.name + '" data-desc="' + tool.desc + '">';
+      html += '<div><div class="mcp-tool-name">' + tool.name + '</div><div class="mcp-tool-desc">' + tool.desc + '</div></div>';
+      html += '<div class="mcp-tool-check">' + (isSelected ? '✓' : '') + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+
+  if (!services.length) {
+    html = '<div style="text-align:center;padding:40px 0;color:#999;font-size:14px;">未找到匹配的 MCP 服务</div>';
+  }
+
+  listEl.innerHTML = html;
+  bindListEvents();
+}
+
+function bindListEvents() {
+  // 添加全部
+  listEl.querySelectorAll('.mcp-add-all-btn').forEach(function(btn) {
+    btn.onclick = function() {
+      var svcName = btn.dataset.svc;
+      var svc = mcpServices.find(function(s) { return s.name === svcName; });
+      if (!svc) return;
+      var allSelected = svc.tools.every(function(t) {
+        return pendingTools.some(function(p) { return p.name === t.name; });
+      });
+      if (allSelected) {
+        svc.tools.forEach(function(t) {
+          var idx = pendingTools.findIndex(function(p) { return p.name === t.name; });
+          if (idx >= 0) pendingTools.splice(idx, 1);
+        });
+      } else {
+        svc.tools.forEach(function(t) {
+          if (!pendingTools.some(function(p) { return p.name === t.name; })) {
+            pendingTools.push({ name: t.name, desc: t.desc, service: svc.name });
+          }
+        });
+      }
+      renderList();
+    };
+  });
+
+  // 展开/收起
+  listEl.querySelectorAll('.mcp-expand-btn').forEach(function(btn) {
+    btn.onclick = function(e) {
+      e.stopPropagation();
+      var svcName = btn.dataset.svc;
+      expandedServices[svcName] = !expandedServices[svcName];
+      renderList();
+    };
+  });
+
+  // 单个工具选择
+  listEl.querySelectorAll('.mcp-tool-item').forEach(function(item) {
+    item.onclick = function() {
+      var toolName = item.dataset.tool;
+      var toolDesc = item.dataset.desc;
+      var svcName = item.dataset.svc;
+      var idx = pendingTools.findIndex(function(p) { return p.name === toolName; });
+      if (idx >= 0) {
+        pendingTools.splice(idx, 1);
+      } else {
+        pendingTools.push({ name: toolName, desc: toolDesc, service: svcName });
+      }
+      renderList();
+    };
+  });
+}
+
+// ===== 已选标签渲染 =====
+function renderSelectedTags() {
+  var container = document.getElementById('selectedTags');
+  if (!selectedTools.length) {
+    container.innerHTML = '<span style="color:#999;font-size:13px;">暂无选择，点击上方按钮添加 MCP 服务</span>';
+    return;
+  }
+  container.innerHTML = selectedTools.map(function(t, i) {
+    return '<span class="selected-tag">' + t.name + '<span class="remove" data-idx="' + i + '">×</span></span>';
+  }).join('');
+  container.querySelectorAll('.remove').forEach(function(el) {
+    el.onclick = function() {
+      selectedTools.splice(parseInt(el.dataset.idx), 1);
+      renderSelectedTags();
+    };
+  });
+}
+
+// ===== Toast =====
+function showToast(msg, type) {
+  var toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast' + (type ? ' ' + type : '');
+  setTimeout(function() { toast.classList.add('show'); }, 10);
+  setTimeout(function() { toast.classList.remove('show'); }, 2000);
+}
+
+// ===== 事件绑定 =====
+document.getElementById('openMcpBtn').onclick = openModal;
+document.getElementById('mcpModalClose').onclick = closeModal;
+document.getElementById('mcpModalCancel').onclick = closeModal;
+document.getElementById('mcpModalConfirm').onclick = confirmModal;
+overlay.onclick = function(e) {
+  if (e.target === overlay) closeModal();
+};
+searchInput.oninput = function() {
+  renderList();
+};
+</script>
+</body>
+</html>
