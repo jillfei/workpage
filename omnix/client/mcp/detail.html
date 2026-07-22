@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amap Maps 高德地图</title>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --surface: #ffffff;
+      --text-main: #111827;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --border: #e5e7eb;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top navigation */
+    .top-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .top-nav svg { width: 18px; height: 18px; color: var(--text-secondary); cursor: pointer; }
+    .top-nav span { font-weight: normal; }
+
+    .back-nav {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 14px; color: var(--text-secondary); cursor: pointer;
+      text-decoration: none; margin: 0;
+      transition: color .15s; user-select: none;
+    }
+    .back-nav:hover { color: var(--text-main); }
+    .back-nav svg { width: 16px; height: 16px; }
+
+    .logo-box { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+
+    /* Header */
+    .header {
+      background: var(--surface);
+      padding: 22px 24px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .header-meta { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .header-logo {
+      width: 40px; height: 40px; border-radius: 8px;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px; font-weight: 600; color: #fff; line-height: 1;
+      overflow: hidden;
+    }
+    .header-logo svg { width: 24px; height: 24px; }
+    .header-title { font-size: 20px; font-weight: 600; color: var(--text-main); line-height: 1.2; }
+
+    .source-badge {
+      align-self: flex-start;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 6px;
+      color: #52525b;
+      background: #f4f4f5;
+      border: 1px solid #e4e4e7;
+    }
+    .source-badge.custom { color: #4f46e5; background: #eef2ff; border-color: #e0e7ff; }
+    .source-badge.market { color: #0e7490; background: #ecfeff; border-color: #cffafe; }
+
+    .header-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--surface); color: var(--text-main);
+      font-size: 14px; cursor: pointer; transition: background .15s, border-color .15s;
+      flex-shrink: 0;
+    }
+    .header-btn:hover { background: #fafafa; border-color: #d4d4d8; }
+
+    /* Main */
+    .main { flex: 1; padding: 20px 24px 32px; display: flex; justify-content: center; }
+    .content {
+      width: 100%;
+      background: var(--surface);
+      border-radius: 12px;
+    }
+    .lead {
+      color: #3f3f46;
+      font-size: 14px;
+      line-height: 1.75;
+      margin: 0 0 20px;
+    }
+    .section-label {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin: 4px 0 6px;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin: 0 0 12px;
+    }
+    .desc {
+      color: #3f3f46;
+      font-size: 14px;
+      line-height: 1.75;
+      margin: 0 0 14px;
+    }
+
+    /* Tool list */
+    .tool-list { margin-top: 6px; }
+    .tool-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px 4px;
+      border-top: 1px solid var(--border);
+    }
+    .tool-item:first-child {
+      border-top: none;
+      background: #f5f6f7;
+      border-radius: 10px;
+      padding: 14px 16px;
+      border: 1px solid #ececed;
+      margin-top: 2px;
+    }
+    .tool-icon {
+      width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;
+      color: #3b82f6;
+    }
+    .tool-item:first-child .tool-icon { color: #52525b; }
+    .tool-body { flex: 1; min-width: 0; }
+    .tool-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 4px;
+    }
+    .tool-item:first-child .tool-name { color: #111827; }
+    .tool-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed; top: 24px; left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: #18181b; color: #fff; padding: 12px 20px;
+      border-radius: 10px; font-size: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s ease, transform .25s ease;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* 详情页头部右侧操作区 */
+    .header-right {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    /* 启禁用开关（与列表页一致） */
+    .mcp-switch { position: relative; display: inline-flex; width: 40px; height: 22px; flex-shrink: 0; }
+    .mcp-switch input { opacity: 0; width: 0; height: 0; }
+    .mcp-switch-track { position: absolute; inset: 0; background: #e4e4e7; border-radius: 999px; transition: background .2s; cursor: pointer; }
+    .mcp-switch-track::before { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: transform .2s; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+    .mcp-switch input:checked + .mcp-switch-track { background: #22c55e; }
+    .mcp-switch input:checked + .mcp-switch-track::before { transform: translateX(18px); }
+
+    /* 三个点菜单 */
+    .mcp-menu-trigger { width: 30px; height: 30px; border: 1px solid var(--border); background: var(--surface); border-radius: 8px; cursor: pointer; color: #52525b; display: flex; align-items: center; justify-content: center; font-size: 18px; line-height: 1; transition: background .15s; flex-shrink: 0; }
+    .mcp-menu-trigger:hover { background: #fafafa; }
+    .mcp-menu { position: absolute; top: calc(100% + 8px); right: 0; min-width: 128px; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 4px; display: none; z-index: 50; }
+    .mcp-menu.open { display: block; }
+    .mcp-menu-item { display: block; width: 100%; text-align: left; background: transparent; border: none; padding: 8px 10px; border-radius: 6px; font-size: 13px; color: #ef4444; cursor: pointer; }
+    .mcp-menu-item:hover { background: #fef2f2; }
+
+    /* 转转转加载 */
+    .mcp-spinner { width: 22px; height: 22px; border: 2px solid #e4e4e7; border-top-color: #52525b; border-radius: 50%; animation: mcp-spin .8s linear infinite; }
+    @keyframes mcp-spin { to { transform: rotate(360deg); } }
+
+    /* 卸载确认弹窗 */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-overlay.show { display: flex; }
+    .modal { width: 380px; max-width: calc(100vw - 40px); background: #fff; border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.2); overflow: hidden; }
+    .modal-header { display: flex; align-items: center; gap: 12px; padding: 20px 20px 12px; }
+    .modal-icon { width: 40px; height: 40px; border-radius: 10px; background: #fef2f2; color: #ef4444; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .modal-title-wrap { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .modal-title { font-size: 16px; font-weight: 600; color: #18181b; }
+    .modal-subtitle { font-size: 12px; color: #71717a; }
+    .modal-close { width: 30px; height: 30px; border: none; background: transparent; color: #a1a1aa; cursor: pointer; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .modal-close:hover { background: #f4f4f5; color: #52525b; }
+    .confirm-text { padding: 0 20px 16px; font-size: 14px; color: #3f3f46; line-height: 1.6; }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 12px 20px 20px; }
+    .btn { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: 1px solid transparent; }
+    .btn-secondary { background: #fff; color: #18181b; border-color: #e4e4e7; }
+    .btn-secondary:hover { background: #fafafa; border-color: #d4d4d8; }
+    .btn-danger { background: #ef4444; color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+  </style>
+</head>
+<body>
+  <div class="top-nav">
+    <a class="back-nav" href="./list.html">
+      <div class="logo-box">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l-6 6 6 6"/></svg>
+      </div>
+      <span>MCP</span>
+    </a>
+  </div>
+
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo" id="header-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 L12 5 L19 19"/><path d="M8 14 L16 14"/></svg>
+      </div>
+      <div class="header-meta">
+        <div class="header-title" id="header-title">Amap Maps 高德地图</div>
+        <span class="source-badge" id="source-badge"></span>
+      </div>
+    </div>
+    <div class="header-right" id="detail-actions">
+      <button class="header-btn" id="add-mcp-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+        <span>添加MCP</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="content">
+      <p class="lead">高德地图 MCP Server 现已覆盖 15 大核心接口，提供全场景覆盖的地理信息服务，包括生成专属地图、导航到目的地、订车、地理编码、逆地理编码、IP 定位、天气查询、骑行路径规划、步行路径规划、驾车路径规划、公交路径规划、距离测量、关键词搜索、周边搜索、详情搜索等。</p>
+
+      <div class="section-label">服务介绍</div>
+      <h2 class="section-title">什么是 Amap Maps MCP 服务？</h2>
+      <p class="desc">为实现 LBS 服务与 LLM 更好的交互，高德地图 MCP Server 现已覆盖 15 大核心服务接口，提供全场景覆盖的地图服务，包括生成专属地图、导航到目的地、订车、地理编码、逆地理编码、IP 定位、天气查询、骑行路径规划、步行路径规划、驾车路径规划、公交路径规划、距离测量、关键词搜索、周边搜索、详情搜索等。</p>
+      <p class="desc">通过高德 MCP Server 与高德地图APP无缝打通，用户可将大模型产出的攻略与高德地图APP无缝衔接。实现一键生成专属地图，将攻略中的单位、描述、行程规划等个性化信息自动导入到高德地图APP，生成一张独属于用户的私有地图，实际出行中可实现由攻略到一键导航、打车、订票的丝滑体验。</p>
+
+      <div class="section-label" style="margin-top:18px;">工具列表 <span id="tool-count">6</span></div>
+      <div class="tool-list" id="tool-list">
+        <div class="tool-item">
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <div class="tool-body">
+            <div class="tool-name">maps_direction_bicycling</div>
+            <div class="tool-desc">骑行路径规划用于规划骑行通勤方案，规划时会考虑天桥、单行线、封路等情况，最大支持 500km 的骑行路径规划</div>
+          </div>
+        </div>
+        <div class="tool-item">
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <div class="tool-body">
+            <div class="tool-name">maps_direction_driving</div>
+            <div class="tool-desc">驾车路径规划 API 可以根据用户起点终点经度坐标规划以小汽车、轿车通勤出行的方案，并且返回通勤方案的数据</div>
+          </div>
+        </div>
+        <div class="tool-item">
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <div class="tool-body">
+            <div class="tool-name">maps_direction_transit_integrated</div>
+            <div class="tool-desc">根据用户起点终点经度坐标规划综合公交（火车、公交、地铁）交通方式的通勤方案，并且返回通勤方案的数据，跨…</div>
+          </div>
+        </div>
+        <div class="tool-item">
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <div class="tool-body">
+            <div class="tool-name">maps_direction_walking</div>
+            <div class="tool-desc">根据输入起点终点经度坐标规划 100km 以内的步行通勤方案，并且返回通勤方案的数据</div>
+          </div>
+        </div>
+        <div class="tool-item">
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <div class="tool-body">
+            <div class="tool-name">maps_distance</div>
+            <div class="tool-desc">测量两个经纬度坐标之间的距离,支持驾车、步行以及球面距离测量</div>
+          </div>
+        </div>
+        <div class="tool-item">
+          <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <div class="tool-body">
+            <div class="tool-name">maps_text_search</div>
+            <div class="tool-desc">根据用户输入的关键字搜索 POI 兴趣点信息，可设置城市及类别筛选，返回匹配的地点列表及地址、坐标等详情</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <!-- 卸载确认弹窗 -->
+  <div class="modal-overlay" id="uninstall-confirm">
+    <div class="modal" style="max-width: 380px;">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="modal-title-wrap">
+          <div class="modal-title">卸载 MCP</div>
+          <div class="modal-subtitle">此操作不可撤销</div>
+        </div>
+        <button class="modal-close" id="uninstall-close" aria-label="关闭">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="confirm-text">确定要卸载 <b id="uninstall-name"></b> 吗？</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="uninstall-cancel">取消</button>
+        <button class="btn btn-danger" id="uninstall-ok">确认卸载</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const toast = document.getElementById('toast');
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      }
+      // 从 URL ?name=&icon=&source= 同步头部图标、标题与来源标签
+      const params = new URLSearchParams(location.search);
+      const name = params.get('name') || '';
+      const icon = params.get('icon') || '';
+      const source = params.get('source') || '';
+
+      const logo = document.getElementById('header-logo');
+      const badge = document.getElementById('source-badge');
+
+      // 市场 MCP：彩色字母方块（颜色与列表页保持一致）
+      const MARKET = {
+        dingtalk: { letter: '钉', color: '#3370ff' },
+        feishu:   { letter: '飞', color: '#00d6b9' },
+        sql:      { letter: 'S', color: '#0055ff' },
+        ima:      { letter: 'i', color: '#1f1f1f' },
+        qqmail:   { letter: 'Q', color: '#ffb800' }
+      };
+      // 自定义 MCP：灰色底 + 对应图标
+      const CUSTOM = {
+        globe: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#52525b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+        map: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#52525b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>',
+        mail: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#52525b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'
+      };
+
+      if (source === 'MCP市场' && MARKET[icon]) {
+        const m = MARKET[icon];
+        logo.style.background = m.color;
+        logo.textContent = m.letter;
+        badge.textContent = 'MCP市场';
+        badge.className = 'source-badge market';
+      } else if (source === '自定义MCP' && CUSTOM[icon]) {
+        logo.style.background = '#f4f4f5';
+        logo.innerHTML = CUSTOM[icon];
+        badge.textContent = '自定义MCP';
+        badge.className = 'source-badge custom';
+      } else {
+        // 缺省：保留原有 Amap 蓝色 logo
+        badge.style.display = 'none';
+      }
+
+      if (name) {
+        document.getElementById('header-title').textContent = name;
+        document.title = name + ' - MCP';
+      }
+
+      // ---------- 详情页头部操作区：根据 source 控制 添加 / 开关+三点 / 隐藏 ----------
+      const actionsWrap = document.getElementById('detail-actions');
+      const addBtn = document.getElementById('add-mcp-btn');
+
+      if (source === '自定义MCP') {
+        // 自定义 MCP 详情页不显示添加按钮
+        actionsWrap.style.display = 'none';
+      } else if (source === 'MCP市场') {
+        // 列表已添加的市场 MCP：直接进入“已添加”状态（开关 + 三点），无需再点添加
+        if (params.get('added') === 'true') {
+          enterAddedState();
+        } else {
+          // 市场 MCP：点击添加 -> 转转转 -> 开关 + 三个点（与列表页一致）
+          addBtn.addEventListener('click', () => {
+            addBtn.style.display = 'none';
+            const spinner = document.createElement('span');
+            spinner.className = 'mcp-spinner';
+            actionsWrap.appendChild(spinner);
+            setTimeout(() => {
+              spinner.remove();
+              showToast('添加' + name + '成功');
+              enterAddedState();
+            }, 800);
+          });
+        }
+      }
+
+      function enterAddedState() {
+        addBtn.style.display = 'none';
+        const inner = document.createElement('div');
+        inner.className = 'header-right';
+        inner.id = 'detail-added';
+        inner.style.gap = '10px';
+
+        // 启禁用开关
+        const sw = document.createElement('label');
+        sw.className = 'mcp-switch';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.checked = true;
+        const track = document.createElement('span');
+        track.className = 'mcp-switch-track';
+        sw.appendChild(input);
+        sw.appendChild(track);
+        input.addEventListener('change', () => { console.log('MCP enabled =', input.checked); });
+
+        // 三个点触发按钮
+        const trigger = document.createElement('button');
+        trigger.className = 'mcp-menu-trigger';
+        trigger.setAttribute('aria-label', '更多操作');
+        trigger.textContent = '⋮';
+
+        // 下拉菜单（卸载）
+        const menu = document.createElement('div');
+        menu.className = 'mcp-menu';
+        const uninstallItem = document.createElement('button');
+        uninstallItem.className = 'mcp-menu-item';
+        uninstallItem.textContent = '卸载';
+        menu.appendChild(uninstallItem);
+
+        inner.appendChild(sw);
+        inner.appendChild(trigger);
+        inner.appendChild(menu);
+        actionsWrap.appendChild(inner);
+
+        trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const willOpen = !menu.classList.contains('open');
+          document.querySelectorAll('.mcp-menu.open').forEach((m) => { if (m !== menu) m.classList.remove('open'); });
+          if (willOpen) menu.classList.add('open');
+        });
+
+        uninstallItem.addEventListener('click', (e) => {
+          e.stopPropagation();
+          menu.classList.remove('open');
+          openUninstallConfirm(name);
+        });
+      }
+
+      function openUninstallConfirm(n) {
+        document.getElementById('uninstall-name').textContent = n;
+        document.getElementById('uninstall-confirm').classList.add('show');
+      }
+      function closeUninstallConfirm() {
+        document.getElementById('uninstall-confirm').classList.remove('show');
+      }
+
+      document.getElementById('uninstall-close').addEventListener('click', closeUninstallConfirm);
+      document.getElementById('uninstall-cancel').addEventListener('click', closeUninstallConfirm);
+      document.getElementById('uninstall-confirm').addEventListener('click', (e) => {
+        if (e.target.id === 'uninstall-confirm') closeUninstallConfirm();
+      });
+      document.getElementById('uninstall-ok').addEventListener('click', () => {
+        closeUninstallConfirm();
+        const added = document.getElementById('detail-added');
+        if (added) added.remove();
+        addBtn.style.display = '';
+        showToast('已卸载 ' + name);
+      });
+
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.mcp-menu.open').forEach((m) => m.classList.remove('open'));
+      });
+    })();
+  </script>
+</body>
+</html>

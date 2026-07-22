@@ -6473,11 +6473,6 @@
             <span class="skill-modal-title">选择技能</span>
             <button class="skill-modal-close" id="skillModalClose">✕</button>
           </div>
-          <div class="skill-modal-tabs">
-            <button class="skill-modal-tab active" data-tab="market">技能市场<span class="tab-count">15</span></button>
-            <button class="skill-modal-tab" data-tab="enterprise">企业技能<span class="tab-count">5</span></button>
-            <button class="skill-modal-tab" data-tab="installed">已安装技能<span class="tab-count">5</span></button>
-          </div>
           <div class="skill-modal-search">
             <input type="text" id="skillModalSearch" placeholder="搜索技能">
           </div>
@@ -6564,8 +6559,7 @@
       <div class="ar-assistant-head">
         <div class="ar-assistant-title">OmniX小助手</div>
         <div class="ar-assistant-actions">
-          <button class="ar-assistant-btn" id="arNewSessionBtn">+ 新会话</button>
-          <button class="ar-assistant-btn" id="arHistoryBtn">历史</button>
+          <button class="ar-assistant-btn" id="arClearSessionBtn">清空会话</button>
           <button class="ar-drawer-btn" id="arDrawerBtn" title="产物抽屉">📦 产物</button>
         </div>
       </div>
@@ -10154,7 +10148,7 @@
   var arLinks = [];        // [{from: name, to: name}]
   var arPan = { x: 0, y: 0 };
   var arZoom = 1;
-  var arStartNode = { x: 60, y: 120, textEnabled: true, fileEnabled: false }; // { x, y, textEnabled, fileEnabled }
+  var arStartNode = { x: 60, y: 120, textEnabled: true, fileEnabled: true }; // { x, y, textEnabled, fileEnabled }
   var arLinkingFrom = null;  // 处于连线模式时的源节点 name
   var arDrag = null;         // {type:'node'|'pan', startX, startY, origX, origY, name, moved}
   var arUploadedAvatar = null;
@@ -10392,21 +10386,19 @@
       '<div class="ar-start-node-title">开始节点</div>' +
     '</div>';
     startHtml += '<div class="ar-start-input-list">';
-    startHtml += '<div class="ar-start-input-row' + (arStartNode.textEnabled ? ' on' : ' off') + '">';
+    startHtml += '<div class="ar-start-input-row on">';
     startHtml += '<div class="ar-start-input-left">';
     startHtml += '<span class="ar-start-input-asterisk">*</span>';
     startHtml += '<span class="ar-start-input-label">文本输入</span>';
     startHtml += '<span class="ar-start-input-icon">T</span>';
     startHtml += '</div>';
-    startHtml += '<label class="ar-toggle"><input type="checkbox"' + (arStartNode.textEnabled ? ' checked' : '') + ' data-type="text"><span class="ar-toggle-track"></span><span class="ar-toggle-thumb"></span></label>';
     startHtml += '</div>';
-    startHtml += '<div class="ar-start-input-row' + (arStartNode.fileEnabled ? ' on' : ' off') + '">';
+    startHtml += '<div class="ar-start-input-row on">';
     startHtml += '<div class="ar-start-input-left">';
     startHtml += '<span class="ar-start-input-asterisk">*</span>';
     startHtml += '<span class="ar-start-input-label">文件输入</span>';
     startHtml += '<span class="ar-start-input-icon">📄</span>';
     startHtml += '</div>';
-    startHtml += '<label class="ar-toggle"><input type="checkbox"' + (arStartNode.fileEnabled ? ' checked' : '') + ' data-type="file"><span class="ar-toggle-track"></span><span class="ar-toggle-thumb"></span></label>';
     startHtml += '</div>';
     startHtml += '</div>';
     startNode.innerHTML = startHtml;
@@ -11085,9 +11077,6 @@
         skillHtml += '<div class="ar-skill-subtitle">' + (s.desc || '') + '</div>';
         skillHtml += '</div>';
         skillHtml += '<div class="ar-skill-header-actions">';
-        if (!s._installed) {
-          skillHtml += '<span class="ar-skill-uninstalled-tag" data-skill-idx="' + i + '" data-kind="skill">未安装</span>';
-        }
         skillHtml += '<button class="ar-skill-delete" data-skill-idx="' + i + '" title="删除技能">🗑</button>';
         skillHtml += '</div>';
         skillHtml += '</div></div>';
@@ -11099,23 +11088,6 @@
           arDrawerPendingSkills.splice(parseInt(btn.dataset.skillIdx), 1);
           renderArDrawerTags();
         };
-      });
-      // Bind uninstalled tag click → install with loading
-      skillTags.querySelectorAll('.ar-skill-uninstalled-tag').forEach(function(tag) {
-        tag.onclick = (function(skillIdx, s) {
-          return function(e) {
-            e.stopPropagation();
-            var el = e.currentTarget;
-            if (el.classList.contains('loading')) return;
-            el.classList.add('loading');
-            el.innerHTML = '<span class="spinner"></span>安装中';
-            setTimeout(function() {
-              s._installed = true;
-              showToast('技能「' + s.name + '」安装完成', 'success');
-              renderArDrawerTags();
-            }, 1200);
-          };
-        })(parseInt(tag.dataset.skillIdx), arDrawerPendingSkills[parseInt(tag.dataset.skillIdx)]);
       });
     }
 
@@ -11192,27 +11164,17 @@
 
   // ---- 技能选择弹窗 ----
   var skillModalPendingSkills = []; // 弹窗内的临时技能列表
-  var skillModalActiveTab = 'market'; // 当前激活的Tab
+  var skillModalActiveTab = 'installed'; // 当前激活的Tab
   var skillModalInstalledSet = {}; // 记录哪些技能已安装（技能市场/企业技能Tab用）
 
   function openSkillModal() {
     skillModalPendingSkills = arDrawerPendingSkills.map(function(s) { return { name: s.name, desc: s.desc || '', color: s.color || '#7c3aed', icon: s.icon || '?' }; });
-    skillModalActiveTab = 'market';
+    skillModalActiveTab = 'installed';
     skillModalInstalledSet = {};
     // 已安装技能Tab中全部默认已安装
     arMockInstalledSkills.forEach(function(s) { skillModalInstalledSet[s.name] = true; });
-    // 技能市场和企业技能中模拟几条已安装
-    skillModalInstalledSet['web-search'] = true;
-    skillModalInstalledSet['pptx'] = true;
-    skillModalInstalledSet['github'] = true;
-    skillModalInstalledSet['内部数据查询'] = true;
-    skillModalInstalledSet['审批流程助手'] = true;
     var search = document.getElementById('skillModalSearch');
     search.value = '';
-    // Reset tab UI
-    document.querySelectorAll('.skill-modal-tab').forEach(function(t) { t.classList.remove('active'); });
-    var firstTab = document.querySelector('.skill-modal-tab[data-tab="market"]');
-    if (firstTab) firstTab.classList.add('active');
     renderSkillModal();
     document.getElementById('skillModalOverlay').classList.add('open');
   }
@@ -11340,13 +11302,6 @@
       };
     });
   }
-
-  // Tab switch events
-  document.querySelectorAll('.skill-modal-tab').forEach(function(tab) {
-    tab.onclick = function() {
-      switchSkillModalTab(tab.dataset.tab);
-    };
-  });
 
   document.getElementById('skillModalClose').onclick = closeSkillModal;
   document.getElementById('skillModalCancel').onclick = closeSkillModal;
@@ -12220,6 +12175,15 @@
     }
   }
 
+ document.getElementById('arClearSessionBtn').addEventListener('click', function() {
+   arCurrentSession.msgs = [];
+   var chatBody = document.getElementById('chatBody');
+   if (chatBody) {
+     chatBody.innerHTML = '<div class="welcome-placeholder"><h1>OmniX小助手</h1><p class="welcome-subtitle">一起探索你的好奇心</p><div class="welcome-section"><h3>获取新的灵感</h3><div class="welcome-prompts"><div class="welcome-prompt">OmniX小助手能为我做什么？</div><div class="welcome-prompt">调整一下专家团，在数据总监后新增一个财务审计专家。</div><div class="welcome-prompt">帮我分析一下这个月的财务数据，写一份财务报告。</div></div></div></div>';
+   }
+   arToast('会话已清空');
+ });
+
  document.getElementById('arDrawerBtn').addEventListener('click', toggleArProduct);
  document.getElementById('arProductCloseBtn').addEventListener('click', function() {
    if (arProductOpen) toggleArProduct();
@@ -12320,20 +12284,6 @@
     });
     window.addEventListener('resize', function () { setH(curH()); });
   })();
-  document.getElementById('arNewSessionBtn').addEventListener('click', function() {
-    arCurrentSession = arNewSession(arCurrentTeam);
-    renderArAssistant();
-    document.getElementById('arHistoryModal').classList.add('hidden');
-  });
-  document.getElementById('arHistoryBtn').addEventListener('click', function() {
-    var btn = this;
-    var rect = btn.getBoundingClientRect();
-    var modal = document.getElementById('arHistoryModal');
-    modal.style.top = (rect.bottom + 6) + 'px';
-    modal.style.left = (rect.left - 130) + 'px';
-    renderArHistoryModal();
-    modal.classList.remove('hidden');
-  });
   document.getElementById('arHistoryModalClose').addEventListener('click', function() {
     document.getElementById('arHistoryModal').classList.add('hidden');
   });
@@ -12537,47 +12487,52 @@
 
   // 版本管理按钮事件处理程序
   document.getElementById('arVersionBtn').addEventListener('click', function() {
-    if (!arCurrentTeam) return;
-    
     var expertId = 'ZJT-13256602185-260713125934-01';
     
     // 模拟数据
     var publishRecords = [
-      { version: '3.0', description: '添加知识库集成，支持文档问答', publishTime: '2026/7/12 17:00:00' },
-      { version: '2.0', description: '新增多轮对话支持，优化响应速度', publishTime: '2026/7/11 11:00:00' }
+      { version: '3.0', description: '添加知识库集成，支持文档问答', publishTime: '2026/7/12 17:00:00', isCurrent: true },
+      { version: '2.0', description: '新增多轮对话支持，优化响应速度', publishTime: '2026/7/11 11:00:00', isCurrent: false }
     ];
     
     var overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.innerHTML =
-      '<div class="modal-box" style="width: 550px;">' +
-        '<div class="modal-title">版本管理</div>' +
-        '<div style="margin-bottom: 16px;"><span style="font-size: 12px; color: #666;">专家ID：</span><span class="expert-id-tag" style="font-size: 12px;">' + expertId + '</span></div>' +
-        '<div class="modal-tab-content" style="max-height: 400px; overflow-y: auto;">' +
-          '<div class="tab-pane active" id="publishTab">' +
-            publishRecords.map(function(v, index) {
-              return '<div style="padding: 12px; border: 1px solid #e8e8e8; border-radius: 8px; margin-bottom: 8px;">' +
-                '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">' +
-                  '<span style="font-weight: 600; color: #1a1a1a;">v' + v.version + '</span>' +
-                  '<div style="display: flex; align-items: center; gap: 6px;">' +
-                    (index === 0 ? '<span style="background: #dcfce7; color: #166534; font-size: 10px; padding: 2px 6px; border-radius: 4px;">当前</span>' : '<button class="modal-btn modal-btn-primary" style="font-size: 11px; padding: 3px 8px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer;">回退此版本</button>') +
-                    '<span style="font-size: 12px; color: #999;">' + v.publishTime + '</span>' +
-                  '</div>' +
+      '<div class="modal-box" style="width: 550px; padding: 24px;">' +
+        '<div style="text-align: center; font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #1a1a1a;">版本管理</div>' +
+        '<div style="margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">' +
+          '<span style="font-size: 13px; color: #666;">专家ID：</span>' +
+          '<span style="background: #f3f4f6; color: #374151; font-size: 12px; padding: 4px 8px; border-radius: 4px; font-family: monospace;">' + expertId + '</span>' +
+        '</div>' +
+        '<div style="max-height: 300px; overflow-y: auto;">' +
+          publishRecords.map(function(v, index) {
+            return '<div style="padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 12px;">' +
+              '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">' +
+                '<span style="font-size: 18px; font-weight: 600; color: #1a1a1a;">v' + v.version + '</span>' +
+                '<div style="display: flex; align-items: center; gap: 8px;">' +
+                  (v.isCurrent ? '<span style="background: #dcfce7; color: #166534; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 500;">当前</span>' : '<button class="version-rollback-btn" style="font-size: 11px; padding: 4px 10px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">回退此版本</button>') +
+                  '<span style="font-size: 12px; color: #999;">' + v.publishTime + '</span>' +
                 '</div>' +
-                '<div style="font-size: 13px; color: #666;">' + v.description + '</div>' +
-              '</div>';
-            }).join('') +
-          '</div>' +
+              '</div>' +
+              '<div style="font-size: 13px; color: #666; line-height: 1.5;">' + v.description + '</div>' +
+            '</div>';
+          }).join('') +
         '</div>' +
-        '<div class="modal-actions">' +
-          '<button class="modal-btn modal-btn-cancel" id="arVersionClose">关闭</button>' +
-        '</div>' +
+        '<button id="arVersionClose" style="width: 100%; padding: 10px; margin-top: 16px; background: #f3f4f6; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; color: #374151; font-weight: 500;">关闭</button>' +
       '</div>';
     document.body.appendChild(overlay);
     
     function closeVersionModal() { if (overlay.parentNode) document.body.removeChild(overlay); }
     document.getElementById('arVersionClose').onclick = closeVersionModal;
     overlay.addEventListener('click', function(e) { if (e.target === overlay) closeVersionModal(); });
+    
+    // 回退按钮事件
+    overlay.querySelectorAll('.version-rollback-btn').forEach(function(btn) {
+      btn.onclick = function() {
+        arToast('版本回退成功');
+        closeVersionModal();
+      };
+    });
   });
 })();
 

@@ -214,13 +214,13 @@
     <li><a href="#sec1" data-target="sec1" class="">一、背景与目标</a></li>
     <li><a href="#sec2" data-target="sec2" class="">二、用户画像</a></li>
     <li><a href="#sec3" data-target="sec3" class="">三、用户故事</a></li>
-    <li><a href="#sec4" data-target="sec4" class="active">四、功能架构</a></li>
+    <li><a href="#sec4" data-target="sec4" class="">四、功能架构</a></li>
     <li>
       <a href="#sec5" data-target="sec5" class="">五、子模块详细设计</a>
       <ul class="nav-sub">
         <li><a href="#sec5-1" data-target="sec5-1" class="">5.1 专家列表</a></li>
         <li><a href="#sec5-2" data-target="sec5-2" class="">5.2 专家新增 / 编辑</a></li>
-        <li><a href="#sec5-3" data-target="sec5-3" class="">5.3 回收站</a></li>
+        <li><a href="#sec5-3" data-target="sec5-3" class="active">5.3 回收站</a></li>
       </ul>
     </li>
     <li><a href="#sec6" data-target="sec6" class="">六、关键交互流程</a></li>
@@ -297,7 +297,7 @@
         <td><span class="tag tag-admin">专家管理员</span></td>
         <td>运营负责人 / IT</td>
         <td>统筹专家准入、发布、下架，监控专家调用情况</td>
-        <td>高效检索、批量操作、发布可控、调用可统计</td>
+        <td>高效检索、发布可控、调用可统计</td>
       </tr>
       <tr>
         <td><span class="tag tag-builder">专家配置员</span></td>
@@ -332,7 +332,7 @@
   <div class="section" id="sec4">
     <h2>四、功能架构</h2>
 
-    <p>专家管理模块以「专家（智能体）」为核心对象，向下拆分为三个子模块：专家列表（检索与批量管理）、专家新增 / 编辑（配置工作台）、回收站（删除暂存与恢复 / 彻底删除）。其中新增 / 编辑页面是配置工作台，由三个区域协同完成「配置 → 调试」的闭环。</p>
+    <p>专家管理模块以「专家（智能体）」为核心对象，向下拆分为三个子模块：专家列表（检索与管理）、专家新增 / 编辑（配置工作台）、回收站（删除暂存与恢复 / 彻底删除）。其中新增 / 编辑页面是配置工作台，由三个区域协同完成「配置 → 调试」的闭环。</p>
 
     <div style="text-align:center; margin: 20px 0;">
       <svg width="100%" height="440" viewBox="0 0 780 440" xmlns="http://www.w3.org/2000/svg">
@@ -348,7 +348,7 @@
         <!-- 3 sub-module boxes -->
         <rect x="25" y="110" width="165" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
         <text x="108" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">专家列表</text>
-        <text x="108" y="156" text-anchor="middle" fill="#6B7280" font-size="11">检索 · 筛选 · 批量</text>
+        <text x="108" y="156" text-anchor="middle" fill="#6B7280" font-size="11">检索 · 筛选 · 管理</text>
 
         <rect x="308" y="110" width="165" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
         <text x="391" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">专家新增 / 编辑</text>
@@ -402,7 +402,7 @@
 
     <h3>核心链路说明</h3>
     <ul class="feature-list">
-      <li><strong>列表入口：</strong>专家列表是所有操作的统一入口，承载搜索、筛选、新增、发布 / 下架、删除（进回收站）、导出，并提供回收站入口。</li>
+      <li><strong>列表入口：</strong>专家列表是所有操作的统一入口，承载搜索、筛选、新增、发布 / 下架、删除（进回收站）提供回收站入口。</li>
       <li><strong>AI 一键创建：</strong>点击「创建专家」后弹窗输入需求描述，系统调用 AI 能力自动生成专家全部配置参数并跳转至配置工作台（参数已预填）；用户可在工作台继续微调、调试、发布。同时保留「手动创建」入口，进入空白工作台逐项配置。</li>
       <li><strong>配置工作台：</strong>新增与编辑共用同一页面，左侧专家配置区、中间预览调试区两栏默认展开；页面头部固定显示于顶部。</li>
       <li><strong>状态流转：</strong>专家状态为「下架 / 发布」；新建默认下架，调试调优达标后由管理员 / 配置员发布，发布后客户端可调用，可随时下架。</li>
@@ -415,7 +415,7 @@
 
     <!-- 5.1 专家列表 -->
     <h3 id="sec5-1">🔹 5.1 专家列表</h3>
-    <p>专家列表是专家资产的统一检索与管理入口，展示所有专家（含管理端与客户端来源）记录，并承载新增、批量操作与状态管控。</p>
+    <p>专家列表是专家资产的统一检索与管理入口，展示所有专家（含管理端与客户端来源）记录，并承载新增、管理与状态管控。</p>
 
     <h4>字段设计</h4>
     <table>
@@ -440,14 +440,13 @@
       <li><strong>新增专家（AI 创建，默认）：</strong>点击「创建专家」弹出创建弹窗，输入一段需求描述（创建文案，如「一个能解答员工社保公积金问题的 HR 助手」），点击「AI 生成」后系统调用 AI 能力自动生成专家全部配置参数（含名称、简介、分类、模型、提示词、开场白问题、技能 / MCP等），并跳转至专家配置工作台（5.2），所有参数已预填，用户可在此基础上微调；新建草稿并启动自动保存（配置信息修改后 20 秒无改动则自动保存）。</li>
       <li><strong>新增专家（手动创建）：</strong>在创建弹窗中点击「手动创建」，直接进入空白配置工作台，逐项配置。</li>
       <li><strong>编辑专家：</strong>点击专家行进入配置工作台，加载已有配置；客户端来源专家仅可查看基本信息，核心配置不可编辑。</li>
-      <li><strong>发布 / 下架：</strong>对单个或批量专家切换状态；下架后客户端调用入口关闭，专家记录与配置保留。</li>
+      <li><strong>发布 / 下架：</strong>对单个专家切换状态；下架后客户端调用入口关闭，专家记录与配置保留。</li>
       <li><strong>删除专家：</strong>删除前二次确认，提示「删除后专家将进入回收站」；确认后专家从列表移除并进入回收站暂存（非物理删除）；客户端来源专家删除将同步移除客户端调用入口。</li>
-      <li><strong>批量操作：</strong>勾选多个专家后支持批量发布 / 下架、批量删除（删除后统一进入回收站）、批量调整分类。</li>
       <li><strong>调用统计：</strong>列表展示调用次数列，点击可下钻查看该专家的调用趋势（预留扩展）。</li>
       <li><strong>回收站入口：</strong>列表页顶部或筛选区提供「回收站」入口，点击进入回收站页面（见 5.3）。</li>
     </ul>
 
-    <div class="note">💡 列表页顶部固定操作区：「创建」「导出」按钮常驻；搜索框 + 筛选下拉随筛选条件动态展示为标签。</div>
+    <div class="note">💡 列表页顶部固定操作区：「创建」按钮常驻；搜索框 + 筛选下拉随筛选条件动态展示为标签。</div>
     <hr>
 
     <!-- 5.2 专家新增/编辑 -->
@@ -483,7 +482,7 @@
       <tr><td>分类</td><td>专家分类标签</td></tr>
       <tr><td>创建人</td><td>创建者，只读</td></tr>
       <tr><td>自动保存时间</td><td>展示「已自动保存于 HH:MM:SS」</td></tr>
-      <tr><td>操作（…）</td><td>点击展开操作列表：<strong>版本历史</strong>、<strong>分析</strong>、<strong>导出专家</strong>、<strong>重置为初始 AI 配置</strong>、<strong>日志</strong></td></tr>
+      <tr><td>操作</td><td>发布</td></tr>
     </tbody></table>
 
     <!-- 5.2.2 专家配置区域 -->
@@ -549,7 +548,6 @@
       <li><strong>批量操作：</strong>勾选多个专家后支持批量恢复、批量彻底删除；批量操作前统一展示影响清单与数量，确认后执行。</li>
       <li><strong>清空回收站：</strong>页面顶部提供「清空回收站」入口，一次性彻底删除回收站内全部专家；操作前需二次确认并展示待清空数量，操作不可逆。</li>
       <li><strong>查看详情：</strong>点击专家行可查看删除前的配置快照（只读），便于确认是否需要恢复；不可在回收站内直接编辑配置。</li>
-      <li><strong>导出：</strong>支持按当前筛选条件导出回收站列表为 Excel；单个专家可导出专家配置包（用于备份）。</li>
     </ul>
   </div>
 

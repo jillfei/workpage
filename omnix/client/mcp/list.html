@@ -69,6 +69,7 @@
     }
 
     .mcp-card {
+      position: relative;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -77,6 +78,7 @@
       border-radius: 12px;
       background: #fff;
       transition: background .15s, border-color .15s;
+      cursor: pointer;
     }
 
     .mcp-card:hover {
@@ -165,12 +167,158 @@
       color: #18181b;
     }
 
+    /* 启禁用开关 */
+    .mcp-switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .mcp-switch input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      margin: 0;
+    }
+
+    .mcp-switch-track {
+      position: absolute;
+      inset: 0;
+      background: #e4e4e7;
+      border-radius: 999px;
+      transition: background .2s;
+    }
+
+    .mcp-switch-track::before {
+      content: "";
+      position: absolute;
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+      transition: transform .2s;
+    }
+
+    .mcp-switch input:checked + .mcp-switch-track {
+      background: #22c55e;
+    }
+
+    .mcp-switch input:checked + .mcp-switch-track::before {
+      transform: translateX(18px);
+    }
+
+    /* 加载转转转动画 */
+    .mcp-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #e4e4e7;
+      border-top-color: #18181b;
+      border-radius: 50%;
+      animation: mcp-spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes mcp-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 已添加卡片的操作区（仅开关） */
+    .mcp-card-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    /* 右上角悬浮三点菜单 */
+    .mcp-menu-trigger {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 26px;
+      height: 20px;
+      border: none;
+      background: transparent;
+      color: #a1a1aa;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity .15s, background .15s, color .15s;
+    }
+
+    .mcp-card:hover .mcp-menu-trigger {
+      opacity: 1;
+    }
+
+    .mcp-menu-trigger:hover {
+      color: #474747;
+    }
+
+    .mcp-menu {
+      position: absolute;
+      top: 38px;
+      right: 8px;
+      min-width: 104px;
+      background: #fff;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+      padding: 4px;
+      z-index: 10;
+      display: none;
+    }
+
+    .mcp-menu.open {
+      display: block;
+    }
+
+    .mcp-menu-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      font-size: 13px;
+      color: #ef4444;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 7px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .mcp-menu-item:hover {
+      background: #fef2f2;
+    }
+
+    /* 确认弹窗提示文字 */
+    .confirm-text {
+      padding: 4px 24px 20px;
+      font-size: 14px;
+      color: #3f3f46;
+      line-height: 1.6;
+    }
+
+    .confirm-text strong {
+      color: #18181b;
+    }
+
     /* 编辑按钮 */
     .mcp-edit {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 5px 10px;
+	  height:32px;
+      padding: 5px 6px;
       border: 1px solid #e4e4e7;
       border-radius: 8px;
       background: #fff;
@@ -385,7 +533,8 @@
 
     .modal-footer {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
       gap: 10px;
       padding: 16px 24px 24px;
     }
@@ -419,6 +568,32 @@
     .btn-primary:hover {
       background: #27272a;
     }
+
+    .btn-danger {
+      background: #fff;
+      color: #ef4444;
+      border-color: #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .btn-danger.armed {
+      background: #ef4444;
+      color: #fff;
+      border-color: #ef4444;
+    }
+
+    .btn-danger.armed:hover {
+      background: #dc2626;
+    }
+
+    .footer-right {
+      display: flex;
+      gap: 10px;
+    }
   </style>
 </head>
 <body>
@@ -427,8 +602,7 @@
   <header class="header">
     <div class="header-left">
       <div class="logo-box">
-        <svg class="icon-sm" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-      </div>
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="7" width="12" height="8" rx="2"></rect><line x1="8" y1="19" x2="16" y2="19"></line><line x1="12" y1="16" x2="12" y2="18"></line></svg>      </div>
       <h1>MCP</h1>
     </div>
 
@@ -447,7 +621,7 @@
       <section class="mcp-section">
         <h2 class="section-title">自定义MCP</h2>
         <div class="mcp-list">
-          <div class="mcp-card">
+          <div class="mcp-card" data-icon="globe" data-source="自定义MCP">
             <div class="mcp-icon custom">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             </div>
@@ -457,11 +631,11 @@
             </div>
             <button class="mcp-edit" data-name="联网搜索增强" data-protocol="sse" data-desc="提供专业级的联网搜索增强服务，支持多维数据分析与自动化处理，极大提升工作效率。" data-url="http://localhost:8080/mcp" data-headers="">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              编辑
+              
             </button>
           </div>
 
-          <div class="mcp-card">
+          <div class="mcp-card" data-icon="map" data-source="自定义MCP">
             <div class="mcp-icon custom">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
             </div>
@@ -471,11 +645,11 @@
             </div>
             <button class="mcp-edit" data-name="高德地图服务" data-protocol="http" data-desc="根据地理坐标，规划多种出行方式的通勤方案。例如，驾车规划会考虑路况，骑行规划会考虑天桥和单行道..." data-url="http://localhost:8081/mcp" data-headers="">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              编辑
+              
             </button>
           </div>
 
-          <div class="mcp-card">
+          <div class="mcp-card" data-icon="mail" data-source="自定义MCP">
             <div class="mcp-icon custom">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
             </div>
@@ -485,7 +659,7 @@
             </div>
             <button class="mcp-edit" data-name="微信公众号管理" data-protocol="stdio" data-desc="通过自然语言描述完成内容管理、素材上传和文章发布等操作。" data-url="http://localhost:8082/mcp" data-headers="">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              编辑
+              
             </button>
           </div>
         </div>
@@ -495,7 +669,7 @@
       <section class="mcp-section">
         <h2 class="section-title">MCP市场</h2>
         <div class="mcp-list">
-          <div class="mcp-card">
+          <div class="mcp-card" data-icon="dingtalk" data-source="MCP市场">
             <div class="mcp-icon market dingtalk">钉</div>
             <div class="mcp-info">
               <div class="mcp-name">钉钉消息推送</div>
@@ -506,7 +680,7 @@
             </button>
           </div>
 
-          <div class="mcp-card">
+          <div class="mcp-card" data-icon="feishu" data-source="MCP市场">
             <div class="mcp-icon market feishu">飞</div>
             <div class="mcp-info">
               <div class="mcp-name">飞书文档集成</div>
@@ -517,7 +691,7 @@
             </button>
           </div>
 
-          <div class="mcp-card">
+          <div class="mcp-card" data-icon="sql" data-source="MCP市场">
             <div class="mcp-icon market sql">S</div>
             <div class="mcp-info">
               <div class="mcp-name">SQL查询助手</div>
@@ -528,7 +702,7 @@
             </button>
           </div>
 
-          <div class="mcp-card">
+          <div class="mcp-card" data-icon="ima" data-source="MCP市场">
             <div class="mcp-icon market ima">i</div>
             <div class="mcp-info">
               <div class="mcp-name">ima知识库</div>
@@ -539,7 +713,7 @@
             </button>
           </div>
 
-          <div class="mcp-card">
+          <div class="mcp-card" data-icon="qqmail" data-source="MCP市场">
             <div class="mcp-icon market qqmail">Q</div>
             <div class="mcp-info">
               <div class="mcp-name">QQ邮箱</div>
@@ -684,8 +858,34 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" id="edit-modal-cancel">取消</button>
-        <button class="btn btn-primary" id="edit-modal-submit">保存</button>
+        <button class="btn btn-danger" id="edit-modal-uninstall">卸载</button>
+        <div class="footer-right">
+          <button class="btn btn-secondary" id="edit-modal-cancel">取消</button>
+          <button class="btn btn-primary" id="edit-modal-submit">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 卸载确认弹窗 -->
+  <div class="modal-overlay" id="uninstall-confirm-modal">
+    <div class="modal" style="max-width: 380px;">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="modal-title-wrap">
+          <div class="modal-title">卸载 MCP</div>
+          <div class="modal-subtitle">此操作不可撤销</div>
+        </div>
+        <button class="modal-close" id="uninstall-confirm-close" aria-label="关闭">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="confirm-text" id="uninstall-confirm-text">确定要卸载该 MCP 服务吗？</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="uninstall-confirm-cancel">取消</button>
+        <button class="btn btn-danger" id="uninstall-confirm-ok">确认卸载</button>
       </div>
     </div>
   </div>
@@ -777,6 +977,150 @@
         closeAddModal();
       });
 
+      // ---------- 市场卡片：点击加号 -> 转转转动画 -> 添加成功 + 启禁用开关 ----------
+      function createSwitch(checked) {
+        const label = document.createElement('label');
+        label.className = 'mcp-switch';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.checked = !!checked;
+        const track = document.createElement('span');
+        track.className = 'mcp-switch-track';
+        label.appendChild(input);
+        label.appendChild(track);
+        label.addEventListener('click', (e) => e.stopPropagation());
+        input.addEventListener('change', () => {
+          console.log('MCP enabled =', input.checked);
+        });
+        return label;
+      }
+
+      // 卸载确认弹窗
+      const uninstallConfirmModal = document.getElementById('uninstall-confirm-modal');
+      const uninstallConfirmText = document.getElementById('uninstall-confirm-text');
+      const uninstallConfirmClose = document.getElementById('uninstall-confirm-close');
+      const uninstallConfirmCancel = document.getElementById('uninstall-confirm-cancel');
+      const uninstallConfirmOk = document.getElementById('uninstall-confirm-ok');
+      let pendingUninstallCard = null;
+      let pendingUninstallName = '';
+
+      function openUninstallConfirm(card, name) {
+        pendingUninstallCard = card;
+        pendingUninstallName = name;
+        uninstallConfirmText.innerHTML = '确定要卸载 <strong>' + name + '</strong> 吗？';
+        uninstallConfirmModal.classList.add('show');
+      }
+
+      function closeUninstallConfirm() {
+        uninstallConfirmModal.classList.remove('show');
+        pendingUninstallCard = null;
+        pendingUninstallName = '';
+      }
+
+      uninstallConfirmClose.addEventListener('click', closeUninstallConfirm);
+      uninstallConfirmCancel.addEventListener('click', closeUninstallConfirm);
+      uninstallConfirmModal.addEventListener('click', (e) => {
+        if (e.target === uninstallConfirmModal) closeUninstallConfirm();
+      });
+      uninstallConfirmOk.addEventListener('click', () => {
+        if (pendingUninstallCard) {
+          const card = pendingUninstallCard;
+          /*恢复到未添加状态*/
+          // 移除已添加状态的元素（开关、三点菜单、下拉）
+          const actions = card.querySelector('.mcp-card-actions');
+          const trigger = card.querySelector('.mcp-menu-trigger');
+          const menu = card.querySelector('.mcp-menu');
+          if (actions) actions.remove();
+          if (trigger) trigger.remove();
+          if (menu) menu.remove();
+
+          // 重建加号按钮，恢复为未添加状态
+          const addBtn = document.createElement('button');
+          addBtn.className = 'mcp-action add';
+          addBtn.setAttribute('aria-label', '添加');
+          addBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>';
+          card.appendChild(addBtn);
+          bindAddButton(addBtn);
+
+          console.log('uninstalled (restored)', pendingUninstallName);
+          showToast('已卸载 ' + pendingUninstallName);
+        }
+        closeUninstallConfirm();
+      });
+
+      // 关闭所有卡片下拉菜单
+      function closeAllCardMenus() {
+        document.querySelectorAll('.mcp-menu.open').forEach((m) => m.classList.remove('open'));
+      }
+
+      function bindAddButton(btn) {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const card = btn.closest('.mcp-card');
+          const name = (card.querySelector('.mcp-name') || {}).textContent || 'MCP';
+          const spinner = document.createElement('span');
+          spinner.className = 'mcp-spinner';
+          btn.replaceWith(spinner);
+          setTimeout(() => {
+            showToast('添加' + name + '成功');
+
+            // 右侧：仅启禁用开关
+            const actions = document.createElement('div');
+            actions.className = 'mcp-card-actions';
+            actions.appendChild(createSwitch(true));
+            spinner.replaceWith(actions);
+
+            // 右上角：三点菜单（hover 显示）
+            const trigger = document.createElement('button');
+            trigger.className = 'mcp-menu-trigger';
+            trigger.setAttribute('aria-label', '更多操作');
+            trigger.innerHTML = '<strong>···</strong>';
+
+            const menu = document.createElement('div');
+            menu.className = 'mcp-menu';
+            const uninstallItem = document.createElement('button');
+            uninstallItem.className = 'mcp-menu-item';
+            uninstallItem.textContent = '卸载';
+            uninstallItem.addEventListener('click', (e) => {
+              e.stopPropagation();
+              menu.classList.remove('open');
+              openUninstallConfirm(card, name);
+            });
+            menu.appendChild(uninstallItem);
+
+            trigger.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const willOpen = !menu.classList.contains('open');
+              closeAllCardMenus();
+              if (willOpen) menu.classList.add('open');
+            });
+
+            card.appendChild(trigger);
+            card.appendChild(menu);
+          }, 1200);
+        });
+      }
+
+      document.querySelectorAll('.mcp-action.add').forEach(bindAddButton);
+
+      // 点击空白处关闭卡片下拉菜单
+      document.addEventListener('click', () => closeAllCardMenus());
+
+      // ---------- 点击 MCP 卡片跳转到详情页（携带 name / icon / source / added 参数）----------
+      document.querySelectorAll('.mcp-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          const name = (card.querySelector('.mcp-name') || {}).textContent || 'MCP';
+          const icon = card.dataset.icon || '';
+          const source = card.dataset.source || '';
+          // 是否添加：自定义恒为已添加；市场按卡片当前是否显示开关判断
+          const isCustom = source === '自定义MCP';
+          const isAddedCard = !!card.querySelector('.mcp-card-actions');
+          const added = (isCustom || isAddedCard) ? 'true' : 'false';
+          const qs = new URLSearchParams({ name: name, icon: icon, source: source, added: added });
+          location.href = 'detail.html?' + qs.toString();
+        });
+      });
+
       // ---------- 编辑 MCP ----------
       const editModal = document.getElementById('edit-mcp-modal');
       const editCloseBtn = document.getElementById('edit-modal-close');
@@ -784,13 +1128,24 @@
       const editSubmitBtn = document.getElementById('edit-modal-submit');
       const editAvatarInput = document.getElementById('edit-avatar');
       const editAvatarPreview = document.getElementById('edit-avatar-preview');
+      const editUninstallBtn = document.getElementById('edit-modal-uninstall');
       let editAvatarData = null;
       let editingCard = null;
+      let uninstallArmed = false;
+      let uninstallTimer = null;
+
+      function resetUninstallBtn() {
+        uninstallArmed = false;
+        if (uninstallTimer) { clearTimeout(uninstallTimer); uninstallTimer = null; }
+        editUninstallBtn.textContent = '卸载';
+        editUninstallBtn.classList.remove('armed');
+      }
 
       bindAvatar(editAvatarPreview, editAvatarInput, (data) => { editAvatarData = data; });
 
       function openEditModal(card, data) {
         editingCard = card;
+        resetUninstallBtn();
         document.getElementById('edit-name').value = data.name || '';
         document.getElementById('edit-protocol').value = data.protocol || '';
         document.getElementById('edit-desc').value = data.desc || '';
@@ -815,6 +1170,7 @@
         resetAvatar(editAvatarPreview, editAvatarInput);
         editAvatarData = null;
         editingCard = null;
+        resetUninstallBtn();
       }
 
       editCloseBtn.addEventListener('click', closeEditModal);
@@ -824,7 +1180,8 @@
       });
 
       document.querySelectorAll('.mcp-edit').forEach((btn) => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
           const card = btn.closest('.mcp-card');
           const data = {
             name: btn.dataset.name || '',
@@ -870,11 +1227,33 @@
         closeEditModal();
       });
 
+      editUninstallBtn.addEventListener('click', () => {
+        if (!editingCard) return;
+        if (!uninstallArmed) {
+          uninstallArmed = true;
+          editUninstallBtn.textContent = '确认卸载？';
+          editUninstallBtn.classList.add('armed');
+          uninstallTimer = setTimeout(() => {
+            uninstallArmed = false;
+            editUninstallBtn.textContent = '卸载';
+            editUninstallBtn.classList.remove('armed');
+          }, 3000);
+          return;
+        }
+        clearTimeout(uninstallTimer);
+        const cardName = (editingCard.querySelector('.mcp-name') || {}).textContent || '该服务';
+        editingCard.remove();
+        console.log('uninstalled', cardName);
+        showToast('已卸载 ' + cardName);
+        closeEditModal();
+      });
+
       // ---------- 公共：ESC 关闭任意弹窗 ----------
       document.addEventListener('keydown', (e) => {
         if (e.key !== 'Escape') return;
         if (addModal.classList.contains('show')) closeAddModal();
         if (editModal.classList.contains('show')) closeEditModal();
+        if (uninstallConfirmModal.classList.contains('show')) closeUninstallConfirm();
       });
     })();
   </script>
