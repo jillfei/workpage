@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #ffffff;
+      color: #18181b;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---------- Header ---------- */
+    .header {
+      display: flex;align-items: center;justify-content: space-between;padding: 16px 24px;border-bottom: 1px solid #f0f0f1;
+    }
+    .header-left { display: flex; align-items: center; gap: 8px; }
+    .logo-box {width: 32px; height: 32px;border-radius: 8px;background: #f4f4f5;display: flex; align-items: center; justify-content: center;
+    }
+    .header h1 { font-size: 18px; font-weight: 600; }
+
+    .add-wrap { position: relative; }
+    .btn-add {display: inline-flex; align-items: center; gap: 6px;padding: 6px 10px;background: #fff;border: 1px solid #e4e4e7; border-radius: 8px;font-size: 13px; font-weight: 500;cursor: pointer;transition: background .15s;}
+    .btn-add:hover { background: #fafafa; }
+
+    /* ---------- Main ---------- */
+    main { padding: 8px 24px 48px; }
+
+    /* 顶部成功提示 Toast */
+    #toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: #18181b;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease, transform .25s ease;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ---------- MCP List ---------- */
+    .mcp-section {
+      margin-top: 24px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #18181b;
+      margin-bottom: 12px;
+    }
+
+    .mcp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mcp-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid #f0f0f1;
+      border-radius: 12px;
+      background: #fff;
+      transition: background .15s, border-color .15s;
+    }
+
+    .mcp-card:hover {
+      background: #fafafa;
+      border-color: #e4e4e7;
+    }
+
+    .mcp-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .mcp-icon.custom {
+      background: #f4f4f5;
+      color: #52525b;
+    }
+
+    .mcp-icon.market {
+      color: #fff;
+    }
+
+    .mcp-icon.dingtalk { background: #3370ff; }
+    .mcp-icon.feishu { background: #00d6b9; }
+    .mcp-icon.sql { background: #0055ff; }
+    .mcp-icon.ima { background: #1f1f1f; }
+    .mcp-icon.qqmail { background: #ffb800; }
+
+    .mcp-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mcp-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #18181b;
+      line-height: 1.4;
+    }
+
+    .mcp-desc {
+      font-size: 13px;
+      color: #71717a;
+      line-height: 1.5;
+      margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .mcp-action {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #a1a1aa;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s, color .15s;
+      flex-shrink: 0;
+    }
+
+    .mcp-action:hover {
+      background: #f4f4f5;
+      color: #52525b;
+    }
+
+    .mcp-action.add {
+      border: 1px solid #e4e4e7;
+      color: #71717a;
+    }
+
+    .mcp-action.add:hover {
+      background: #fafafa;
+      color: #18181b;
+    }
+
+    /* 编辑按钮 */
+    .mcp-edit {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      background: #fff;
+      color: #52525b;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+      flex-shrink: 0;
+    }
+
+    .mcp-edit:hover {
+      background: #fafafa;
+      border-color: #d4d4d8;
+      color: #18181b;
+    }
+
+    /* ---------- Modal ---------- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+      z-index: 1000;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      width: 520px;
+      max-width: calc(100vw - 40px);
+      max-height: calc(100vh - 40px);
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(12px);
+      transition: transform .2s ease;
+    }
+
+    .modal-overlay.show .modal {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid #f0f0f1;
+    }
+
+    .modal-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #f4f4f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .modal-title-wrap {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #18181b;
+      line-height: 1.4;
+    }
+
+    .modal-subtitle {
+      font-size: 13px;
+      color: #71717a;
+      margin-top: 2px;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      color: #a1a1aa;
+      cursor: pointer;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s, color .15s;
+      flex-shrink: 0;
+    }
+
+    .modal-close:hover {
+      background: #f4f4f5;
+      color: #52525b;
+    }
+
+    .modal-body {
+      padding: 20px 24px 8px;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      color: #71717a;
+      margin-bottom: 6px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #18181b;
+      background: #fff;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+      font-family: inherit;
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: #a1a1aa;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: #18181b;
+      box-shadow: 0 0 0 3px rgba(24, 24, 27, .06);
+    }
+
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 32px;
+    }
+
+    .form-textarea {
+      min-height: 80px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    /* 图标字段 */
+    .avatar-field {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar-preview {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #f4f4f5;
+      border: 1px dashed #d4d4d8;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: #a1a1aa;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+      outline: none;
+    }
+
+    .avatar-preview:hover {
+      background: #fafafa;
+      border-color: #a1a1aa;
+    }
+
+    .avatar-preview:focus-visible {
+      border-color: #18181b;
+      box-shadow: 0 0 0 3px rgba(24, 24, 27, .06);
+    }
+
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-hint {
+      font-size: 13px;
+      color: #71717a;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 24px 24px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+      border: 1px solid transparent;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: #18181b;
+      border-color: #e4e4e7;
+    }
+
+    .btn-secondary:hover {
+      background: #fafafa;
+      border-color: #d4d4d8;
+    }
+
+    .btn-primary {
+      background: #18181b;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #27272a;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-box">
+        <svg class="icon-sm" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      </div>
+      <h1>MCP</h1>
+    </div>
+
+    <div class="add-wrap">
+      <button class="btn-add" id="add-skill-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+        添加服务器
+      </button>
+    </div>
+  </header>
+
+  <!-- Skills -->
+  <main>
+    <div id="container">
+      <!-- 自定义 MCP -->
+      <section class="mcp-section">
+        <h2 class="section-title">自定义MCP</h2>
+        <div class="mcp-list">
+          <div class="mcp-card">
+            <div class="mcp-icon custom">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <div class="mcp-info">
+              <div class="mcp-name">联网搜索增强</div>
+              <div class="mcp-desc">提供专业级的联网搜索增强服务，支持多维数据分析与自动化处理，极大提升工作效率。</div>
+            </div>
+            <button class="mcp-edit" data-name="联网搜索增强" data-protocol="sse" data-desc="提供专业级的联网搜索增强服务，支持多维数据分析与自动化处理，极大提升工作效率。" data-url="http://localhost:8080/mcp" data-headers="">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              编辑
+            </button>
+          </div>
+
+          <div class="mcp-card">
+            <div class="mcp-icon custom">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+            </div>
+            <div class="mcp-info">
+              <div class="mcp-name">高德地图服务</div>
+              <div class="mcp-desc">根据地理坐标，规划多种出行方式的通勤方案。例如，驾车规划会考虑路况，骑行规划会考虑天桥和单行道...</div>
+            </div>
+            <button class="mcp-edit" data-name="高德地图服务" data-protocol="http" data-desc="根据地理坐标，规划多种出行方式的通勤方案。例如，驾车规划会考虑路况，骑行规划会考虑天桥和单行道..." data-url="http://localhost:8081/mcp" data-headers="">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              编辑
+            </button>
+          </div>
+
+          <div class="mcp-card">
+            <div class="mcp-icon custom">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div class="mcp-info">
+              <div class="mcp-name">微信公众号管理</div>
+              <div class="mcp-desc">通过自然语言描述完成内容管理、素材上传和文章发布等操作。</div>
+            </div>
+            <button class="mcp-edit" data-name="微信公众号管理" data-protocol="stdio" data-desc="通过自然语言描述完成内容管理、素材上传和文章发布等操作。" data-url="http://localhost:8082/mcp" data-headers="">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              编辑
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MCP 市场 -->
+      <section class="mcp-section">
+        <h2 class="section-title">MCP市场</h2>
+        <div class="mcp-list">
+          <div class="mcp-card">
+            <div class="mcp-icon market dingtalk">钉</div>
+            <div class="mcp-info">
+              <div class="mcp-name">钉钉消息推送</div>
+              <div class="mcp-desc">通过命令行管理钉钉全产品能力：AI 表格、考勤、日历、群聊与机器人、通讯录、开放平台文档、DING 消息、钉...</div>
+            </div>
+            <button class="mcp-action add" aria-label="添加">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+            </button>
+          </div>
+
+          <div class="mcp-card">
+            <div class="mcp-icon market feishu">飞</div>
+            <div class="mcp-info">
+              <div class="mcp-name">飞书文档集成</div>
+              <div class="mcp-desc">通过命令行管理飞书 Lark 全产品能力：即时通讯、邮箱、日历、云文档、电子表格、多维表格（Base）、幻灯片...</div>
+            </div>
+            <button class="mcp-action add" aria-label="添加">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+            </button>
+          </div>
+
+          <div class="mcp-card">
+            <div class="mcp-icon market sql">S</div>
+            <div class="mcp-info">
+              <div class="mcp-name">SQL查询助手</div>
+              <div class="mcp-desc">提供专业级的联网搜索增强服务，支持多维数据分析与自动化处理，极大提升工作效率。</div>
+            </div>
+            <button class="mcp-action add" aria-label="添加">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+            </button>
+          </div>
+
+          <div class="mcp-card">
+            <div class="mcp-icon market ima">i</div>
+            <div class="mcp-info">
+              <div class="mcp-name">ima知识库</div>
+              <div class="mcp-desc">读取知识库资料及文档，浏览知识库详情。</div>
+            </div>
+            <button class="mcp-action add" aria-label="添加">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+            </button>
+          </div>
+
+          <div class="mcp-card">
+            <div class="mcp-icon market qqmail">Q</div>
+            <div class="mcp-info">
+              <div class="mcp-name">QQ邮箱</div>
+              <div class="mcp-desc">收发、搜索和整理 QQ 邮件。用自然语言读取邮件内容，汇总邮件数据，管理文件夹。</div>
+            </div>
+            <button class="mcp-action add" aria-label="添加">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="toast"></div>
+
+  <!-- Add MCP Modal -->
+  <div class="modal-overlay" id="add-mcp-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div class="modal-title-wrap">
+          <div class="modal-title">添加MCP</div>
+          <div class="modal-subtitle">安装 MCP 服务，为 AI 扩展更多工具能力</div>
+        </div>
+        <button class="modal-close" id="modal-close" aria-label="关闭">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="mcp-name">服务器名称</label>
+          <input class="form-input" id="mcp-name" type="text" placeholder="请输入服务器名称">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">图标</label>
+          <div class="avatar-field">
+            <div class="avatar-preview" id="avatar-preview" role="button" tabindex="0" title="点击上传图标">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <input type="file" id="mcp-avatar" accept="image/*" hidden>
+            <span class="avatar-hint">点击图标上传图片</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="mcp-protocol">传输协议</label>
+          <select class="form-select" id="mcp-protocol">
+            <option value="" disabled selected>选择传输协议</option>
+            <option value="sse">SSE</option>
+            <option value="stdio">Stdio</option>
+            <option value="http">HTTP</option>
+            <option value="websocket">WebSocket</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="mcp-desc">描述</label>
+          <textarea class="form-textarea" id="mcp-desc" placeholder="请输入MCP服务描述"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="mcp-url">服务地址</label>
+          <input class="form-input" id="mcp-url" type="text" placeholder="请输入服务地址，如 http://localhost:8080/mcp">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="mcp-headers">HTTP Headers</label>
+          <input class="form-input" id="mcp-headers" type="text" placeholder='JSON 格式, 如: {"headers": {"Authorization":"Bearer xxx"} }'>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modal-cancel">取消</button>
+        <button class="btn btn-primary" id="modal-submit">添加MCP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit MCP Modal -->
+  <div class="modal-overlay" id="edit-mcp-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <div class="modal-title-wrap">
+          <div class="modal-title">编辑MCP</div>
+          <div class="modal-subtitle">修改 MCP 服务配置</div>
+        </div>
+        <button class="modal-close" id="edit-modal-close" aria-label="关闭">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="edit-name">服务器名称</label>
+          <input class="form-input" id="edit-name" type="text" placeholder="请输入服务器名称">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">图标</label>
+          <div class="avatar-field">
+            <div class="avatar-preview" id="edit-avatar-preview" role="button" tabindex="0" title="点击上传图标">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <input type="file" id="edit-avatar" accept="image/*" hidden>
+            <span class="avatar-hint">点击图标上传图片</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-protocol">传输协议</label>
+          <select class="form-select" id="edit-protocol">
+            <option value="" disabled>选择传输协议</option>
+            <option value="sse">SSE</option>
+            <option value="stdio">Stdio</option>
+            <option value="http">HTTP</option>
+            <option value="websocket">WebSocket</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-desc">描述</label>
+          <textarea class="form-textarea" id="edit-desc" placeholder="请输入MCP服务描述"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-url">服务地址</label>
+          <input class="form-input" id="edit-url" type="text" placeholder="请输入服务地址，如 http://localhost:8080/mcp">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-headers">HTTP Headers</label>
+          <input class="form-input" id="edit-headers" type="text" placeholder='JSON 格式, 如: {"headers": {"Authorization":"Bearer xxx"} }'>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="edit-modal-cancel">取消</button>
+        <button class="btn btn-primary" id="edit-modal-submit">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const toast = document.getElementById('toast');
+      const DEFAULT_AVATAR_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      }
+
+      // 头像上传（添加 / 编辑通用）
+      function bindAvatar(preview, input, onData) {
+        preview.addEventListener('click', () => input.click());
+        preview.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            input.click();
+          }
+        });
+        input.addEventListener('change', () => {
+          const file = input.files && input.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            onData(reader.result);
+            preview.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = reader.result;
+            img.alt = '';
+            preview.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function resetAvatar(preview, input) {
+        preview.innerHTML = DEFAULT_AVATAR_SVG;
+        input.value = '';
+      }
+
+      // ---------- 添加 MCP ----------
+      const addModal = document.getElementById('add-mcp-modal');
+      const addOpenBtn = document.getElementById('add-skill-btn');
+      const addCloseBtn = document.getElementById('modal-close');
+      const addCancelBtn = document.getElementById('modal-cancel');
+      const addSubmitBtn = document.getElementById('modal-submit');
+      const addAvatarInput = document.getElementById('mcp-avatar');
+      const addAvatarPreview = document.getElementById('avatar-preview');
+      let addAvatarData = null;
+
+      bindAvatar(addAvatarPreview, addAvatarInput, (data) => { addAvatarData = data; });
+
+      function openAddModal() {
+        addModal.classList.add('show');
+      }
+
+      function closeAddModal() {
+        addModal.classList.remove('show');
+        resetAvatar(addAvatarPreview, addAvatarInput);
+        addAvatarData = null;
+      }
+
+      addOpenBtn.addEventListener('click', openAddModal);
+      addCloseBtn.addEventListener('click', closeAddModal);
+      addCancelBtn.addEventListener('click', closeAddModal);
+      addModal.addEventListener('click', (e) => {
+        if (e.target === addModal) closeAddModal();
+      });
+
+      addSubmitBtn.addEventListener('click', () => {
+        const name = document.getElementById('mcp-name').value.trim();
+        const protocol = document.getElementById('mcp-protocol').value;
+        const desc = document.getElementById('mcp-desc').value.trim();
+        const url = document.getElementById('mcp-url').value.trim();
+        const headers = document.getElementById('mcp-headers').value.trim();
+        const avatar = addAvatarData;
+
+        if (!name) { showToast('请输入服务器名称'); return; }
+        if (!protocol) { showToast('请选择传输协议'); return; }
+        if (!url) { showToast('请输入服务地址'); return; }
+
+        console.log({ name, protocol, desc, url, headers, avatar });
+        showToast('MCP 添加成功');
+        closeAddModal();
+      });
+
+      // ---------- 编辑 MCP ----------
+      const editModal = document.getElementById('edit-mcp-modal');
+      const editCloseBtn = document.getElementById('edit-modal-close');
+      const editCancelBtn = document.getElementById('edit-modal-cancel');
+      const editSubmitBtn = document.getElementById('edit-modal-submit');
+      const editAvatarInput = document.getElementById('edit-avatar');
+      const editAvatarPreview = document.getElementById('edit-avatar-preview');
+      let editAvatarData = null;
+      let editingCard = null;
+
+      bindAvatar(editAvatarPreview, editAvatarInput, (data) => { editAvatarData = data; });
+
+      function openEditModal(card, data) {
+        editingCard = card;
+        document.getElementById('edit-name').value = data.name || '';
+        document.getElementById('edit-protocol').value = data.protocol || '';
+        document.getElementById('edit-desc').value = data.desc || '';
+        document.getElementById('edit-url').value = data.url || '';
+        document.getElementById('edit-headers').value = data.headers || '';
+        if (data.avatar) {
+          editAvatarData = data.avatar;
+          editAvatarPreview.innerHTML = '';
+          const img = document.createElement('img');
+          img.src = data.avatar;
+          img.alt = '';
+          editAvatarPreview.appendChild(img);
+        } else {
+          editAvatarData = null;
+          editAvatarPreview.innerHTML = DEFAULT_AVATAR_SVG;
+        }
+        editModal.classList.add('show');
+      }
+
+      function closeEditModal() {
+        editModal.classList.remove('show');
+        resetAvatar(editAvatarPreview, editAvatarInput);
+        editAvatarData = null;
+        editingCard = null;
+      }
+
+      editCloseBtn.addEventListener('click', closeEditModal);
+      editCancelBtn.addEventListener('click', closeEditModal);
+      editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) closeEditModal();
+      });
+
+      document.querySelectorAll('.mcp-edit').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const card = btn.closest('.mcp-card');
+          const data = {
+            name: btn.dataset.name || '',
+            protocol: btn.dataset.protocol || '',
+            desc: btn.dataset.desc || '',
+            url: btn.dataset.url || '',
+            headers: btn.dataset.headers || '',
+            avatar: btn.dataset.avatar || ''
+          };
+          openEditModal(card, data);
+        });
+      });
+
+      editSubmitBtn.addEventListener('click', () => {
+        if (!editingCard) return;
+        const name = document.getElementById('edit-name').value.trim();
+        const protocol = document.getElementById('edit-protocol').value;
+        const desc = document.getElementById('edit-desc').value.trim();
+        const url = document.getElementById('edit-url').value.trim();
+        const headers = document.getElementById('edit-headers').value.trim();
+
+        if (!name) { showToast('请输入服务器名称'); return; }
+        if (!protocol) { showToast('请选择传输协议'); return; }
+        if (!url) { showToast('请输入服务地址'); return; }
+
+        const nameEl = editingCard.querySelector('.mcp-name');
+        const descEl = editingCard.querySelector('.mcp-desc');
+        if (nameEl) nameEl.textContent = name;
+        if (descEl) descEl.textContent = desc;
+
+        const editBtn = editingCard.querySelector('.mcp-edit');
+        if (editBtn) {
+          editBtn.dataset.name = name;
+          editBtn.dataset.protocol = protocol;
+          editBtn.dataset.desc = desc;
+          editBtn.dataset.url = url;
+          editBtn.dataset.headers = headers;
+          editBtn.dataset.avatar = editAvatarData || '';
+        }
+
+        console.log('updated', { name, protocol, desc, url, headers, avatar: editAvatarData });
+        showToast('保存成功');
+        closeEditModal();
+      });
+
+      // ---------- 公共：ESC 关闭任意弹窗 ----------
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        if (addModal.classList.contains('show')) closeAddModal();
+        if (editModal.classList.contains('show')) closeEditModal();
+      });
+    })();
+  </script>
+</body>
+</html>

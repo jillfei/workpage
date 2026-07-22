@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token用量 - OmniX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            padding: 32px 40px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .main-content-inner {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            padding: 32px 48px;
+            background: #f5f5f5;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .content-inner {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .refresh-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            border-color: #333;
+            color: #333;
+        }
+
+        .refresh-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        /* 统计卡片 */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 图表容器 */
+        .chart-section {
+            background: #fff;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .chart-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .time-filter {
+            display: flex;
+            gap: 4px;
+        }
+
+        .time-btn {
+            padding: 6px 12px;
+            border: 1px solid #e0e0e0;
+            background: #fff;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .time-btn:hover {
+            border-color: #333;
+            color: #333;
+        }
+
+        .time-btn.active {
+            background: #333;
+            border-color: #333;
+            color: #fff;
+        }
+
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .date-input {
+            padding: 6px 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            width: 120px;
+            cursor: pointer;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: #333;
+        }
+
+        .date-input::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.6;
+        }
+
+        .date-input::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+
+        /* 图表 */
+        .chart-container {
+            width: 100%;
+            height: 240px;
+            position: relative;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .legend-color.purple {
+            background: #7c3aed;
+        }
+
+        .legend-color.green {
+            background: #10b981;
+        }
+
+        /* 热力图 */
+        .heatmap-container {
+            width: 100%;
+            overflow-x: auto;
+            padding: 0 10px;
+        }
+
+        .heatmap-months {
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .heatmap-month-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .heatmap-month-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .heatmap-month-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .heatmap-cell {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            background: #f0f0f0;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.15);
+        }
+
+        .heatmap-cell.level-1 { background: #e9d5ff; }
+        .heatmap-cell.level-2 { background: #d8b4fe; }
+        .heatmap-cell.level-3 { background: #c084fc; }
+        .heatmap-cell.level-4 { background: #a855f7; }
+        .heatmap-cell.level-5 { background: #7c3aed; }
+
+        .heatmap-legend {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-top: 20px;
+        }
+
+        .heatmap-legend-label {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .heatmap-legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        /* 模型选择器 */
+        .model-selector {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #333;
+            background: #fff;
+            cursor: pointer;
+            min-width: 140px;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .tooltip-date {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .tooltip-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .tooltip-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .tooltip-dot.purple {
+            background: #7c3aed;
+        }
+
+        .tooltip-dot.green {
+            background: #10b981;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <div class="content-inner">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Token 用量</h1>
+                    <p class="page-subtitle">累计统计普通会话的模型请求，和聊天里的当前上下文占用分开计算</p>
+                </div>
+                <div>
+                    <button class="refresh-btn" onclick="refreshData()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                            <path d="M21 3v5h-5"/>
+                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                            <path d="M8 16H3v5"/>
+                        </svg>
+                        刷新
+                    </button>
+                    <div class="timestamp">统计生成 2026-07-01 16:28:23</div>
+                </div>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-label">Token 总量</div>
+                    <div class="stat-value">162,796</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">活跃天数</div>
+                    <div class="stat-value">162,796</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">日均 Token</div>
+                    <div class="stat-value">162,796</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">单日峰值</div>
+                    <div class="stat-value">14,628</div>
+                </div>
+            </div>
+
+            <!-- Token 统计表 -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h3 class="chart-title">Token 统计表</h3>
+                    <div class="chart-controls">
+                        <div class="time-filter">
+                            <button class="time-btn active" onclick="setTimeRange(7, this)">7天</button>
+                            <button class="time-btn" onclick="setTimeRange(15, this)">15天</button>
+                            <button class="time-btn" onclick="setTimeRange(30, this)">30天</button>
+                        </div>
+                        <div class="date-range">
+                            <input type="date" class="date-input" id="startDate">
+                            <span>—</span>
+                            <input type="date" class="date-input" id="endDate">
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container" id="tokenChart">
+                    <canvas class="chart-canvas"></canvas>
+                    <div class="tooltip" id="tokenTooltip">
+                        <div class="tooltip-date"></div>
+                        <div class="tooltip-row">
+                            <span class="tooltip-dot purple"></span>
+                            <span>输入 4,216 tokens</span>
+                        </div>
+                        <div class="tooltip-row">
+                            <span class="tooltip-dot green"></span>
+                            <span>输出 1,628 tokens</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-color purple"></span>
+                        <span>输入token</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color green"></span>
+                        <span>输出token</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 近一年热力图 -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h3 class="chart-title">近一年热力图</h3>
+                </div>
+                <div class="heatmap-container">
+                    <div class="heatmap-months" id="heatmapMonths"></div>
+                    <div class="heatmap-legend">
+                        <span class="heatmap-legend-label">少</span>
+                        <span class="heatmap-legend-color" style="background: #f0f0f0;"></span>
+                        <span class="heatmap-legend-color" style="background: #e9d5ff;"></span>
+                        <span class="heatmap-legend-color" style="background: #d8b4fe;"></span>
+                        <span class="heatmap-legend-color" style="background: #c084fc;"></span>
+                        <span class="heatmap-legend-color" style="background: #a855f7;"></span>
+                        <span class="heatmap-legend-color" style="background: #7c3aed;"></span>
+                        <span class="heatmap-legend-label">多</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模型 Token 消耗 -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h3 class="chart-title">模型 Token 消耗</h3>
+                    <select class="model-selector" id="modelSelector" onchange="changeModel()">
+                        <option value="qwen3.7-plus">Qwen3.7-plus</option>
+                        <option value="gpt-4">GPT-4</option>
+                        <option value="claude-3">Claude-3</option>
+                    </select>
+                </div>
+                <div class="chart-container" id="modelChart">
+                    <canvas class="chart-canvas"></canvas>
+                    <div class="tooltip" id="modelTooltip">
+                        <div class="tooltip-date">6月 29日</div>
+                        <div class="tooltip-row">
+                            <span class="tooltip-dot purple"></span>
+                            <span>输入 4,216 tokens</span>
+                        </div>
+                        <div class="tooltip-row">
+                            <span class="tooltip-dot green"></span>
+                            <span>输出 1,628 tokens</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-color purple"></span>
+                        <span>输入token</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color green"></span>
+                        <span>输出token</span>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 模拟数据
+        const chartData = {
+            labels: ['06-25', '06-26', '06-27', '06-28', '06-29', '06-30', '07-01'],
+            input: [12000, 28000, 18000, 15000, 42000, 20000, 28000],
+            output: [8000, 18000, 12000, 10000, 28000, 15000, 22000]
+        };
+
+        // 绘制折线图
+        function drawChart(canvasId, data) {
+            const canvas = document.querySelector(`#${canvasId} canvas`);
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.parentElement.getBoundingClientRect();
+            
+            canvas.width = rect.width * 2;
+            canvas.height = rect.height * 2;
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+            ctx.scale(2, 2);
+
+            const width = rect.width;
+            const height = rect.height;
+            const padding = { top: 20, right: 20, bottom: 40, left: 50 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+
+            // 清空画布
+            ctx.clearRect(0, 0, width, height);
+
+            // 绘制网格线
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding.top + (chartHeight / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(width - padding.right, y);
+                ctx.stroke();
+            }
+
+            // 绘制Y轴标签
+            ctx.fillStyle = '#999';
+            ctx.font = '11px -apple-system, sans-serif';
+            ctx.textAlign = 'right';
+            const maxValue = 50000;
+            for (let i = 0; i <= 5; i++) {
+                const value = maxValue - (maxValue / 5) * i;
+                const y = padding.top + (chartHeight / 5) * i;
+                ctx.fillText(value === 0 ? '0' : (value / 1000) + 'k', padding.left - 10, y + 4);
+            }
+
+            // 绘制X轴标签
+            ctx.textAlign = 'center';
+            data.labels.forEach((label, i) => {
+                const x = padding.left + (chartWidth / (data.labels.length - 1)) * i;
+                ctx.fillText(label, x, height - 15);
+            });
+
+            // 绘制线条函数
+            function drawLine(values, color) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                values.forEach((value, i) => {
+                    const x = padding.left + (chartWidth / (values.length - 1)) * i;
+                    const y = padding.top + chartHeight - (value / maxValue) * chartHeight;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                
+                ctx.stroke();
+
+                // 绘制数据点
+                values.forEach((value, i) => {
+                    const x = padding.left + (chartWidth / (values.length - 1)) * i;
+                    const y = padding.top + chartHeight - (value / maxValue) * chartHeight;
+                    
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+            }
+
+            // 绘制输入和输出线条
+            drawLine(data.input, '#7c3aed');
+            drawLine(data.output, '#10b981');
+
+            // 鼠标悬停显示tooltip
+            canvas.onmousemove = function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                // 找到最近的数据点
+                let closestIndex = 0;
+                let minDist = Infinity;
+                
+                data.labels.forEach((label, i) => {
+                    const x = padding.left + (chartWidth / (data.labels.length - 1)) * i;
+                    const dist = Math.abs(mouseX - x);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closestIndex = i;
+                    }
+                });
+
+                // 显示tooltip
+                const tooltip = document.getElementById(canvasId.replace('Chart', 'Tooltip'));
+                if (tooltip && minDist < 50) {
+                    const x = padding.left + (chartWidth / (data.labels.length - 1)) * closestIndex;
+                    const inputY = padding.top + chartHeight - (data.input[closestIndex] / maxValue) * chartHeight;
+                    const outputY = padding.top + chartHeight - (data.output[closestIndex] / maxValue) * chartHeight;
+                    
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = (x + 10) + 'px';
+                    tooltip.style.top = (Math.min(inputY, outputY) - 20) + 'px';
+                    
+                    tooltip.querySelector('.tooltip-date').textContent = data.labels[closestIndex];
+                    tooltip.querySelectorAll('.tooltip-row')[0].querySelector('span:last-child').textContent = '输入 ' + data.input[closestIndex].toLocaleString() + ' tokens';
+                    tooltip.querySelectorAll('.tooltip-row')[1].querySelector('span:last-child').textContent = '输出 ' + data.output[closestIndex].toLocaleString() + ' tokens';
+                    
+                    // 绘制垂直线
+                    ctx.clearRect(0, 0, width, height);
+                    
+                    // 重新绘制网格线
+                    ctx.strokeStyle = '#f0f0f0';
+                    ctx.lineWidth = 1;
+                    for (let i = 0; i <= 5; i++) {
+                        const y = padding.top + (chartHeight / 5) * i;
+                        ctx.beginPath();
+                        ctx.moveTo(padding.left, y);
+                        ctx.lineTo(width - padding.right, y);
+                        ctx.stroke();
+                    }
+                    
+                    // 重新绘制Y轴标签
+                    ctx.fillStyle = '#999';
+                    ctx.font = '11px -apple-system, sans-serif';
+                    ctx.textAlign = 'right';
+                    for (let i = 0; i <= 5; i++) {
+                        const value = maxValue - (maxValue / 5) * i;
+                        const y = padding.top + (chartHeight / 5) * i;
+                        ctx.fillText(value === 0 ? '0' : (value / 1000) + 'k', padding.left - 10, y + 4);
+                    }
+                    
+                    // 重新绘制X轴标签
+                    ctx.textAlign = 'center';
+                    data.labels.forEach((label, i) => {
+                        const x = padding.left + (chartWidth / (data.labels.length - 1)) * i;
+                        ctx.fillText(label, x, height - 15);
+                    });
+                    
+                    // 绘制虚线垂直线
+                    ctx.strokeStyle = '#ccc';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([4, 4]);
+                    ctx.beginPath();
+                    ctx.moveTo(x, padding.top);
+                    ctx.lineTo(x, height - padding.bottom);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    // 重新绘制线条
+                    drawLine(data.input, '#7c3aed');
+                    drawLine(data.output, '#10b981');
+                    
+                    // 高亮当前数据点
+                    ctx.fillStyle = '#7c3aed';
+                    ctx.beginPath();
+                    ctx.arc(x, inputY, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#10b981';
+                    ctx.beginPath();
+                    ctx.arc(x, outputY, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    tooltip.style.display = 'none';
+                }
+            };
+
+            canvas.onmouseleave = function() {
+                const tooltip = document.getElementById(canvasId.replace('Chart', 'Tooltip'));
+                if (tooltip) tooltip.style.display = 'none';
+                
+                // 重新绘制图表
+                ctx.clearRect(0, 0, width, height);
+                
+                // 绘制网格线
+                ctx.strokeStyle = '#f0f0f0';
+                ctx.lineWidth = 1;
+                for (let i = 0; i <= 5; i++) {
+                    const y = padding.top + (chartHeight / 5) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(padding.left, y);
+                    ctx.lineTo(width - padding.right, y);
+                    ctx.stroke();
+                }
+                
+                // 绘制Y轴标签
+                ctx.fillStyle = '#999';
+                ctx.font = '11px -apple-system, sans-serif';
+                ctx.textAlign = 'right';
+                for (let i = 0; i <= 5; i++) {
+                    const value = maxValue - (maxValue / 5) * i;
+                    const y = padding.top + (chartHeight / 5) * i;
+                    ctx.fillText(value === 0 ? '0' : (value / 1000) + 'k', padding.left - 10, y + 4);
+                }
+                
+                // 绘制X轴标签
+                ctx.textAlign = 'center';
+                data.labels.forEach((label, i) => {
+                    const x = padding.left + (chartWidth / (data.labels.length - 1)) * i;
+                    ctx.fillText(label, x, height - 15);
+                });
+                
+                // 重新绘制线条
+                drawLine(data.input, '#7c3aed');
+                drawLine(data.output, '#10b981');
+            };
+        }
+
+        // 生成热力图
+        function generateHeatmap() {
+            const container = document.getElementById('heatmapMonths');
+            container.innerHTML = '';
+            
+            const months = ['6月', '7月', '8月', '9月', '10月', '11月', '12月', '1月', '2月', '3月', '4月', '5月'];
+            
+            months.forEach((month, monthIndex) => {
+                const monthGroup = document.createElement('div');
+                monthGroup.className = 'heatmap-month-group';
+                
+                const label = document.createElement('div');
+                label.className = 'heatmap-month-label';
+                label.textContent = month;
+                monthGroup.appendChild(label);
+                
+                const grid = document.createElement('div');
+                grid.className = 'heatmap-month-grid';
+                
+                // 每个月7行×4列 = 28个单元格（代表4周）
+                for (let i = 0; i < 28; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'heatmap-cell';
+                    
+                    // 随机生成等级
+                    const rand = Math.random();
+                    if (rand > 0.6) {
+                        cell.classList.add('level-' + Math.ceil(Math.random() * 5));
+                    }
+                    
+                    cell.addEventListener('mouseenter', function(e) {
+                        showHeatmapTooltip(e, this, monthIndex, i);
+                    });
+                    cell.addEventListener('mouseleave', hideHeatmapTooltip);
+                    
+                    grid.appendChild(cell);
+                }
+                
+                monthGroup.appendChild(grid);
+                container.appendChild(monthGroup);
+            });
+        }
+
+        // 热力图提示
+        function showHeatmapTooltip(e, cell, monthIndex, dayIndex) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'heatmap-tooltip';
+            tooltip.innerHTML = `
+                <div style="font-weight: 500; margin-bottom: 4px;">5月28日周四</div>
+                <div style="color: #ccc;">14,628 tokens</div>
+            `;
+            tooltip.style.cssText = `
+                position: fixed;
+                background: #333;
+                color: #fff;
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                z-index: 1000;
+                pointer-events: none;
+                left: ${e.clientX + 10}px;
+                top: ${e.clientY - 40}px;
+            `;
+            document.body.appendChild(tooltip);
+            cell.tooltip = tooltip;
+        }
+
+        function hideHeatmapTooltip(e) {
+            if (e.target.tooltip) {
+                e.target.tooltip.remove();
+                e.target.tooltip = null;
+            }
+        }
+
+        // 模拟数据生成函数
+        function generateChartData(days) {
+            const labels = [];
+            const input = [];
+            const output = [];
+            
+            const today = new Date();
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                labels.push(`${month}-${day}`);
+                
+                // 生成随机数据
+                input.push(Math.floor(Math.random() * 30000) + 10000);
+                output.push(Math.floor(Math.random() * 20000) + 5000);
+            }
+            
+            return { labels, input, output };
+        }
+
+        // 当前时间范围
+        let currentDays = 7;
+
+        // 时间范围切换
+        function setTimeRange(days, btn) {
+            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentDays = days;
+            
+            // 生成新数据并重绘图表
+            const newData = generateChartData(days);
+            drawChart('tokenChart', newData);
+        }
+
+        // 刷新数据
+        function refreshData() {
+            // 模拟刷新动画
+            const btn = document.querySelector('.refresh-btn svg');
+            btn.style.animation = 'spin 1s linear';
+            setTimeout(() => {
+                btn.style.animation = '';
+            }, 1000);
+            
+            // 重新生成数据并绘制图表
+            const newData = generateChartData(currentDays);
+            drawChart('tokenChart', newData);
+            drawChart('modelChart', chartData);
+        }
+
+        // 模型切换
+        function changeModel() {
+            const model = document.getElementById('modelSelector').value;
+            console.log('切换模型:', model);
+            drawChart('modelChart', chartData);
+        }
+
+        // 侧边栏导航切换
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 初始化
+        window.addEventListener('load', function() {
+            // 默认显示7天数据
+            const initialData = generateChartData(7);
+            drawChart('tokenChart', initialData);
+            drawChart('modelChart', chartData);
+            generateHeatmap();
+        });
+
+        window.addEventListener('resize', function() {
+            const currentData = generateChartData(currentDays);
+            drawChart('tokenChart', currentData);
+            drawChart('modelChart', chartData);
+        });
+    </script>
+
+    <style>
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</body>
+</html>

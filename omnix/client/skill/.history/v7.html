@@ -35,11 +35,11 @@
     .add-wrap { position: relative; }
     .btn-add {
       display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 10px;
+      padding: 8px 16px;
       background: #fff;
       border: 1px solid #e4e4e7;
       border-radius: 8px;
-      font-size: 13px; font-weight: 500;
+      font-size: 14px; font-weight: 500;
       cursor: pointer;
       transition: background .15s;
     }
@@ -160,11 +160,7 @@
       border-radius: 16px;
       padding: 20px;
       transition: box-shadow .15s;
-      cursor: pointer;
     }
-    /* 卡片内的操作按钮 / 三点菜单不应继承整卡指针样式 */
-    .card .btn-install,
-    .card .card-menu { cursor: default; }
     .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); }
     .grid-list .card { align-items: center; }
 
@@ -196,23 +192,7 @@
     .grid-list .card-foot { margin-top: 0; flex-shrink: 0; }
 
     .stats { display: flex; align-items: center; gap: 16px; font-size: 14px; color: #a1a1aa; }
-    .push-right { margin-left: auto; }
     .stat { display: inline-flex; align-items: center; gap: 4px; }
-
-    /* 已安装 Tab 下的来源标签 */
-    .src-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px; border-radius: 999px;
-      font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap;
-      background: #f4f4f5; color: #52525b;
-    }
-    .src-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #a1a1aa; }
-    .src-badge[data-src="技能市场"] { background: #eff6ff; color: #2563eb; }
-    .src-badge[data-src="技能市场"] .dot { background: #2563eb; }
-    .src-badge[data-src="企业技能"] { background: #faf5ff; color: #7c3aed; }
-    .src-badge[data-src="企业技能"] .dot { background: #7c3aed; }
-    .src-badge[data-src="自定义"] { background: #ecfdf5; color: #059669; }
-    .src-badge[data-src="自定义"] .dot { background: #059669; }
 
     .btn-install {
       display: inline-flex; align-items: center; gap: 6px;
@@ -269,14 +249,13 @@
     /* 已安装技能：状态按钮 + 右上角三点菜单 */
     .card { position: relative; }
     .card-menu {
-      position: absolute; top: 14px; right: 14px; z-index: 6;margin: -12px -10px 0px 0px;
+      position: absolute; top: 14px; right: 14px; z-index: 6;
     }
     .dots-btn {
       width: 28px; height: 28px;
       display: inline-flex; align-items: center; justify-content: center;
       border: none; background: transparent; border-radius: 8px;
       color: #a1a1aa; cursor: pointer;
-	  font-weight: bold;
     }
     .dots-btn:hover { background: #f4f4f5; color: #52525b; }
     .menu-dropdown {
@@ -300,7 +279,7 @@
       display: inline-flex; align-items: center; gap: 6px;
       padding: 6px 16px;
       border: 1px solid #18181b; background: #e5e5e5;
-      border-radius: 6px;
+      border-radius: 999px;
       font-size: 14px; font-weight: 500; color: #18181b;
       cursor: pointer; white-space: nowrap;
       opacity: 1; pointer-events: auto;
@@ -317,9 +296,7 @@
     .card.disabled:hover .btn-installed .bi-installed { display: inline-flex !important; }
     .card.disabled:hover .btn-installed .bi-try { display: none !important; }
 
-    .card.disabled .icon-box,
-    .card.disabled .card-body,
-    .card.disabled .card-foot { opacity: .55; filter: grayscale(1); }
+    .card.disabled { opacity: .5; filter: grayscale(1); }
 
     /* 顶部成功提示 Toast */
     #toast {
@@ -533,7 +510,7 @@
       <div class="toolbar-right">
         <div class="search-box">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          <input type="text" placeholder="搜索技能">
+          <input type="text" placeholder="搜索插件">
         </div>
         <div class="view-toggle">
           <button class="view-btn" data-view="list">
@@ -549,12 +526,6 @@
           <option value="all">全部</option>
           <option value="installed">已安装</option>
           <option value="uninstalled">未安装</option>
-        </select>
-        <select class="status-filter" id="source-filter" style="display:none;">
-          <option value="all">来源</option>
-          <option value="技能市场">技能市场</option>
-          <option value="企业技能">企业技能</option>
-          <option value="自定义">自定义</option>
         </select>
       </div>
     </div>
@@ -710,7 +681,7 @@
         stars: 140, downloads: "1,280万", featured: false },
       { id: 13, name: "微信支付基础支付接入skill", icon: "wxpay", grad: "linear-gradient(135deg,#34d399,#059669)",
         desc: "微信支付基础支付解决方案，涵盖支付、退款账单、分账、商户进件、开户意愿确认，提供选型/代码示例/业务速查/质量评估/排障五大能力。",
-        stars: 140, downloads: "1,280万", featured: false },
+        stars: 140, downloads: "1,280万", featured: true },
       { id: 14, name: "Java编程专家", icon: "java", grad: "linear-gradient(135deg,#60a5fa,#2563eb)",
         desc: "Java 源码分析与编程专家。TRIGGER when: 分析Java源码、阅读Java代码、Java代码走读、Java项目结构分析、写Java代码、Java代码重构。",
         stars: 140, downloads: "1,280万", featured: false }
@@ -721,14 +692,6 @@
       s.enabled = i % 4 !== 0;
     });
 
-    // 为每个技能标注来源（用于「已安装」标签页展示）
-    SKILLS.forEach(s => {
-      if ([1, 2, 3, 4, 6, 7, 8].includes(s.id)) s.source = "技能市场";
-      else if ([5, 11, 13, 10].includes(s.id)) s.source = "企业技能";
-      else if ([12, 14].includes(s.id)) s.source = "系统内置";
-      else s.source = "自定义";
-    });
-
     const byId = ids => ids.map(id => {
       const o = SKILLS.find(s => s.id === id);
       return o ? Object.assign({}, o) : null;
@@ -736,8 +699,8 @@
 
     const TAB_DATA = {
       market: byId([1, 2, 3, 4, 6, 7, 8]),
-      enterprise: byId([5, 11, 13, 10]),
-      builtin: byId([12, 14]),
+      enterprise: byId([5, 11, 13]),
+      builtin: byId([10, 12, 14]),
       installed: byId([1, 9, 10])
     };
     // 系统内置 / 已安装 Tab 下的技能均为已安装且默认启用状态
@@ -751,16 +714,9 @@
     const CHECK_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
     const DOTS_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>';
 
-    // 预制空链接 + 参数：技能卡片点击后于当前窗口打开的详情页地址
-    function buildSkillUrl(s) {
-      const params = new URLSearchParams({ id: s.id, name: s.name, source: s.source, from: currentTab });
-      return "detail.html?" + params.toString();
-    }
-
     let currentView = "card";
     let currentTab = "market";
     let currentFilter = "all";
-    let currentSource = "all";
 
     const FILTER_OPTIONS = {
       market: [
@@ -774,12 +730,12 @@
         { value: "uninstalled", label: "未安装" }
       ],
       builtin: [
-        { value: "all", label: "状态" },
+        { value: "all", label: "全部" },
         { value: "enabled", label: "已启用" },
         { value: "disabled", label: "已禁用" }
       ],
       installed: [
-        { value: "all", label: "状态" },
+        { value: "all", label: "全部" },
         { value: "enabled", label: "已启用" },
         { value: "disabled", label: "已禁用" }
       ]
@@ -803,24 +759,17 @@
         if (currentFilter === "uninstalled") return !s.installed;
         if (currentFilter === "enabled") return s.enabled;
         if (currentFilter === "disabled") return !s.enabled;
-        if (currentSource !== "all" && s.source !== currentSource) return false;
         return true;
       });
       container.innerHTML = list.map(s => {
         const iconHtml = '<div class="icon-box" style="background:' + s.grad + '">' + (ICONS[s.icon] || "") + '</div>';
         const titleHtml = '<h3 class="card-title">' + s.name + '</h3>';
         const descHtml = '<p class="card-desc ' + (currentView === "card" ? "clamp-2" : "clamp-1") + '">' + s.desc + '</p>';
-        const showStats = currentTab !== 'builtin' && currentTab !== 'installed';
-        const statsHtml = showStats
-          ? '<div class="stats">' +
-              '<span class="stat">' + STAR_SVG + s.stars + '</span>' +
-              '<span class="stat">' + DL_SVG + s.downloads + '</span>' +
-            '</div>'
-          : '';
-        const showSource = currentTab === 'installed' || currentFilter === 'installed';
-        const sourceHtml = showSource
-          ? '<span class="src-badge" data-src="' + s.source + '"><span class="dot"></span>' + s.source + '</span>'
-          : '';
+        const statsHtml =
+          '<div class="stats">' +
+            '<span class="stat">' + STAR_SVG + s.stars + '</span>' +
+            '<span class="stat">' + DL_SVG + s.downloads + '</span>' +
+          '</div>';
         let actionHtml, menuHtml = '';
         if (s.installed) {
           actionHtml = '<button class="btn-installed" data-name="' + s.name + '">' +
@@ -829,7 +778,7 @@
             '</button>';
           const showUninstall = currentTab !== 'builtin';
           menuHtml = '<div class="card-menu">' +
-            '<button class="dots-btn" type="button" aria-label="更多操作">···</button>' +
+            '<button class="dots-btn" type="button" aria-label="更多操作">' + DOTS_SVG + '</button>' +
             '<div class="menu-dropdown hidden">' +
               '<button class="menu-item" data-action="toggle">' + (s.enabled ? '禁用' : '启用') + '</button>' +
               (showUninstall ? '<button class="menu-item danger" data-action="uninstall">卸载</button>' : '') +
@@ -841,26 +790,18 @@
           actionHtml = '<button class="btn-install" data-name="' + s.name + '">' + PLUS_SVG + '安装技能</button>';
         }
 
-        const sourcePart = showSource ? sourceHtml : '';
-        let footContent;
-        if (showStats) {
-          footContent = statsHtml + sourcePart + actionHtml;
-        } else {
-          footContent = sourcePart + '<div class="push-right">' + actionHtml + '</div>';
-        }
-
         const cardClass = 'card' + (s.installed && !s.enabled ? ' disabled' : '');
 
         if (currentView === "card") {
-          return '<div class="' + cardClass + '" data-id="' + s.id + '" data-href="' + buildSkillUrl(s) + '">' + iconHtml + menuHtml +
+          return '<div class="' + cardClass + '" data-id="' + s.id + '">' + iconHtml + menuHtml +
                    '<div class="card-body">' + titleHtml + descHtml +
-                     '<div class="card-foot">' + footContent + '</div>' +
+                     '<div class="card-foot">' + statsHtml + actionHtml + '</div>' +
                    '</div>' +
                  '</div>';
         } else {
-          return '<div class="' + cardClass + '" data-id="' + s.id + '" data-href="' + buildSkillUrl(s) + '">' + iconHtml + menuHtml +
+          return '<div class="' + cardClass + '" data-id="' + s.id + '">' + iconHtml + menuHtml +
                    '<div class="card-body">' + titleHtml + descHtml + '</div>' +
-                   '<div class="card-foot">' + footContent + '</div>' +
+                   '<div class="card-foot">' + statsHtml + actionHtml + '</div>' +
                  '</div>';
         }
       }).join("");
@@ -878,7 +819,6 @@
 
     // ---- Tabs ----
     const statusFilter = document.getElementById("status-filter");
-    const sourceFilter = document.getElementById("source-filter");
     const catsEl = document.querySelector(".cats");
     document.querySelectorAll(".tab").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -886,18 +826,12 @@
         btn.classList.add("active");
         currentTab = btn.dataset.tab;
         rebuildFilterSelect();
-        sourceFilter.style.display = currentTab === "installed" ? "" : "none";
-        if (currentTab !== "installed") { currentSource = "all"; sourceFilter.value = "all"; }
         catsEl.style.display = (currentTab === "market" || currentTab === "enterprise") ? "flex" : "none";
         render();
       });
     });
     statusFilter.addEventListener("change", () => {
       currentFilter = statusFilter.value;
-      render();
-    });
-    sourceFilter.addEventListener("change", () => {
-      currentSource = sourceFilter.value;
       render();
     });
 
@@ -938,7 +872,7 @@
       if (instBtn) {
         const card = instBtn.closest(".card");
         if (card && card.classList.contains("disabled")) return;
-		window.location.href="../content.html";
+        showToast("试用技能 " + instBtn.getAttribute("data-name"));
         return;
       }
       // 右上角三点：展开/收起下拉
@@ -975,26 +909,17 @@
       }
       // 安装技能：loading -> 成功并转为已安装态
       const btn = e.target.closest(".btn-install");
-      if (btn) {
-        if (btn.classList.contains("loading") || btn.classList.contains("done")) return;
-        const name = btn.getAttribute("data-name");
-        btn.classList.add("loading");
-        btn.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 109 9"/></svg> 安装中';
-        setTimeout(() => {
-          const skill = (TAB_DATA[currentTab] || []).find(x => x.name === name);
-          if (skill) { skill.installed = true; skill.enabled = true; }
-          render();
-          showToast("技能 " + name + " 安装成功");
-        }, 1300);
-        return;
-      }
-
-      // 卡片点击（非操作按钮 / 非三点菜单）：当前窗口打开技能详情页
-      const card = e.target.closest(".card");
-      if (card && !e.target.closest(".card-menu")) {
-        const href = card.getAttribute("data-href");
-        if (href) window.location.href = href;
-      }
+      if (!btn) return;
+      if (btn.classList.contains("loading") || btn.classList.contains("done")) return;
+      const name = btn.getAttribute("data-name");
+      btn.classList.add("loading");
+      btn.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 109 9"/></svg> 安装中';
+      setTimeout(() => {
+        const skill = (TAB_DATA[currentTab] || []).find(x => x.name === name);
+        if (skill) { skill.installed = true; skill.enabled = true; }
+        render();
+        showToast("技能 " + name + " 安装成功");
+      }, 1300);
     });
 
     // 点击空白处收起三点菜单
@@ -1156,18 +1081,6 @@
         showToast("技能 " + name + " 安装成功");
       }, 1500);
     });
-
-
-// 父窗口点击菜单
-function parentClick(url='') {
-	if(url){
-		if (window.parent && window.parent !== window) {
-		  window.parent.postMessage({ type: 'navigate', src: url }, '*');
-		} else {
-		  window.location.href = url;
-		}
-	}
-}
 
     // ---- Init ----
     render();

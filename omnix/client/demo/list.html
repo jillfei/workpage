@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>技能市场</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #ffffff;
+      color: #18181b;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---------- Header ---------- */
+    .header {
+      display: flex;align-items: center;justify-content: space-between;padding: 16px 24px;border-bottom: 1px solid #f0f0f1;
+    }
+    .header-left { display: flex; align-items: center; gap: 8px; }
+    .logo-box {width: 32px; height: 32px;border-radius: 8px;background: #f4f4f5;display: flex; align-items: center; justify-content: center;
+    }
+    .header h1 { font-size: 18px; font-weight: 600; }
+
+    .add-wrap { position: relative; }
+    .btn-add {display: inline-flex; align-items: center; gap: 6px;padding: 6px 10px;background: #fff;border: 1px solid #e4e4e7; border-radius: 8px;font-size: 13px; font-weight: 500;cursor: pointer;transition: background .15s;}
+    .btn-add:hover { background: #fafafa; }
+
+    /* ---------- Main ---------- */
+    main { padding: 8px 24px 48px; }
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 768px) { .grid-cards { grid-template-columns: 1fr; } }
+
+
+    /* 顶部成功提示 Toast */
+    #toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: #18181b;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease, transform .25s ease;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-box">
+        <svg class="icon-sm" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      </div>
+      <h1>技能</h1>
+    </div>
+
+    <div class="add-wrap">
+      <button class="btn-add" id="add-skill-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+        添加技能
+      </button>
+    </div>
+  </header>
+
+  <!-- Skills -->
+  <main>
+    <div id="container" class="grid-cards"></div>
+  </main>
+
+  <div id="toast"></div>
+
+
+  
+</body>
+</html>

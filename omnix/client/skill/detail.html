@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>腾讯文档 TENCENT DOCS — 技能详情</title>
+<style>
+:root {
+  --bg: #f5f6fa;
+  --card-bg: #ffffff;
+  --border: #e8ecf1;
+  --text: #1a1d26;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --primary: #18181b;
+  --primary-light: #e5e5e5;
+  --purple: #7c3aed;
+  --green: #059669;
+  --amber: #f59e0b;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", "SF Mono", Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── Container ─── */
+.container {  margin: 0 auto; }
+
+
+/* Top navigation */
+.top-nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.top-nav svg { width: 18px; height: 18px; color: var(--text-secondary); cursor: pointer; }
+.top-nav span { font-weight: normal; }
+
+/* Back Nav */
+.back-nav {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 14px; color: var(--text-secondary); cursor: pointer;
+  text-decoration: none; margin: 0px;
+  transition: color .15s; user-select: none;
+}
+.back-nav:hover { color: var(--text-main); }
+.back-nav svg { width: 16px; height: 16px; }
+
+.logo-box{width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;}
+
+
+	
+.logo-box{width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;}
+
+/* ─── Header Card ─── */
+.header-card {
+  background: var(--card-bg);
+  padding: 24px 28px;
+}
+.header-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px;
+}
+.header-left { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0; }
+
+/* Icon */
+.skill-icon {
+  width: 52px; height: 52px; min-width: 52px;
+  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(124,58,237,.25);
+}
+.skill-icon svg { width: 28px; height: 28px; fill: #fff; }
+
+.header-info { min-width: 0; }
+.header-title {
+  font-size: 20px; font-weight: 700;
+  letter-spacing: -.2px; line-height: 1.3;
+}
+.header-title .en { font-size: 14px; font-weight: 400; color: var(--text-muted); }
+
+.header-meta {
+  display: flex; align-items: center; gap: 16px;
+  margin-top: 8px; font-size: 13px; color: var(--text-secondary);
+}
+.meta-item {
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.meta-item .icon { width: 15px; height: 15px; color: var(--text-muted); }
+.meta-item strong { color: var(--text); font-weight: 600; }
+
+/* Install button */
+.btn-install {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--card-bg);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: all .2s; white-space: nowrap; color: var(--text-secondary);
+  height: fit-content;
+}
+.btn-install:hover {
+  border-color: var(--primary); color: var(--primary);
+  background: var(--primary-light);
+}
+.btn-install svg { width: 14px; height: 14px; }
+.btn-install.loading { pointer-events: none; opacity: .7; }
+.btn-install .spinner {
+  width: 14px; height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Action Buttons Group ─── */
+.action-group {
+  display: none; align-items: center; gap: 8px;
+  height: fit-content;
+}
+.action-group.visible { display: inline-flex; }
+
+.btn-try {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px; border-radius: 8px;
+  border: 1px solid var(--primary); background: var(--primary);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: all .2s; white-space: nowrap; color: #fff;
+}
+.btn-try:hover { opacity: .85; }
+.btn-try svg { width: 14px; height: 14px; }
+
+.btn-dots {
+  width: 34px; height: 34px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--card-bg);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .15s; position: relative;
+}
+.btn-dots:hover { border-color: var(--primary); background: var(--primary-light); }
+.btn-dots svg { width: 16px; height: 16px; color: var(--text-secondary); }
+
+/* ─── Dropdown Menu ─── */
+.dropdown-menu {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: 8px; box-shadow: var(--shadow-md);
+  min-width: 140px; padding: 4px 0;
+  opacity: 0; visibility: hidden;
+  transform: translateY(-4px);
+  transition: all .15s ease; z-index: 100;
+}
+.dropdown-menu.open {
+  opacity: 1; visibility: visible;
+  transform: translateY(0);
+}
+.dropdown-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; font-size: 13px;
+  color: var(--text-secondary); cursor: pointer;
+  transition: background .1s; border: none;
+  background: none; width: 100%; text-align: left;
+}
+.dropdown-item:hover { background: #f5f6fa; color: var(--text); }
+.dropdown-item.danger { color: #ef4444; }
+.dropdown-item.danger:hover { background: #fef2f2; }
+.dropdown-item svg { width: 15px; height: 15px; }
+
+/* ─── Disabled Badge ─── */
+.badge-disabled {
+  display: none; align-items: center;
+  font-size: 11px; font-weight: 600;
+  color: var(--text-muted); background: #f0f0f2;
+  padding: 2px 8px; border-radius: 4px;
+  margin-left: 10px; vertical-align: middle;
+  letter-spacing: .3px;
+}
+.badge-disabled.visible { display: inline-flex; }
+
+.toast {
+  position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-20px);
+  background: var(--primary); color: #fff; padding: 10px 20px;
+  border-radius: 8px; font-size: 13px; font-weight: 500;
+  box-shadow: var(--shadow-md); opacity: 0;
+  transition: all .3s ease; pointer-events: none; z-index: 999;
+  display: flex; align-items: center; gap: 8px;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast svg { width: 16px; height: 16px; color: #34d399; }
+
+/* Description */
+.skill-desc {
+  margin-top: 18px; padding-top: 18px;
+  border-top: 1px solid var(--border);
+  font-size: 14px; color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+/* ─── Config Preview Block ─── */
+.config-block {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin: 0px 24px;
+  box-shadow: var(--shadow-sm);
+}
+.config-toolbar {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 8px; padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: #fafafa;
+}
+.toolbar-btn {
+  width: 30px; height: 30px; border-radius: 6px;
+  border: none; background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-muted);
+  transition: all .15s;
+}
+.toolbar-btn:hover { background: #e8ecf1; color: var(--text-secondary); }
+.toolbar-btn.active { background: var(--primary-light); color: var(--primary); }
+.toolbar-btn svg { width: 16px; height: 16px; }
+
+.config-body {
+  padding: 20px 24px; font-family: var(--font-mono);
+  font-size: 13px; line-height: 1.85;
+}
+.config-line { margin-bottom: 2px; }
+.config-key { color: var(--text-muted); }
+.config-value { color: var(--text); word-break: break-all; }
+.config-str { color: #059669; }
+
+/* Visual mode */
+.visual-mode .config-body { font-family: inherit; }
+.visual-mode .visual-grid {
+  display: grid; grid-template-columns: 100px 1fr; gap: 10px 20px;
+}
+.visual-mode .v-label { color: var(--text-muted); font-size: 13px; font-weight: 500; }
+.visual-mode .v-value { font-size: 13px; color: var(--text); }
+
+/* ─── Section ─── */
+.section { margin-bottom: 28px; }
+.section-title {
+  font-size: 18px; font-weight: 700;
+  margin-bottom: 10px; letter-spacing: -.3px;
+}
+.section-desc {
+  font-size: 14px; color: var(--text-secondary);
+  margin-bottom: 18px; line-height: 1.65;
+}
+
+/* ─── Table ─── */
+.data-table-wrap {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.data-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+.data-table thead th {
+  background: #f9fafb;
+  text-align: left; padding: 11px 16px;
+  font-weight: 600; font-size: 12px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.data-table tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  color: var(--text);
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover { background: #fafbfd; }
+.data-table .code-text {
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--text-secondary); background: #f5f6fa;
+  padding: 2px 6px; border-radius: 4px;
+}
+
+/* Stars / Rating */
+.rating-stars { display: inline-flex; gap: 1px; }
+.star { color: #e5e7eb; }
+.star.filled { color: #f59e0b; }
+.rating-label { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
+
+/* ─── Responsive ─── */
+@media (max-width: 720px) {
+  body { padding: 16px; }
+  .header-row { flex-direction: column; }
+  .header-left { flex-wrap: wrap; }
+  .btn-install { align-self: flex-start; }
+  .action-group { align-self: flex-start; flex-wrap: wrap; }
+  .data-table { font-size: 12px; }
+  .data-table thead th,
+  .data-table tbody td { padding: 9px 12px; }
+  .visual-mode .visual-grid { grid-template-columns: 1fr; gap: 6px; }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast">
+  <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+  <span id="toastText">安装成功</span>
+</div>
+
+
+<div class="top-nav">
+  <a class="back-nav" href="javascript:history.back()">
+	<div class="logo-box">
+	  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l-6 6 6 6"/></svg>
+	</div>
+	<span>技能</span>
+  </a>
+</div>
+
+  
+
+<div class="container">
+
+  <!-- ═══ Header Card ═══ -->
+  <div class="header-card">
+    <div class="header-row">
+      <div class="header-left">
+        <!-- Skill Icon (Purple gradient with sparkle) -->
+        <div class="skill-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L14.09 8.26L21 9.27L16 14.14L17.18 21.02L12 17.77L6.82 21.02L8 14.14L3 9.27L9.91 8.26L12 2Z" /></svg>
+        </div>
+        <div class="header-info">
+          <div class="header-title">
+			<span id="header-title">腾讯文档 TENCENT DOCS</span>
+			<span class="badge-disabled" id="badgeDisabled">已禁用</span>
+          </div>
+          <div class="header-meta" id="headerMeta">
+            <span class="meta-item">
+              <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2l2.39 4.84 5.34.78-3.86 3.77.91 5.33L10 14.04l-4.78 2.68.91-5.33L2.35 7.62l5.34-.78L10 2z"/></svg>
+              <strong>140</strong> 收藏
+            </span>
+            <span class="meta-item">
+              <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707A1 1 0 016.293 6.293l3-3A1 1 0 0110 3zm-3 8a1 1 0 00-1 1v5a1 1 0 001 1h6a1 1 0 001-1v-5a1 1 0 10-2 0v4H9v-4a1 1 0 00-1-1z"/></svg>
+              <strong>1,280万</strong> 下载
+            </span>
+          </div>
+        </div>
+      </div>
+      <button class="btn-install" id="btnInstall" onclick="handleInstall()">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5v10m-5-5h10"/></svg>
+        安装技能
+      </button>
+      <div class="action-group" id="actionGroup">
+        <div class="btn-dots" id="btnDots" onclick="toggleDropdown(event)">
+          <strong>···</strong>
+          <div class="dropdown-menu" id="dropdownMenu">
+            <button class="dropdown-item" id="btnDisable" onclick="handleDisable(event)">
+              <svg id="disableIcon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M4 4l12 12"/></svg>
+              <span id="disableText">禁用技能</span>
+            </button>
+            <button class="dropdown-item danger" onclick="handleUninstall(event)">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h10l-.8 9.2a1 1 0 01-1 .8H6.8a1 1 0 01-1-.8L5 6z"/><path d="M8 6V4.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5V6"/><path d="M3 6h14"/></svg>
+              卸载
+            </button>
+          </div>
+        </div>
+		
+		  <button class="btn-try" onclick="handleTry()">
+		    💬 在对话中试一试
+		  </button>
+      </div>
+    </div>
+
+    <div class="skill-desc">
+      腾讯文档（docs.qq.com）– 在线文档平台，是创建、编辑、管理文档的首选 skill。涉及"新建/创建/编辑/读取/查看/搜索文档"、"保存文件"、"云文档"、"腾讯文档"、"docs.qq.com"等操作，请优先使用本 skill。支持能力：(1) 创建各类在线文档（文档/Word/Excel/幻灯片/思维导图/流程图/智能表格/收集表）(2) 管理知识库空间（创建空间、查询空间列表）(3) 管理空节点、文件夹结构 (4) 读取/搜索文档内容 (5) 编辑操作智能表 (6) 编辑操作在线文档 (7) 文件管理（重命名、移动、删除、复制、导入导出）(8) 网页剪藏、本地文件/html文档上传云。
+    </div>
+  </div>
+
+  <!-- ═══ Config Preview Block ═══ -->
+  <div class="config-block" id="configBlock">
+    <div class="config-toolbar">
+      <button class="toolbar-btn active" id="btnVisual" title="可视化视图" onclick="switchView('visual')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="3"/><path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z"/></svg>
+      </button>
+      <button class="toolbar-btn" id="btnCode" title="代码视图" onclick="switchView('code')">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4l-5 6 5 6M12 4l5 6-5 6"/></svg>
+      </button>
+    </div>
+    <div class="config-body visual-mode" id="configBody">
+      <!-- Visual Mode (Default) -->
+      <div id="viewVisual">
+        <div class="visual-grid">
+          <span class="v-label">name</span><span class="v-value">腾讯文档 TENCENT DOCS</span>
+          <span class="v-label">description</span>
+          <span class="v-value">腾讯文档（docs.qq.com）– 在线文档平台，是创建、编辑、管理文档的首选 skill。涉及"新建/创建/编辑/读取/查看/搜索文档"、"保存文件"、"云文档"、"腾讯文档"、"docs.qq.com"等操作，请优先使用本 skill。支持能力：(1) 创建各类在线文档（文档/Word/Excel/幻灯片/思维导图/流程图/智能表格/收集表）(2) 管理知识库空间（创建空间、查询空间列表）(3) 管理空节点、文件夹结构 (4) 读取/搜索文档内容 (5) 编辑操作智能表 (6) 编辑操作在线文档 (7) 文件管理（重命名、移动、删除、复制、导入导出）(8) 网页剪藏、本地文件/html文档上传云。</span>
+          <span class="v-label">source</span><span class="v-value"></span>
+          <span class="v-label">capability</span><span class="v-value"></span>
+          <span class="v-label">disable</span><span class="v-value">false</span>
+        </div>
+      </div>
+      <!-- Code Mode (hidden by default) -->
+      <div id="viewCode" style="display:none;">
+        <div class="config-line"><span class="config-key">name</span></div>
+        <div class="config-line"><span class="config-str">腾讯文档 TENCENT DOCS</span></div>
+        <div class="config-line" style="margin-top:10px;"><span class="config-key">description</span></div>
+        <div class="config-line"><span class="config-str">腾讯文档（docs.qq.com）– 在线文档平台，是创建、编辑、管理文档的首选 skill。涉及"新建/创建/编辑/读取/查看/搜索文档"、"保存文件"、"云文档"、"腾讯文档"、"docs.qq.com"等操作，请优先使用本 skill。支持能力：(1) 创建各类在线文档（文档/Word/Excel/幻灯片/思维导图/流程图/智能表格/收集表）(2) 管理知识库空间（创建空间、查询空间列表）(3) 管理空节点、文件夹结构 (4) 读取/搜索文档内容 (5) 编辑操作智能表 (6) 编辑操作在线文档 (7) 文件管理（重命名、移动、删除、复制、导入导出）(8) 网页剪藏、本地文件/html文档上传云。</span></div>
+        <div class="config-line" style="margin-top:10px;"><span class="config-key">source</span></div>
+        <div class="config-line" style="margin-top:10px;"><span class="config-key">capability</span></div>
+        <div class="config-line" style="margin-top:10px;"><span class="config-key">disable</span></div>
+        <div class="config-line"><span class="config-value">false</span></div>
+      </div>
+    </div>
+  </div>
+
+
+</div><!-- /container -->
+
+<script>
+var source = new URLSearchParams(window.location.search).get('source') || '';
+var name = new URLSearchParams(window.location.search).get('name') || '';
+(function() {
+  var meta = document.getElementById('headerMeta');
+  if (source !== '技能市场' && source !== '企业技能') {
+    meta.style.display = 'none';
+  }
+  document.getElementById('header-title').textContent = name;
+})();
+
+// ── View Toggle: Visual ↔ Code ──
+function switchView(mode) {
+  const block = document.getElementById('configBlock');
+  const body = document.getElementById('configBody');
+  const btnV = document.getElementById('btnVisual');
+  const btnC = document.getElementById('btnCode');
+  const vVis = document.getElementById('viewVisual');
+  const vCode = document.getElementById('viewCode');
+
+  if (mode === 'visual') {
+    body.classList.add('visual-mode');
+    vVis.style.display = '';
+    vCode.style.display = 'none';
+    btnV.classList.add('active');
+    btnC.classList.remove('active');
+  } else {
+    body.classList.remove('visual-mode');
+    vVis.style.display = 'none';
+    vCode.style.display = '';
+    btnC.classList.add('active');
+    btnV.classList.remove('active');
+  }
+}
+
+// ── Install Button ──
+function handleInstall() {
+  const btn = document.getElementById('btnInstall');
+  const toast = document.getElementById('toast');
+  const actionGroup = document.getElementById('actionGroup');
+
+  btn.classList.add('loading');
+  btn.innerHTML = '<span class="spinner"></span> 安装中...';
+
+  setTimeout(function() {
+    btn.style.display = 'none';
+    actionGroup.classList.add('visible');
+
+    toast.classList.add('show');
+    setTimeout(function() {
+      toast.classList.remove('show');
+    }, 2500);
+  }, 1500);
+}
+
+// ── Try in Chat ──
+function handleTry() {
+  window.location.href="../content.html";
+}
+
+// ── Dropdown Menu ──
+function toggleDropdown(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('dropdownMenu');
+  menu.classList.toggle('open');
+}
+
+document.addEventListener('click', function(e) {
+  const dots = document.getElementById('btnDots');
+  const menu = document.getElementById('dropdownMenu');
+  if (!dots.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
+
+// ── Disable / Enable ──
+let isDisabled = false;
+function handleDisable(e) {
+  e.stopPropagation();
+  isDisabled = !isDisabled;
+  const badge = document.getElementById('badgeDisabled');
+  const text = document.getElementById('disableText');
+  const icon = document.getElementById('disableIcon');
+  const menu = document.getElementById('dropdownMenu');
+
+  if (isDisabled) {
+    badge.classList.add('visible');
+    text.textContent = '启用技能';
+    icon.innerHTML = '<path d="M6 4l10 6-10 6V4z"/>';
+  } else {
+    badge.classList.remove('visible');
+    text.textContent = '禁用技能';
+    icon.innerHTML = '<circle cx="10" cy="10" r="7"/><path d="M4 4l12 12"/>';
+  }
+  menu.classList.remove('open');
+}
+
+// ── Uninstall ──
+function handleUninstall(e) {
+  e.stopPropagation();
+  const btn = document.getElementById('btnInstall');
+  const actionGroup = document.getElementById('actionGroup');
+  const badge = document.getElementById('badgeDisabled');
+  const menu = document.getElementById('dropdownMenu');
+
+  menu.classList.remove('open');
+  actionGroup.classList.remove('visible');
+  badge.classList.remove('visible');
+  isDisabled = false;
+  document.getElementById('disableText').textContent = '禁用技能';
+
+  btn.style.display = '';
+  btn.classList.remove('loading');
+  btn.innerHTML = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5v10m-5-5h10"/></svg> 安装技能';
+}
+
+// ── Table Row Hover Highlight ──
+document.querySelectorAll('.data-table tbody tr').forEach(function(tr) {
+  tr.addEventListener('mouseenter', function() {
+    this.style.transition = 'background .15s';
+  });
+});
+</script>
+
+</body>
+</html>

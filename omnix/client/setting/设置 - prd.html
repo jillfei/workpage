@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账户管理模块功能说明</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px;
+            margin-left: 180px;
+        }
+
+        /* 头部 */
+        .header {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .doc-info {
+            display: flex;
+            gap: 24px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .doc-info-item {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .doc-info-item span {
+            color: #333;
+        }
+
+        /* 导航 */
+        .nav {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .nav h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .nav-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        /* 内容区 */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* 卡片 */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title svg {
+            width: 20px;
+            height: 20px;
+            color: #666;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 24px 0 12px;
+            padding-left: 12px;
+            border-left: 3px solid #333;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        /* 表格 */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        th {
+            background: #fafafa;
+            font-weight: 600;
+            color: #666;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        /* 代码块 */
+        .code-block {
+            background: #f8f8f8;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* 标签 */
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .tag-green {
+            background: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+
+        .tag-red {
+            background: #fff2f0;
+            color: #ff4d4f;
+            border: 1px solid #ffccc7;
+        }
+
+        .tag-blue {
+            background: #e6f7ff;
+            color: #1890ff;
+            border: 1px solid #91d5ff;
+        }
+
+        .tag-orange {
+            background: #fff7e6;
+            color: #fa8c16;
+            border: 1px solid #ffd591;
+        }
+
+        /* 流程图 */
+        .flow-chart {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 24px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flow-step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #333;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .flow-step-text {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            font-size: 20px;
+            color: #ccc;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .sidebar-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e8e8e8;
+            position: sticky;
+            top: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .sidebar-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+            text-decoration: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-item:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .sidebar-item.active {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .sidebar-item svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* 校验规则卡片 */
+        .validation-card {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+
+        .validation-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .validation-title svg {
+            width: 14px;
+            height: 14px;
+            color: #fa8c16;
+        }
+
+        .validation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .validation-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .validation-item svg {
+            width: 14px;
+            height: 14px;
+            color: #52c41a;
+        }
+
+        /* 错误提示示例 */
+        .error-example {
+            background: #fff2f0;
+            border: 1px solid #ffccc7;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #ff4d4f;
+            margin: 8px 0;
+        }
+
+        .success-example {
+            background: #f6ffed;
+            border: 1px solid #b7eb8f;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #52c41a;
+            margin: 8px 0;
+        }
+
+        /* 左侧导航 */
+        .left-nav {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 180px;
+            height: 100vh;
+            background: #fff;
+            border-right: 1px solid #e8e8e8;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .left-nav-title {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+            color: #333;
+        }
+
+        .left-nav-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .left-nav-item:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .left-nav-item.active {
+            background: #f0f0f0;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .container {
+            margin-left: 180px;
+        }
+
+        /* Tab内容 */
+        .tab-content {
+            display: none;
+            width: 100%;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 左侧导航 -->
+    <aside class="left-nav">
+        <div class="left-nav-title">OmniX功能说明</div>
+        <div class="left-nav-item active" data-tab="tab-account">账户管理</div>
+        <div class="left-nav-item" data-tab="tab-model">模型管理</div>
+        <div class="left-nav-item" data-tab="tab-plugin">插件</div>
+        <div class="left-nav-item" data-tab="tab-token">Token用量</div>
+    </aside>
+
+    <div class="container">
+        <div class="content">
+            <!-- 账户管理 Tab -->
+            <div class="tab-content active" id="tab-account">
+            <div class="main-content">
+                <!-- 功能概述 -->
+                <section class="card" id="overview">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 16v-4"/>
+                            <path d="M12 8h.01"/>
+                        </svg>
+                        功能概述
+                    </h2>
+                    <p style="margin-bottom: 16px; color: #666;">账户管理模块用于管理用户的个人信息与偏好设置，包含以下核心功能：</p>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>功能</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>基本信息管理</strong></td>
+                                    <td>查看和修改用户头像、用户名</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>手机号管理</strong></td>
+                                    <td>更换绑定手机号（两步验证）</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>密码管理</strong></td>
+                                    <td>修改登录密码（格式校验）</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>系统偏好设置</strong></td>
+                                    <td>发送消息快捷键、技能自动更新、存储路径</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>账户操作</strong></td>
+                                    <td>退出登录</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 修改信息 -->
+                <section class="card" id="edit-info">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        修改信息
+                    </h2>
+
+                    <h3 class="section-title">触发方式</h3>
+                    <p style="color: #666;">点击用户信息卡片右侧的"修改信息"按钮</p>
+
+                    <h3 class="section-title">弹窗内容</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>元素</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>头像展示</td>
+                                    <td>圆形头像，点击可选择新图片</td>
+                                </tr>
+                                <tr>
+                                    <td>更换头像按钮</td>
+                                    <td>点击打开文件选择器</td>
+                                </tr>
+                                <tr>
+                                    <td>用户名输入框</td>
+                                    <td>可编辑，1-20个字符</td>
+                                </tr>
+                                <tr>
+                                    <td>取消/保存按钮</td>
+                                    <td>取消关闭弹窗，保存更新信息</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="section-title">交互逻辑</h3>
+                    <div class="validation-card">
+                        <div class="validation-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            交互流程
+                        </div>
+                        <div class="validation-list">
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                点击头像或"更换头像"按钮 → 打开文件选择器
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                选择图片后 → 弹窗内头像实时预览
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                点击"保存" → 主页面头像同步更新，关闭弹窗
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">校验规则</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>校验项</th>
+                                    <th>规则</th>
+                                    <th>错误提示</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>用户名</td>
+                                    <td>必填，1-20个字符</td>
+                                    <td><span class="error-example">请输入用户名</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 更换手机号 -->
+                <section class="card" id="change-phone">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                            <line x1="12" y1="18" x2="12.01" y2="18"/>
+                        </svg>
+                        更换手机号
+                    </h2>
+
+                    <h3 class="section-title">两步验证流程</h3>
+                    <div class="flow-chart">
+                        <div class="flow-step">
+                            <div class="flow-step-number">1</div>
+                            <div class="flow-step-text">验证当前手机</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <div class="flow-step-number">2</div>
+                            <div class="flow-step-text">绑定新手机</div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">第一步：验证当前手机</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>元素</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>当前手机号</td>
+                                    <td>部分隐藏显示（如：131****6909）</td>
+                                </tr>
+                                <tr>
+                                    <td>验证码输入框</td>
+                                    <td>6位数字输入</td>
+                                </tr>
+                                <tr>
+                                    <td>发送验证码按钮</td>
+                                    <td>点击发送验证码，60秒倒计时</td>
+                                </tr>
+                                <tr>
+                                    <td>下一步按钮</td>
+                                    <td>输入6位验证码后启用</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="validation-card">
+                        <div class="validation-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            交互流程
+                        </div>
+                        <div class="validation-list">
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                点击"发送验证码" → 60秒倒计时，按钮显示"XXs"
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                输入6位验证码 → "下一步"按钮启用
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                点击"下一步" → 验证验证码，通过进入第二步
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">第二步：绑定新手机</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>元素</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>国家代码</td>
+                                    <td>固定显示"+ 86"</td>
+                                </tr>
+                                <tr>
+                                    <td>新手机号输入框</td>
+                                    <td>11位手机号输入，格式校验</td>
+                                </tr>
+                                <tr>
+                                    <td>验证码输入框</td>
+                                    <td>手机号校验通过后才可点击发送</td>
+                                </tr>
+                                <tr>
+                                    <td>上一步按钮</td>
+                                    <td>返回第一步，保留验证状态</td>
+                                </tr>
+                                <tr>
+                                    <td>保存按钮</td>
+                                    <td>所有验证通过后启用</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="validation-card">
+                        <div class="validation-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            交互流程
+                        </div>
+                        <div class="validation-list">
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                输入新手机号 → 实时校验格式
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                手机号格式正确 → 启用验证码输入框和发送按钮
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                输入6位验证码 → "保存"按钮启用
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                点击"保存" → 验证验证码，通过保存成功
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">输入框状态</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>状态</th>
+                                    <th>样式</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>默认</td>
+                                    <td>灰色边框</td>
+                                    <td>未输入或未校验</td>
+                                </tr>
+                                <tr>
+                                    <td>错误</td>
+                                    <td>红色边框</td>
+                                    <td>格式校验失败</td>
+                                </tr>
+                                <tr>
+                                    <td>成功</td>
+                                    <td>绿色边框</td>
+                                    <td>格式校验通过</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="section-title">校验规则</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>校验项</th>
+                                    <th>规则</th>
+                                    <th>错误提示</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>验证码（第一步）</td>
+                                    <td>必填，6位数字</td>
+                                    <td><span class="error-example">请输入验证码</span></td>
+                                </tr>
+                                <tr>
+                                    <td>验证码（第一步）</td>
+                                    <td>必须正确</td>
+                                    <td><span class="error-example">验证码错误，您还有X次机会</span></td>
+                                </tr>
+                                <tr>
+                                    <td>验证码（第一步）</td>
+                                    <td>错误10次锁定</td>
+                                    <td><span class="error-example">验证码错误次数过多，请30分钟后再试</span></td>
+                                </tr>
+                                <tr>
+                                    <td>新手机号</td>
+                                    <td>必填</td>
+                                    <td><span class="error-example">请输入新手机号</span></td>
+                                </tr>
+                                <tr>
+                                    <td>新手机号格式</td>
+                                    <td>11位有效手机号（1开头）</td>
+                                    <td><span class="error-example">请输入正确的11位手机号</span></td>
+                                </tr>
+                                <tr>
+                                    <td>验证码（第二步）</td>
+                                    <td>必填，6位数字</td>
+                                    <td><span class="error-example">请输入验证码</span></td>
+                                </tr>
+                                <tr>
+                                    <td>验证码（第二步）</td>
+                                    <td>必须正确</td>
+                                    <td><span class="error-example">验证码错误，您还有X次机会</span></td>
+                                </tr>
+                                <tr>
+                                    <td>验证码（第二步）</td>
+                                    <td>错误10次锁定</td>
+                                    <td><span class="error-example">验证码错误次数过多，请30分钟后再试</span></td>
+                                </tr>
+                                <tr>
+                                    <td>发送频率</td>
+                                    <td>60秒内只能发送一次</td>
+                                    <td><span class="error-example">验证码发送过于频繁，请X分钟后再试</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 修改密码 -->
+                <section class="card" id="change-password">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                        </svg>
+                        修改密码
+                    </h2>
+
+                    <h3 class="section-title">弹窗内容</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>元素</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>原密码输入框</td>
+                                    <td>密码类型，可切换显示/隐藏</td>
+                                </tr>
+                                <tr>
+                                    <td>新密码输入框</td>
+                                    <td>密码类型，8-20位字符，包含大写字母、小写字母、数字</td>
+                                </tr>
+                                <tr>
+                                    <td>确认新密码输入框</td>
+                                    <td>校验是否与新密码一致</td>
+                                </tr>
+                                <tr>
+                                    <td>取消/保存按钮</td>
+                                    <td>取消关闭弹窗，保存修改密码</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="section-title">交互逻辑</h3>
+                    <div class="validation-card">
+                        <div class="validation-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            交互流程
+                        </div>
+                        <div class="validation-list">
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                输入原密码 → 实时校验是否非空
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                输入新密码 → 实时校验格式
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                输入确认密码 → 实时校验是否与新密码一致
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                点击"保存" → 验证原密码，通过则修改成功
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">校验规则</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>校验项</th>
+                                    <th>规则</th>
+                                    <th>错误提示</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>原密码</td>
+                                    <td>必填</td>
+                                    <td><span class="error-example">请输入原密码</span></td>
+                                </tr>
+                                <tr>
+                                    <td>原密码</td>
+                                    <td>必须正确（模拟：password123）</td>
+                                    <td><span class="error-example">原密码错误</span></td>
+                                </tr>
+                                <tr>
+                                    <td>新密码长度</td>
+                                    <td>8-20位字符</td>
+                                    <td><span class="error-example">密码格式不满足要求</span></td>
+                                </tr>
+                                <tr>
+                                    <td>新密码大写</td>
+                                    <td>必须包含大写字母</td>
+                                    <td><span class="error-example">密码格式不满足要求</span></td>
+                                </tr>
+                                <tr>
+                                    <td>新密码小写</td>
+                                    <td>必须包含小写字母</td>
+                                    <td><span class="error-example">密码格式不满足要求</span></td>
+                                </tr>
+                                <tr>
+                                    <td>新密码数字</td>
+                                    <td>必须包含数字</td>
+                                    <td><span class="error-example">密码格式不满足要求</span></td>
+                                </tr>
+                                <tr>
+                                    <td>确认密码</td>
+                                    <td>必须与新密码一致</td>
+                                    <td><span class="error-example">两次密码不相同</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 系统偏好设置 -->
+                <section class="card" id="settings">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                        系统偏好设置
+                    </h2>
+
+                    <h3 class="section-title">发送消息快捷键</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>选项值</th>
+                                    <th>显示文本</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>enter</code></td>
+                                    <td>Enter</td>
+                                </tr>
+                                <tr>
+                                    <td><code>ctrl+enter</code></td>
+                                    <td>Ctrl + Enter</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p style="color: #666; font-size: 13px; margin-top: 8px;">选择后立即生效，无需保存</p>
+
+                    <h3 class="section-title">技能自动更新</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>状态</th>
+                                    <th>样式</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>开启</td>
+                                    <td>绿色，滑块在右</td>
+                                    <td>自动更新已安装的技能</td>
+                                </tr>
+                                <tr>
+                                    <td>关闭</td>
+                                    <td>灰色，滑块在左</td>
+                                    <td>不自动更新</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="section-title">默认工作空间存储路径</h3>
+                    <p style="color: #666;">显示当前存储路径，点击"更改"可修改</p>
+                    <div class="code-block">
+                        <pre>/Users/J1hyo/Documents/OmniX</pre>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- 侧边栏 -->
+            <aside class="sidebar">
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">模拟数据</h3>
+                    <div class="validation-card">
+                        <div class="validation-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                            测试账号
+                        </div>
+                        <div class="validation-list">
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                验证码：<code>123456</code>
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                原密码：<code>password123</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">相关文件</h3>
+                    <div class="sidebar-list">
+                        <a href="account-management.html" class="sidebar-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            原型演示页面
+                        </a>
+                        <a href="账户管理模块PRD.md" class="sidebar-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            PRD文档
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">功能清单</h3>
+                    <div class="sidebar-list">
+                        <a href="#edit-info" class="sidebar-item active">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            修改信息
+                        </a>
+                        <a href="#change-phone" class="sidebar-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                                <line x1="12" y1="18" x2="12.01" y2="18"/>
+                            </svg>
+                            更换手机号
+                        </a>
+                        <a href="#change-password" class="sidebar-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                            </svg>
+                            修改密码
+                        </a>
+                        <a href="#settings" class="sidebar-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                            系统偏好设置
+                        </a>
+                    </div>
+                </div>
+            </aside>
+            </div>
+            <!-- 账户管理 Tab 结束 -->
+
+            <!-- 模型管理 Tab -->
+            <div class="tab-content" id="tab-model">
+                <div class="main-content">
+                    <!-- 功能概述 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 16v-4"/>
+                                <path d="M12 8h.01"/>
+                            </svg>
+                            功能概述
+                        </h2>
+                        <p style="margin-bottom: 16px; color: #666;">模型管理模块用于配置和管理AI模型供应商及API密钥，包含以下核心功能：</p>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>功能</th>
+                                        <th>说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>供应商管理</strong></td>
+                                        <td>添加、删除AI模型供应商</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>模型配置</strong></td>
+                                        <td>配置模型API密钥、上下文长度等参数</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>默认模型设置</strong></td>
+                                        <td>选择和切换默认使用的AI模型</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>自定义供应商</strong></td>
+                                        <td>支持添加自定义OpenAI兼容的供应商</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- 支持的供应商 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                <line x1="8" y1="21" x2="16" y2="21"/>
+                                <line x1="12" y1="17" x2="12" y2="21"/>
+                            </svg>
+                            支持的供应商
+                        </h2>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>供应商</th>
+                                        <th>说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>OpenAI</strong></td>
+                                        <td>官方API，支持GPT系列模型</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>百炼</strong></td>
+                                        <td>阿里云百炼平台，支持通义千问系列</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>深度求索</strong></td>
+                                        <td>DeepSeek API，支持V4等模型</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>MiniMax</strong></td>
+                                        <td>MiniMax API</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>月之暗面</strong></td>
+                                        <td>Moonshot API</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>智谱</strong></td>
+                                        <td>智谱AI API，支持GLM系列模型</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>自定义供应商</strong></td>
+                                        <td>支持任何OpenAI兼容的API</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- 添加模型配置 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14"/>
+                            </svg>
+                            添加模型配置
+                        </h2>
+                        <p style="margin-bottom: 16px; color: #666;">添加新的AI模型供应商配置：</p>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>字段</th>
+                                        <th>说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>供应商</strong></td>
+                                        <td>选择要添加的供应商类型</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>API Key</strong></td>
+                                        <td>供应商提供的API密钥（自定义供应商为非必填）</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>模型名称</strong></td>
+                                        <td>自定义供应商时填写（仅自定义供应商）</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>API Base</strong></td>
+                                        <td>API端点地址（仅自定义供应商）</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>上下文长度</strong></td>
+                                        <td>模型支持的最大上下文长度（仅自定义供应商）</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>输出上限</strong></td>
+                                        <td>模型单次最大输出Token数（仅自定义供应商）</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3 class="section-title">校验规则</h3>
+                        <div class="validation-card">
+                            <div class="validation-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                必填项说明
+                            </div>
+                            <div class="validation-list">
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    <strong>自定义供应商：</strong>模型名称、API Base 为必填
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    <strong>预设供应商：</strong>API Key 为必填
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    必填项全部填写后，"添加模型"按钮才会启用
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="validation-card" style="margin-top: 12px;">
+                            <div class="validation-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                                连通性校验
+                            </div>
+                            <div class="validation-list">
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    点击"添加模型"后，系统会自动校验 API Key 的连通性
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    校验通过 → Toast 提示"添加模型成功"，模型添加到列表
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    校验失败 → Toast 提示"添加模型失败"
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 已添加模型 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            已添加模型管理
+                        </h2>
+                        <p style="margin-bottom: 16px; color: #666;">管理已配置的供应商和模型：</p>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>操作</th>
+                                        <th>说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>展开/折叠</strong></td>
+                                        <td>点击供应商卡片头部展开或折叠模型列表</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>选择模型</strong></td>
+                                        <td>点击单选按钮选择要使用的模型</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>切换默认</strong></td>
+                                        <td>选中非默认模型后，点击"切换为默认"按钮设置为默认模型</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>编辑模型</strong></td>
+                                        <td>点击编辑按钮修改模型配置（仅自定义供应商）</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>删除模型</strong></td>
+                                        <td>点击删除按钮删除模型（需确认删除确认弹窗）</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>删除供应商</strong></td>
+                                        <td>点击供应商卡片的删除按钮删除整个供应商（需确认删除确认弹窗）</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- 默认模型 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            默认模型设置
+                        </h2>
+                        <p style="margin-bottom: 16px; color: #666;">设置系统默认使用的AI模型：</p>
+                        <div class="validation-card">
+                            <div class="validation-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                交互流程
+                            </div>
+                            <div class="validation-list">
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    选择任意供应商下的模型
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    点击"切换为默认"按钮
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    该模型将被标记为"默认"
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <!-- 模型管理 Tab 结束 -->
+
+            <!-- 插件 Tab -->
+            <div class="tab-content" id="tab-plugin">
+                <div class="main-content">
+                    <!-- 功能概述 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 16v-4"/>
+                                <path d="M12 8h.01"/>
+                            </svg>
+                            功能概述
+                        </h2>
+                        <p style="margin-bottom: 16px; color: #666;">插件模块用于扩展AI智能体的能力，支持安装、卸载和管理各类功能插件：</p>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>功能</th>
+                                        <th>说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>插件市场</strong></td>
+                                        <td>浏览和搜索可用的功能插件</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>插件分类</strong></td>
+                                        <td>按类别查看插件（桌面控制、浏览器自动化等）</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>安装插件</strong></td>
+                                        <td>一键安装所需的功能插件</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>卸载插件</strong></td>
+                                        <td>移除不需要的功能插件</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- 插件列表 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="3" y1="9" x2="21" y2="9"/>
+                                <line x1="9" y1="21" x2="9" y2="9"/>
+                            </svg>
+                            可用插件
+                        </h2>
+
+                        <h3 class="section-title">浏览器自动化</h3>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>插件名称</th>
+                                        <th>说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Google Chrome 浏览器插件</strong></td>
+                                        <td>浏览器自动化控制，需要注册浏览器扩展插件</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- 搜索功能 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                            搜索插件
+                        </h2>
+                        <p style="margin-bottom: 16px; color: #666;">在搜索框输入关键词可快速筛选插件：</p>
+                        <div class="validation-card">
+                            <div class="validation-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                搜索规则
+                            </div>
+                            <div class="validation-list">
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    支持按插件名称搜索
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    搜索不区分大小写
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 安装与卸载 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            安装与卸载
+                        </h2>
+                        <div class="validation-card">
+                            <div class="validation-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                交互流程
+                            </div>
+                            <div class="validation-list">
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    点击"+"按钮 → 直接安装插件（显示加载动画）
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    安装完成 → 按钮变为删除图标，显示"已安装"标签
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    点击删除按钮 → 直接卸载插件（显示加载动画）
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    卸载完成 → 按钮恢复为"+"图标，隐藏"已安装"标签
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="validation-card" style="margin-top: 12px;">
+                            <div class="validation-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                                Toast 提示
+                            </div>
+                            <div class="validation-list">
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    安装成功 → 提示"插件名"安装成功（绿色）
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    卸载成功 → 提示"插件名"已卸载（绿色）
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 按钮状态 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="3" y1="9" x2="21" y2="9"/>
+                            </svg>
+                            按钮状态说明
+                        </h2>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>状态</th>
+                                        <th>样式</th>
+                                        <th>说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>未安装</td>
+                                        <td>白色背景 + "+"图标</td>
+                                        <td>点击安装插件</td>
+                                    </tr>
+                                    <tr>
+                                        <td>安装中</td>
+                                        <td>显示旋转加载动画</td>
+                                        <td>正在处理安装</td>
+                                    </tr>
+                                    <tr>
+                                        <td>已安装</td>
+                                        <td>浅蓝背景 + 删除图标</td>
+                                        <td>点击卸载插件</td>
+                                    </tr>
+                                    <tr>
+                                        <td>卸载中</td>
+                                        <td>显示旋转加载动画</td>
+                                        <td>正在处理卸载</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <!-- 插件 Tab 结束 -->
+
+            <!-- Token用量 Tab -->
+            <div class="tab-content" id="tab-token">
+                <div class="main-content">
+                    <!-- 功能概述 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 16v-4"/>
+                                <path d="M12 8h.01"/>
+                            </svg>
+                            功能概述
+                        </h2>
+                        <p style="margin-bottom: 16px; color: #666;">Token用量模块用于监控和分析AI模型的Token消耗情况，帮助用户了解使用趋势：</p>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>功能</th>
+                                        <th>说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>用量统计卡片</strong></td>
+                                        <td>显示Token总量、活跃天数、日均Token、单日峰值</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Token统计表</strong></td>
+                                        <td>折线图展示输入/输出Token趋势</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>热力图</strong></td>
+                                        <td>近一年每日Token使用量可视化</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>模型消耗分析</strong></td>
+                                        <td>按模型维度查看Token消耗情况</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- 统计卡片 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="3" y1="9" x2="21" y2="9"/>
+                                <line x1="9" y1="21" x2="9" y2="9"/>
+                            </svg>
+                            统计卡片
+                        </h2>
+                        <p style="margin-bottom: 16px; color: #666;">页面顶部显示四个核心统计指标：</p>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>指标</th>
+                                        <th>说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Token 总量</strong></td>
+                                        <td>累计使用的Token总数</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>活跃天数</strong></td>
+                                        <td>有Token消耗的天数</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>日均 Token</strong></td>
+                                        <td>平均每天消耗的Token数</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>单日峰值</strong></td>
+                                        <td>单日最高Token消耗量</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Token统计表 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                            </svg>
+                            Token 统计表
+                        </h2>
+                        <p style="margin-bottom: 16px; color: #666;">折线图展示Token使用趋势，支持多种时间范围筛选：</p>
+                        <div class="validation-card">
+                            <div class="validation-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                时间范围筛选
+                            </div>
+                            <div class="validation-list">
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    快捷筛选：7天、15天、30天
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    自定义日期范围：选择起止日期
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="validation-card" style="margin-top: 12px;">
+                            <div class="validation-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                图表说明
+                            </div>
+                            <div class="validation-list">
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    紫色线条：输入Token数量
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    绿色线条：输出Token数量
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    鼠标悬停显示具体数值和日期
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 热力图 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="3" y1="9" x2="21" y2="9"/>
+                                <line x1="9" y1="21" x2="9" y2="9"/>
+                            </svg>
+                            近一年热力图
+                        </h2>
+                        <p style="margin-bottom: 16px; color: #666;">以热力图形式展示近一年的Token使用情况：</p>
+                        <div class="validation-card">
+                            <div class="validation-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                热力图说明
+                            </div>
+                            <div class="validation-list">
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    颜色越深表示当日Token消耗越多
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    灰色表示当日无Token消耗
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    鼠标悬停显示具体日期和Token数量
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 模型Token消耗 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                <line x1="8" y1="21" x2="16" y2="21"/>
+                                <line x1="12" y1="17" x2="12" y2="21"/>
+                            </svg>
+                            模型 Token 消耗
+                        </h2>
+                        <p style="margin-bottom: 16px; color: #666;">按模型维度查看Token消耗情况：</p>
+                        <div class="validation-card">
+                            <div class="validation-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                交互流程
+                            </div>
+                            <div class="validation-list">
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    通过下拉框选择不同模型
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    切换模型后图表自动更新
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    显示该模型的输入/输出Token趋势
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 刷新功能 -->
+                    <section class="card">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                                <path d="M21 3v5h-5"/>
+                                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                                <path d="M8 16H3v5"/>
+                            </svg>
+                            刷新功能
+                        </h2>
+                        <p style="margin-bottom: 16px; color: #666;">点击刷新按钮可获取最新的Token使用数据：</p>
+                        <div class="validation-card">
+                            <div class="validation-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                刷新说明
+                            </div>
+                            <div class="validation-list">
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    点击刷新按钮，图标显示旋转动画
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    数据更新后，统计卡片和图表同步刷新
+                                </div>
+                                <div class="validation-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    页面显示"统计生成"时间戳
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <!-- Token用量 Tab 结束 -->
+        </div>
+    </div>
+
+    <script>
+        // 左侧导航Tab切换
+        document.querySelectorAll('.left-nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有active状态
+                document.querySelectorAll('.left-nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                
+                // 添加当前active状态
+                this.classList.add('active');
+                const tabId = this.dataset.tab;
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 侧边栏高亮
+        const sections = document.querySelectorAll('section[id]');
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            sidebarItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === `#${current}`) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

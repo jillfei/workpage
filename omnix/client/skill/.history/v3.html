@@ -35,11 +35,11 @@
     .add-wrap { position: relative; }
     .btn-add {
       display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 10px;
+      padding: 8px 16px;
       background: #fff;
       border: 1px solid #e4e4e7;
       border-radius: 8px;
-      font-size: 13px; font-weight: 500;
+      font-size: 14px; font-weight: 500;
       cursor: pointer;
       transition: background .15s;
     }
@@ -107,18 +107,6 @@
     }
     .search-box input:focus { border-color: #d4d4d8; }
 
-    .status-filter {
-      appearance: none; -webkit-appearance: none;
-      padding: 8px 34px 8px 14px;
-      border: 1px solid #e4e4e7;
-      border-radius: 8px;
-      font-size: 14px; color: #3f3f46;
-      background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 12px center;
-      cursor: pointer; outline: none;
-      transition: border-color .15s;
-    }
-    .status-filter:focus { border-color: #d4d4d8; }
-
     .view-toggle { display: flex; border: 1px solid #e4e4e7; border-radius: 8px; overflow: hidden; }
     .view-btn {
       display: inline-flex; align-items: center; gap: 6px;
@@ -160,11 +148,7 @@
       border-radius: 16px;
       padding: 20px;
       transition: box-shadow .15s;
-      cursor: pointer;
     }
-    /* 卡片内的操作按钮 / 三点菜单不应继承整卡指针样式 */
-    .card .btn-install,
-    .card .card-menu { cursor: default; }
     .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); }
     .grid-list .card { align-items: center; }
 
@@ -196,23 +180,7 @@
     .grid-list .card-foot { margin-top: 0; flex-shrink: 0; }
 
     .stats { display: flex; align-items: center; gap: 16px; font-size: 14px; color: #a1a1aa; }
-    .push-right { margin-left: auto; }
     .stat { display: inline-flex; align-items: center; gap: 4px; }
-
-    /* 已安装 Tab 下的来源标签 */
-    .src-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px; border-radius: 999px;
-      font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap;
-      background: #f4f4f5; color: #52525b;
-    }
-    .src-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #a1a1aa; }
-    .src-badge[data-src="技能市场"] { background: #eff6ff; color: #2563eb; }
-    .src-badge[data-src="技能市场"] .dot { background: #2563eb; }
-    .src-badge[data-src="企业技能"] { background: #faf5ff; color: #7c3aed; }
-    .src-badge[data-src="企业技能"] .dot { background: #7c3aed; }
-    .src-badge[data-src="自定义"] { background: #ecfdf5; color: #059669; }
-    .src-badge[data-src="自定义"] .dot { background: #059669; }
 
     .btn-install {
       display: inline-flex; align-items: center; gap: 6px;
@@ -265,61 +233,6 @@
     }
     .spinner { animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* 已安装技能：状态按钮 + 右上角三点菜单 */
-    .card { position: relative; }
-    .card-menu {
-      position: absolute; top: 14px; right: 14px; z-index: 6;margin: -12px -10px 0px 0px;
-    }
-    .dots-btn {
-      width: 28px; height: 28px;
-      display: inline-flex; align-items: center; justify-content: center;
-      border: none; background: transparent; border-radius: 8px;
-      color: #a1a1aa; cursor: pointer;
-	  font-weight: bold;
-    }
-    .dots-btn:hover { background: #f4f4f5; color: #52525b; }
-    .menu-dropdown {
-      position: absolute; top: 34px; right: 0;
-      width: 124px;
-      background: #fff; border: 1px solid #ececef;
-      border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.12);
-      padding: 6px; z-index: 10;
-    }
-    .menu-dropdown.hidden { display: none; }
-    .menu-item {
-      display: block; width: 100%; text-align: left;
-      padding: 8px 10px; border: none; background: transparent;
-      border-radius: 6px; font-size: 14px; color: #3f3f46; cursor: pointer;
-    }
-    .menu-item:hover { background: #f4f4f5; }
-    .menu-item.danger { color: #ef4444; }
-    .menu-item.danger:hover { background: #fef2f2; }
-
-    .btn-installed {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 16px;
-      border: 1px solid #18181b; background: #e5e5e5;
-      border-radius: 6px;
-      font-size: 14px; font-weight: 500; color: #18181b;
-      cursor: pointer; white-space: nowrap;
-      opacity: 1; pointer-events: auto;
-      transition: background .15s ease;
-    }
-    .btn-installed svg { margin: 0px 3px -3px 0px; }
-    .btn-installed .bi-try { display: none; }
-    .card:hover .btn-installed .bi-installed { display: none; }
-    .card:hover .btn-installed .bi-try { display: inline-flex; }
-    .card:hover .btn-installed .bi-try svg { margin: 3px 3px 0px 0px; }
-    .card.disabled .btn-installed {
-      color: #a1a1aa; border-color: #e4e4e7; background: #f4f4f5; pointer-events: none;
-    }
-    .card.disabled:hover .btn-installed .bi-installed { display: inline-flex !important; }
-    .card.disabled:hover .btn-installed .bi-try { display: none !important; }
-
-    .card.disabled .icon-box,
-    .card.disabled .card-body,
-    .card.disabled .card-foot { opacity: .55; filter: grayscale(1); }
 
     /* 顶部成功提示 Toast */
     #toast {
@@ -430,13 +343,6 @@
       border-color: #9ca3af;
     }
     .btn.gray:hover { background: #8b95a1; }
-    .btn.gray:disabled { opacity: .45; cursor: not-allowed; }
-    .btn.primary {
-      background: #2563eb; color: #fff;
-      border-color: #2563eb;
-      box-shadow: 0 2px 8px rgba(37,99,235,.25);
-    }
-    .btn.primary:hover { background: #1d4ed8; }
     .btn.dark {
       background: #18181b; color: #fff;
       border-color: #18181b;
@@ -481,14 +387,12 @@
       padding: 6px 0; list-style: none;
     }
     .file-item {
-      display: flex; justify-content: flex-start; align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
       padding: 8px 16px; font-size: 13px; color: #3f3f46;
     }
     .file-item::before {
       content: "•"; color: #a1a1aa; margin-right: 8px;
     }
-    .file-item > span:first-child { text-align: left; }
-    .file-item > span:last-child { margin-left: auto; }
   </style>
 </head>
 <body>
@@ -525,15 +429,15 @@
     <div class="toolbar-top">
       <nav class="tabs">
         <button class="tab active" data-tab="market">技能市场</button>
-        <button class="tab" data-tab="enterprise">企业技能</button>
         <button class="tab" data-tab="builtin">系统内置</button>
+        <button class="tab" data-tab="enterprise">企业技能</button>
         <button class="tab" data-tab="installed">已安装</button>
       </nav>
 
       <div class="toolbar-right">
         <div class="search-box">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          <input type="text" placeholder="搜索技能">
+          <input type="text" placeholder="搜索插件">
         </div>
         <div class="view-toggle">
           <button class="view-btn" data-view="list">
@@ -545,22 +449,11 @@
             卡片
           </button>
         </div>
-        <select class="status-filter" id="status-filter">
-          <option value="all">全部</option>
-          <option value="installed">已安装</option>
-          <option value="uninstalled">未安装</option>
-        </select>
-        <select class="status-filter" id="source-filter" style="display:none;">
-          <option value="all">来源</option>
-          <option value="技能市场">技能市场</option>
-          <option value="企业技能">企业技能</option>
-          <option value="自定义">自定义</option>
-        </select>
       </div>
     </div>
 
     <div class="cats">
-      <button class="cat active" data-cat="all">全部</button>
+      <button class="cat active" data-cat="ai">AI智能</button>
       <button class="cat" data-cat="dev">开发工具</button>
       <button class="cat" data-cat="efficiency">效率提升</button>
       <button class="cat" data-cat="data">数据分析</button>
@@ -623,7 +516,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn cancel" id="url-cancel">取消</button>
-        <button class="btn gray" id="url-preview" disabled>预览安装</button>
+        <button class="btn gray" id="url-preview">预览安装</button>
       </div>
     </div>
   </div>
@@ -716,151 +609,39 @@
         stars: 140, downloads: "1,280万", featured: false }
     ];
 
-    SKILLS.forEach((s, i) => {
-      s.installed = i % 3 !== 0;
-      s.enabled = i % 4 !== 0;
-    });
-
-    // 为每个技能标注来源（用于「已安装」标签页展示）
-    SKILLS.forEach(s => {
-      if ([1, 2, 3, 4, 6, 7, 8].includes(s.id)) s.source = "技能市场";
-      else if ([5, 11, 13, 10].includes(s.id)) s.source = "企业技能";
-      else if ([12, 14].includes(s.id)) s.source = "系统内置";
-      else s.source = "自定义";
-    });
-
-    const byId = ids => ids.map(id => {
-      const o = SKILLS.find(s => s.id === id);
-      return o ? Object.assign({}, o) : null;
-    }).filter(Boolean);
-
-    const TAB_DATA = {
-      market: byId([1, 2, 3, 4, 6, 7, 8]),
-      enterprise: byId([5, 11, 13, 10]),
-      builtin: byId([12, 14]),
-      installed: byId([1, 9, 10])
-    };
-    // 系统内置 / 已安装 Tab 下的技能均为已安装且默认启用状态
-    TAB_DATA.builtin.forEach(s => { s.installed = true; s.enabled = true; });
-    TAB_DATA.installed.forEach(s => { s.installed = true; s.enabled = true; });
-
     const STAR_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>';
     const DL_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>';
     const TRY_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>';
     const PLUS_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>';
-    const CHECK_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
-    const DOTS_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>';
-
-    // 预制空链接 + 参数：技能卡片点击后于当前窗口打开的详情页地址
-    function buildSkillUrl(s) {
-      const params = new URLSearchParams({ id: s.id, name: s.name, source: s.source, from: currentTab });
-      return "detail.html?" + params.toString();
-    }
 
     let currentView = "card";
-    let currentTab = "market";
-    let currentFilter = "all";
-    let currentSource = "all";
-
-    const FILTER_OPTIONS = {
-      market: [
-        { value: "all", label: "全部" },
-        { value: "installed", label: "已安装" },
-        { value: "uninstalled", label: "未安装" }
-      ],
-      enterprise: [
-        { value: "all", label: "全部" },
-        { value: "installed", label: "已安装" },
-        { value: "uninstalled", label: "未安装" }
-      ],
-      builtin: [
-        { value: "all", label: "状态" },
-        { value: "enabled", label: "已启用" },
-        { value: "disabled", label: "已禁用" }
-      ],
-      installed: [
-        { value: "all", label: "状态" },
-        { value: "enabled", label: "已启用" },
-        { value: "disabled", label: "已禁用" }
-      ]
-    };
-
-    function rebuildFilterSelect() {
-      const opts = FILTER_OPTIONS[currentTab] || FILTER_OPTIONS.market;
-      statusFilter.innerHTML = opts.map(o =>
-        '<option value="' + o.value + '">' + o.label + '</option>'
-      ).join("");
-      currentFilter = "all";
-      statusFilter.value = "all";
-    }
 
     function render() {
       const container = document.getElementById("skills-container");
       container.className = currentView === "card" ? "grid-cards" : "grid-list";
-      const source = TAB_DATA[currentTab] || SKILLS;
-      const list = source.filter(s => {
-        if (currentFilter === "installed") return s.installed;
-        if (currentFilter === "uninstalled") return !s.installed;
-        if (currentFilter === "enabled") return s.enabled;
-        if (currentFilter === "disabled") return !s.enabled;
-        if (currentSource !== "all" && s.source !== currentSource) return false;
-        return true;
-      });
-      container.innerHTML = list.map(s => {
+      container.innerHTML = SKILLS.map(s => {
         const iconHtml = '<div class="icon-box" style="background:' + s.grad + '">' + (ICONS[s.icon] || "") + '</div>';
         const titleHtml = '<h3 class="card-title">' + s.name + '</h3>';
         const descHtml = '<p class="card-desc ' + (currentView === "card" ? "clamp-2" : "clamp-1") + '">' + s.desc + '</p>';
-        const showStats = currentTab !== 'builtin' && currentTab !== 'installed';
-        const statsHtml = showStats
-          ? '<div class="stats">' +
-              '<span class="stat">' + STAR_SVG + s.stars + '</span>' +
-              '<span class="stat">' + DL_SVG + s.downloads + '</span>' +
-            '</div>'
-          : '';
-        const showSource = currentTab === 'installed' || currentFilter === 'installed';
-        const sourceHtml = showSource
-          ? '<span class="src-badge" data-src="' + s.source + '"><span class="dot"></span>' + s.source + '</span>'
-          : '';
-        let actionHtml, menuHtml = '';
-        if (s.installed) {
-          actionHtml = '<button class="btn-installed" data-name="' + s.name + '">' +
-            '<span class="bi-installed">' + CHECK_SVG + '已安装</span>' +
-            '<span class="bi-try">' + TRY_SVG + '去试试</span>' +
-            '</button>';
-          const showUninstall = currentTab !== 'builtin';
-          menuHtml = '<div class="card-menu">' +
-            '<button class="dots-btn" type="button" aria-label="更多操作">···</button>' +
-            '<div class="menu-dropdown hidden">' +
-              '<button class="menu-item" data-action="toggle">' + (s.enabled ? '禁用' : '启用') + '</button>' +
-              (showUninstall ? '<button class="menu-item danger" data-action="uninstall">卸载</button>' : '') +
-            '</div>' +
+        const statsHtml =
+          '<div class="stats">' +
+            '<span class="stat">' + STAR_SVG + s.stars + '</span>' +
+            '<span class="stat">' + DL_SVG + s.downloads + '</span>' +
           '</div>';
-        } else if (s.featured) {
-          actionHtml = '<button class="btn-try">' + TRY_SVG + '试一试</button>';
-        } else {
-          actionHtml = '<button class="btn-install" data-name="' + s.name + '">' + PLUS_SVG + '安装技能</button>';
-        }
-
-        const sourcePart = showSource ? sourceHtml : '';
-        let footContent;
-        if (showStats) {
-          footContent = statsHtml + sourcePart + actionHtml;
-        } else {
-          footContent = sourcePart + '<div class="push-right">' + actionHtml + '</div>';
-        }
-
-        const cardClass = 'card' + (s.installed && !s.enabled ? ' disabled' : '');
+        const actionHtml = s.featured
+          ? '<button class="btn-try">' + TRY_SVG + '试一试</button>'
+          : '<button class="btn-install" data-name="' + s.name + '">' + PLUS_SVG + '安装技能</button>';
 
         if (currentView === "card") {
-          return '<div class="' + cardClass + '" data-id="' + s.id + '" data-href="' + buildSkillUrl(s) + '">' + iconHtml + menuHtml +
+          return '<div class="card">' + iconHtml +
                    '<div class="card-body">' + titleHtml + descHtml +
-                     '<div class="card-foot">' + footContent + '</div>' +
+                     '<div class="card-foot">' + statsHtml + actionHtml + '</div>' +
                    '</div>' +
                  '</div>';
         } else {
-          return '<div class="' + cardClass + '" data-id="' + s.id + '" data-href="' + buildSkillUrl(s) + '">' + iconHtml + menuHtml +
+          return '<div class="card">' + iconHtml +
                    '<div class="card-body">' + titleHtml + descHtml + '</div>' +
-                   '<div class="card-foot">' + footContent + '</div>' +
+                   '<div class="card-foot">' + statsHtml + actionHtml + '</div>' +
                  '</div>';
         }
       }).join("");
@@ -877,28 +658,11 @@
     });
 
     // ---- Tabs ----
-    const statusFilter = document.getElementById("status-filter");
-    const sourceFilter = document.getElementById("source-filter");
-    const catsEl = document.querySelector(".cats");
     document.querySelectorAll(".tab").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-        currentTab = btn.dataset.tab;
-        rebuildFilterSelect();
-        sourceFilter.style.display = currentTab === "installed" ? "" : "none";
-        if (currentTab !== "installed") { currentSource = "all"; sourceFilter.value = "all"; }
-        catsEl.style.display = (currentTab === "market" || currentTab === "enterprise") ? "flex" : "none";
-        render();
       });
-    });
-    statusFilter.addEventListener("change", () => {
-      currentFilter = statusFilter.value;
-      render();
-    });
-    sourceFilter.addEventListener("change", () => {
-      currentSource = sourceFilter.value;
-      render();
     });
 
     // ---- Categories ----
@@ -933,75 +697,18 @@
       toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
     }
     skillContainer.addEventListener("click", e => {
-      // 已安装技能：去试试
-      const instBtn = e.target.closest(".btn-installed");
-      if (instBtn) {
-        const card = instBtn.closest(".card");
-        if (card && card.classList.contains("disabled")) return;
-		window.location.href="../content.html";
-        return;
-      }
-      // 右上角三点：展开/收起下拉
-      const dots = e.target.closest(".dots-btn");
-      if (dots) {
-        e.stopPropagation();
-        const dd = dots.parentElement.querySelector(".menu-dropdown");
-        const wasOpen = !dd.classList.contains("hidden");
-        document.querySelectorAll(".menu-dropdown:not(.hidden)").forEach(d => d.classList.add("hidden"));
-        if (!wasOpen) dd.classList.remove("hidden");
-        return;
-      }
-      // 下拉菜单项：禁用/启用/卸载
-      const menuItem = e.target.closest(".menu-item");
-      if (menuItem) {
-        e.stopPropagation();
-        const card = menuItem.closest(".card");
-        const id = Number(card.getAttribute("data-id"));
-        const action = menuItem.getAttribute("data-action");
-        const skill = (TAB_DATA[currentTab] || []).find(x => x.id === id);
-        if (!skill) return;
-        if (action === "toggle") {
-          skill.enabled = !skill.enabled;
-          showToast("技能 " + skill.name + (skill.enabled ? " 已启用" : " 已禁用"));
-        } else if (action === "uninstall") {
-          skill.installed = false;
-          if (currentTab === "installed") {
-            TAB_DATA.installed = TAB_DATA.installed.filter(x => x.id !== id);
-          }
-          showToast("技能 " + skill.name + " 已卸载");
-        }
-        render();
-        return;
-      }
-      // 安装技能：loading -> 成功并转为已安装态
       const btn = e.target.closest(".btn-install");
-      if (btn) {
-        if (btn.classList.contains("loading") || btn.classList.contains("done")) return;
-        const name = btn.getAttribute("data-name");
-        btn.classList.add("loading");
-        btn.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 109 9"/></svg> 安装中';
-        setTimeout(() => {
-          const skill = (TAB_DATA[currentTab] || []).find(x => x.name === name);
-          if (skill) { skill.installed = true; skill.enabled = true; }
-          render();
-          showToast("技能 " + name + " 安装成功");
-        }, 1300);
-        return;
-      }
-
-      // 卡片点击（非操作按钮 / 非三点菜单）：当前窗口打开技能详情页
-      const card = e.target.closest(".card");
-      if (card && !e.target.closest(".card-menu")) {
-        const href = card.getAttribute("data-href");
-        if (href) window.location.href = href;
-      }
-    });
-
-    // 点击空白处收起三点菜单
-    document.addEventListener("click", e => {
-      if (!e.target.closest(".card-menu")) {
-        document.querySelectorAll(".menu-dropdown:not(.hidden)").forEach(d => d.classList.add("hidden"));
-      }
+      if (!btn) return;
+      if (btn.classList.contains("loading") || btn.classList.contains("done")) return;
+      const name = btn.getAttribute("data-name");
+      btn.classList.add("loading");
+      btn.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 109 9"/></svg> 安装中';
+      setTimeout(() => {
+        btn.classList.remove("loading");
+        btn.classList.add("done");
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> 已安装';
+        showToast("技能 " + name + " 安装成功");
+      }, 1300);
     });
 
     // ---- Local import modal ----
@@ -1094,14 +801,8 @@
       urlNameInput.value = "";
       urlInstallModal.classList.remove("hidden");
       dropdown.classList.add("hidden");
-      urlPreviewBtn.disabled = true;
-      urlPreviewBtn.className = "btn gray";
+      urlPreviewBtn.disabled = false;
       urlPreviewBtn.textContent = "预览安装";
-    }
-    function syncPreviewBtn() {
-      const hasUrl = urlInput.value.trim() !== "";
-      urlPreviewBtn.disabled = !hasUrl;
-      urlPreviewBtn.className = hasUrl ? "btn dark" : "btn gray";
     }
     function closeUrlInstall() { urlInstallModal.classList.add("hidden"); }
     function closeUrlPreview() { urlPreviewModal.classList.add("hidden"); }
@@ -1127,7 +828,6 @@
     }
 
     btnUrl.addEventListener("click", openUrlInstall);
-    urlInput.addEventListener("input", syncPreviewBtn);
     urlClose.addEventListener("click", closeUrlInstall);
     urlCancel.addEventListener("click", closeUrlInstall);
     urlInstallModal.addEventListener("click", e => { if (e.target === urlInstallModal) closeUrlInstall(); });
@@ -1156,18 +856,6 @@
         showToast("技能 " + name + " 安装成功");
       }, 1500);
     });
-
-
-// 父窗口点击菜单
-function parentClick(url='') {
-	if(url){
-		if (window.parent && window.parent !== window) {
-		  window.parent.postMessage({ type: 'navigate', src: url }, '*');
-		} else {
-		  window.location.href = url;
-		}
-	}
-}
 
     // ---- Init ----
     render();

@@ -37,7 +37,7 @@
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: var(--bg);
+    background: #fff;
     color: var(--text);
     line-height: 1.6;
     font-size: 14px;
@@ -50,45 +50,57 @@
     margin: 0 auto;
     padding: 20px;
   }
-
-  /* ========== Page Title Bar ========== */
-  .page-title-bar {
+  
+  .header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid #f0f0f1;
   }
+  .header-left { display: flex; align-items: center; gap: 8px; }
+  .logo-box {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: #f4f4f5;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .header h1 { font-size: 18px; font-weight: 600; }
+
+    .add-wrap { position: relative; }
+    .btn-add {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px;
+      background: #fff;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-add:hover { background: #fafafa; }
+    .dropdown {
+      position: absolute; right: 0; top: calc(100% + 8px);
+      width: 160px;
+      background: #fff;
+      border: 1px solid #f0f0f1;
+      border-radius: 12px;
+      box-shadow: 0 12px 32px rgba(0,0,0,.10);
+      padding: 4px;
+      z-index: 50;
+    }
+
+  /* ========== Page Title Bar ========== */
+
   .page-title-icon {
     width: 18px;
     height: 18px;
     color: var(--text);
     flex-shrink: 0;
   }
-  .page-title-text {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-  }
-
+  
   /* ========== Header Row: Tabs + New Button ========== */
 
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 20px;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: #fff;
-    background: var(--primary);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: var(--transition);
-    box-shadow: 0 1px 2px rgba(79,70,229,0.25);
-  }
-  .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 2px 6px rgba(79,70,229,0.35); }
-  .btn-primary:active { transform: translateY(0); }
   .btn-icon { width: 16px; height: 16px; }
 
   /* ========== Filter Row: Search + Status Filter ========== */
@@ -104,8 +116,8 @@
   }
   .search-input {
     width: 100%;
-    height: 42px;
-    padding: 0 16px 0 40px;
+    height: 35px;
+    padding: 8px 16px 8px 36px;
     font-size: 13.5px;
     color: var(--text);
     background: var(--card-bg);
@@ -756,22 +768,34 @@
 </head>
 <body>
 
+  <!-- ===== Page Title Bar ===== -->
+  
+  <header class="header">
+      <div class="header-left">
+        <div class="logo-box">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+        <h1>本地知识库</h1>
+      </div>
+  
+      <div class="add-wrap">
+        <button class="btn-add" id="add-skill-btn" onclick="openAddModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"></path></svg>
+          新建知识库
+        </button>
+
+      </div>
+    </header>
+	
 <div class="page-container">
 
-  <!-- ===== Page Title Bar ===== -->
-  <div class="page-title-bar">
-    <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-    </svg>
-    <span class="page-title-text">本地知识库</span>
-  </div>
+	
 
   <!-- ===== Filter Row: Search + Status + Sort + New Button ===== -->
   <div class="filter-row">
     <div class="search-wrapper">
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" class="search-input" id="searchInput" placeholder="搜索知识库名称..." oninput="renderCards()">
+      <input type="text" class="search-input" id="searchInput" placeholder="搜索知识库..." oninput="renderCards()">
     </div>
     <div class="filter-group">
       <button class="filter-btn active" data-status="all" onclick="setStatusFilter('all', this)">
@@ -791,10 +815,7 @@
       <button class="sort-btn active" data-sort="update" onclick="setSort('update', this)">最热</button>
       <button class="sort-btn" data-sort="create" onclick="setSort('create', this)">最新</button>
     </div-->
-    <button class="btn-primary" onclick="openAddModal()" style="margin-left:auto;">
-      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      新建知识库
-    </button>
+
   </div>
 
   <!-- ===== Card Grid / Empty State ===== -->
@@ -1386,6 +1407,18 @@ document.addEventListener('keydown', function(e) {
     if (e.target === this) this.classList.remove('show');
   });
 });
+
+
+// 父窗口点击菜单
+function parentClick(url='') {
+	if(url){
+		if (window.parent && window.parent !== window) {
+		  window.parent.postMessage({ type: 'navigate', src: url }, '*');
+		} else {
+		  window.location.href = url;
+		}
+	}
+}
 
 // ==================== Init ====================
 renderCards();

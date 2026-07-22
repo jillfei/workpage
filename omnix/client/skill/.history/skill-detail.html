@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>技能详情</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #fff; color: #18181b; padding: 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 14px; color: #52525b; text-decoration: none;
+      border: 1px solid #e4e4e7; padding: 8px 14px; border-radius: 8px;
+      margin-bottom: 24px;
+    }
+    .back:hover { background: #fafafa; }
+    .panel {
+      border: 1px solid #f0f0f1; border-radius: 16px; padding: 24px; max-width: 640px;
+    }
+    h1 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+    .row { display: flex; gap: 12px; padding: 10px 0; border-top: 1px solid #f0f0f1; font-size: 14px; }
+    .row:first-of-type { border-top: none; }
+    .label { width: 80px; flex-shrink: 0; color: #a1a1aa; }
+    .value { color: #18181b; word-break: break-all; }
+    .tip { margin-top: 16px; font-size: 13px; color: #71717a; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <a class="back" href="v8.html">← 返回技能列表</a>
+  <div class="panel">
+    <h1>技能详情（占位页）</h1>
+    <div class="row"><span class="label">id</span><span class="value" id="p-id">—</span></div>
+    <div class="row"><span class="label">name</span><span class="value" id="p-name">—</span></div>
+    <p class="tip">这是一个预制占位详情页：链接地址固定为 <code>skill-detail.html?id=…&amp;name=…</code>。
+       将本页替换为真实的技能详情页即可，参数会随卡片点击自动带入。</p>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+    const name = params.get("name");
+    document.getElementById("p-id").textContent = id || "—";
+    document.getElementById("p-name").textContent = name || "—";
+    if (name) document.title = "技能详情 · " + name;
+  </script>
+</body>
+</html>

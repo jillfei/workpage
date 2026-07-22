@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型配置 - OmniX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            padding: 32px 40px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .main-content-inner {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 12px;
+            border: 1px solid #e8e8e8;
+        }
+
+        /* 表单样式 */
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            flex: 1;
+            margin-bottom: 16px;
+        }
+
+        .form-row .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: #ff4d4f;
+            margin-left: 2px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #333;
+        }
+
+        .form-input::placeholder {
+            color: #ccc;
+        }
+
+        .form-input:disabled,
+        .form-select:disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+            border-color: #e0e0e0;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #fff;
+            appearance: none;
+        }
+
+        .form-select:disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .custom-select {
+            width: 100%;
+            appearance: none;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px 36px 10px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .custom-select:focus {
+            border-color: #333;
+        }
+
+        .select-wrapper::after {
+            content: "▾";
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            pointer-events: none;
+        }
+
+        /* 自定义下拉组件 */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 12px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .dropdown-trigger:hover {
+            border-color: #ccc;
+        }
+
+        .dropdown-trigger:focus {
+            border-color: #333;
+        }
+
+        .dropdown-trigger .icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .dropdown-trigger .icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .dropdown-trigger .label {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .dropdown-trigger .arrow {
+            width: 16px;
+            height: 16px;
+            color: #999;
+            transition: transform 0.2s;
+        }
+
+        .custom-dropdown.open .dropdown-trigger {
+            border-color: #333;
+        }
+
+        .custom-dropdown.open .dropdown-trigger .arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: none;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .custom-dropdown.open .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .dropdown-item:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .dropdown-item:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+
+        .dropdown-item:hover {
+            background: #f5f5f5;
+        }
+
+        .dropdown-item.selected {
+            background: #f0f0f0;
+        }
+
+        .dropdown-item .icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item .icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .dropdown-item .label {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .dropdown-item .check {
+            width: 16px;
+            height: 16px;
+            color: #333;
+            opacity: 0;
+        }
+
+        .dropdown-item.selected .check {
+            opacity: 1;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
+        }
+
+        .btn-outline {
+            border: 1px solid #e0e0e0;
+            color: #333;
+        }
+
+        .btn-outline:hover {
+            border-color: #999;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: #fff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #444;
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .btn-text {
+            color: #333;
+            padding: 8px 12px;
+        }
+
+        .btn-text:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-danger {
+            color: #ff4d4f;
+        }
+
+        .btn-danger:hover {
+            background: #fff1f0;
+        }
+
+        /* 已添加模型区域 */
+        .models-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .default-model {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .default-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #52c41a;
+        }
+
+        .default-name {
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 供应商卡片 */
+        .provider-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e8e8e8;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .provider-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .provider-header:hover {
+            background: #fafafa;
+        }
+
+        .provider-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .provider-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .provider-icon svg {
+            width: 18px;
+            height: 18px;
+            color: #666;
+        }
+
+        .provider-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .provider-api-key {
+            font-size: 12px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .provider-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .provider-expand {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .provider-expand:hover {
+            background: #f0f0f0;
+        }
+
+        .provider-expand svg {
+            width: 16px;
+            height: 16px;
+            color: #999;
+            transition: transform 0.2s;
+        }
+
+        .provider-card.expanded .provider-expand svg {
+            transform: rotate(90deg);
+        }
+
+        .provider-delete {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
+            color: #999;
+        }
+
+        .provider-delete:hover {
+            background: #fff1f0;
+            color: #ff4d4f;
+        }
+
+        .provider-delete svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* 模型列表 */
+        .models-list {
+            padding: 0 20px 16px 20px;
+            display: none;
+        }
+
+        .provider-card.expanded .models-list {
+            display: block;
+        }
+
+        .model-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .model-item:hover {
+            background: #f5f5f5;
+        }
+
+        .model-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .model-radio {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid #d9d9d9;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .model-radio.selected {
+            border-color: #1890ff;
+        }
+
+        .model-radio.selected::after {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #1890ff;
+        }
+
+        .model-name {
+            font-size: 14px;
+        }
+
+        .default-tag {
+            background: #e6f7ff;
+            color: #1890ff;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        .model-item-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .model-item:hover .model-item-right {
+            opacity: 1;
+        }
+
+        .model-action-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
+            color: #666;
+        }
+
+        .model-action-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .model-action-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .switch-default-btn {
+            padding: 8px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: #fff;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: none;
+            margin-top: 12px;
+        }
+
+        .switch-default-btn:hover {
+            border-color: #999;
+            background: #f5f5f5;
+        }
+
+        .switch-default-btn.visible {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 确认弹窗样式 */
+        .confirm-modal {
+            width: 360px;
+            text-align: center;
+            padding: 32px 24px;
+        }
+
+        .confirm-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 20px;
+            background: #fff2f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-icon svg {
+            width: 28px;
+            height: 28px;
+            color: #ff4d4f;
+        }
+
+        .confirm-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .confirm-message {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .confirm-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .confirm-actions .btn {
+            min-width: 80px;
+            justify-content: center;
+        }
+
+        .btn-danger {
+            background: #ff4d4f;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: #ff7875;
+        }
+
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 16px;
+            width: 480px;
+            max-width: 90vw;
+            padding: 24px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            background: #f5f5f5;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Toast提示 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #333;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: #ff4d4f;
+        }
+
+        .toast.success {
+            background: #52c41a;
+        }
+
+        .toast-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+            color: #d9d9d9;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .provider-card {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* 提示信息 */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 状态标签 */
+        .status-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            background: #f6ffed;
+            color: #52c41a;
+        }
+
+        .status-tag.warning {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <div class="main-content-inner">
+                <h1 class="page-title">模型配置</h1>
+                <p class="page-subtitle">选择默认供应商、模型和访问凭证。</p>
+
+                <h2 class="section-title">添加模型配置</h2>
+                
+                <!-- 添加模型表单 -->
+                <div class="card" id="addModelForm">
+                    <div class="form-group">
+                        <label class="form-label">供应商</label>
+                        <div class="custom-dropdown" id="providerDropdown">
+                            <div class="dropdown-trigger" onclick="toggleDropdown('providerDropdown')">
+                                <div class="icon" id="selectedProviderIcon">
+                                    <!-- OpenAI图标 -->
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365 2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z"/>
+                                    </svg>
+                                </div>
+                                <span class="label" id="selectedProviderLabel">OpenAI</span>
+                                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="m6 9 6 6 6-6"/>
+                                </svg>
+                            </div>
+                            <div class="dropdown-menu">
+                                <div class="dropdown-item selected" data-value="openai" onclick="selectProvider(this)">
+                                    <div class="icon">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="label">OpenAI</span>
+                                    <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 6 9 17l-5-5"/>
+                                    </svg>
+                                </div>
+                                <div class="dropdown-item" data-value="alibaba" onclick="selectProvider(this)">
+                                    <div class="icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                                        </svg>
+                                    </div>
+                                    <span class="label">百炼</span>
+                                    <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 6 9 17l-5-5"/>
+                                    </svg>
+                                </div>
+                                <div class="dropdown-item" data-value="custom" onclick="selectProvider(this)">
+                                    <div class="icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="3"/>
+                                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="label">自定义供应商</span>
+                                    <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 6 9 17l-5-5"/>
+                                    </svg>
+                                </div>
+                                <div class="dropdown-item" data-value="deepseek" onclick="selectProvider(this)">
+                                    <div class="icon">
+                                        <svg viewBox="0 0 24 24" fill="#0ea5e9">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="label">深度求索</span>
+                                    <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 6 9 17l-5-5"/>
+                                    </svg>
+                                </div>
+                                <div class="dropdown-item" data-value="minimax" onclick="selectProvider(this)">
+                                    <div class="icon">
+                                        <svg viewBox="0 0 24 24" fill="#ec4899">
+                                            <path d="M4 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8z" fill="none" stroke="currentColor" stroke-width="2"/>
+                                            <path d="M8 12c0-2.21 1.79-4 4-4s4 1.79 4 4-1.79 4-4 4-4-1.79-4-4z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="label">MiniMax</span>
+                                    <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 6 9 17l-5-5"/>
+                                    </svg>
+                                </div>
+                                <div class="dropdown-item" data-value="moonshot" onclick="selectProvider(this)">
+                                    <div class="icon">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 2L8 6h3v6h2V6h3l-4-4zM6 18h12v2H6v-2z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="label">月之暗面</span>
+                                    <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 6 9 17l-5-5"/>
+                                    </svg>
+                                </div>
+                                <div class="dropdown-item" data-value="zhipu" onclick="selectProvider(this)">
+                                    <div class="icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                                            <polyline points="2 17 12 22 22 17"/>
+                                            <polyline points="2 12 12 17 22 12"/>
+                                        </svg>
+                                    </div>
+                                    <span class="label">智谱</span>
+                                    <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 6 9 17l-5-5"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="providerSelect" value="openai">
+                    </div>
+
+                    <!-- 自定义模型额外字段 -->
+                    <div id="customModelFields" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">模型名称 <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="modelNameInput" placeholder="请输入模型名称" oninput="validateForm()">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">API Base <span class="required">*</span></label>
+                                <input type="text" class="form-input" id="apiBaseInput" placeholder="例如: https://api.openai.com/v1" oninput="validateForm()">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">API Key</label>
+                                <input type="password" class="form-input" id="apiKeyInput" placeholder="粘贴新的 API Key">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">上下文长度</label>
+                                <input type="number" class="form-input" id="contextLengthInput" value="100000">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">输出上限</label>
+                                <input type="number" class="form-input" id="maxTokensInput" value="65536">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 预设供应商API Key输入 -->
+                    <div id="presetApiKeyField">
+                        <div class="form-group">
+                            <label class="form-label">API Key <span class="required">*</span></label>
+                            <input type="password" class="form-input" id="presetApiKeyInput" placeholder="粘贴新的 API Key" oninput="validateForm()">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" id="addModelBtn" onclick="addModel()" disabled>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                <polyline points="17 21 17 13 7 13 7 21"/>
+                                <polyline points="7 3 7 8 15 8"/>
+                            </svg>
+                            添加模型
+                        </button>
+                    </div>
+                </div>
+
+                <h2 class="section-title" style="margin-top: 32px;">已添加模型</h2>
+                
+                <div class="models-header">
+                    <span></span>
+                    <div class="default-model">
+                        <span class="default-dot"></span>
+                        当前默认 <span class="default-name" id="currentDefaultModel">GPT-5 mini</span>
+                    </div>
+                </div>
+
+                <!-- 模型列表容器 -->
+                <div id="modelsContainer">
+                    <!-- OpenAI -->
+                    <div class="provider-card" data-provider="openai">
+                        <div class="provider-header" onclick="toggleProvider(this)">
+                            <div class="provider-info">
+                                <div class="provider-icon">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365 2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="provider-name">OpenAI</div>
+                                    <div class="provider-api-key">API Key: sk-***************</div>
+                                </div>
+                            </div>
+                            <div class="provider-actions">
+                                <button class="provider-delete" onclick="deleteProvider(event, 'openai')" title="删除">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 6h18"/>
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                    </svg>
+                                </button>
+                                <button class="provider-expand">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="m9 18 6-6-6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="models-list">
+                            <div class="model-item" data-model="GPT-5.4">
+                                <div class="model-item-left">
+                                    <div class="model-radio" onclick="selectModel(this, 'GPT-5.4')"></div>
+                                    <span class="model-name">GPT-5.4</span>
+                                </div>
+                            </div>
+                            <div class="model-item" data-model="GPT-5 mini">
+                                <div class="model-item-left">
+                                    <div class="model-radio selected" onclick="selectModel(this, 'GPT-5 mini')"></div>
+                                    <span class="model-name">GPT-5 mini</span>
+                                    <span class="default-tag">默认</span>
+                                </div>
+                            </div>
+                            <div class="model-item" data-model="GPT-4.1">
+                                <div class="model-item-left">
+                                    <div class="model-radio" onclick="selectModel(this, 'GPT-4.1')"></div>
+                                    <span class="model-name">GPT-4.1</span>
+                                </div>
+                            </div>
+                            <div class="model-item" data-model="GPT-4.1 mini">
+                                <div class="model-item-left">
+                                    <div class="model-radio" onclick="selectModel(this, 'GPT-4.1 mini')"></div>
+                                    <span class="model-name">GPT-4.1 mini</span>
+                                </div>
+                            </div>
+                            <div class="model-item" data-model="GPT-4.1 nano">
+                                <div class="model-item-left">
+                                    <div class="model-radio" onclick="selectModel(this, 'GPT-4.1 nano')"></div>
+                                    <span class="model-name">GPT-4.1 nano</span>
+                                </div>
+                            </div>
+                            <button class="switch-default-btn" onclick="setDefaultModel(this)">切换为默认</button>
+                        </div>
+                    </div>
+
+                    <!-- 自定义供应商 -->
+                    <div class="provider-card" data-provider="custom">
+                        <div class="provider-header" onclick="toggleProvider(this)">
+                            <div class="provider-info">
+                                <div class="provider-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="provider-name">自定义供应商</div>
+                                    <div class="provider-api-key">API Key: sk-***************</div>
+                                </div>
+                            </div>
+                            <div class="provider-actions">
+                                <button class="provider-delete" onclick="deleteProvider(event, 'custom')" title="删除">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 6h18"/>
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                    </svg>
+                                </button>
+                                <button class="provider-expand">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="m9 18 6-6-6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="models-list">
+                            <div class="model-item" data-model="Gemini 3.1 Pro">
+                                <div class="model-item-left">
+                                    <div class="model-radio" onclick="selectModel(this, 'Gemini 3.1 Pro')"></div>
+                                    <span class="model-name">Gemini 3.1 Pro</span>
+                                </div>
+                                <div class="model-item-right">
+                                    <button class="model-action-btn" onclick="editModel('Gemini 3.1 Pro')" title="编辑">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                                            <path d="m15 5 4 4"/>
+                                        </svg>
+                                    </button>
+                                    <button class="model-action-btn" onclick="deleteModel('Gemini 3.1 Pro')" title="删除">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M3 6h18"/>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="model-item" data-model="GPT-5.6 Sol">
+                                <div class="model-item-left">
+                                    <div class="model-radio" onclick="selectModel(this, 'GPT-5.6 Sol')"></div>
+                                    <span class="model-name">GPT-5.6 Sol</span>
+                                </div>
+                                <div class="model-item-right">
+                                    <button class="model-action-btn" onclick="editModel('GPT-5.6 Sol')" title="编辑">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                                            <path d="m15 5 4 4"/>
+                                        </svg>
+                                    </button>
+                                    <button class="model-action-btn" onclick="deleteModel('GPT-5.6 Sol')" title="删除">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M3 6h18"/>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="model-item" data-model="Claude Fable 5">
+                                <div class="model-item-left">
+                                    <div class="model-radio" onclick="selectModel(this, 'Claude Fable 5')"></div>
+                                    <span class="model-name">Claude Fable 5</span>
+                                </div>
+                                <div class="model-item-right">
+                                    <button class="model-action-btn" onclick="editModel('Claude Fable 5')" title="编辑">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                                            <path d="m15 5 4 4"/>
+                                        </svg>
+                                    </button>
+                                    <button class="model-action-btn" onclick="deleteModel('Claude Fable 5')" title="删除">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M3 6h18"/>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="model-item" data-model="智谱 GLM-5.2">
+                                <div class="model-item-left">
+                                    <div class="model-radio" onclick="selectModel(this, '智谱 GLM-5.2')"></div>
+                                    <span class="model-name">智谱 GLM-5.2</span>
+                                </div>
+                                <div class="model-item-right">
+                                    <button class="model-action-btn" onclick="editModel('智谱 GLM-5.2')" title="编辑">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                                            <path d="m15 5 4 4"/>
+                                        </svg>
+                                    </button>
+                                    <button class="model-action-btn" onclick="deleteModel('智谱 GLM-5.2')" title="删除">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M3 6h18"/>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="model-item" data-model="DeepSeek V4">
+                                <div class="model-item-left">
+                                    <div class="model-radio" onclick="selectModel(this, 'DeepSeek V4')"></div>
+                                    <span class="model-name">DeepSeek V4</span>
+                                </div>
+                                <div class="model-item-right">
+                                    <button class="model-action-btn" onclick="editModel('DeepSeek V4')" title="编辑">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                                            <path d="m15 5 4 4"/>
+                                        </svg>
+                                    </button>
+                                    <button class="model-action-btn" onclick="deleteModel('DeepSeek V4')" title="删除">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M3 6h18"/>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <button class="switch-default-btn" onclick="setDefaultModel(this)">切换为默认</button>
+                        </div>
+                    </div>
+
+                    <!-- 百炼 -->
+                    <div class="provider-card" data-provider="alibaba">
+                        <div class="provider-header" onclick="toggleProvider(this)">
+                            <div class="provider-info">
+                                <div class="provider-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="provider-name">百炼</div>
+                                    <div class="provider-api-key">API Key: sk-***************</div>
+                                </div>
+                            </div>
+                            <div class="provider-actions">
+                                <button class="provider-delete" onclick="deleteProvider(event, 'alibaba')" title="删除">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 6h18"/>
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                    </svg>
+                                </button>
+                                <button class="provider-expand">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="m9 18 6-6-6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="models-list">
+                            <div class="model-item" data-model="qwen-max">
+                                <div class="model-item-left">
+                                    <div class="model-radio" onclick="selectModel(this, 'qwen-max')"></div>
+                                    <span class="model-name">qwen-max</span>
+                                </div>
+                            </div>
+                            <div class="model-item" data-model="qwen-plus">
+                                <div class="model-item-left">
+                                    <div class="model-radio" onclick="selectModel(this, 'qwen-plus')"></div>
+                                    <span class="model-name">qwen-plus</span>
+                                </div>
+                            </div>
+                            <button class="switch-default-btn" onclick="setDefaultModel(this)">切换为默认</button>
+                        </div>
+                    </div>
+
+                    <!-- 智谱 -->
+                    <div class="provider-card" data-provider="zhipu">
+                        <div class="provider-header" onclick="toggleProvider(this)">
+                            <div class="provider-info">
+                                <div class="provider-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                                        <polyline points="2 17 12 22 22 17"/>
+                                        <polyline points="2 12 12 17 22 12"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="provider-name">智谱</div>
+                                    <div class="provider-api-key">API Key: sk-***************</div>
+                                </div>
+                            </div>
+                            <div class="provider-actions">
+                                <button class="provider-delete" onclick="deleteProvider(event, 'zhipu')" title="删除">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 6h18"/>
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                                    </svg>
+                                </button>
+                                <button class="provider-expand">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="m9 18 6-6-6-6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="models-list">
+                            <div class="model-item" data-model="glm-4">
+                                <div class="model-item-left">
+                                    <div class="model-radio" onclick="selectModel(this, 'glm-4')"></div>
+                                    <span class="model-name">glm-4</span>
+                                </div>
+                            </div>
+                            <button class="switch-default-btn" onclick="setDefaultModel(this)">切换为默认</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 编辑模型配置弹窗 -->
+    <div class="modal-overlay" id="editModelModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                    </svg>
+                    编辑模型配置
+                </div>
+                <button class="modal-close" onclick="closeModal('editModelModal')">×</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">供应商</label>
+                <select class="form-select" id="editProviderSelect" disabled>
+                    <option value="openai">OpenAI</option>
+                    <option value="alibaba">百炼</option>
+                    <option value="custom">自定义供应商</option>
+                    <option value="deepseek">深度求索</option>
+                    <option value="minimax">MiniMax</option>
+                    <option value="moonshot">月之暗面</option>
+                    <option value="zhipu">智谱</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">模型名称</label>
+                <input type="text" class="form-input" id="editModelName" value="GPT 5.6">
+            </div>
+            <div class="form-group">
+                <label class="form-label">API Base</label>
+                <input type="text" class="form-input" id="editApiBase" placeholder="例如: https://api.openai.com/v1">
+            </div>
+            <div class="form-group">
+                <label class="form-label">API Key</label>
+                <input type="text" class="form-input" id="editApiKey" placeholder="请输入 API Key">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">上下文长度</label>
+                    <input type="number" class="form-input" id="editContextLength" value="10000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">输出上限</label>
+                    <input type="number" class="form-input" id="editMaxTokens" value="65536">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-text" onclick="closeModal('editModelModal')">取消</button>
+                <button class="btn btn-primary" onclick="saveModelEdit()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal confirm-modal">
+            <div class="confirm-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+            </div>
+            <h3 class="confirm-title" id="confirmTitle">确认删除</h3>
+            <p class="confirm-message" id="confirmMessage">确定要删除吗？此操作不可撤销。</p>
+            <div class="confirm-actions">
+                <button class="btn btn-outline" onclick="closeModal('confirmModal')">取消</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn" onclick="confirmDelete()">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toast提示函数
+        function showToast(message, type = 'error') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                ${message}
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 当前编辑的模型
+        let currentEditModel = null;
+        let currentEditProvider = null;
+
+        // 供应商图标SVG映射
+        const providerIcons = {
+            'openai': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073z"/></svg>',
+            'alibaba': '<svg viewBox="0 0 24 24" fill="#6366f1"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
+            'custom': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+            'deepseek': '<svg viewBox="0 0 24 24" fill="#0ea5e9"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z"/></svg>',
+            'minimax': '<svg viewBox="0 0 24 24" fill="#ec4899"><path d="M4 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12c0-2.21 1.79-4 4-4s4 1.79 4 4-1.79 4-4 4-4-1.79-4-4z"/></svg>',
+            'moonshot': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L8 6h3v6h2V6h3l-4-4zM6 18h12v2H6v-2z"/></svg>',
+            'zhipu': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v4H4V4zm0 6h16v4H4v-4zm0 6h16v4H4v-4z"/></svg>'
+        };
+
+        // 验证必填字段并更新按钮状态
+        function validateForm() {
+            const provider = document.getElementById('providerSelect').value;
+            const addModelBtn = document.getElementById('addModelBtn');
+            let isValid = false;
+            
+            if (provider === 'custom') {
+                const modelName = document.getElementById('modelNameInput').value.trim();
+                const apiBase = document.getElementById('apiBaseInput').value.trim();
+                isValid = modelName !== '' && apiBase !== '';
+            } else {
+                const apiKey = document.getElementById('presetApiKeyInput').value.trim();
+                isValid = apiKey !== '';
+            }
+            
+            addModelBtn.disabled = !isValid;
+        }
+
+        // 切换下拉菜单
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            dropdown.classList.toggle('open');
+        }
+
+        // 选择供应商
+        function selectProvider(item) {
+            const dropdown = item.closest('.custom-dropdown');
+            const value = item.dataset.value;
+            const label = item.querySelector('.label').textContent;
+            const icon = item.querySelector('.icon').innerHTML;
+
+            // 更新选中状态
+            dropdown.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+
+            // 更新触发器显示
+            dropdown.querySelector('.dropdown-trigger .label').textContent = label;
+            dropdown.querySelector('.dropdown-trigger .icon').innerHTML = icon;
+
+            // 更新隐藏的input值
+            document.getElementById('providerSelect').value = value;
+
+            // 关闭下拉菜单
+            dropdown.classList.remove('open');
+
+            // 触发供应商变更处理
+            handleProviderChange();
+            
+            // 验证表单
+            validateForm();
+        }
+
+        // 点击外部关闭下拉菜单
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-dropdown')) {
+                document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('open');
+                });
+            }
+        });
+
+        // 供应商变更处理
+        function handleProviderChange() {
+            const select = document.getElementById('providerSelect');
+            const customFields = document.getElementById('customModelFields');
+            const presetField = document.getElementById('presetApiKeyField');
+            
+            if (select.value === 'custom') {
+                customFields.style.display = 'block';
+                presetField.style.display = 'none';
+            } else {
+                customFields.style.display = 'none';
+                presetField.style.display = 'block';
+            }
+        }
+
+        // 展开/折叠供应商
+        function toggleProvider(header) {
+            const card = header.closest('.provider-card');
+            card.classList.toggle('expanded');
+        }
+
+        // 选择模型
+        function selectModel(radio, modelName) {
+            // 取消所有选中
+            document.querySelectorAll('.model-radio').forEach(r => r.classList.remove('selected'));
+            // 选中当前
+            radio.classList.add('selected');
+            
+            // 获取当前默认模型
+            const currentDefault = document.getElementById('currentDefaultModel').textContent;
+            
+            // 获取当前选中模型所在的供应商卡片
+            const modelItem = radio.closest('.model-item');
+            const providerCard = modelItem.closest('.provider-card');
+            const switchBtn = providerCard.querySelector('.switch-default-btn');
+            
+            // 如果选择的是非默认模型，显示"切换为默认"按钮
+            if (modelName !== currentDefault) {
+                switchBtn.classList.add('visible');
+                switchBtn.dataset.model = modelName;
+            } else {
+                switchBtn.classList.remove('visible');
+            }
+            
+            // 隐藏其他供应商卡片的"切换为默认"按钮
+            document.querySelectorAll('.provider-card').forEach(card => {
+                if (card !== providerCard) {
+                    card.querySelector('.switch-default-btn').classList.remove('visible');
+                }
+            });
+        }
+
+        // 设置默认模型
+        function setDefaultModel(btn) {
+            const modelName = btn.dataset.model;
+            
+            // 移除旧默认模型的"默认"标签
+            document.querySelectorAll('.default-tag').forEach(tag => tag.remove());
+            
+            // 更新默认模型显示
+            document.getElementById('currentDefaultModel').textContent = modelName;
+            
+            // 为新默认模型添加"默认"标签
+            const newDefaultItem = document.querySelector(`.model-item[data-model="${modelName}"]`);
+            if (newDefaultItem) {
+                const modelNameSpan = newDefaultItem.querySelector('.model-name');
+                const defaultTag = document.createElement('span');
+                defaultTag.className = 'default-tag';
+                defaultTag.textContent = '默认';
+                modelNameSpan.parentNode.insertBefore(defaultTag, modelNameSpan.nextSibling);
+            }
+            
+            // 更新所有模型的选中状态
+            document.querySelectorAll('.model-radio').forEach(r => {
+                r.classList.remove('selected');
+                if (r.closest('.model-item').dataset.model === modelName) {
+                    r.classList.add('selected');
+                }
+            });
+            
+            // 隐藏所有"切换为默认"按钮
+            document.querySelectorAll('.switch-default-btn').forEach(b => {
+                b.classList.remove('visible');
+            });
+        }
+
+        // 编辑模型
+        function editModel(modelName) {
+            event.stopPropagation();
+            currentEditModel = modelName;
+            
+            // 查找模型所在的供应商
+            const modelItem = document.querySelector(`.model-item[data-model="${modelName}"]`);
+            const providerCard = modelItem.closest('.provider-card');
+            currentEditProvider = providerCard.dataset.provider;
+            
+            // 根据供应商设置不同的默认值
+            const defaults = {
+                'openai': { apiBase: 'https://api.openai.com/v1', contextLength: 128000, maxTokens: 16384 },
+                'custom': { apiBase: 'https://api.openai.com/v1', contextLength: 10000, maxTokens: 65536 },
+                'alibaba': { apiBase: 'https://dashscope.aliyuncs.com/compatible-mode/v1', contextLength: 32000, maxTokens: 8192 },
+                'deepseek': { apiBase: 'https://api.deepseek.com', contextLength: 64000, maxTokens: 8192 },
+                'minimax': { apiBase: 'https://api.minimax.chat/v1', contextLength: 32000, maxTokens: 4096 },
+                'moonshot': { apiBase: 'https://api.moonshot.cn/v1', contextLength: 128000, maxTokens: 4096 },
+                'zhipu': { apiBase: 'https://open.bigmodel.cn/api/paas/v4', contextLength: 128000, maxTokens: 4096 }
+            };
+            
+            const config = defaults[currentEditProvider] || defaults['custom'];
+            
+            // 填充弹窗数据
+            document.getElementById('editModelName').value = modelName;
+            document.getElementById('editProviderSelect').value = currentEditProvider;
+            document.getElementById('editApiBase').value = config.apiBase;
+            document.getElementById('editApiKey').value = 'sk-***************';
+            document.getElementById('editContextLength').value = config.contextLength;
+            document.getElementById('editMaxTokens').value = config.maxTokens;
+            
+            openModal('editModelModal');
+        }
+
+        // 保存模型编辑
+        function saveModelEdit() {
+            const newName = document.getElementById('editModelName').value.trim();
+            if (!newName) {
+                alert('请输入模型名称');
+                return;
+            }
+            
+            // 更新模型名称
+            const modelItem = document.querySelector(`.model-item[data-model="${currentEditModel}"]`);
+            if (modelItem) {
+                modelItem.dataset.model = newName;
+                modelItem.querySelector('.model-name').textContent = newName;
+            }
+            
+            // 如果是当前默认模型，更新显示
+            const defaultModelName = document.getElementById('currentDefaultModel').textContent;
+            if (defaultModelName === currentEditModel) {
+                document.getElementById('currentDefaultModel').textContent = newName;
+            }
+            
+            closeModal('editModelModal');
+        }
+
+        // 当前删除目标
+        let deleteTarget = null;
+        let deleteType = null; // 'model' 或 'provider'
+
+        // 删除模型
+        function deleteModel(modelName) {
+            event.stopPropagation();
+            deleteTarget = modelName;
+            deleteType = 'model';
+            document.getElementById('confirmTitle').textContent = '删除模型';
+            document.getElementById('confirmMessage').textContent = `确定要删除模型 "${modelName}" 吗？此操作不可撤销。`;
+            openModal('confirmModal');
+        }
+
+        // 删除供应商
+        function deleteProvider(event, provider) {
+            event.stopPropagation();
+            const providerName = document.querySelector(`[data-provider="${provider}"] .provider-name`).textContent;
+            deleteTarget = provider;
+            deleteType = 'provider';
+            document.getElementById('confirmTitle').textContent = '删除供应商';
+            document.getElementById('confirmMessage').textContent = `确定要删除供应商 "${providerName}" 及其所有模型吗？此操作不可撤销。`;
+            openModal('confirmModal');
+        }
+
+        // 确认删除
+        function confirmDelete() {
+            if (deleteType === 'model') {
+                const modelItem = document.querySelector(`.model-item[data-model="${deleteTarget}"]`);
+                if (modelItem) {
+                    modelItem.style.opacity = '0';
+                    modelItem.style.transform = 'translateX(-20px)';
+                    modelItem.style.transition = 'all 0.3s ease';
+                    setTimeout(() => modelItem.remove(), 300);
+                }
+            } else if (deleteType === 'provider') {
+                const card = document.querySelector(`[data-provider="${deleteTarget}"]`);
+                if (card) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(-10px)';
+                    card.style.transition = 'all 0.3s ease';
+                    setTimeout(() => card.remove(), 300);
+                }
+            }
+            deleteTarget = null;
+            deleteType = null;
+            closeModal('confirmModal');
+        }
+
+        // 添加模型
+        function addModel() {
+            const provider = document.getElementById('providerSelect').value;
+            let modelName = '';
+            let apiKey = '';
+            
+            if (provider === 'custom') {
+                modelName = document.getElementById('modelNameInput').value.trim();
+                apiKey = document.getElementById('apiKeyInput').value.trim();
+                const apiBase = document.getElementById('apiBaseInput').value.trim();
+                
+                if (!modelName || !apiBase) {
+                    showToast('添加模型失败');
+                    return;
+                }
+                if (apiKey && apiKey !== '123456789') {
+                    showToast('添加模型失败');
+                    return;
+                }
+                apiKey = '123456789';
+            } else {
+                apiKey = document.getElementById('presetApiKeyInput').value.trim();
+                modelName = getProviderDefaultModel(provider);
+                
+                if (!apiKey) {
+                    showToast('添加模型失败');
+                    return;
+                }
+                if (apiKey !== '123456789') {
+                    showToast('添加模型失败');
+                    return;
+                }
+            }
+            
+            showToast('添加模型成功', 'success');
+            
+            // 查找或创建供应商卡片
+            let providerCard = document.querySelector(`[data-provider="${provider}"]`);
+            
+            if (!providerCard) {
+                // 创建新的供应商卡片
+                providerCard = createProviderCard(provider, apiKey);
+                document.getElementById('modelsContainer').appendChild(providerCard);
+            }
+            
+            // 添加模型到列表
+            const modelsList = providerCard.querySelector('.models-list');
+            const isCustom = provider === 'custom';
+            const currentDefault = document.getElementById('currentDefaultModel').textContent;
+            const isDefault = modelName === currentDefault;
+            const modelItem = createModelItem(modelName, isCustom, isDefault);
+            
+            // 插入到"切换为默认"按钮之前
+            const switchBtn = modelsList.querySelector('.switch-default-btn');
+            if (switchBtn) {
+                modelsList.insertBefore(modelItem, switchBtn);
+            } else {
+                modelsList.appendChild(modelItem);
+            }
+            
+            // 展开供应商
+            providerCard.classList.add('expanded');
+            
+            // 清空表单
+            clearAddForm();
+        }
+
+        // 获取供应商默认模型名称
+        function getProviderDefaultModel(provider) {
+            const defaults = {
+                'openai': 'GPT-4o',
+                'alibaba': 'qwen-max',
+                'custom': 'custom-model',
+                'deepseek': 'deepseek-chat',
+                'minimax': 'abab6.5-chat',
+                'moonshot': 'moonshot-v1-8k',
+                'zhipu': 'glm-4'
+            };
+            return defaults[provider] || 'New Model';
+        }
+
+        // 创建供应商卡片
+        function createProviderCard(provider, apiKey) {
+            const providerNames = {
+                'openai': 'OpenAI',
+                'alibaba': '百炼',
+                'custom': '自定义供应商',
+                'deepseek': '深度求索',
+                'minimax': 'MiniMax',
+                'moonshot': '月之暗面',
+                'zhipu': '智谱'
+            };
+            
+            const maskedKey = apiKey.substring(0, 3) + '**************-' + apiKey.substring(apiKey.length - 4);
+            
+            const card = document.createElement('div');
+            card.className = 'provider-card';
+            card.dataset.provider = provider;
+            card.innerHTML = `
+                <div class="provider-header" onclick="toggleProvider(this)">
+                    <div class="provider-info">
+                        <div class="provider-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="provider-name">${providerNames[provider]}</div>
+                            <div class="provider-api-key">API Key: ${maskedKey}</div>
+                        </div>
+                    </div>
+                    <div class="provider-actions">
+                        <button class="provider-delete" onclick="deleteProvider(event, '${provider}')" title="删除">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18"/>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                            </svg>
+                        </button>
+                        <button class="provider-expand">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="models-list">
+                    <button class="switch-default-btn" onclick="setDefaultModel(this)">切换为默认</button>
+                </div>
+            `;
+            return card;
+        }
+
+        // 创建模型项
+        function createModelItem(modelName, isCustom = false, isDefault = false) {
+            const item = document.createElement('div');
+            item.className = 'model-item';
+            item.dataset.model = modelName;
+            
+            let rightSection = '';
+            if (isCustom) {
+                rightSection = `
+                    <div class="model-item-right">
+                        <button class="model-action-btn" onclick="editModel('${modelName}')" title="编辑">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                                <path d="m15 5 4 4"/>
+                            </svg>
+                        </button>
+                        <button class="model-action-btn" onclick="deleteModel('${modelName}')" title="删除">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18"/>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            }
+            
+            const defaultTag = isDefault ? '<span class="default-tag">默认</span>' : '';
+            
+            item.innerHTML = `
+                <div class="model-item-left">
+                    <div class="model-radio" onclick="selectModel(this, '${modelName}')"></div>
+                    <span class="model-name">${modelName}</span>
+                    ${defaultTag}
+                </div>
+                ${rightSection}
+            `;
+            return item;
+        }
+
+        // 清空添加表单
+        function clearAddForm() {
+            document.getElementById('providerSelect').value = 'openai';
+            document.getElementById('modelNameInput').value = '';
+            document.getElementById('apiBaseInput').value = '';
+            document.getElementById('apiKeyInput').value = '';
+            document.getElementById('contextLengthInput').value = '100000';
+            document.getElementById('maxTokensInput').value = '65536';
+            document.getElementById('presetApiKeyInput').value = '';
+            handleProviderChange();
+        }
+
+        // 打开弹窗
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // 点击弹窗外部关闭
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        // 侧边栏导航切换
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 初始化
+        handleProviderChange();
+    </script>
+</body>
+</html>

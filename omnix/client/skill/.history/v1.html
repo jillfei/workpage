@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>技能市场</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #ffffff;
+      color: #18181b;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---------- Header ---------- */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid #f0f0f1;
+    }
+    .header-left { display: flex; align-items: center; gap: 8px; }
+    .logo-box {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: #f4f4f5;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header h1 { font-size: 18px; font-weight: 600; }
+
+    .add-wrap { position: relative; }
+    .btn-add {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      background: #fff;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      font-size: 14px; font-weight: 500;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-add:hover { background: #fafafa; }
+    .dropdown {
+      position: absolute; right: 0; top: calc(100% + 8px);
+      width: 160px;
+      background: #fff;
+      border: 1px solid #f0f0f1;
+      border-radius: 12px;
+      box-shadow: 0 12px 32px rgba(0,0,0,.10);
+      padding: 4px;
+      z-index: 50;
+    }
+    .dropdown.hidden { display: none; }
+    .dropdown button {
+      width: 100%;
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      text-align: left;
+      background: none; border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #3f3f46;
+    }
+    .dropdown button:hover { background: #fafafa; }
+
+    /* ---------- Toolbar ---------- */
+    .toolbar {
+      padding: 16px 24px;
+    }
+    .toolbar-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .tabs { display: flex; gap: 24px; border-bottom: 1px solid #f0f0f1; }
+    .tab {
+      padding-bottom: 12px;
+      font-size: 14px;
+      color: #71717a;
+      background: none; border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tab.active {
+      color: #18181b; font-weight: 600;
+      border-bottom-color: #18181b;
+    }
+
+    .toolbar-right { display: flex; align-items: center; gap: 12px; }
+    .search-box { position: relative; }
+    .search-box svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #a1a1aa; }
+    .search-box input {
+      padding: 8px 16px 8px 36px;
+      width: 256px;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+    .search-box input:focus { border-color: #d4d4d8; }
+
+    .view-toggle { display: flex; border: 1px solid #e4e4e7; border-radius: 8px; overflow: hidden; }
+    .view-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 12px;
+      font-size: 14px;
+      background: #fff; color: #52525b;
+      border: none; cursor: pointer;
+    }
+    .view-btn.active { background: #f4f4f5; color: #18181b; }
+
+    /* ---------- Categories ---------- */
+    .cats { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .cat {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      color: #71717a;
+      background: none; border: none; cursor: pointer;
+      white-space: nowrap;
+    }
+    .cat.active { background: #f4f4f5; color: #18181b; font-weight: 500; }
+
+    /* ---------- Main ---------- */
+    main { padding: 8px 24px 48px; }
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .grid-list { display: flex; flex-direction: column; gap: 12px; }
+    @media (max-width: 768px) { .grid-cards { grid-template-columns: 1fr; } }
+
+    .card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: #fff;
+      border: 1px solid #f0f0f1;
+      border-radius: 16px;
+      padding: 20px;
+      transition: box-shadow .15s;
+    }
+    .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+    .grid-list .card { align-items: center; }
+
+    .icon-box {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,.08);
+    }
+    .card-body { flex: 1; min-width: 0; }
+    .card-title { font-size: 16px; font-weight: 600; color: #18181b; }
+    .card-desc {
+      margin-top: 4px;
+      font-size: 14px;
+      color: #71717a;
+      line-height: 1.5;
+    }
+    .clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    .card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+      gap: 12px;
+    }
+    .grid-list .card-foot { margin-top: 0; flex-shrink: 0; }
+
+    .stats { display: flex; align-items: center; gap: 16px; font-size: 14px; color: #a1a1aa; }
+    .stat { display: inline-flex; align-items: center; gap: 4px; }
+
+    .btn-install {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 16px;
+      background: #fff;
+      border: 1px solid #e4e4e7;
+      border-radius: 999px;
+      font-size: 14px; font-weight: 500;
+      color: #3f3f46;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-install:hover { background: #fafafa; }
+    .btn-try {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 16px;
+      background: #fff;
+      border: 1px solid #e4e4e7;
+      border-radius: 999px;
+      font-size: 14px; font-weight: 500;
+      color: #3f3f46;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-try:hover { background: #fafafa; }
+
+    /* 默认隐藏操作按钮，hover 卡片时淡入显示（保留占位避免布局抖动） */
+    .btn-install, .btn-try {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s ease, background .15s ease;
+    }
+    .card:hover .btn-install,
+    .card:hover .btn-try {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* 安装中 / 已安装：常显不受 hover 影响 */
+    .btn-install.loading,
+    .btn-install.done {
+      opacity: 1;
+      pointer-events: auto;
+      cursor: default;
+    }
+    .btn-install.done {
+      color: #16a34a;
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+    .spinner { animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 顶部成功提示 Toast */
+    #toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: #18181b;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease, transform .25s ease;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-box">
+        <svg class="icon-sm" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      </div>
+      <h1>技能</h1>
+    </div>
+
+    <div class="add-wrap">
+      <button class="btn-add" id="add-skill-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+        添加技能
+      </button>
+      <div class="dropdown hidden" id="add-dropdown">
+        <button>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          本地导入
+        </button>
+        <button>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+          从URL安装
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-top">
+      <nav class="tabs">
+        <button class="tab active" data-tab="market">技能市场</button>
+        <button class="tab" data-tab="builtin">系统内置</button>
+        <button class="tab" data-tab="enterprise">企业技能</button>
+        <button class="tab" data-tab="installed">已安装</button>
+      </nav>
+
+      <div class="toolbar-right">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input type="text" placeholder="搜索插件">
+        </div>
+        <div class="view-toggle">
+          <button class="view-btn" data-view="list">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            列表
+          </button>
+          <button class="view-btn active" data-view="card">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            卡片
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cats">
+      <button class="cat active" data-cat="ai">AI智能</button>
+      <button class="cat" data-cat="dev">开发工具</button>
+      <button class="cat" data-cat="efficiency">效率提升</button>
+      <button class="cat" data-cat="data">数据分析</button>
+      <button class="cat" data-cat="content">内容创作</button>
+      <button class="cat" data-cat="security">安全合规</button>
+      <button class="cat" data-cat="collab">通讯协作</button>
+    </div>
+  </div>
+
+  <!-- Skills -->
+  <main>
+    <div id="skills-container" class="grid-cards"></div>
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    const ICONS = {
+      "document": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
+      "ima": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+      "pm": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>',
+      "academic": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>',
+      "stock": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+      "video": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>',
+      "knowledge": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>',
+      "antifragile": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+      "mbti": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>',
+      "diagram": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>',
+      "wecom": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1 1 0 01-1-1v-6a1 1 0 011-1h8zM9 8h4v4H9V8z"/></svg>',
+      "fullstack": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>',
+      "wxpay": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>',
+      "java": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>'
+    };
+
+    const SKILLS = [
+      { id: 1, name: "腾讯文档 TENCENT DOCS", icon: "document", grad: "linear-gradient(135deg,#8b5cf6,#7c3aed)",
+        desc: "腾讯文档（docs.qq.com）-在线云文档平台，是创建、编辑、管理文档的首选 skill。涉及新建/创建/编辑/读取/查看/搜索文档等操作。",
+        stars: 140, downloads: "1,280万", featured: false },
+      { id: 2, name: "ima-skills", icon: "ima", grad: "linear-gradient(135deg,#60a5fa,#2563eb)",
+        desc: "ima skills，支持对笔记、知识库的读取、写入和检索等操作，可以帮你随时记录，收入ima智能管理，随时调用，龙虾输出精准懂你。",
+        stars: 140, downloads: "1,280万", featured: false },
+      { id: 3, name: "产品经理综合技能（PM Master）", icon: "pm", grad: "linear-gradient(135deg,#8b5cf6,#7c3aed)",
+        desc: "需求分析、PRD编写、产品需求文档、详细设计、BRD、MRD、PRD模板、用户故事、用户访谈、需求挖掘、痛点分析、功能设计。",
+        stars: 140, downloads: "1,280万", featured: false },
+      { id: 4, name: "论文学术预审委员会", icon: "academic", grad: "linear-gradient(135deg,#818cf8,#4f46e5)",
+        desc: "由五位资深审稿人组成的“学术预审委员会”，根据用户需求调度对应的审稿人角色进行论文审查。支持全面审稿（依次调度全部五个角色）和指定角色审稿。",
+        stars: 140, downloads: "280万", featured: false },
+      { id: 5, name: "股票价值投资分析系统", icon: "stock", grad: "linear-gradient(135deg,#fbbf24,#f59e0b)",
+        desc: "A股和港股价值投资分析系统。基于价值投资经典方法论，提供完整的投资分析框架：护城河分析、财务指标分析、估值模型、财报解读。",
+        stars: 140, downloads: "1,280万", featured: false },
+      { id: 6, name: "视频生成", icon: "video", grad: "linear-gradient(135deg,#374151,#111827)",
+        desc: "使用火山引擎 SD 1.5pro API 生成视频。支持文本到视频和图生视频，异步处理任务。",
+        stars: 140, downloads: "1,280万", featured: false },
+      { id: 7, name: "Knowledge Explainer", icon: "knowledge", grad: "linear-gradient(135deg,#fb923c,#f87171)",
+        desc: "知识点原子化拆解与专业讲解技能。",
+        stars: 140, downloads: "1,280万", featured: false },
+      { id: 8, name: "塔勒布·反脆弱", icon: "antifragile", grad: "linear-gradient(135deg,#3b82f6,#4f46e5)",
+        desc: "基于纳西姆·塔勒布的反脆弱理论，构建在不确定性中获益的能力。包含7个核心心智模型和10条决策启发式，帮助你在混乱中生存、在压力中成长。",
+        stars: 140, downloads: "1,280万", featured: false },
+      { id: 9, name: "MBTI性格测评", icon: "mbti", grad: "linear-gradient(135deg,#4b5563,#1f2937)",
+        desc: "基于 MBTI 93题完整版的专业人格测评 Skill，支持翻页式自助测验和对话式引导双模式，生成包含四维度分析、雷达图、认知功能栈和深度解读。",
+        stars: 140, downloads: "1,280万", featured: false },
+      { id: 10, name: "架构图与流程图绘制专家", icon: "diagram", grad: "linear-gradient(135deg,#1f2937,#000000)",
+        desc: "专业架构图与流程图绘制 skill。绘制系统架构图、微服务架构、网络拓扑图、业务流程图、数据流图、时序图、状态机、ER图等。支持 show_me 插件渲染。",
+        stars: 140, downloads: "1,280万", featured: true },
+      { id: 11, name: "企微CLI一键安装助手", icon: "wecom", grad: "linear-gradient(135deg,#fb923c,#ea580c)",
+        desc: "企业微信 CLI 一键安装助手。当用户提到「安装企业微信 CLI」「安装 wecom-cli」「企微 CLI 怎么安装」「一键安装企微」「配置企微CLI」等需求时触发。",
+        stars: 140, downloads: "1,280万", featured: false },
+      { id: 12, name: "全栈开发伴侣", icon: "fullstack", grad: "linear-gradient(135deg,#fcd34d,#f59e0b)",
+        desc: "全栈开发伴侣 — 自动检测当前项目类型（前端/后端/全栈），路由到对应的开发模式，内置后端开发、前端开发、代码规范三盒子流程。",
+        stars: 140, downloads: "1,280万", featured: false },
+      { id: 13, name: "微信支付基础支付接入skill", icon: "wxpay", grad: "linear-gradient(135deg,#34d399,#059669)",
+        desc: "微信支付基础支付解决方案，涵盖支付、退款账单、分账、商户进件、开户意愿确认，提供选型/代码示例/业务速查/质量评估/排障五大能力。",
+        stars: 140, downloads: "1,280万", featured: false },
+      { id: 14, name: "Java编程专家", icon: "java", grad: "linear-gradient(135deg,#60a5fa,#2563eb)",
+        desc: "Java 源码分析与编程专家。TRIGGER when: 分析Java源码、阅读Java代码、Java代码走读、Java项目结构分析、写Java代码、Java代码重构。",
+        stars: 140, downloads: "1,280万", featured: false }
+    ];
+
+    const STAR_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>';
+    const DL_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>';
+    const TRY_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>';
+    const PLUS_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>';
+
+    let currentView = "card";
+
+    function render() {
+      const container = document.getElementById("skills-container");
+      container.className = currentView === "card" ? "grid-cards" : "grid-list";
+      container.innerHTML = SKILLS.map(s => {
+        const iconHtml = '<div class="icon-box" style="background:' + s.grad + '">' + (ICONS[s.icon] || "") + '</div>';
+        const titleHtml = '<h3 class="card-title">' + s.name + '</h3>';
+        const descHtml = '<p class="card-desc ' + (currentView === "card" ? "clamp-2" : "clamp-1") + '">' + s.desc + '</p>';
+        const statsHtml =
+          '<div class="stats">' +
+            '<span class="stat">' + STAR_SVG + s.stars + '</span>' +
+            '<span class="stat">' + DL_SVG + s.downloads + '</span>' +
+          '</div>';
+        const actionHtml = s.featured
+          ? '<button class="btn-try">' + TRY_SVG + '试一试</button>'
+          : '<button class="btn-install" data-name="' + s.name + '">' + PLUS_SVG + '安装技能</button>';
+
+        if (currentView === "card") {
+          return '<div class="card">' + iconHtml +
+                   '<div class="card-body">' + titleHtml + descHtml +
+                     '<div class="card-foot">' + statsHtml + actionHtml + '</div>' +
+                   '</div>' +
+                 '</div>';
+        } else {
+          return '<div class="card">' + iconHtml +
+                   '<div class="card-body">' + titleHtml + descHtml + '</div>' +
+                   '<div class="card-foot">' + statsHtml + actionHtml + '</div>' +
+                 '</div>';
+        }
+      }).join("");
+    }
+
+    // ---- View toggle ----
+    document.querySelectorAll(".view-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentView = btn.dataset.view;
+        document.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        render();
+      });
+    });
+
+    // ---- Tabs ----
+    document.querySelectorAll(".tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    // ---- Categories ----
+    document.querySelectorAll(".cat").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".cat").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    // ---- Dropdown ----
+    const addBtn = document.getElementById("add-skill-btn");
+    const dropdown = document.getElementById("add-dropdown");
+    const addWrap = addBtn.parentElement;
+
+    addBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      dropdown.classList.toggle("hidden");
+    });
+    document.addEventListener("click", e => {
+      if (!addWrap.contains(e.target)) dropdown.classList.add("hidden");
+    });
+
+    // ---- Install: loading spinner -> success toast ----
+    const skillContainer = document.getElementById("skills-container");
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+    }
+    skillContainer.addEventListener("click", e => {
+      const btn = e.target.closest(".btn-install");
+      if (!btn) return;
+      if (btn.classList.contains("loading") || btn.classList.contains("done")) return;
+      const name = btn.getAttribute("data-name");
+      btn.classList.add("loading");
+      btn.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 109 9"/></svg> 安装中';
+      setTimeout(() => {
+        btn.classList.remove("loading");
+        btn.classList.add("done");
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> 已安装';
+        showToast("技能 " + name + " 安装成功");
+      }, 1300);
+    });
+
+    // ---- Init ----
+    render();
+  </script>
+</body>
+</html>
