@@ -36,15 +36,14 @@
 
     /* Top navigation */
     .top-nav {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
+      padding: 14px 24px;
       display: flex;
       align-items: center;
       gap: 8px;
       font-size: 14px;
       font-weight: 600;
       color: var(--text-main);
+	  box-shadow: 0 -1px 0 0 var(--border) inset;
     }
     .top-nav svg { width: 18px; height: 18px; color: var(--text-secondary); cursor: pointer; }
     .top-nav span { font-weight: normal; }
@@ -63,12 +62,12 @@
     /* Header */
     .header {
       background: var(--surface);
-      padding: 22px 24px;
+      margin: 0px 24px;
+      padding-top: 20px;
       display: flex;
       gap: 20px;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border);
     }
     .header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
     .header-meta { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
@@ -400,26 +399,27 @@
       const actionsWrap = document.getElementById('detail-actions');
       const addBtn = document.getElementById('add-mcp-btn');
 
+      function handleAddClick() {
+        addBtn.style.display = 'none';
+        const spinner = document.createElement('span');
+        spinner.className = 'mcp-spinner';
+        actionsWrap.appendChild(spinner);
+        setTimeout(() => {
+          spinner.remove();
+          showToast('添加' + name + '成功');
+          enterAddedState();
+        }, 800);
+      }
+
       if (source === '自定义MCP') {
         // 自定义 MCP 详情页不显示添加按钮
         actionsWrap.style.display = 'none';
       } else if (source === 'MCP市场') {
-        // 列表已添加的市场 MCP：直接进入“已添加”状态（开关 + 三点），无需再点添加
+        // 列表已添加的市场 MCP：直接进入"已添加"状态（开关 + 三点），无需再点添加
         if (params.get('added') === 'true') {
           enterAddedState();
         } else {
-          // 市场 MCP：点击添加 -> 转转转 -> 开关 + 三个点（与列表页一致）
-          addBtn.addEventListener('click', () => {
-            addBtn.style.display = 'none';
-            const spinner = document.createElement('span');
-            spinner.className = 'mcp-spinner';
-            actionsWrap.appendChild(spinner);
-            setTimeout(() => {
-              spinner.remove();
-              showToast('添加' + name + '成功');
-              enterAddedState();
-            }, 800);
-          });
+          addBtn.addEventListener('click', handleAddClick);
         }
       }
 
@@ -446,7 +446,7 @@
         const trigger = document.createElement('button');
         trigger.className = 'mcp-menu-trigger';
         trigger.setAttribute('aria-label', '更多操作');
-        trigger.textContent = '⋮';
+        trigger.textContent = '···';
 
         // 下拉菜单（卸载）
         const menu = document.createElement('div');
@@ -493,6 +493,8 @@
         const added = document.getElementById('detail-added');
         if (added) added.remove();
         addBtn.style.display = '';
+        addBtn.removeEventListener('click', handleAddClick);
+        addBtn.addEventListener('click', handleAddClick);
         showToast('已卸载 ' + name);
       });
 
