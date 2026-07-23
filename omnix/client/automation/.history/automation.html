@@ -1,0 +1,2651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自动化</title>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --surface: #ffffff;
+      --text-main: #111827;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --border: #e5e7eb;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      padding:0px; margin: 0px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top navigation */
+    .top-nav {
+      display: flex;
+      padding: 14px 24px;
+      align-items: center;
+      box-shadow: 0 -1px 0 0 var(--border) inset;
+      justify-content: space-between;
+      background: var(--surface);
+    }
+    .top-nav-left { display: flex; align-items: center; gap: 8px; }
+    .logo-box {width: 32px; height: 32px;border-radius: 8px;background: #f4f4f5;display: flex; align-items: center; justify-content: center;
+    }
+    .top-nav h1 { font-size: 18px; font-weight: 600; }
+
+    .add-wrap { position: relative; }
+    .btn-add {display: inline-flex; align-items: center; gap: 6px;padding: 6px 10px;background: #fff;border: 1px solid #e4e4e7; border-radius: 8px;font-size: 13px; font-weight: 500;cursor: pointer;transition: background .15s;}
+    .btn-add:hover { background: #fafafa; }
+
+    /* ---------- Header tabs ---------- */
+    header {
+      background: var(--surface);
+      padding: 0 24px;
+    }
+
+    .tab-bar {
+      display: inline-flex;
+      align-items: center;
+      gap: 24px;
+      padding: 0;
+      background: transparent;
+      border-radius: 0;
+    }
+
+    .tab {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 0;
+      border-radius: 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: color .15s ease;
+      border: none;
+      background: transparent;
+    }
+
+    .tab:hover {
+      color: var(--text-main);
+    }
+
+    .tab.active {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 2px;
+      background: var(--text-main);
+      border-radius: 2px 2px 0 0;
+    }
+
+    /* ---------- Main ---------- */
+    main {margin: 20px 24px; }
+
+    .hero-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 32px 8px 32px;
+      background: #ffffff;
+      box-shadow: 0 -1px 0 0 var(--border) inset;
+      margin-bottom: 20px;
+    }
+
+    .hero-text{
+      margin-top: 60px;
+    }
+
+    .hero-text h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+	
+    .hero-text p {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .hero-mascot {
+      width: 120px;
+      height: 120px;
+      flex-shrink: 0;
+    }
+
+    /* Automation list */
+    .automation-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .automation-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      transition: all .15s ease;
+      cursor: pointer;
+    }
+
+    .automation-item:hover,
+    .automation-item.is-hovered {
+      background: #f9fafb;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .item-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .item-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .item-info h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .item-info p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .item-actions {
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .automation-item:hover .item-actions,
+    .automation-item.is-hovered .item-actions {
+      display: flex;
+    }
+
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .15s ease;
+    }
+
+    .action-btn:hover {
+      background: #f3f4f6;
+      color: var(--text-main);
+    }
+
+    .action-btn.danger:hover {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    /* Tab panels */
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Executed list */
+    .executed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .executed-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #ffffff;
+      border-radius: 10px;
+      transition: background .15s ease;
+      cursor: pointer;
+    }
+
+    .executed-item:hover,
+    .executed-item.is-hovered {
+      background: #f3f4f6;
+    }
+
+    .executed-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-dot.success {
+      background: var(--success);
+    }
+
+    .status-dot.failed {
+      background: var(--danger);
+    }
+
+    .status-dot.pending {
+      background: #d1d5db;
+    }
+
+    .executed-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .status-tag {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
+
+    .status-tag.failed {
+      color: var(--danger);
+      background: #fee2e2;
+    }
+
+    .executed-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .executed-time {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .more-menu-wrap {
+      position: relative;
+    }
+
+    .more-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .15s ease;
+    }
+
+    .more-btn:hover {
+      background: #e5e7eb;
+      color: var(--text-main);
+    }
+
+    .more-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 6px;
+      min-width: 120px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.12), 0 4px 10px -4px rgba(0,0,0,0.1);
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      z-index: 100;
+    }
+
+    .more-dropdown.show {
+      display: flex;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-main);
+      cursor: pointer;
+      text-align: left;
+      transition: background .15s ease;
+    }
+
+    .dropdown-item:hover {
+      background: #f3f4f6;
+    }
+
+    .dropdown-item.danger {
+      color: var(--danger);
+    }
+
+    .dropdown-item.danger:hover {
+      background: #fee2e2;
+    }
+
+    /* Templates */
+    .templates-header {
+      margin-bottom: 20px;
+    }
+
+    .templates-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .templates-header p {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .template-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      transition: all .15s ease;
+      cursor: pointer;
+    }
+
+    .template-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transform: translateY(-1px);
+    }
+
+    .template-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .template-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .template-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .template-time {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 24px;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: #ffffff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 800px;
+      max-height: calc(100vh - 48px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px -10px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #f4f4f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      flex-shrink: 0;
+    }
+
+    .modal-title-text h2 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .modal-title-text p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .15s ease;
+      margin-top: 4px;
+    }
+
+    .modal-close:hover {
+      background: #f3f4f6;
+      color: var(--text-main);
+    }
+
+    .modal-body {
+      padding: 20px 24px;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+	
+	.form-group-label{
+		margin-bottom: 8px;
+	}
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .form-input,
+    .form-textarea,
+    .form-select,
+    .time-input {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-main);
+      background: #fff;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+	  height: 41px;
+	  width: 100%;
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: #d1d5db;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+    }
+
+    .form-textarea {
+      min-height: 100px;
+	  width: 100%;
+      resize: vertical;
+      line-height: 1.6;
+      margin-bottom: 10px;
+	  padding-bottom: 40px;
+    }
+
+    .form-select {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      color: var(--text-main);
+      transition: transform .1s ease;
+    }
+
+    .form-select .select-placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-select:hover {
+      border-color: #d1d5db;
+    }
+
+    .form-select:active {
+      transform: scale(0.98);
+    }
+
+    .prompt-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+	  margin: -50px 0px 0px 10px;
+    }
+
+    .tool-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+
+    .tool-btn:hover {
+      border-color: #d1d5db;
+      color: var(--text-main);
+    }
+
+    /* Skill multi-select */
+    .skill-select-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .skill-select-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 28px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all .15s ease;
+      max-width: 420px;
+      flex-wrap: wrap;
+    }
+
+    .skill-select-trigger:hover {
+      border-color: #d1d5db;
+      color: var(--text-main);
+    }
+
+    .skill-select-trigger .skill-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .skill-select-trigger .skill-tags {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px 2px 8px;
+      background: #f3f4f6;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--text-main);
+      cursor: default;
+    }
+
+    .skill-tag .remove-skill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all .15s ease;
+    }
+
+    .skill-tag .remove-skill:hover {
+      background: #e5e7eb;
+      color: var(--text-main);
+    }
+
+    .skill-select-trigger .trigger-caret {
+      width: 12px;
+      height: 12px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      margin-left: auto;
+      transition: transform .15s ease;
+    }
+
+    .skill-select-wrap.open .skill-select-trigger .trigger-caret {
+      transform: rotate(180deg);
+    }
+
+    .skill-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 6px;
+      width: 320px;
+      max-height: 360px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.12), 0 4px 10px -4px rgba(0,0,0,0.1);
+      display: none;
+      flex-direction: column;
+      z-index: 1002;
+      overflow: hidden;
+    }
+
+    .skill-dropdown.is-fixed {
+      position: fixed;
+    }
+
+    .skill-dropdown.show {
+      display: flex;
+    }
+
+    .skill-search {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .skill-search input {
+      width: 100%;
+      padding: 8px 10px 8px 30px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-main);
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 9px center;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .skill-search input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .skill-search input:focus {
+      border-color: #d1d5db;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+    }
+
+    .skill-list {
+      overflow-y: auto;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .skill-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      text-align: left;
+      transition: background .15s ease;
+    }
+
+    .skill-item:hover {
+      background: #f3f4f6;
+    }
+
+    .skill-item.selected {
+      background: #eef2ff;
+    }
+
+    .skill-item.selected .skill-check {
+      opacity: 1;
+      color: var(--primary);
+    }
+
+    .skill-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .skill-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    .skill-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .skill-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .skill-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .skill-check {
+      width: 18px;
+      height: 18px;
+      opacity: 0;
+      flex-shrink: 0;
+      color: var(--text-muted);
+      transition: opacity .15s ease, color .15s ease;
+    }
+
+    .skill-empty {
+      padding: 24px 12px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .freq-period-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .freq-period-row .freq-mode-wrap {
+      width: auto;
+      margin-bottom: 0;
+    }
+
+    .freq-period-row .freq-mode-wrap .form-select,
+    .freq-cycle-wrap {
+      width: auto;
+    }
+
+    .freq-cycle-wrap[hidden],
+    .freq-interval-week[hidden],
+    .freq-interval-gap[hidden],
+    .freq-once-wrap[hidden] {
+      display: none;
+    }
+
+    .freq-panel {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+	  height: 41px;
+    }
+
+    .freq-panel[hidden] {
+      display: none;
+    }
+
+    .freq-sub {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+      padding: 4px 14px;
+	  margin: -4px 0px;
+      background: #fafafa;
+      border-radius: 10px;
+	  box-shadow: 0px 0px 0px 1px var(--border) inset
+    }
+
+    .freq-sub[hidden] {
+      display: none;
+    }
+	
+	.weekday-trigger{height: 41px;}
+
+    .freq-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .freq-line.full-row {
+      flex-basis: 100%;
+    }
+
+    .freq-prefix {
+      font-size: 13px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .freq-tip {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .chip-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+
+    .chip {
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+
+    .chip:hover {
+      border-color: #d1d5db;
+      color: var(--text-main);
+    }
+
+    .chip.active {
+      background: var(--text-main);
+      border-color: var(--text-main);
+      color: #fff;
+    }
+
+    .date-range {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .range-sep {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .date-field,
+    .time-field {
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-main);
+      background: #fff;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease, transform .1s ease;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .date-field::-webkit-calendar-picker-indicator,
+    .time-field::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+    }
+
+    .date-field:focus,
+    .time-field:focus {
+      border-color: #d1d5db;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+    }
+
+    .date-field:active,
+    .time-field:active {
+      transform: scale(0.98);
+    }
+
+    .interval-input {
+      width: 72px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-main);
+      background: #fff;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .interval-input:focus {
+      border-color: #d1d5db;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+    }
+
+    .select-wrap {
+      position: relative;
+    }
+
+    .cycle-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 6px;
+      min-width: 140px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.12), 0 4px 10px -4px rgba(0,0,0,0.1);
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      z-index: 1001;
+    }
+
+    .cycle-menu.is-fixed {
+      position: fixed;
+      margin-top: 6px;
+    }
+
+    .cycle-menu.show {
+      display: flex;
+    }
+
+    .cycle-menu--row {
+      flex-direction: row !important;
+    }
+
+    .cycle-menu--row .cycle-option {
+      white-space: nowrap;
+    }
+
+    .cycle-option {
+      padding: 8px 10px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-main);
+      cursor: pointer;
+      text-align: left;
+      transition: background .15s ease;
+    }
+
+    .cycle-option:hover {
+      background: #f3f4f6;
+    }
+
+    .weekday-pop {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 6px;
+      min-width: 160px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.12), 0 4px 10px -4px rgba(0,0,0,0.1);
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      z-index: 1001;
+    }
+
+    .weekday-pop.is-fixed {
+      position: fixed;
+      margin-top: 6px;
+    }
+
+    .weekday-pop.show {
+      display: flex;
+    }
+
+    .weekday-pop.up {
+      top: auto;
+      bottom: 100%;
+      margin-top: 0;
+      margin-bottom: 6px;
+    }
+
+    .weekday-pop--grid {
+      grid-template-columns: repeat(7, 1fr);
+      min-width: 200px;
+    }
+	
+	.monthday-pop--grid {
+	  grid-template-columns: repeat(10, 1fr);
+	  min-width: 200px;
+	}
+	
+	.month-pop--grid {
+	  grid-template-columns: repeat(6, 1fr);
+	  min-width: 200px;
+	}
+
+    .date-pop-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+    }
+
+    .date-pop-btn {
+      padding: 4px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+
+    .date-pop-btn:hover {
+      border-color: #d1d5db;
+      color: var(--text-main);
+    }
+
+    .weekday-pop--grid.show {
+      display: grid;
+    }
+	
+	.monthday-pop--grid.show {
+	  display: grid;
+	}
+	
+    .month-pop--grid.show {
+      display: grid;
+    }
+
+    .weekday-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 4px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: background .15s ease;
+    }
+
+    .weekday-item:hover {
+      background: #f3f4f6;
+    }
+
+    .weekday-item input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--text-main);
+      cursor: pointer;
+	  margin: 3px 4px 0px 0px;
+	  display: block;
+	  float: left;
+    }
+
+	.weekday-drop{
+		min-width:100px;
+		max-width: 145px;
+	}
+
+	.weekday-drop .weekday-trigger span {
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		max-width: 280px;
+	}
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-cancel,
+    .btn-save {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .15s ease;
+      border: none;
+    }
+
+    .btn-cancel {
+      background: #fff;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+
+    .btn-cancel:hover {
+      background: #f9fafb;
+    }
+
+    .btn-save {
+      background: var(--text-muted);
+      color: #fff;
+    }
+
+    .btn-save:hover {
+      background: var(--text-secondary);
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed; top: 24px;left: 50%;transform: translateX(-50%) translateY(-20px); background: #18181b;
+      color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 14px;box-shadow: 0 8px 24px rgba(0,0,0,.18);
+      opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;z-index: 999;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  </style>
+</head>
+<body>
+
+  <!-- top-nav -->
+  <div class="top-nav">
+    <div class="top-nav-left">
+      <div class="logo-box">
+        <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+      </div>
+      <h1>自动化</h1>
+    </div>
+
+    <div class="add-wrap">
+      <button class="btn-add">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+        添加自动化
+      </button>
+    </div>
+  </div>
+
+  <header>
+    <nav class="tab-bar">
+      <button class="tab active" data-tab="automation">自动化</button>
+      <button class="tab" data-tab="executed">已执行</button>
+      <button class="tab" data-tab="templates">模板中心</button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="tab-panel active" id="panel-automation">
+      <section class="hero-card">
+        <div class="hero-text">
+          <h2>自动化</h2>
+          <p>任务调度尽在掌握，运行历史有据可查。</p>
+        </div>
+        <img class="hero-mascot" src="../../style/img/logo-gray.png">
+      </section>
+
+      <section class="automation-list">
+        <article class="automation-item">
+          <div class="item-left">
+            <div class="item-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div class="item-info">
+              <h3>提醒我下班</h3>
+              <p>下次运行 2小时后 · 工作日 18:00</p>
+            </div>
+          </div>
+          <div class="item-actions">
+            <button class="action-btn" title="运行">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+            </button>
+            <button class="action-btn" title="编辑">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <button class="action-btn danger" title="删除">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        </article>
+
+        <article class="automation-item">
+          <div class="item-left">
+            <div class="item-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div class="item-info">
+              <h3>每日新闻推送</h3>
+              <p>下次运行 17小时后 · 每天 09:00</p>
+            </div>
+          </div>
+          <div class="item-actions">
+            <button class="action-btn" title="运行">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+            </button>
+            <button class="action-btn" title="编辑">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <button class="action-btn danger" title="删除">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        </article>
+
+        <article class="automation-item">
+          <div class="item-left">
+            <div class="item-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div class="item-info">
+              <h3>每日 5 个英语单词</h3>
+              <p>下次运行 16小时后 · 每天 08:00</p>
+            </div>
+          </div>
+          <div class="item-actions">
+            <button class="action-btn" title="运行">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+            </button>
+            <button class="action-btn" title="编辑">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <button class="action-btn danger" title="删除">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        </article>
+      </section>
+    </div>
+
+    <div class="tab-panel" id="panel-executed">
+      <section class="executed-list">
+        <article class="executed-item">
+          <div class="executed-left">
+            <span class="status-dot success"></span>
+            <span class="executed-name">每日新闻推送</span>
+          </div>
+          <div class="executed-right">
+            <span class="executed-time">19 小时前</span>
+            <div class="more-menu-wrap">
+              <button class="more-btn" aria-label="更多">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="6" r="2"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <circle cx="12" cy="18" r="2"></circle>
+                </svg>
+              </button>
+              <div class="more-dropdown">
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                  置顶
+                </button>
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  重命名
+                </button>
+                <button class="dropdown-item danger">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  删除任务
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="executed-item">
+          <div class="executed-left">
+            <span class="status-dot success"></span>
+            <span class="executed-name">每日 5 个英语单词</span>
+          </div>
+          <div class="executed-right">
+            <span class="executed-time">1 天前</span>
+            <div class="more-menu-wrap">
+              <button class="more-btn" aria-label="更多">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="6" r="2"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <circle cx="12" cy="18" r="2"></circle>
+                </svg>
+              </button>
+              <div class="more-dropdown">
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                  置顶
+                </button>
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  重命名
+                </button>
+                <button class="dropdown-item danger">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  删除任务
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="executed-item">
+          <div class="executed-left">
+            <span class="status-dot failed"></span>
+            <span class="executed-name">每周工作周报</span>
+            <span class="status-tag failed">失败</span>
+          </div>
+          <div class="executed-right">
+            <span class="executed-time">1 天前</span>
+            <div class="more-menu-wrap">
+              <button class="more-btn" aria-label="更多">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="6" r="2"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <circle cx="12" cy="18" r="2"></circle>
+                </svg>
+              </button>
+              <div class="more-dropdown">
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                  置顶
+                </button>
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  重命名
+                </button>
+                <button class="dropdown-item danger">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  删除任务
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="executed-item">
+          <div class="executed-left">
+            <span class="status-dot pending"></span>
+            <span class="executed-name">经典电影推荐</span>
+          </div>
+          <div class="executed-right">
+            <span class="executed-time">19 小时前</span>
+            <div class="more-menu-wrap">
+              <button class="more-btn" aria-label="更多">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="6" r="2"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <circle cx="12" cy="18" r="2"></circle>
+                </svg>
+              </button>
+              <div class="more-dropdown">
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                  置顶
+                </button>
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  重命名
+                </button>
+                <button class="dropdown-item danger">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  删除任务
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="executed-item">
+          <div class="executed-left">
+            <span class="status-dot pending"></span>
+            <span class="executed-name">每日 5 个英语单词</span>
+          </div>
+          <div class="executed-right">
+            <span class="executed-time">1 天前</span>
+            <div class="more-menu-wrap">
+              <button class="more-btn" aria-label="更多">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="6" r="2"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <circle cx="12" cy="18" r="2"></circle>
+                </svg>
+              </button>
+              <div class="more-dropdown">
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                  置顶
+                </button>
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  重命名
+                </button>
+                <button class="dropdown-item danger">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  删除任务
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="executed-item">
+          <div class="executed-left">
+            <span class="status-dot pending"></span>
+            <span class="executed-name">每日新闻推送</span>
+          </div>
+          <div class="executed-right">
+            <span class="executed-time">1 天前</span>
+            <div class="more-menu-wrap">
+              <button class="more-btn" aria-label="更多">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="6" r="2"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <circle cx="12" cy="18" r="2"></circle>
+                </svg>
+              </button>
+              <div class="more-dropdown">
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                  置顶
+                </button>
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  重命名
+                </button>
+                <button class="dropdown-item danger">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  删除任务
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="executed-item">
+          <div class="executed-left">
+            <span class="status-dot pending"></span>
+            <span class="executed-name">每日 5 个英语单词</span>
+          </div>
+          <div class="executed-right">
+            <span class="executed-time">2 天前</span>
+            <div class="more-menu-wrap">
+              <button class="more-btn" aria-label="更多">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="6" r="2"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <circle cx="12" cy="18" r="2"></circle>
+                </svg>
+              </button>
+              <div class="more-dropdown">
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                  置顶
+                </button>
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  重命名
+                </button>
+                <button class="dropdown-item danger">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  删除任务
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="executed-item">
+          <div class="executed-left">
+            <span class="status-dot pending"></span>
+            <span class="executed-name">每日新闻推送</span>
+          </div>
+          <div class="executed-right">
+            <span class="executed-time">2 天前</span>
+            <div class="more-menu-wrap">
+              <button class="more-btn" aria-label="更多">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="6" r="2"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <circle cx="12" cy="18" r="2"></circle>
+                </svg>
+              </button>
+              <div class="more-dropdown">
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                  置顶
+                </button>
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  重命名
+                </button>
+                <button class="dropdown-item danger">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  删除任务
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="executed-item">
+          <div class="executed-left">
+            <span class="status-dot pending"></span>
+            <span class="executed-name">每日 5 个英语单词</span>
+          </div>
+          <div class="executed-right">
+            <span class="executed-time">3 天前</span>
+            <div class="more-menu-wrap">
+              <button class="more-btn" aria-label="更多">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="6" r="2"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <circle cx="12" cy="18" r="2"></circle>
+                </svg>
+              </button>
+              <div class="more-dropdown">
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                  置顶
+                </button>
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  重命名
+                </button>
+                <button class="dropdown-item danger">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  删除任务
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="executed-item">
+          <div class="executed-left">
+            <span class="status-dot pending"></span>
+            <span class="executed-name">体检预约提醒</span>
+          </div>
+          <div class="executed-right">
+            <span class="executed-time">3 天前</span>
+            <div class="more-menu-wrap">
+              <button class="more-btn" aria-label="更多">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="12" cy="6" r="2"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                  <circle cx="12" cy="18" r="2"></circle>
+                </svg>
+              </button>
+              <div class="more-dropdown">
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                  置顶
+                </button>
+                <button class="dropdown-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  重命名
+                </button>
+                <button class="dropdown-item danger">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  删除任务
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+    </div>
+
+    <div class="tab-panel" id="panel-templates">
+      <section class="templates-header">
+        <h2>模板中心</h2>
+        <p>选一个模板，开启你的自动化第一步。</p>
+      </section>
+
+      <section class="template-grid">
+        <article class="template-card">
+          <div class="template-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          </div>
+          <h3>每日新闻推送</h3>
+          <p class="template-desc">关注当天 AI 领域的重要动态，侧重 AI coding 与具身智能方向。筛选 3-5 条有价值的信息，简…</p>
+          <p class="template-time">每天 08:00</p>
+        </article>
+
+        <article class="template-card">
+          <div class="template-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+          </div>
+          <h3>每日 5 个英语单词</h3>
+          <p class="template-desc">每天推荐 5 个实用英语单词，优先选取生活和职场中常见词汇。输出词义、音标、例句，以及…</p>
+          <p class="template-time">每天 08:00</p>
+        </article>
+
+        <article class="template-card">
+          <div class="template-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          </div>
+          <h3>每周工作周报</h3>
+          <p class="template-desc">梳理本周仓库中的 PR 与 Issue 情况，包括新增、已关闭及重点讨论。输出一份周报，涵盖…</p>
+          <p class="template-time">每天 08:00</p>
+        </article>
+
+        <article class="template-card">
+          <div class="template-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+          </div>
+          <h3>经典电影推荐</h3>
+          <p class="template-desc">给我推荐一部公认的经典电影（评分高、口碑好），简要介绍剧情梗概、亮点所在，以及它…</p>
+          <p class="template-time">每天 08:00</p>
+        </article>
+
+        <article class="template-card">
+          <div class="template-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <h3>历史上的今天</h3>
+          <p class="template-desc">历史上的今天发生过什么有趣的事？从科技、电影、音乐等领域中挑一个，讲讲它的来龙去脉…</p>
+          <p class="template-time">每天 08:00</p>
+        </article>
+
+        <article class="template-card">
+          <div class="template-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          </div>
+          <h3>可爱萌宠手机壁纸</h3>
+          <p class="template-desc">帮我生成一张手机壁纸，以下主题随机选一个就可以。主体：可爱萌宠。格式要求：手机壁纸…</p>
+          <p class="template-time">每天 08:00</p>
+        </article>
+
+        <article class="template-card">
+          <div class="template-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
+          <h3>会议前准备</h3>
+          <p class="template-desc">在会议开始前，提醒我整理议题、目标、需要确认的问题，以及要同步的关键结论。</p>
+          <p class="template-time">每天 08:00</p>
+        </article>
+
+        <article class="template-card">
+          <div class="template-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          </div>
+          <h3>每日一个为什么</h3>
+          <p class="template-desc">随机挑选一个有趣的冷知识或生活百科问题，并给出详细、有趣、通俗易懂的解答。每次问…</p>
+          <p class="template-time">每天 08:00</p>
+        </article>
+
+        <article class="template-card">
+          <div class="template-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          </div>
+          <h3>体检预约提醒</h3>
+          <p class="template-desc">4月8号七点提醒我确认体检时间、准备证件，提前空腹并留意注意事项。</p>
+          <p class="template-time">每天 08:00</p>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <!-- Add automation modal -->
+  <div class="modal-overlay" id="add-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+          </div>
+          <div class="modal-title-text">
+            <h2>添加自动化</h2>
+            <p>预设最佳流程，一键开启自动化。</p>
+          </div>
+        </div>
+        <button class="modal-close" aria-label="关闭">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-group-label">名称</label>
+          <input type="text" class="form-input" placeholder="输入自动化任务名称">
+        </div>
+
+        <div class="form-group">
+          <label class="form-group-label">项目</label>
+          <div class="select-wrap" id="projectSelectWrap">
+            <div class="form-select" id="projectSelect">
+              <span class="select-placeholder">选择项目</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="cycle-menu">
+              <button type="button" class="cycle-option project-option">项目 Alpha</button>
+              <button type="button" class="cycle-option project-option">项目 Beta</button>
+              <button type="button" class="cycle-option project-option">项目 Gamma</button>
+              <button type="button" class="cycle-option project-option">项目 Delta</button>
+              <button type="button" class="cycle-option project-option">项目 Epsilon</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-group-label">提示词</label>
+          <textarea class="form-textarea" placeholder="添加提示词，例如：在 sentry 中查找崩溃"></textarea>
+          <div class="prompt-tools">
+            <button class="tool-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+              Auto
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="skill-select-wrap" id="skillSelectWrap">
+              <div class="skill-select-trigger" id="skillSelectTrigger">
+                <span class="skill-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"></path></svg>
+                  技能
+                </span>
+                <span class="skill-tags" id="skillTags"></span>
+                <svg class="trigger-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="skill-dropdown" id="skillDropdown">
+                <div class="skill-search">
+                  <input type="text" id="skillSearchInput" placeholder="搜索技能">
+                </div>
+                <div class="skill-list" id="skillList">
+                  <button type="button" class="skill-item" data-id="tencent-docs" data-name="腾讯文档" data-color="#7c3aed">
+                    <div class="skill-icon" style="background:#7c3aed;">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <div class="skill-info">
+                      <div class="skill-name">腾讯文档 TENCENT DOCS</div>
+                      <div class="skill-desc">腾讯文档（docs.qq.com）- 在线云文档平台，是创作者协作办公的首选。</div>
+                    </div>
+                    <svg class="skill-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </button>
+                  <button type="button" class="skill-item" data-id="ima-skills" data-name="ima-skills" data-color="#2563eb">
+                    <div class="skill-icon" style="background:#2563eb;">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                    </div>
+                    <div class="skill-info">
+                      <div class="skill-name">ima-skills</div>
+                      <div class="skill-desc">ima skills，支持对笔记、知识库的读取、写入和检索。</div>
+                    </div>
+                    <svg class="skill-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </button>
+                  <button type="button" class="skill-item" data-id="pm-master" data-name="产品经理综合技能" data-color="#7c3aed">
+                    <div class="skill-icon" style="background:#7c3aed;">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                    </div>
+                    <div class="skill-info">
+                      <div class="skill-name">产品经理综合技能（PM Master）</div>
+                      <div class="skill-desc">需求分析、PRD编写、产品需求文档、详细设计、项目排期。</div>
+                    </div>
+                    <svg class="skill-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </button>
+                  <button type="button" class="skill-item" data-id="wecom-cli" data-name="企微CLI一键安装助手" data-color="#ea580c">
+                    <div class="skill-icon" style="background:#ea580c;">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <div class="skill-info">
+                      <div class="skill-name">企微CLI一键安装助手</div>
+                      <div class="skill-desc">企业微信 CLI 一键安装助手。当用户提到「安装企业微信」时调用。</div>
+                    </div>
+                    <svg class="skill-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-group-label">MCP</label>
+          <div class="form-select">
+            <span class="select-placeholder">选择MCP</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-group-label">执行频率</label>
+          <div class="freq-period-row">
+            <div class="select-wrap freq-mode-wrap">
+              <div class="form-select" id="freqModeSelect">
+                <span>按周期</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="cycle-menu">
+                <button type="button" class="cycle-option mode-option active" data-mode="cycle">按周期</button>
+                <button type="button" class="cycle-option mode-option" data-mode="interval">按间隔</button>
+                <button type="button" class="cycle-option mode-option" data-mode="once">单次</button>
+              </div>
+            </div>
+
+            <div class="select-wrap freq-cycle-wrap" id="freqCycleWrap">
+              <div class="form-select cycle-unit" id="cycleUnit">
+                <span>每天</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="cycle-menu">
+                <button type="button" class="cycle-option" data-unit="daily">每天</button>
+                <button type="button" class="cycle-option" data-unit="weekly">每周</button>
+                <button type="button" class="cycle-option" data-unit="biweekly">双周</button>
+                <button type="button" class="cycle-option" data-unit="monthly">每月</button>
+                <button type="button" class="cycle-option" data-unit="yearly">每年</button>
+              </div>
+            </div>
+
+            <div class="freq-sub" data-sub="daily">
+              <div class="freq-line">
+                <span class="freq-prefix">时间</span>
+                <input type="time" class="time-field" value="08:30">
+              </div>
+            </div>
+
+            <div class="freq-sub" data-sub="weekly" hidden>
+              <div class="freq-line">
+                <span class="freq-prefix">星期</span>
+                <div class="select-wrap weekday-drop">
+                  <div class="form-select weekday-trigger" id="cycleWeekdayTrigger">
+                    <span class="select-placeholder">选择星期</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </div>
+                  <div class="weekday-pop weekday-pop--grid">
+                    <label class="weekday-item"><input type="checkbox" value="周一"><span>周一</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="周二"><span>周二</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="周三"><span>周三</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="周四"><span>周四</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="周五"><span>周五</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="周六"><span>周六</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="周日"><span>周日</span></label>
+                  </div>
+                </div>
+              </div>
+              <div class="freq-line">
+                <span class="freq-prefix">时间</span>
+                <input type="time" class="time-field" value="08:30">
+              </div>
+            </div>
+
+            <div class="freq-sub" data-sub="monthly" hidden>
+              <div class="freq-line">
+                <span class="freq-prefix">日期</span>
+                <div class="select-wrap weekday-drop">
+                  <div class="form-select weekday-trigger" id="cycleDateTrigger">
+                    <span class="select-placeholder">选择日期</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </div>
+                  <div class="weekday-pop date-pop monthday-pop--grid">
+                    <label class="weekday-item"><input type="checkbox" value="1日"><span>1</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="2日"><span>2</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="3日"><span>3</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="4日"><span>4</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="5日"><span>5</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="6日"><span>6</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="7日"><span>7</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="8日"><span>8</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="9日"><span>9</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="10日"><span>10</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="11日"><span>11</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="12日"><span>12</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="13日"><span>13</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="14日"><span>14</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="15日"><span>15</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="16日"><span>16</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="17日"><span>17</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="18日"><span>18</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="19日"><span>19</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="20日"><span>20</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="21日"><span>21</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="22日"><span>22</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="23日"><span>23</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="24日"><span>24</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="25日"><span>25</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="26日"><span>26</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="27日"><span>27</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="28日"><span>28</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="29日"><span>29</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="30日"><span>30</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="31日"><span>31</span></label>
+                    <div class="date-pop-actions">
+                      <button type="button" class="date-pop-btn" data-action="all">全选</button>
+                      <button type="button" class="date-pop-btn" data-action="invert">反选</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="freq-line">
+                <span class="freq-prefix">时间</span>
+                <input type="time" class="time-field" value="08:30">
+              </div>
+            </div>
+
+            <div class="freq-sub" data-sub="yearly" hidden>
+              <div class="freq-line">
+                <span class="freq-prefix">月份</span>
+                <div class="select-wrap weekday-drop">
+                  <div class="form-select weekday-trigger" id="yearlyMonthTrigger">
+                    <span class="select-placeholder">选择月份</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </div>
+                  <div class="weekday-pop month-pop--grid month-pop">
+                    <label class="weekday-item"><input type="checkbox" value="1月"><span>1月</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="2月"><span>2月</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="3月"><span>3月</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="4月"><span>4月</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="5月"><span>5月</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="6月"><span>6月</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="7月"><span>7月</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="8月"><span>8月</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="9月"><span>9月</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="10月"><span>10月</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="11月"><span>11月</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="12月"><span>12月</span></label>
+                    <div class="date-pop-actions">
+                      <button type="button" class="date-pop-btn" data-action="all">全选</button>
+                      <button type="button" class="date-pop-btn" data-action="invert">反选</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="freq-line">
+                <span class="freq-prefix">日期</span>
+                <div class="select-wrap weekday-drop">
+                  <div class="form-select weekday-trigger" id="yearlyDateTrigger">
+                    <span class="select-placeholder">选择日期</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </div>
+                  <div class="weekday-pop monthday-pop--grid date-pop-yearly">
+                    <label class="weekday-item"><input type="checkbox" value="1日"><span>1</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="2日"><span>2</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="3日"><span>3</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="4日"><span>4</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="5日"><span>5</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="6日"><span>6</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="7日"><span>7</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="8日"><span>8</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="9日"><span>9</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="10日"><span>10</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="11日"><span>11</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="12日"><span>12</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="13日"><span>13</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="14日"><span>14</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="15日"><span>15</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="16日"><span>16</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="17日"><span>17</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="18日"><span>18</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="19日"><span>19</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="20日"><span>20</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="21日"><span>21</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="22日"><span>22</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="23日"><span>23</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="24日"><span>24</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="25日"><span>25</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="26日"><span>26</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="27日"><span>27</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="28日"><span>28</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="29日"><span>29</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="30日"><span>30</span></label>
+                    <label class="weekday-item"><input type="checkbox" value="31日"><span>31</span></label>
+                    <div class="date-pop-actions">
+                      <button type="button" class="date-pop-btn" data-action="all">全选</button>
+                      <button type="button" class="date-pop-btn" data-action="invert">反选</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="freq-line">
+                <span class="freq-prefix">时间</span>
+                <input type="time" class="time-field" value="08:30">
+              </div>
+            </div>
+
+            <div class="select-wrap weekday-drop freq-interval-week" id="freqIntervalWeekWrap" hidden>
+              <div class="form-select weekday-trigger" id="intervalWeekdayTrigger">
+                <span class="select-placeholder">选择星期</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="weekday-pop weekday-pop--grid">
+                <label class="weekday-item"><input type="checkbox" value="周一"><span>周一</span></label>
+                <label class="weekday-item"><input type="checkbox" value="周二"><span>周二</span></label>
+                <label class="weekday-item"><input type="checkbox" value="周三"><span>周三</span></label>
+                <label class="weekday-item"><input type="checkbox" value="周四"><span>周四</span></label>
+                <label class="weekday-item"><input type="checkbox" value="周五"><span>周五</span></label>
+                <label class="weekday-item"><input type="checkbox" value="周六"><span>周六</span></label>
+                <label class="weekday-item"><input type="checkbox" value="周日"><span>周日</span></label>
+              </div>
+            </div>
+
+            <div class="freq-line freq-interval-gap" id="freqIntervalGapWrap" hidden>
+              <span class="freq-prefix">每隔</span>
+              <input type="number" class="interval-input" value="1" min="1">
+              <span class="freq-prefix">小时执行</span>
+            </div>
+
+            <div class="freq-line freq-once-wrap" id="freqOnceWrap" hidden>
+              <input type="date" class="date-field once-date">
+              <input type="time" class="time-field" value="08:30">
+            </div>
+          </div>
+
+          <!-- 按周期 -->
+          <div class="freq-panel" data-panel="cycle">
+
+            <div class="freq-line full-row">
+              <span class="freq-prefix">生效区间日期</span>
+              <div class="date-range">
+                <input type="date" class="date-field" placeholder="开始日期">
+                <span class="range-sep">至</span>
+                <input type="date" class="date-field" placeholder="结束日期">
+              </div>
+            </div>
+          </div>
+
+          <!-- 按间隔 -->
+          <div class="freq-panel" data-panel="interval" hidden>
+            <div class="freq-line full-row">
+              <span class="freq-prefix">生效区间日期</span>
+              <div class="date-range">
+                <input type="date" class="date-field" placeholder="开始日期">
+                <span class="range-sep">至</span>
+                <input type="date" class="date-field" placeholder="结束日期">
+              </div>
+            </div>
+          </div>
+
+          <!-- 单次 -->
+          <div class="freq-panel" data-panel="once" hidden>
+            <div class="freq-line full-row">
+              <span class="freq-tip">提示：仅执行一次，执行后关闭该任务；选择当前时间之前的时间，会立即执行。</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel">取消</button>
+        <button class="btn-save">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    // Tab switching
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.tab;
+
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        panels.forEach(panel => {
+          if (panel.id === 'panel-' + target) {
+            panel.classList.add('active');
+          } else {
+            panel.classList.remove('active');
+          }
+        });
+      });
+    });
+
+    // More dropdown toggle
+    document.querySelectorAll('.more-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dropdown = btn.nextElementSibling;
+        const isOpen = dropdown.classList.contains('show');
+
+        // close all others
+        document.querySelectorAll('.more-dropdown').forEach(d => d.classList.remove('show'));
+
+        if (!isOpen) {
+          dropdown.classList.add('show');
+        }
+      });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.more-dropdown').forEach(d => d.classList.remove('show'));
+    });
+
+    // Add automation modal
+    const addBtn = document.querySelector('.btn-add');
+    const addModal = document.getElementById('add-modal');
+    const modalClose = addModal.querySelector('.modal-close');
+    const btnCancel = addModal.querySelector('.btn-cancel');
+    const btnSave = addModal.querySelector('.btn-save');
+
+    function openModal() {
+      addModal.classList.add('show');
+    }
+
+    function closeModal() {
+      addModal.classList.remove('show');
+    }
+
+    addBtn.addEventListener('click', openModal);
+    modalClose.addEventListener('click', closeModal);
+    btnCancel.addEventListener('click', closeModal);
+    btnSave.addEventListener('click', closeModal);
+
+    // Frequency mode switching (dropdown)
+    const freqModeSelect = document.getElementById('freqModeSelect');
+    const freqModeMenu = freqModeSelect.nextElementSibling;
+    const freqModeOptions = freqModeMenu.querySelectorAll('.mode-option');
+    const freqPanels = document.querySelectorAll('.freq-panel');
+    const freqCycleWrap = document.getElementById('freqCycleWrap');
+    const freqIntervalWeekWrap = document.getElementById('freqIntervalWeekWrap');
+    const freqIntervalGapWrap = document.getElementById('freqIntervalGapWrap');
+    const freqOnceWrap = document.getElementById('freqOnceWrap');
+
+    function positionDropdown(trigger, dropdown) {
+      const rect = trigger.getBoundingClientRect();
+      dropdown.style.top = (rect.bottom + 6) + 'px';
+      dropdown.style.left = rect.left + 'px';
+    }
+
+    freqModeSelect.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = freqModeMenu.classList.contains('show');
+      document.querySelectorAll('.cycle-menu').forEach(m => { m.classList.remove('show', 'is-fixed'); m.style.top = ''; m.style.left = ''; });
+      closeSkillDropdown();
+      if (!isOpen) {
+        positionDropdown(freqModeSelect, freqModeMenu);
+        freqModeMenu.classList.add('show', 'is-fixed');
+      }
+    });
+
+    freqModeOptions.forEach(opt => {
+      opt.addEventListener('click', () => {
+        const target = opt.dataset.mode;
+        freqModeSelect.querySelector('span').textContent = opt.textContent;
+        freqModeOptions.forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        freqModeMenu.classList.remove('show', 'is-fixed');
+        freqModeMenu.style.top = '';
+        freqModeMenu.style.left = '';
+        freqPanels.forEach(p => {
+          p.hidden = (p.dataset.panel !== target);
+        });
+        freqCycleWrap.hidden = (target !== 'cycle');
+        freqIntervalWeekWrap.hidden = (target !== 'interval');
+        freqIntervalGapWrap.hidden = (target !== 'interval');
+        freqOnceWrap.hidden = (target !== 'once');
+        if (target === 'cycle') {
+          applyCycleUnit(currentUnit);
+        } else {
+          cycleSubs.forEach(s => { s.hidden = true; });
+        }
+      });
+    });
+
+    // Cycle unit dropdown
+    const cycleUnit = document.getElementById('cycleUnit');
+    const cycleMenu = cycleUnit.nextElementSibling;
+    const cycleOptions = cycleMenu.querySelectorAll('.cycle-option');
+    const cycleSubs = document.querySelectorAll('.freq-sub');
+    let currentUnit = 'daily';
+
+    function applyCycleUnit(unit) {
+      cycleSubs.forEach(s => {
+        let show = false;
+        if (unit === 'daily' && s.dataset.sub === 'daily') show = true;
+        if ((unit === 'weekly' || unit === 'biweekly') && s.dataset.sub === 'weekly') show = true;
+        if (unit === 'monthly' && s.dataset.sub === 'monthly') show = true;
+        if (unit === 'yearly' && s.dataset.sub === 'yearly') show = true;
+        s.hidden = !show;
+      });
+    }
+
+    cycleUnit.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = cycleMenu.classList.contains('show');
+      document.querySelectorAll('.cycle-menu').forEach(m => { m.classList.remove('show', 'is-fixed'); m.style.top = ''; m.style.left = ''; });
+      closeSkillDropdown();
+      if (!isOpen) {
+        positionDropdown(cycleUnit, cycleMenu);
+        cycleMenu.classList.add('show', 'is-fixed');
+      }
+    });
+
+    const defaultCycleOpt = cycleMenu.querySelector('[data-unit="daily"]');
+    if (defaultCycleOpt) defaultCycleOpt.classList.add('active');
+
+    cycleOptions.forEach(opt => {
+      opt.addEventListener('click', () => {
+        const unit = opt.dataset.unit;
+        currentUnit = unit;
+        cycleUnit.querySelector('span').textContent = opt.textContent;
+        cycleOptions.forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        cycleMenu.classList.remove('show', 'is-fixed');
+        cycleMenu.style.top = '';
+        cycleMenu.style.left = '';
+        applyCycleUnit(unit);
+      });
+    });
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.cycle-menu').forEach(m => { m.classList.remove('show', 'is-fixed'); m.style.top = ''; m.style.left = ''; });
+      document.querySelectorAll('.weekday-pop').forEach(p => { p.classList.remove('show', 'is-fixed'); p.style.top = ''; p.style.left = ''; });
+      closeSkillDropdown();
+    });
+
+    // Weekday multi-select (textbox + popup panel) — shared by 按间隔 & 按周期(每周/双周)
+    function initWeekdayDropdown(triggerId, placeholder) {
+      const trigger = document.getElementById(triggerId);
+      if (!trigger) return;
+      const pop = trigger.nextElementSibling;
+      const checks = pop.querySelectorAll('input[type="checkbox"]');
+
+      const sync = () => {
+        const picked = Array.from(checks).filter(c => c.checked).map(c => c.value);
+        const span = trigger.querySelector('span');
+        if (picked.length) {
+          span.textContent = picked.join('、');
+          span.classList.remove('select-placeholder');
+        } else {
+          span.textContent = placeholder;
+          span.classList.add('select-placeholder');
+        }
+      };
+
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = pop.classList.contains('show');
+        document.querySelectorAll('.cycle-menu').forEach(m => { m.classList.remove('show', 'is-fixed'); m.style.top = ''; m.style.left = ''; });
+        document.querySelectorAll('.weekday-pop').forEach(p => { p.classList.remove('show', 'is-fixed'); p.style.top = ''; p.style.left = ''; });
+        closeSkillDropdown();
+        if (!isOpen) {
+          positionDropdown(trigger, pop);
+          pop.classList.add('show', 'is-fixed');
+        }
+      });
+
+      checks.forEach(c => c.addEventListener('change', sync));
+      pop.addEventListener('click', (e) => e.stopPropagation());
+    }
+
+    initWeekdayDropdown('intervalWeekdayTrigger', '选择星期');
+    initWeekdayDropdown('cycleWeekdayTrigger', '选择星期');
+    initWeekdayDropdown('cycleDateTrigger', '选择日期');
+    initWeekdayDropdown('yearlyMonthTrigger', '选择月份');
+    initWeekdayDropdown('yearlyDateTrigger', '选择日期');
+
+    // Project dropdown
+    const projectSelect = document.getElementById('projectSelect');
+    if (projectSelect) {
+      const projectMenu = projectSelect.nextElementSibling;
+      const projectOptions = projectMenu.querySelectorAll('.project-option');
+
+      projectSelect.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = projectMenu.classList.contains('show');
+        document.querySelectorAll('.cycle-menu').forEach(m => { m.classList.remove('show', 'is-fixed'); m.style.top = ''; m.style.left = ''; });
+        document.querySelectorAll('.weekday-pop').forEach(p => { p.classList.remove('show', 'is-fixed'); p.style.top = ''; p.style.left = ''; });
+        closeSkillDropdown();
+        if (!isOpen) {
+          positionDropdown(projectSelect, projectMenu);
+          projectMenu.classList.add('show', 'is-fixed');
+        }
+      });
+
+      projectOptions.forEach(opt => {
+        opt.addEventListener('click', () => {
+          projectSelect.querySelector('span').textContent = opt.textContent;
+          projectSelect.querySelector('span').classList.remove('select-placeholder');
+          projectOptions.forEach(o => o.classList.remove('active'));
+          opt.classList.add('active');
+          projectMenu.classList.remove('show', 'is-fixed');
+          projectMenu.style.top = '';
+          projectMenu.style.left = '';
+        });
+      });
+    }
+
+    // Skill multi-select dropdown
+    const skillSelectWrap = document.getElementById('skillSelectWrap');
+    const skillSelectTrigger = document.getElementById('skillSelectTrigger');
+    const skillDropdown = document.getElementById('skillDropdown');
+    const skillSearchInput = document.getElementById('skillSearchInput');
+    const skillList = document.getElementById('skillList');
+    const skillTags = document.getElementById('skillTags');
+    const skillItems = skillList ? skillList.querySelectorAll('.skill-item') : [];
+    const selectedSkills = new Map();
+
+    function renderSkillTags() {
+      if (!skillTags) return;
+      skillTags.innerHTML = '';
+      if (selectedSkills.size === 0) return;
+
+      selectedSkills.forEach((skill, id) => {
+        const tag = document.createElement('span');
+        tag.className = 'skill-tag';
+        tag.innerHTML = `${skill.name}<span class="remove-skill" data-id="${id}" aria-label="删除">×</span>`;
+        skillTags.appendChild(tag);
+      });
+
+      skillTags.querySelectorAll('.remove-skill').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.id;
+          selectedSkills.delete(id);
+          const item = skillList.querySelector(`.skill-item[data-id="${id}"]`);
+          if (item) item.classList.remove('selected');
+          renderSkillTags();
+        });
+      });
+    }
+
+    function filterSkills(query) {
+      const q = (query || '').trim().toLowerCase();
+      let visibleCount = 0;
+      skillItems.forEach(item => {
+        const name = (item.querySelector('.skill-name')?.textContent || '').toLowerCase();
+        const desc = (item.querySelector('.skill-desc')?.textContent || '').toLowerCase();
+        const match = !q || name.includes(q) || desc.includes(q);
+        item.style.display = match ? 'flex' : 'none';
+        if (match) visibleCount++;
+      });
+
+      let emptyEl = skillList.querySelector('.skill-empty');
+      if (visibleCount === 0) {
+        if (!emptyEl) {
+          emptyEl = document.createElement('div');
+          emptyEl.className = 'skill-empty';
+          emptyEl.textContent = '未找到匹配的技能';
+          skillList.appendChild(emptyEl);
+        }
+      } else if (emptyEl) {
+        emptyEl.remove();
+      }
+    }
+
+    function openSkillDropdown() {
+      if (!skillSelectWrap || !skillDropdown || !skillSelectTrigger) return;
+      positionDropdown(skillSelectTrigger, skillDropdown);
+      skillDropdown.classList.add('show', 'is-fixed');
+      skillSelectWrap.classList.add('open');
+      if (skillSearchInput) {
+        skillSearchInput.value = '';
+        filterSkills('');
+        setTimeout(() => skillSearchInput.focus(), 0);
+      }
+    }
+
+    function closeSkillDropdown() {
+      if (!skillSelectWrap || !skillDropdown) return;
+      skillDropdown.classList.remove('show', 'is-fixed');
+      skillDropdown.style.top = '';
+      skillDropdown.style.left = '';
+      skillSelectWrap.classList.remove('open');
+    }
+
+    if (skillSelectTrigger) {
+      skillSelectTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = skillDropdown.classList.contains('show');
+        document.querySelectorAll('.cycle-menu').forEach(m => { m.classList.remove('show', 'is-fixed'); m.style.top = ''; m.style.left = ''; });
+        document.querySelectorAll('.weekday-pop').forEach(p => { p.classList.remove('show', 'is-fixed'); p.style.top = ''; p.style.left = ''; });
+        if (isOpen) {
+          closeSkillDropdown();
+        } else {
+          openSkillDropdown();
+        }
+      });
+    }
+
+    skillItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = item.dataset.id;
+        const name = item.dataset.name;
+        const color = item.dataset.color;
+
+        if (selectedSkills.has(id)) {
+          selectedSkills.delete(id);
+          item.classList.remove('selected');
+        } else {
+          selectedSkills.set(id, { name, color });
+          item.classList.add('selected');
+        }
+        renderSkillTags();
+      });
+    });
+
+    if (skillSearchInput) {
+      skillSearchInput.addEventListener('click', (e) => e.stopPropagation());
+      skillSearchInput.addEventListener('input', (e) => filterSkills(e.target.value));
+    }
+
+    if (skillDropdown) {
+      skillDropdown.addEventListener('click', (e) => e.stopPropagation());
+    }
+
+    const datePop = document.querySelector('.date-pop');
+    if (datePop) {
+      datePop.querySelectorAll('.date-pop-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const action = btn.dataset.action;
+          const checks = datePop.querySelectorAll('input[type="checkbox"]');
+          if (action === 'all') {
+            checks.forEach(c => { c.checked = true; });
+          } else if (action === 'invert') {
+            checks.forEach(c => { c.checked = !c.checked; });
+          }
+          checks.forEach(c => c.dispatchEvent(new Event('change')));
+        });
+      });
+    }
+
+    const datePopYearly = document.querySelector('.date-pop-yearly');
+    if (datePopYearly) {
+      datePopYearly.querySelectorAll('.date-pop-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const action = btn.dataset.action;
+          const checks = datePopYearly.querySelectorAll('input[type="checkbox"]');
+          if (action === 'all') {
+            checks.forEach(c => { c.checked = true; });
+          } else if (action === 'invert') {
+            checks.forEach(c => { c.checked = !c.checked; });
+          }
+          checks.forEach(c => c.dispatchEvent(new Event('change')));
+        });
+      });
+    }
+
+    const monthPop = document.querySelector('.month-pop');
+    if (monthPop) {
+      monthPop.querySelectorAll('.date-pop-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const action = btn.dataset.action;
+          const checks = monthPop.querySelectorAll('input[type="checkbox"]');
+          if (action === 'all') {
+            checks.forEach(c => { c.checked = true; });
+          } else if (action === 'invert') {
+            checks.forEach(c => { c.checked = !c.checked; });
+          }
+          checks.forEach(c => c.dispatchEvent(new Event('change')));
+        });
+      });
+    }
+
+    // Chip multi-select
+    document.querySelectorAll('.chip-group').forEach(group => {
+      group.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => chip.classList.toggle('active'));
+      });
+    });
+
+    addModal.addEventListener('click', (e) => {
+      if (e.target === addModal) {
+        closeModal();
+      }
+    });
+  </script>
+
+</body>
+</html>
