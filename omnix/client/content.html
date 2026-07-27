@@ -1047,6 +1047,102 @@
     .status-icon:hover { color: #666; }
     .status-icon.delete-icon:hover { color: #e74c3c; }
 
+    /* ========== New Folder Modal ========== */
+    .folder-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .folder-modal-overlay.show { display: flex; }
+    .folder-modal {
+      background: #fff;
+      border-radius: 14px;
+      width: 400px;
+      max-width: 90vw;
+      padding: 24px 28px 20px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+      position: relative;
+    }
+    .folder-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .folder-modal-close:hover { background: #f0f0f0; color: #333; }
+    .folder-modal-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .folder-modal-header svg { width: 22px; height: 22px; color: #4a6cf7; flex-shrink: 0; }
+    .folder-modal-header h3 { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+    .folder-modal-body {
+      margin-bottom: 18px;
+    }
+    .folder-modal-label {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .folder-modal-input {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      font-size: 14px;
+      outline: none;
+      color: #333;
+      transition: border-color 0.15s;
+    }
+    .folder-modal-input:focus { border-color: #4a6cf7; }
+    .folder-modal-input::placeholder { color: #bbb; }
+    .folder-modal-error {
+      font-size: 12px;
+      color: #e53e3e;
+      margin-top: 6px;
+      display: none;
+    }
+    .folder-modal-error.show { display: block; }
+    .folder-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .folder-modal-btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      background: #fff;
+      color: #333;
+      transition: all 0.15s;
+    }
+    .folder-modal-btn:hover { background: #f5f5f5; }
+    .folder-modal-btn.confirm {
+      background: #4a6cf7;
+      color: #fff;
+      border-color: #4a6cf7;
+    }
+    .folder-modal-btn.confirm:hover { background: #3a5ce7; border-color: #3a5ce7; }
+
   </style>
 </head>
 <body>
@@ -1101,6 +1197,7 @@
       <div class="input-textarea-wrap">
         <div class="textarea-tags-area" id="textareaTagsArea"></div>
         <input type="file" id="fileInput" multiple accept="image/*,*/*" style="display:none" onchange="handleFileSelect(event)" />
+        <input type="file" id="folderInput" webkitdirectory directory style="display:none" onchange="handleFolderSelect(event)" />
         <textarea
           class="input-textarea"
           placeholder="描述任务或提问 / @指令 @附件/链接"
@@ -1182,10 +1279,6 @@
                 </div>
               </div>
               <div class="skill-divider"></div>
-              <div class="skill-action-item" onclick="handleSkillAction('add-local')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                从本地添加技能
-              </div>
               <div class="skill-action-item" onclick="parentClick('./skill/list.html')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 管理技能
@@ -1476,6 +1569,53 @@
 
 
 
+  <!-- New Folder Modal -->
+  <div class="folder-modal-overlay" id="folderModal">
+    <div class="folder-modal">
+      <button class="folder-modal-close" onclick="closeFolderModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="folder-modal-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+        <h3>新建空白文件夹</h3>
+      </div>
+      <div class="folder-modal-body">
+        <label class="folder-modal-label">文件夹名称</label>
+        <input type="text" class="folder-modal-input" id="folderNameInput" placeholder="请输入文件夹名称" onkeydown="if(event.key==='Enter')confirmNewFolder()" />
+        <div class="folder-modal-error" id="folderNameError">请输入文件夹名称</div>
+      </div>
+      <div class="folder-modal-actions">
+        <button class="folder-modal-btn" onclick="closeFolderModal()">取消</button>
+        <button class="folder-modal-btn confirm" onclick="confirmNewFolder()">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Use Existing Folder Modal -->
+  <div class="folder-modal-overlay" id="useFolderModal">
+    <div class="folder-modal">
+      <button class="folder-modal-close" onclick="closeUseFolderModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="folder-modal-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <h3>使用现有文件夹</h3>
+      </div>
+      <div class="folder-modal-body">
+        <label class="folder-modal-label">选择文件夹</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" class="folder-modal-input" id="useFolderPathInput" placeholder="请选择文件夹" readonly style="flex:1;cursor:pointer;" onclick="document.getElementById('folderInput').click()" />
+          <button class="folder-modal-btn" onclick="document.getElementById('folderInput').click()" style="white-space:nowrap;">浏览...</button>
+        </div>
+        <div class="folder-modal-error" id="useFolderError">请选择一个文件夹</div>
+      </div>
+      <div class="folder-modal-actions">
+        <button class="folder-modal-btn" onclick="closeUseFolderModal()">取消</button>
+        <button class="folder-modal-btn confirm" onclick="confirmUseFolder()">确定</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Auto-resize textarea logic -->
   <!-- Permission Warning Modal -->
   <div class="perm-modal-overlay" id="permModal">
@@ -1647,7 +1787,85 @@
 
     function handleProjectAction(action) {
       document.getElementById('projectDropdown').classList.remove('show');
-      console.log('Project action:', action);
+      if (action === 'new-folder') {
+        openFolderModal();
+      } else if (action === 'use-folder') {
+        document.getElementById('folderInput').click();
+      } else {
+        console.log('Project action:', action);
+      }
+    }
+
+    function handleFolderSelect(event) {
+      const files = event.target.files;
+      if (files.length > 0) {
+        const relativePath = files[0].webkitRelativePath;
+        const folderName = relativePath.split('/')[0];
+        addedProjects.clear();
+        document.querySelectorAll('#projectList .project-dropdown-item').forEach(el => el.classList.remove('selected'));
+        let existingItem = null;
+        document.querySelectorAll('#projectList .project-dropdown-item').forEach(el => {
+          if (el.dataset.name === folderName) existingItem = el;
+        });
+        if (!existingItem) {
+          const newItem = document.createElement('div');
+          newItem.className = 'project-dropdown-item selected';
+          newItem.dataset.name = folderName;
+          newItem.onclick = function() { addProject(this); };
+          newItem.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>' + folderName;
+          document.getElementById('projectList').appendChild(newItem);
+        } else {
+          existingItem.classList.add('selected');
+        }
+        addedProjects.add(folderName);
+        renderProjectTags();
+      }
+      event.target.value = '';
+    }
+
+    function openFolderModal() {
+      const modal = document.getElementById('folderModal');
+      const input = document.getElementById('folderNameInput');
+      const error = document.getElementById('folderNameError');
+      input.value = '';
+      error.classList.remove('show');
+      modal.classList.add('show');
+      setTimeout(() => input.focus(), 100);
+    }
+
+    function closeFolderModal() {
+      document.getElementById('folderModal').classList.remove('show');
+    }
+
+    function confirmNewFolder() {
+      const input = document.getElementById('folderNameInput');
+      const error = document.getElementById('folderNameError');
+      const name = input.value.trim();
+      if (!name) {
+        error.classList.add('show');
+        input.focus();
+        return;
+      }
+      error.classList.remove('show');
+      closeFolderModal();
+      addedProjects.clear();
+      document.querySelectorAll('#projectList .project-dropdown-item').forEach(el => el.classList.remove('selected'));
+      let existingItem = null;
+      document.querySelectorAll('#projectList .project-dropdown-item').forEach(el => {
+        if (el.dataset.name === name) existingItem = el;
+      });
+      if (!existingItem) {
+        const newItem = document.createElement('div');
+        newItem.className = 'project-dropdown-item selected';
+        newItem.dataset.name = name;
+        newItem.onclick = function() { addProject(this); };
+        newItem.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>' + name;
+        document.getElementById('projectList').appendChild(newItem);
+      } else {
+        existingItem.classList.add('selected');
+      }
+      addedProjects.add(name);
+      renderProjectTags();
     }
 
     // Skill dropdown logic
