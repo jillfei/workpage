@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OmniX 多智能体协作原型 - 功能说明书</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: #f8f9fa;
+      color: #1a1a1a;
+      line-height: 1.7;
+      height: 100%;
+    }
+    body { padding: 0; display: flex; flex-direction: column; }
+    .header {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 24px 40px;
+      flex-shrink: 0;
+    }
+    .header h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+    .header .meta { font-size: 13px; color: #aaa; }
+    .main-wrapper {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 280px;
+      background: #fff;
+      border-right: 1px solid #e8e8e8;
+      flex-shrink: 0;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      height: calc(100vh - 80px);
+    }
+    .sidebar h2 {
+      font-size: 15px;
+      font-weight: 600;
+      padding: 20px 20px 12px;
+      color: #333;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 8px 0;
+    }
+    .sidebar li {
+      margin: 0;
+    }
+    .sidebar a {
+      display: block;
+      padding: 10px 20px;
+      color: #666;
+      text-decoration: none;
+      font-size: 14px;
+      border-left: 3px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .sidebar a:hover {
+      background: #f5f7ff;
+      color: #4a6cf7;
+    }
+    .sidebar a.active {
+      background: #f0f4ff;
+      color: #4a6cf7;
+      border-left-color: #4a6cf7;
+      font-weight: 500;
+    }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      height: calc(100vh - 80px);
+      scroll-behavior: smooth;
+    }
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 40px;
+    }
+    .section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .section h2 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .section h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin: 28px 0 12px;
+      color: #222;
+    }
+    .section h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 20px 0 10px;
+      color: #333;
+    }
+    .section p { font-size: 14.5px; color: #444; margin-bottom: 12px; }
+    .section ul, .section ol {
+      margin: 10px 0 16px 20px;
+      font-size: 14.5px;
+      color: #444;
+    }
+    .section li { margin: 7px 0; }
+    .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-right: 6px;
+    }
+    .tag.interaction { background: #e8eeff; color: #4a6cf7; }
+    .tag.state { background: #e8f5e9; color: #16a34a; }
+    .tag.data { background: #fff3e0; color: #e65100; }
+    .tag.note { background: #fce4ec; color: #c2185b; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid #e8e8e8;
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f8f9fa; font-weight: 600; color: #333; }
+    td { color: #444; }
+    .highlight-box {
+      background: #f0f4ff;
+      border-left: 4px solid #4a6cf7;
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 18px 0;
+    }
+    .highlight-box strong { color: #1a1a1a; }
+    .warning-box {
+      background: #fff8e1;
+      border-left: 4px solid #f59e0b;
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 18px 0;
+    }
+    .render-example {
+      margin: 20px 0;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .render-example-title {
+      background: #f8f9fa;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .render-example img {
+      width: 100%;
+      display: block;
+    }
+    .kbd {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 5px;
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      color: #333;
+    }
+    code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      color: #c2185b;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+      color: #999;
+      background: #fff;
+      border-top: 1px solid #e8e8e8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>OmniX 多智能体协作原型 · 功能说明书</h1>
+</div>
+
+<div class="main-wrapper">
+  <nav class="sidebar">
+    <h2>目录</h2>
+    <ul>
+      <li><a href="#s2" data-section="s2">1. 功能模块清单</a></li>
+      <li><a href="#s3" data-section="s3">2. 各模块功能与交互说明</a></li>
+      <li><a href="#s4" data-section="s4">3. 右侧侧边栏：子智能体 / 概览</a></li>
+      <li><a href="#s5" data-section="s5">4. 智能体详情抽屉</a></li>
+      <li><a href="#s6" data-section="s6">5. 文件渲染规则（含 HTML / 非 HTML 说明）</a></li>
+    </ul>
+  </nav>
+
+  <main class="content" id="content">
+    <div class="container">
+      <div class="section" id="s2">
+        <h2>1. 功能模块清单</h2>
+        <table>
+          <tr>
+            <th style="width:140px">模块</th>
+            <th>功能点</th>
+            <th style="width:160px">交互类型</th>
+          </tr>
+          <tr>
+            <td>顶部导航</td>
+            <td>标题编辑、对话内搜索、历史提问、分享、侧边栏开关</td>
+            <td><span class="tag interaction">点击</span><span class="tag interaction">搜索</span><span class="tag interaction">编辑</span></td>
+          </tr>
+          <tr>
+            <td>聊天区</td>
+            <td>用户消息编辑、智能体标签、富文本、代码块、附件卡片 <span style="color: #e53935;">(详见会话渲染组件案例库)</span></td>
+            <td><span class="tag interaction">点击</span><span class="tag interaction">编辑</span><span class="tag interaction">悬停</span></td>
+          </tr>
+          <tr>
+            <td>任务队列</td>
+            <td>待发送任务展示、拖拽排序、立即发送 / 编辑 / 删除</td>
+            <td><span class="tag interaction">拖拽</span><span class="tag interaction">悬停</span><span class="tag interaction">内联编辑</span></td>
+          </tr>
+          <tr>
+            <td>输入区</td>
+            <td>文本输入、文件上传、技能 / 专家 / 知识库 / 权限 / 模型 / 质量选择</td>
+            <td><span class="tag interaction">下拉</span><span class="tag interaction">搜索</span><span class="tag interaction">选择</span></td>
+          </tr>
+          <tr>
+            <td>右侧侧边栏</td>
+            <td>子智能体任务列表、概览（输出 / 工作空间 / 浏览器 / 变更）<br/><span style="color: #e53935; font-size: 13px;">按照实际产物显示，若没有智能体则不显示，若没有变更文件则不显示</span></td>
+            <td><span class="tag interaction">Tab 切换</span><span class="tag interaction">文件树</span><span class="tag interaction">标签页</span></td>
+          </tr>
+          <tr>
+            <td>智能体详情抽屉</td>
+            <td>三栏结构：顶部 Tab + 左侧任务导航 + 右侧任务详情</td>
+            <td><span class="tag interaction">抽屉</span><span class="tag interaction">折叠</span><span class="tag interaction">全屏</span></td>
+          </tr>
+          <tr>
+            <td>权限模态框</td>
+            <td>选择"完全访问"权限时的风险确认</td>
+            <td><span class="tag interaction">模态</span><span class="tag interaction">勾选确认</span></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="section" id="s3">
+        <h2>2. 各模块功能与交互说明</h2>
+
+        <h3>2.1 顶部导航</h3>
+        <table>
+          <tr><th style="width:160px">元素</th><th>交互说明</th></tr>
+          <tr>
+            <td>会话标题</td>
+            <td>点击标题区进入编辑态（<code>contenteditable</code>），自动全选文字；按 <span class="kbd">Enter</span> 保存，按 <span class="kbd">Esc</span> 取消；失焦自动保存。</td>
+          </tr>
+          <tr>
+            <td>对话内搜索</td>
+            <td>点击放大镜或按 <span class="kbd">⌘/Ctrl + F</span> 唤起搜索框；输入关键词后聊天区文本高亮，显示 <code>x/y</code> 计数；支持"上一个 / 下一个"循环跳转，当前命中项用橙色高亮并自动滚动；关闭后还原原文。</td>
+          </tr>
+          <tr>
+            <td>历史提问</td>
+            <td>点击时钟图标展开下拉，列表动态收集聊天区所有用户问题（兜底展示内置问题）；点击任意历史项，聊天区平滑滚动到对应消息。</td>
+          </tr>
+          <tr>
+            <td>侧边栏开关</td>
+            <td>点击右侧"侧边栏"按钮，右侧抽屉滑出，主内容区同步右移；再次点击或点击遮罩关闭。</td>
+          </tr>
+        </table>
+
+        <h3>2.2 聊天区</h3>
+        <table>
+          <tr><th style="width:160px">元素</th><th>交互说明</th></tr>
+          <tr>
+            <td>用户消息气泡</td>
+            <td>点击编辑图标进入编辑态：气泡变为可编辑输入框，底部出现提示条 +"取消 / 发送"按钮；<span class="kbd">Enter</span>（非 Shift）保存，<span class="kbd">Esc</span> 取消；空内容时回退原文。</td>
+          </tr>
+          <tr>
+            <td>智能体标签</td>
+            <td>助手回复下方展示参与执行的子智能体标签（如 Mutation boundary cas / Remaining plan sync / Frontend autosave review）。<b>点击任意标签打开"智能体详情抽屉"</b>，并自动定位到该智能体。</td>
+          </tr>
+          <tr>
+            <td>富文本内容</td>
+            <td>助手回复支持文件树、表格、代码块（含复制图标悬停）、行内代码、附件卡片、操作按钮（复制、点赞、点踩、分享等）。<span style="color: #e53935;">(详见会话渲染组件案例库)</span></td>
+          </tr>
+        </table>
+
+        <h3>2.3 任务队列</h3>
+        <ul>
+          <li><b>拖拽排序：</b>按住左侧拖拽柄拖动任务行，根据鼠标位置插入到目标行上方或下方，拖动过程中该行半透明。</li>
+          <li><b>悬停操作：</b>鼠标悬停任务行时右侧显示"立即发送 / 编辑 / 删除"三个图标按钮。</li>
+          <li><b>内联编辑：</b>点击编辑后任务文本变为输入框，失焦时保存 / <span class="kbd">Esc</span> 取消。</li>
+        </ul>
+
+        <h3>2.4 输入区</h3>
+        <table>
+          <tr><th style="width:160px">元素</th><th>交互说明</th></tr>
+          <tr>
+            <td>多行输入框</td>
+            <td>支持在输入区上方以标签形式展示已选技能 / 文件。</td>
+          </tr>
+          <tr>
+            <td>选择 +</td>
+            <td>下拉提供"上传照片和文件"、以及浏览器 / 文档解析 / PPT 生成等插件入口。</td>
+          </tr>
+          <tr>
+            <td>技能</td>
+            <td>下拉展示技能列表，顶部搜索框可按名称和描述实时过滤；点击技能项切换选中，并在输入区生成蓝色标签；支持"从本地添加 / 管理技能"。</td>
+          </tr>
+          <tr>
+            <td>专家·专家团</td>
+            <td>下拉分"专家"与"专家团"两组，点击单选；选中后在工具栏生成专家标签并隐藏原按钮；支持"召唤更多专家·专家团"。</td>
+          </tr>
+          <tr>
+            <td>默认权限</td>
+            <td>下拉三档：只读 / 默认权限 / 完全访问。选择"完全访问"时弹出风险确认模态框，需勾选"我已了解风险"并点击确认后方可生效。</td>
+          </tr>
+          <tr>
+            <td>模型选择</td>
+            <td>下拉展示企业与个人模型（gpt-5.5 / gpt-5 / gpt-4o / claude / deepseek 等），单选并更新工具栏显示。<span style="color: #e53935;">当没设置企业模型时，企业模型不显示</span></td>
+          </tr>
+          <tr>
+            <td>质量</td>
+            <td>下拉四档：轻度 / 中 / 高 / 极高，单选。</td>
+          </tr>
+          <tr>
+            <td>上下文用量环</td>
+            <td>圆环按已用上下文比例变色（蓝 / 橙 / 红）；点击显示详情，展示模型名、已用 / 总量、进度条。</td>
+          </tr>
+          <tr>
+            <td>发送按钮</td>
+            <td>输入为空时灰色禁用，有内容后变为深色可点击。</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="section" id="s4">
+        <h2>3. 右侧侧边栏：子智能体 / 概览</h2>
+        <p>点击顶部导航"侧边栏"按钮后，右侧滑出抽屉式侧边栏（默认宽度 640px，可拖拽调整、可最大化全屏）。顶部有两个主 Tab：<b>子智能体</b> 与 <b>概览</b>。</p>
+
+        <h3>3.1 子智能体 Tab</h3>
+        <ul>
+          <li><b>左侧导航：</b>按"执行中"与"已完成"分组列出子智能体任务，点击任务项高亮并渲染右侧详情。</li>
+          <li><b>右侧详情：</b>展示任务标题、状态、处理说明段落、可折叠的"编辑了文件"记录、智能体更新记录等。</li>
+          <li><b>拖拽改宽：</b>抽屉左侧有 8px 拖拽柄，可左右调整侧边栏宽度（最小 400px，最大 95vw）。</li>
+          <li><b>最大化：</b>点击顶部最大化按钮切换全屏，主内容区同步调整。</li>
+        </ul>
+
+        <h3>3.2 概览 Tab</h3>
+        <p>概览 Tab 内部又包含一个顶部下拉切换：<b>概览 / 工作空间文件 / 浏览器 / 变更</b>。</p>
+        <table>
+          <tr><th style="width:140px">子视图</th><th>功能与交互</th></tr>
+          <tr>
+            <td>概览</td>
+            <td>左侧"输出"分区展示产物文件列表（md / html），点击文件在右侧渲染文件内容；分区标题可折叠；右侧支持标签页切换与关闭。</td>
+          </tr>
+          <tr>
+            <td>工作空间文件</td>
+            <td>左侧展示工作空间文件树，文件夹可展开 / 收起，文件点击后在右侧渲染；与概览共用同一套右侧渲染区域和标签页。</td>
+          </tr>
+          <tr>
+            <td>浏览器</td>
+            <td>左侧展示产物文件列表，顶部模拟浏览器地址栏（后退 / 前进 / 刷新 / 外部打开）；选中文件后在右侧 iframe 区域渲染。</td>
+          </tr>
+          <tr>
+            <td>变更</td>
+            <td>左侧展示变更文件列表及总增删行数；选中文件后在右侧显示 diff 视图，新增 / 删除行分别用绿 / 红底色高亮。</td>
+          </tr>
+        </table>
+
+        <h3>3.3 标签页管理</h3>
+        <p>在概览及其三个子视图中打开的文件会以标签页形式展示在顶部 Tab 栏下方。标签页支持：</p>
+        <ul>
+          <li>点击切换已打开文件；</li>
+          <li>点击右侧 ✕ 关闭标签；</li>
+          <li>关闭后自动激活相邻标签。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="s5">
+        <h2>4. 智能体详情抽屉</h2>
+        <p>点击聊天区任意智能体标签，或点击侧边栏"子智能体"中的任务项，会打开一个更宽（900px）的<b>智能体详情抽屉</b>，采用完整三栏结构：</p>
+        <ul>
+          <li><b>顶部 Tab：</b>"子智能体"与"概览"。</li>
+          <li><b>左侧导航：</b>列出子智能体，点击切换右侧内容。</li>
+          <li><b>右侧详情：</b>展示该智能体的状态、说明段落、可折叠文件编辑记录、智能体更新记录。</li>
+        </ul>
+
+        <h3>4.1 关键交互</h3>
+        <table>
+          <tr><th style="width:160px">交互</th><th>说明</th></tr>
+          <tr>
+            <td>打开</td>
+            <td>从右侧滑入，带遮罩；默认展示"子智能体"Tab 并高亮左侧对应任务项。</td>
+          </tr>
+          <tr>
+            <td>关闭</td>
+            <td>点击遮罩、点击右上角关闭按钮、按 <span class="kbd">Esc</span> 均可关闭。</td>
+          </tr>
+          <tr>
+            <td>最大化 / 还原</td>
+            <td>点击顶部最大化按钮切换 100vw 全屏与普通宽度。</td>
+          </tr>
+          <tr>
+            <td>左侧任务切换</td>
+            <td>点击左侧任意任务项，右侧即时刷新为该智能体详情。</td>
+          </tr>
+          <tr>
+            <td>编辑了文件</td>
+            <td>文件编辑记录行可点击展开 / 收起。</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="section" id="s6">
+        <h2>5. 文件渲染规则</h2>
+        <p>在<b>概览、工作空间文件、浏览器、变更</b>四个面板中，打开文件时统一由 <code>renderFileContent(fileName, content)</code> 进行渲染路由。系统根据文件扩展名判断文件类型，并按以下规则渲染：</p>
+
+        <div class="highlight-box">
+          <strong>重要说明：</strong><br/>
+          在"概览 / 工作空间文件 / 浏览器 / 变更"中：<br/>
+          • 所有 <b>HTML 类文件</b>均按 <a href="#fig1">图 1</a> 样式渲染；<br/>
+          • 所有 <b>非 HTML 类文件</b>均按 <a href="#fig2">图 2</a> 样式渲染。
+        </div>
+
+        <h3>5.1 HTML 类文件渲染（图 1）</h3>
+        <p>HTML 类文件按图 1 样式以<b>HTML 预览视图</b>形式渲染：</p>
+
+        <div class="render-example" id="fig1">
+          <div class="render-example-title">图 1：HTML 预览视图样式示例（图中为 aurasound-homepage.html）</div>
+          <img src="file:///C:/Users/zhaonan/.workbuddy/clipboard-images/clipboard-2026-07-26T15-11-41-001Z-6ad2ae44.png" alt="HTML类文件渲染示例" />
+        </div>
+
+        <h3>5.2 非 HTML 类文件渲染（图 2）</h3>
+        <p>非 HTML 类文件（如 <code>.md</code>、<code>.txt</code>、<code>.py</code> 等）按图 2 样式以<b>文档视图</b>形式渲染：</p>
+
+        <div class="render-example" id="fig2">
+          <div class="render-example-title">图 2：文档视图样式示例（图中为 AuraSound-Homepage-Design-Spec.md）</div>
+          <img src="file:///C:/Users/zhaonan/.workbuddy/clipboard-images/clipboard-2026-07-26T15-13-39-746Z-afcb7319.png" alt="非HTML类文件渲染示例" />
+        </div>
+
+        <h3>5.3 变更面板的 Diff 渲染</h3>
+        <p>在"变更"子视图中，选中变更文件后右侧展示 diff 视图：</p>
+        <ul>
+          <li>新增行：绿色背景 + 绿色行号；</li>
+          <li>删除行：红色背景 + 红色行号；</li>
+          <li>上下文行：默认白色背景；</li>
+          <li>HTML 文件额外进行标签 / 属性 / 字符串语法高亮。</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="footer">
+  OmniX 多智能体协作原型 · 功能说明书 · 2026-07-26
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const content = document.getElementById('content');
+  const navLinks = document.querySelectorAll('.sidebar a');
+  const sections = document.querySelectorAll('.section');
+
+  // 点击导航链接平滑滚动
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').substring(1);
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // 滚动监听，高亮当前章节
+  function updateActiveNav() {
+    let currentSection = '';
+    const scrollTop = content.scrollTop;
+
+    sections.forEach(section => {
+      // 获取section相对于content容器的位置
+      const sectionTop = section.getBoundingClientRect().top - content.getBoundingClientRect().top + scrollTop;
+      if (scrollTop >= sectionTop - 100) {
+        currentSection = section.getAttribute('id');
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('data-section') === currentSection) {
+        link.classList.add('active');
+      }
+    });
+  }
+
+  content.addEventListener('scroll', updateActiveNav);
+  updateActiveNav();
+});
+</script>
+
+</body>
+</html>

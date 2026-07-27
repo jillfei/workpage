@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent 会话渲染节点 · 前端组件案例库</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --panel:#fff; --panel2:#fafbfc; --border:#e6e8eb;
+    --text:#1f2329; --sub:#646a73; --brand:#2f6bff; --brand-soft:#eef3ff;
+    --green:#2ba471; --green-soft:#e8f6ef; --red:#e54a4a; --red-soft:#fdecec;
+    --orange:#e8830c; --orange-soft:#fdf2e3; --purple:#7c5cff; --purple-soft:#f1edff;
+    --gray:#8a9099; --mono:"SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+  /* 布局 */
+  .layout{display:flex;max-width:1280px;margin:0 auto}
+  .nav{position:sticky;top:0;align-self:flex-start;width:230px;height:100vh;overflow:auto;
+    padding:18px 12px;border-right:1px solid var(--border);background:var(--panel)}
+  .nav h2{font-size:12px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin:14px 8px 6px}
+  .nav a{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;color:var(--sub);
+    text-decoration:none;font-size:13px}
+  .nav a:hover{background:var(--panel2);color:var(--text)}
+  .nav .tag{font-size:11px;padding:1px 6px;border-radius:6px;background:var(--brand-soft);color:var(--brand);font-family:var(--mono)}
+  .nav .tag.opt{background:var(--gray);color:#fff}
+  .nav .tag.merge{background:var(--purple-soft);color:var(--purple)}
+  .main{flex:1;padding:28px 32px 80px;min-width:0}
+  header.page{margin-bottom:8px}
+  header.page h1{font-size:22px;margin:0 0 6px}
+  header.page p{color:var(--sub);margin:0;font-size:13px}
+  /* 案例区块 */
+  .case{background:var(--panel);border:1px solid var(--border);border-radius:12px;margin:22px 0;overflow:hidden}
+  .case-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .case-head .type{font-family:var(--mono);font-size:13px;background:var(--brand-soft);color:var(--brand);
+    padding:3px 10px;border-radius:7px;font-weight:600}
+  .case-head .type.opt{background:var(--gray);color:#fff}
+  .case-head .type.merge{background:var(--purple-soft);color:var(--purple)}
+  .case-head .name{font-weight:600;font-size:15px}
+  .case-head .grp{display:none}
+  .case-desc{padding:10px 18px;color:var(--sub);font-size:12.5px;background:var(--panel2);border-bottom:1px solid var(--border)}
+  .canvas{padding:22px 18px}
+  .canvas .msg{display:flex;gap:10px;max-width:1060px}
+  .avatar{width:28px;height:28px;border-radius:8px;flex:0 0 28px;display:flex;align-items:center;justify-content:center;
+    font-size:15px;background:linear-gradient(135deg,#2f6bff,#7c5cff);color:#fff}
+  .avatar.u{background:#eef0f3;color:#555}
+  .bubble{flex:1;min-width:0}
+  /* 通用折叠 */
+  .fold{background:var(--panel2);border:1px solid var(--border);border-radius:9px;margin:8px 0;overflow:hidden}
+  .fold>.fh{display:flex;align-items:center;gap:9px;padding:10px 14px;cursor:pointer;user-select:none;font-size:13px}
+  .fold>.fh:hover{background:#f1f3f5}
+  .fold>.fh .ic{font-size:14px}
+  .fold>.fh .arr{margin-left:auto;transition:transform .2s;color:var(--gray)}
+  .fold.open>.fh .arr{transform:rotate(180deg)}
+  .fold>.fb{display:none;padding:10px 14px;border-top:1px solid var(--border);font-size:13px;color:var(--sub)}
+  .fold.open>.fb{display:block}
+  /* text markdown */
+  .md{font-size:14px}
+  .md h3{margin:14px 0 6px;font-size:15px}
+  .md p{margin:6px 0}
+  .md ul{margin:6px 0;padding-left:20px}
+  .md code{font-family:var(--mono);background:#f1f3f5;padding:1px 5px;border-radius:4px;font-size:12.5px}
+  .md table{border-collapse:collapse;margin:10px 0;font-size:13px;width:100%}
+  .md th,.md td{border:1px solid var(--border);padding:6px 10px;text-align:left}
+  .md th{background:var(--panel2)}
+  .md a{color:var(--brand)}
+  /* image_inline */
+  .img-inline{display:block;max-width:420px;border-radius:8px;border:1px solid var(--border);margin:6px 0;cursor:zoom-in}
+  .img-gallery{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+  .img-gallery .ph{width:120px;height:90px;border-radius:8px;border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--gray);cursor:pointer}
+  .img-hint{font-size:12px;color:var(--gray);margin-top:4px}
+  /* image lightbox */
+  .lb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px}
+  .lb-overlay.open{display:flex}
+  .lb-img{max-width:90vw;max-height:80vh;object-fit:contain;transition:transform .2s;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+  .lb-bar{display:flex;align-items:center;gap:10px;margin-top:16px}
+  .lb-bar button,.lb-close{background:rgba(255,255,255,.14);color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:13px;cursor:pointer}
+  .lb-bar button:hover,.lb-close:hover{background:rgba(255,255,255,.24)}
+  .lb-close{position:absolute;top:18px;right:18px;font-size:18px;line-height:1;padding:6px 12px}
+  .lb-fname{color:#fff;font-size:12px;margin-bottom:10px;opacity:.8}
+  /* status */
+  .status{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sub);padding:4px 0}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+  .spinner{width:13px;height:13px;border:2px solid var(--brand);border-top-color:transparent;border-radius:50%;
+    display:inline-block;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  /* tool_call / terminal */
+  .tool{font-family:var(--mono);font-size:12.5px}
+  .tool .kv{color:var(--sub)}
+  .tool .v{color:var(--text)}
+  .term{background:#1e1e2e;color:#e4e4ef;padding:12px 14px;border-radius:8px;margin-top:8px;
+    font-family:var(--mono);font-size:12.5px;overflow-x:auto;white-space:pre}
+  .term .prompt{color:#7fd1a0}
+  .term .ok{color:#7fd1a0}
+  .term .dim{color:#9aa0b5}
+  /* tool_call shell 变体（bash / powershell / cmd） - WorkBuddy 截图样式，统一卡片 + 外壳色条 */
+  .tool-bash, .tool-ps, .tool-cmd{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:4px;background:#fff}
+  .tool-bash .tb-head, .tool-ps .tb-head, .tool-cmd .tb-head{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer}
+  .tool-bash .tb-title, .tool-ps .tb-title, .tool-cmd .tb-title{font-size:13px;font-weight:500;color:var(--text)}
+  .tool-bash .tb-arr, .tool-ps .tb-arr, .tool-cmd .tb-arr{margin-left:auto;font-size:11px;color:var(--sub);transition:transform .2s}
+  .tool-bash.closed .tb-arr, .tool-ps.closed .tb-arr, .tool-cmd.closed .tb-arr{transform:rotate(-90deg)}
+  .tool-bash.closed .tb-body, .tool-ps.closed .tb-body, .tool-cmd.closed .tb-body{display:none}
+  .tool-bash .tb-body, .tool-ps .tb-body, .tool-cmd .tb-body{padding:0 12px 12px}
+  .tool-bash .tc-type, .tool-ps .tc-type, .tool-cmd .tc-type{font-size:11px;color:var(--sub);font-family:var(--mono);margin-bottom:6px}
+  .tool-bash .tc-cmd, .tool-ps .tc-cmd, .tool-cmd .tc-cmd{background:#f6f7f9;border-radius:6px;padding:10px 12px;font-family:var(--mono);
+    font-size:12px;color:#333;white-space:pre-wrap;word-break:break-all;line-height:1.6}
+  .tool-bash .tc-result, .tool-ps .tc-result, .tool-cmd .tc-result{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12.5px;color:#2e9e5b}
+  .tc-result.fail{color:#e54a4a}
+  /* 外壳左侧色条 + 标签配色，区分 shell 类型（bash 灰 / powershell 蓝 / cmd 黑） */
+  .tool-bash{border-left:3px solid #6e7781}
+  .tool-ps{border-left:3px solid #0078d4}
+  .tool-cmd{border-left:3px solid #3a3a3a}
+  .tool-ps .tc-type{color:#0078d4}
+  .tool-cmd .tc-type{color:#3a3a3a}
+  /* tool_call — MCP（严格按参考图样式） */
+  .tool-mcp{font-size:14px;margin-top:8px;color:#1f2329;max-width:760px}
+  .mcp-root{border-left:2px solid var(--border);padding-left:12px;margin:8px 0}
+  .mcp-step-head{display:flex;align-items:center;gap:8px;padding:7px 0;cursor:pointer;user-select:none;font-size:14px;color:#4b5563}
+  .mcp-step-head:hover{color:#111827}
+  .mcp-step-head .ic{font-size:15px;color:#9ca3af}
+  .mcp-step-head .arr{margin-left:auto;font-size:11px;color:#9ca3af;transition:transform .2s}
+  .mcp-step-head.open .arr{transform:rotate(180deg)}
+  .mcp-step-body{display:none;padding:0 0 8px 22px}
+  .mcp-step-body.open{display:block}
+  .mcp-result{background:#f2f4f6;border-radius:14px;padding:14px 16px;font-family:var(--mono);font-size:13px;color:#4b5563;overflow-x:auto;line-height:1.65;max-height:320px;overflow-y:auto;white-space:pre}
+  .mcp-result::-webkit-scrollbar{width:6px;height:6px}
+  .mcp-result::-webkit-scrollbar-thumb{background:#c9cdd4;border-radius:3px}
+  /* tool_call WebSearch 变体 - 真实截图样式（联网搜索 + 可点击结果列表） */
+  .tool-web{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:8px;background:#fff}
+  .tool-web .tw-head{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer}
+  .tool-web .tw-head .ic{font-size:14px;color:var(--sub)}
+  .tool-web .tw-head .tw-label{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap}
+  .tool-web .tw-head .tw-query{font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tool-web .tw-head .tw-arr{margin-left:auto;font-size:11px;color:var(--sub);transition:transform .2s;flex-shrink:0}
+  .tool-web.closed .tw-head .tw-arr{transform:rotate(-90deg)}
+  .tool-web.closed .tw-body{display:none}
+  .tool-web .tw-body{padding:0 12px 12px}
+  .tool-web .tw-list{display:flex;flex-direction:column;gap:10px}
+  .tool-web .tw-item{display:flex;align-items:flex-start;gap:10px;text-decoration:none;color:inherit}
+  .tool-web .tw-favicon{width:16px;height:16px;border-radius:3px;flex-shrink:0;margin-top:2px;
+    display:flex;align-items:center;justify-content:center;font-size:10px}
+  .tool-web .tw-favicon.globe{background:#f0f4ff;color:#4b6bfb}
+  .tool-web .tw-favicon.clock{background:#fff3e6;color:#f6a64b}
+  .tool-web .tw-info{flex:1;min-width:0}
+  .tool-web .tw-link{font-size:13px;color:var(--text);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .tool-web .tw-item:hover .tw-link{text-decoration:underline;color:var(--brand)}
+  .tool-web .tw-meta{display:flex;align-items:center;gap:6px;margin-top:2px;font-size:11px;color:var(--sub)}
+  /* reasoning — 严格按参考图样式 */
+  .reason-block{background:#f7f7f8;border-radius:12px;overflow:hidden;margin-top:8px;max-width:720px}
+  .reason-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;cursor:pointer;user-select:none}
+  .reason-head:hover{background:#f0f0f1}
+  .reason-title{display:flex;align-items:center;gap:8px;font-size:14px;color:#5f5f5f;font-weight:500}
+  .reason-title::before{content:"";width:14px;height:14px;border-radius:50%;border:2px solid #d1d5db;border-top-color:#9ca3af;display:inline-block;animation:spin .9s linear infinite}
+  .reason-block.open .reason-title::before{animation:none;border-color:#9ca3af;border-top-color:transparent;transform:rotate(-45deg);width:10px;height:10px;margin:0 2px;border-width:0 0 2px 2px}
+  .reason-arr{font-size:13px;color:#9ca3af;transition:transform .2s}
+  .reason-block.open .reason-arr{transform:rotate(180deg)}
+  .reason-body{max-height:220px;overflow-y:auto;padding:0 14px 14px;display:none;position:relative}
+  .reason-block.open .reason-body{display:block}
+  .reason-content{display:flex;gap:12px;position:relative}
+  .reason-line{width:2px;flex-shrink:0;background:#e5e7eb;border-radius:1px;min-height:60px}
+  .reason-text{font-size:14px;line-height:1.7;color:#6b7280;white-space:pre-wrap;word-break:break-word}
+  .reason-body::before,.reason-body::after{content:"";position:sticky;left:0;right:0;height:18px;pointer-events:none;z-index:1}
+  .reason-body::before{top:0;background:linear-gradient(180deg,#f7f7f8 0%,rgba(247,247,248,0) 100%)}
+  .reason-body::after{bottom:0;background:linear-gradient(0deg,#f7f7f8 0%,rgba(247,247,248,0) 100%);margin-top:-18px}
+  .reason-body::-webkit-scrollbar{width:6px}
+  .reason-body::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+  /* agent_collab sub */
+  .subconv{border:1px solid var(--border);border-radius:10px;margin-top:10px;overflow:hidden}
+  .subconv .sc-head{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--purple-soft)}
+  .subconv .sc-ava{width:24px;height:24px;border-radius:7px;background:var(--purple);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:13px}
+  .subconv .sc-body{padding:12px 14px}
+  .fullscreen{margin-left:auto;font-size:12px;color:var(--purple);cursor:pointer}
+  /* file_operation */
+  .fileop{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;color:var(--sub)}
+  .fileop .fname{color:var(--brand);text-decoration:underline}
+  .fileop .badge{font-size:11px;padding:1px 7px;border-radius:6px;background:var(--green-soft);color:var(--green)}
+  /* todo_list - WorkBuddy 截图样式 */
+  .todo-wrap{border:1px solid var(--border);border-radius:10px;margin:6px 0;background:#f5f5f5;overflow:hidden}
+  .todo-head{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer}
+  .todo-head .ic{font-size:15px;color:var(--gray)}
+  .todo-head .todo-title{font-size:13px;font-weight:500}
+  .todo-head .arr{margin-left:auto;font-size:12px;color:var(--gray);transition:transform .2s}
+  .todo-wrap.closed .arr{transform:rotate(-90deg)}
+  .todo-body{padding:6px 10px 10px}
+  .todo-wrap.closed .todo-body{display:none}
+  .todo-item{display:flex;align-items:center;gap:10px;font-size:13px;padding:9px 10px;margin-bottom:4px;border-radius:8px;background:#ebebeb;color:#333;cursor:pointer;transition:.15s}
+  .todo-item:last-child{margin-bottom:0}
+  .todo-item:hover{background:#e3e3e3}
+  .todo-item.active{background:#dedede}
+  .todo-item .ck{width:16px;text-align:center;font-size:13px;flex:0 0 16px}
+  .todo-item .txt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .todo-item .arr-right{margin-left:auto;font-size:12px;color:#999}
+  /* 任务状态：截图样式 */
+  .todo-item.done{background:transparent;color:#999}
+  .todo-item.done .ck{color:#999}
+  .todo-item.done .txt{text-decoration:line-through}
+  .todo-item.prog .ck{color:#2e9e5b;animation:spin 1.4s linear infinite;display:inline-block}
+  .todo-item.pend .ck{color:#999}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  /* diff_block */
+  .diff{border:1px solid var(--border);border-radius:9px;margin-top:8px;overflow:hidden}
+  .diff .dcat{padding:10px 14px;border-bottom:1px solid var(--border)}
+  .diff .dcat:last-child{border-bottom:none}
+  .diff .ctitle{font-weight:600;font-size:13px;margin-bottom:6px}
+  .diff .row{display:flex;align-items:center;gap:10px;font-size:12.5px;padding:3px 0;flex-wrap:wrap}
+  .diff .lab{font-family:var(--mono);min-width:140px;color:var(--text)}
+  .diff .old{color:var(--red);text-decoration:line-through;background:var(--red-soft);padding:1px 6px;border-radius:5px}
+  .diff .arrow{color:var(--gray)}
+  .diff .new{color:var(--green);background:var(--green-soft);padding:1px 6px;border-radius:5px}
+  .diff .tagx{font-size:11px;padding:1px 7px;border-radius:6px;background:var(--orange-soft);color:var(--orange)}
+  /* diff_block — git diff / line-by-line 代码差异 */
+  .diff-git{border:1px solid var(--border);border-radius:9px;margin-top:10px;overflow:hidden;font-family:var(--mono);font-size:12.5px}
+  .diff-git .dg-head{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--panel2);border-bottom:1px solid var(--border);color:var(--text);cursor:pointer;user-select:none}
+  .diff-git .dg-head:hover{background:#eef0f3}
+  .diff-git .dg-head .edit{font-size:13px;color:var(--sub)}
+  .diff-git .dg-head .path{font-weight:600}
+  .diff-git .dg-head .path.clickable{color:var(--brand);text-decoration:none;cursor:pointer}
+  .diff-git .dg-head .path.clickable:hover{text-decoration:underline}
+  .diff-git .dg-head .stat{margin-left:auto;color:var(--sub);font-size:12px}
+  .diff-git .dg-head .stat .plus{color:var(--green)}
+  .diff-git .dg-head .stat .minus{color:var(--red)}
+  .diff-git .dg-head .arr{margin-left:6px;transition:transform .2s;color:var(--gray)}
+  .diff-git.open .dg-head .arr{transform:rotate(180deg)}
+  .diff-git .dg-body{display:none;overflow-x:auto;background:#fff}
+  .diff-git.open .dg-body{display:block}
+  .diff-git .ln{width:42px;text-align:right;padding:4px 10px 4px 0;color:var(--gray);background:#f8f9fa;border-right:1px solid var(--border);user-select:none;flex-shrink:0}
+  .diff-git .line{display:flex}
+  .diff-git .line.del{background:#ffeaea}
+  .diff-git .line.del .ln{background:#ffe0e0}
+  .diff-git .line.add{background:#e8f6ef}
+  .diff-git .line.add .ln{background:#d8efe4}
+  .diff-git .line .mark{width:18px;text-align:center;flex-shrink:0;padding:4px 0;color:var(--gray)}
+  .diff-git .line.del .mark{color:var(--red)}
+  .diff-git .line.add .mark{color:var(--green)}
+  .diff-git .line .code{padding:4px 10px;white-space:pre;flex:1}
+  .diff-git .line.info{background:var(--panel2);color:var(--sub)}
+  .diff-git .line.info .code{font-style:italic}
+  /* diff_block — 修正中状态（严格按参考图） */
+  .diff-git.modifying{border:1px solid var(--border);background:#fff;border-radius:9px;overflow:hidden;margin-top:10px;font-family:var(--mono);font-size:12.5px}
+  .diff-git.modifying .dg-head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:#fff}
+  .diff-git.modifying .dg-head .status{font-size:13px;color:var(--gray)}
+  .diff-git.modifying .dg-head .path{font-size:13px;color:var(--brand);font-weight:600}
+  .diff-git.modifying .dg-body{padding:10px 14px;background:#fff;overflow-x:auto;color:#64748b;display:block}
+  .diff-git.modifying .dg-body .mline{white-space:pre;color:#64748b;line-height:1.7;font-size:12.5px}
+  .diff-git.modifying .dg-preview{margin-top:12px;padding:12px 14px;background:#fff;border:1px solid #f0d8bf;border-radius:8px;font-size:13px;color:#3d2b1f;line-height:1.7}
+  .diff-git.modifying .dg-preview .pv-h{font-size:12px;color:#a67c52;margin-bottom:8px}
+  .diff-git.modifying .dg-preview h4{margin:10px 0 4px;font-size:13.5px}
+  .diff-git.modifying .dg-preview ul{margin:4px 0;padding-left:20px}
+  .diff-git.modifying .dg-preview li{margin:3px 0}
+  .diff-git.modifying .dg-preview code{font-family:var(--mono);background:#fdf2e3;padding:1px 5px;border-radius:4px;font-size:12px}
+  /* code_block */
+  .code{border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-top:6px;font-family:var(--mono)}
+  .code .ch{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--panel2);border-bottom:1px solid var(--border)}
+  .code .lang{font-size:12px;color:var(--sub)}
+  .code .ops{margin-left:auto;display:flex;gap:6px}
+  .code .ops button{border:1px solid var(--border);background:#fff;border-radius:6px;padding:2px 9px;font-size:12px;
+    cursor:pointer;color:var(--sub)}
+  .code .ops button:hover{color:var(--brand);border-color:var(--brand)}
+  .code pre{margin:0;padding:12px;font-size:12.5px;overflow-x:auto;background:#fbfbfd}
+  .code .k{color:#c2185b}.code .s{color:#2ba471}.code .c{color:#9aa0b5}.code .f{color:#2f6bff}
+  /* widget */
+  .widget{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:6px;max-width:860px}
+  .widget .wh{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--panel2);border-bottom:1px solid var(--border)}
+  .widget .wh .menu{margin-left:auto;cursor:pointer;font-size:18px;color:var(--gray);position:relative}
+  .wmenu{position:absolute;right:0;top:26px;background:#fff;border:1px solid var(--border);border-radius:8px;
+    box-shadow:0 6px 20px rgba(0,0,0,.12);display:none;z-index:5;min-width:140px}
+  .wmenu.open{display:block}
+  .wmenu div{padding:8px 12px;font-size:13px;cursor:pointer}
+  .wmenu div:hover{background:var(--panel2)}
+  .widget .wb{display:flex;justify-content:center;padding:16px;background:#fff}
+  .widget .wb.code-view{justify-content:stretch;padding:0;background:#fff}
+  .widget .wb.code-view pre{margin:0;padding:14px;font-family:var(--mono);font-size:12.5px;overflow-x:auto;background:#fbfbfd;width:100%;white-space:pre;color:#333;line-height:1.6}
+  .widget .fn{font-size:11px;color:var(--gray);padding:7px 14px;border-top:1px solid var(--border);background:var(--panel2)}
+  /* artifact_card */
+  .artcards{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+  .artcard{border:1px solid transparent;border-radius:10px;padding:12px 14px;cursor:pointer;background:#f1f3f5;transition:.15s;display:flex;align-items:center;gap:12px}
+  .artcard:hover{background:#e8eaed}
+  .artcard .icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex:0 0 38px}
+  .artcard .icon.html{background:#5b7cfa}
+  .artcard .icon.md{background:#42b883}
+  .artcard .icon.xlsx{background:#34a853}
+  .artcard .icon.pptx{background:#f5b731}
+  .artcard .icon.pdf{background:#e94234}
+  .artcard .icon.code{background:#6b7280}
+  .artcard .icon.zip{background:#9ca3af}
+  .artcard .icon.img{background:#5b7cfa}
+  .artcards.gray{display:flex;flex-direction:row;gap:10px}
+  .artcards.gray .artcard{flex:1;min-width:0;background:#f1f3f5;border-color:transparent}
+  .artcards.gray .artcard:hover{background:#e8eaed;border-color:transparent;box-shadow:none}
+  .artcard .info{flex:1;min-width:0}
+  .artcard .nm{font-size:13.5px;font-weight:600;word-break:break-all;color:#1f2329}
+  .artcard .meta{font-size:11.5px;color:#8a9099;margin-top:3px}
+  .artcard .open{flex:0 0 auto;display:flex;align-items:center;gap:10px;color:#5f6368}
+  .artcard .open span{font-size:16px;display:flex;align-items:center;justify-content:center;width:22px;height:22px}
+  .artcard .open span:hover{color:#1f2329}
+  .art-foot{display:flex;gap:16px;margin-top:10px;font-size:12px}
+  .art-foot a{color:var(--gray);cursor:pointer}
+  .art-foot a:hover{color:var(--brand)}
+  .art-foot .count{color:var(--brand);margin-left:2px}
+  /* system */
+  .sys{border-radius:9px;padding:11px 14px;margin-top:6px;font-size:13px;display:flex;gap:10px;align-items:flex-start}
+  .sys .si{font-size:15px;margin-top:1px}
+  .sys.info{background:var(--brand-soft);color:#1d4ed8}
+  .sys.warn{background:var(--orange-soft);color:#9a5b06}
+  .sys.err{background:#f1f3f5;color:#1f2329}
+  .sys.confirm{background:#fff;border:1px solid #e8eaed;border-radius:16px;padding:22px;max-width:560px;font-size:14px}
+  .sys.confirm .auth-label{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#9ca3af;margin-bottom:12px}
+  .sys.confirm .auth-title{font-size:15.5px;font-weight:600;color:#111827;margin-bottom:22px;line-height:1.5}
+  .sys.confirm .auth-row{display:flex;align-items:center;gap:22px;font-size:13.5px;margin-bottom:28px;color:#111827;flex-wrap:nowrap}
+  .sys.confirm .auth-row .label{color:#9ca3af;min-width:56px;flex-shrink:0}
+  .sys.confirm .auth-row .value{font-family:var(--mono);color:#111827}
+  .sys.confirm .acts{margin-top:0;display:flex;gap:10px;flex-wrap:nowrap}
+  .sys.confirm .acts button{border-radius:10px;padding:8px 16px;font-size:13px;cursor:pointer;border:1px solid #e5e7eb;background:#fff;color:#111827;font-weight:500;flex-shrink:0}
+  .sys.confirm .acts button:hover{background:#f9fafb}
+  .sys.confirm .acts .primary{background:#111827;color:#fff;border-color:#111827}
+  .sys.confirm .acts .primary:hover{background:#374151}
+  /* context compress */
+  .ctx-compress{display:flex;align-items:center;gap:8px;padding:10px 0;font-size:14px;color:#9ca3af}
+.ctx-compress .ctx-time{width:100%;padding-bottom:10px;border-bottom:1px solid var(--border);color:var(--gray);font-size:14px}
+.ctx-compress.done{flex-direction:row;align-items:center;gap:8px}
+  .ctx-compress .ctx-icon{flex-shrink:0}
+  /* model switch hint */
+  .model-switch{display:flex;align-items:center;gap:12px;color:#9ca3af;font-size:13px;margin:10px 0}
+  .model-switch .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,#e5e7eb,transparent)}
+  .model-switch .text{display:flex;align-items:center;gap:5px;white-space:nowrap}
+  .model-switch .info{cursor:pointer;color:#9ca3af}
+  .model-switch .info:hover{color:#6b7280}
+  /* task-fail alert box */
+  .errbox{background:#fff2e2;border:1px solid #f5d0a9;border-radius:10px;overflow:hidden;max-width:620px;margin:6px 0;color:#5c3d1e;box-shadow:0 2px 10px rgba(232,131,12,.10)}
+  .errbox .eh{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:#fff2e2}
+  .errbox .eh .ic{font-size:18px;color:#e8830c;flex-shrink:0;margin-top:1px}
+  .errbox .eh .title{font-weight:600;font-size:14px;line-height:1.5;word-break:break-all}
+  .errbox .eh .close{margin-left:auto;font-size:20px;color:#a67c52;cursor:pointer;line-height:1}
+  .errbox .eh .close:hover{color:#7a5a38}
+  .errbox .eb{padding:0 14px 12px 14px;font-size:13px;background:#fff2e2}
+  .errbox .more-line{color:#e8830c;cursor:pointer;font-size:13px;margin:2px 0 10px;display:inline-flex;align-items:center;gap:6px}
+  .errbox .more-line:hover{text-decoration:underline}
+  .errbox .more-line .sf{color:#a67c52;margin-left:8px}
+  .errbox .edet{font-size:12px;color:#6e543b;line-height:1.8}
+  .errbox .edet .lk{color:#4a3421;font-weight:500;min-width:70px;display:inline-block}
+  .errbox .ef{display:flex;justify-content:flex-end;gap:10px;padding:12px 14px;border-top:1px solid #f5d0a9;background:#fff2e2}
+  .errbox .ef button{border-radius:7px;padding:6px 14px;font-size:12.5px;cursor:pointer;border:1px solid #e8830c;background:#fff;color:#e8830c;display:inline-flex;align-items:center;gap:5px}
+  .errbox .ef button:hover{background:#fff3e6}
+  .errbox .ef .retry{background:#e8830c;color:#fff}
+  .errbox .ef .retry:hover{background:#d4740a}
+  /* ask */
+  .ask{background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px;max-width:560px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .ask-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .ask-head .q{font-size:15px;font-weight:600;color:var(--text);line-height:1.4;margin:0}
+  .ask-pager{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray)}
+  .ask-pager .ask-arrow{width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;padding:0}
+  .ask-pager .ask-arrow:hover:not(:disabled){background:var(--panel2);border-color:var(--brand);color:var(--brand)}
+  .ask-pager .ask-arrow:disabled{opacity:.4;cursor:not-allowed}
+  .ask .opts{display:flex;flex-direction:column;gap:8px}
+  .ask .opt{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;cursor:pointer;transition:.15s;border:1px solid transparent}
+  .ask .opt:hover{background:var(--panel2)}
+  .ask .opt.sel{background:#3d3d3d;border-color:#3d3d3d;color:#fff}
+  .ask .opt.sel:hover{background:#3d3d3d}
+  .ask .opt .num{width:22px;height:22px;border-radius:50%;background:#f1f3f5;color:#333;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex:0 0 22px}
+  .ask .opt.sel .num{background:#5a5a5a;color:#fff}
+  .ask .opt .txt{flex:1;font-size:14px;color:var(--text);line-height:1.4}
+  .ask .opt.sel .txt{color:#fff}
+  .ask .opt .arrow{font-size:14px;color:var(--gray);opacity:0;transition:.15s}
+  .ask .opt:hover .arrow{opacity:1}
+  .ask .opt.sel .arrow{color:#fff;opacity:1}
+  .ask-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:12px}
+  .ask-other{font-size:13px;color:var(--gray);cursor:pointer;display:flex;align-items:center;gap:6px}
+  .ask-other:hover{color:var(--brand)}
+  .ask-skip{font-size:13px;color:var(--text);background:#f1f3f5;border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer}
+  .ask-skip:hover{background:var(--panel2);border-color:var(--brand);color:var(--brand)}
+  .ask.interactive .ask-foot{display:flex;justify-content:flex-start}
+  .ask.interactive .submit-row{display:flex !important}
+  .ask.interactive .submit-row .submit{display:none !important}
+  .ask.interactive.in-submit .submit-row .submit{display:inline-flex !important}
+  .ask.interactive.in-edit .submit-row{display:flex !important}
+  .ask.interactive .other-input{display:none !important}
+  .ask.interactive.in-edit .other-input{display:flex !important}
+  .ask.interactive.in-edit .ask-foot{display:none !important}
+  /* ask — MCP / 工具权限确认 */
+  .ask-perm{background:#fff;border:1px solid var(--border);border-radius:18px;padding:20px;max-width:560px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .ask-perm .perm-label{display:flex;align-items:center;gap:8px;font-size:13px;color:#9ca3af;margin-bottom:14px}
+  .ask-perm .perm-label svg{width:18px;height:18px;color:#f59e0b;flex-shrink:0}
+  .ask-perm .perm-q{font-size:15px;font-weight:500;color:var(--text);line-height:1.5;margin-bottom:16px}
+  .ask-perm .perm-row{display:flex;align-items:center;gap:12px;font-size:13px;margin-bottom:22px}
+  .ask-perm .perm-row .l{color:#9ca3af;min-width:64px;flex-shrink:0}
+  .ask-perm .perm-row .v{color:var(--text);font-family:var(--mono)}
+  .ask-perm .perm-btns{display:flex;align-items:center;gap:10px}
+  .ask-perm .perm-btns button{border-radius:10px;padding:8px 16px;font-size:13px;cursor:pointer;font-weight:500;border:1px solid #e5e7eb;background:#fff;color:#1f2329}
+  .ask-perm .perm-btns button:hover{background:#f9fafb}
+  .ask-perm .perm-btns .primary{background:#1f2329;color:#fff;border-color:#1f2329}
+  .ask-perm .perm-btns .primary:hover{background:#374151}
+  /* ask — 带其他输入框的提问 */
+  .ask .other-input{display:flex;align-items:center;gap:10px;background:#f3f4f6;border-radius:10px;padding:11px 12px;margin-top:10px}
+  .ask .other-input svg{width:16px;height:16px;color:#1f2329;flex-shrink:0}
+  .ask .other-input input{flex:1;border:none;background:transparent;font-size:14px;color:var(--text);outline:none}
+  .ask .other-input input::placeholder{color:#9ca3af}
+  .ask .other-input input:placeholder-shown{color:transparent}
+  .ask.interactive.in-edit .other-input input::placeholder{color:#9ca3af}
+  .ask.interactive.in-edit .other-input input:placeholder-shown{color:inherit}
+  .ask .submit-row{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:12px}
+  .ask .submit-row button{border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;font-weight:500}
+  .ask .submit-row .skip{background:#f1f3f5;border:1px solid var(--border);color:var(--text)}
+  .ask .submit-row .skip:hover{background:var(--panel2);border-color:var(--brand);color:var(--brand)}
+  .ask .submit-row .submit{background:#1f2329;color:#fff;border:1px solid #1f2329}
+  .ask .submit-row .submit:hover{background:#374151}
+  /* plan confirmable section */
+  .plan-acts{margin-top:10px;display:flex;gap:8px}
+  .plan-acts button{border-radius:7px;padding:5px 14px;font-size:13px;cursor:pointer}
+  .plan-acts .ok{background:var(--green);color:#fff;border:none}
+  .plan-acts .rev{background:#fff;border:1px solid var(--border);color:var(--sub)}
+  /* tree diagram */
+  .tree{border:1px solid #e6e8eb;border-radius:12px;background:#fff;padding:18px 20px;font-family:"SF Mono",Consolas,"Liberation Mono",Menlo,monospace;font-size:13.5px;color:#4b5563;line-height:1.75;overflow-x:auto}
+  .tree pre{margin:0;white-space:pre;color:#4b5563}
+  /* citation inline */
+  .cit{color:var(--brand);font-size:11px;vertical-align:super;cursor:pointer;text-decoration:none}
+  /* ===== 补充节点样式 ===== */
+
+
+  /* timeline */
+  .timeline{margin-top:6px;padding-left:6px}
+  .tl-item{display:flex;gap:12px;padding-bottom:14px;position:relative}
+  .tl-item:not(:last-child)::before{content:"";position:absolute;left:6px;top:14px;bottom:0;width:2px;background:var(--border)}
+  .tl-dot{width:14px;height:14px;border-radius:50%;background:var(--brand);margin-top:3px;flex:0 0 14px;z-index:1;border:3px solid var(--brand-soft)}
+  .tl-dot.gray{background:var(--gray);border-color:#eef0f3}
+  .tl-dot.green{background:var(--green);border-color:var(--green-soft)}
+  .tl-c{flex:1}
+  .tl-time{font-size:11px;color:var(--gray);font-family:var(--mono)}
+  .tl-t{font-size:13.5px;color:var(--text);margin-top:1px}
+  .tl-d{font-size:12.5px;color:var(--sub);margin-top:2px}
+  /* user_message */
+  .msg.u .avatar{background:#eef0f3;color:#555}
+  .umsg{background:#f1f3f5;border:1px solid var(--border);border-radius:14px;padding:12px 16px;max-width:600px;margin-top:6px;font-size:14px;color:var(--text);line-height:1.6}
+  .umsg .uattach{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .umsg .uchip{background:transparent;border:none;padding:2px 0;font-size:13px;color:var(--text);display:inline-flex;align-items:center;gap:4px;font-weight:500}
+  .umsg .uchip .uicon{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;flex-shrink:0}
+  .umsg .uchip .uicon.jpg{background:#e8830c}
+  .umsg .uchip .uicon.html{background:#2f6bff}
+  .umsg .uchip .uicon.doc{background:#2f6bff}
+  .umsg .uchip .uicon.txt{background:#2ba471}
+  .umsg .utext{display:inline;margin-left:4px}
+  /* form */
+  .form{border:1px solid var(--border);border-radius:12px;padding:16px;max-width:520px;margin-top:6px;background:#fff}
+  .form .fld{margin-bottom:12px}
+  .form .fld:last-of-type{margin-bottom:0}
+  .form label{display:block;font-size:13px;color:var(--text);margin-bottom:6px;font-weight:500}
+  .form input,.form select,.form textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:13px;font-family:inherit;color:var(--text);background:#fff;box-sizing:border-box}
+  .form input:focus,.form select:focus,.form textarea:focus{outline:none;border-color:var(--brand)}
+  .form .frow{display:flex;gap:10px}
+  .form .frow .fld{flex:1}
+  .form .fsubmit{margin-top:14px;background:var(--brand);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer}
+  .form .fsubmit:hover{filter:brightness(.95)}
+
+  @keyframes caret{50%{opacity:0}}
+  /* plan */
+  .plan{border:1px solid var(--border);border-radius:12px;padding:14px 16px;max-width:560px;margin-top:6px;background:#fff}
+  .plan .pt{font-size:14px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .plan .pstep{display:flex;gap:10px;padding:7px 0;font-size:13px;color:var(--text)}
+  .plan .pstep .pn{width:20px;height:20px;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex:0 0 20px;margin-top:1px}
+  .plan .pstep .pd{color:var(--sub);font-size:12px;margin-top:1px}
+  </style>
+</head>
+<body>
+<div class="layout">
+  <!-- 左侧导航 -->
+  <nav class="nav">
+    <a href="#top" style="font-weight:600;color:var(--text)">⬆ 回到顶部</a>
+    <h2>结论类</h2>
+    <a href="#usermsg"><span class="tag opt">user</span>用户消息</a>
+    <a href="#text"><span class="tag">text</span>文本</a>
+    <a href="#image"><span class="tag">image</span>内嵌图片</a>
+    <a href="#widget"><span class="tag">widget</span>可视化挂件</a>
+    <a href="#tree"><span class="tag">tree</span>功能结构图</a>
+    <a href="#timeline"><span class="tag">timeline</span>时间线</a>
+    <a href="#code"><span class="tag">code</span>代码块</a>
+    <h2>过程/透明类</h2>
+    <a href="#tool"><span class="tag">tool</span>Shell 工具调用</a>
+    <a href="#web"><span class="tag">web</span>网页搜索</a>
+    <a href="#mcp"><span class="tag">mcp</span>MCP 工具调用</a>
+    <a href="#reason"><span class="tag">reason</span>深度思考</a>
+    <a href="#todo"><span class="tag">todo</span>任务清单</a>
+    <a href="#diff"><span class="tag">File modification</span>文件修正</a>
+    <a href="#agent"><span class="tag">agent</span>子Agent协作</a>
+    <h2>产物 / 系统</h2>
+    <a href="#artifact"><span class="tag">art</span>产物卡片</a>
+    <a href="#sys-model"><span class="tag">system</span>模型切换</a>
+    <a href="#sys-ctx"><span class="tag">system</span>上下文压缩</a>
+    <a href="#ask"><span class="tag">ask</span>提问选项</a>
+    <a href="#plan"><span class="tag">plan</span>执行计划</a>
+    <a href="#form"><span class="tag">form</span>表单收集</a>
+    <a href="#sys-error"><span class="tag">system</span>错误提示</a>
+    <a href="#task-fail"><span class="tag">err</span>任务失败提示</a>
+  </nav>
+
+  <!-- 主内容 -->
+  <div class="main">
+    <header class="page" id="top">
+      <h1>Agent 会话渲染节点 · 前端组件案例库</h1>
+    </header>
+
+    <!-- 28. user_message -->
+    <section class="case" id="usermsg">
+      <div class="case-head"><span class="type opt">user_message</span><span class="name">用户消息 / 多模态输入</span><span class="grp">结论类</span></div>
+      <div class="case-desc">用户侧消息，支持文本 + 附件（图片 / 文件 / 截图）多模态输入。</div>
+      <div class="canvas"><div class="msg u"><div class="avatar u">🤖</div><div class="bubble">
+        <div class="umsg">
+          <div class="uattach">
+            <span class="uchip"><span class="uicon jpg">🖼</span>0723.jpg</span>
+            <span class="uchip"><span class="uicon html">&#60;/&#62;</span>htmledit.html</span>
+            <span class="uchip"><span class="uicon doc">📄</span>原型Skill.doc</span>
+            <span class="uchip"><span class="uicon txt">T</span>账号管理.txt</span>
+            <span class="utext">这些是什么文件</span>
+          </div>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 1. text -->
+    <section class="case" id="text">
+      <div class="case-head"><span class="type">text</span><span class="name">文本（Markdown）</span><span class="grp">结论类</span></div>
+      <div class="case-desc">Markdown 富文本，支持流式增量渲染（text:delta）。承载最终回答。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="md">
+          <h3>核心结论：LLM API 定价三档</h3>
+          <p>综合官方数据，当前主流模型按<strong>输入/输出</strong>分别计费，推理类模型溢价明显：</p>
+          <ul><li>旗舰对话模型：输入约 <code>¥0.004/千tokens</code></li>
+          <li>视觉生成：按张计费，<code>¥0.14/张</code> 起</li></ul>
+          <table><tr><th>厂商</th><th>模型</th><th>输入价</th></tr>
+            <tr><td>阿里云百炼</td><td>qwen-plus</td><td>¥0.004/千</td></tr>
+            <tr><td>OpenAI</td><td>gpt-4o-mini</td><td>$0.00015/千</td></tr></table>
+          <p>HTML 文件里每一家都有独立分板块表格（含各分档价、缓存价、上下文窗口）、横向选型要点，以及每家可点击的官方来源链接，可直接用于你平台的供应商模型接入选型。</p>
+          <div class="artcards" style="margin-top:10px">
+            <div class="artcard" onclick="toast('预览 llm_api_pricing_2026.html')">
+              <div class="icon html">&#60;&#47;&#62;</div>
+              <div class="info"><div class="nm">llm_api_pricing_2026.html</div><div class="meta">网页 · 24.6 KB</div></div>
+              <div class="open"><span>↗</span></div>
+            </div>
+          </div>
+          <div class="art-foot">
+            <a onclick="toast('切换到产物 Tab')">查看所有产物<span class="count">(1)</span> ›</a>
+          </div>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 2. image_inline -->
+    <section class="case" id="image">
+      <div class="case-head"><span class="type">image_inline</span><span class="name">内嵌图片</span><span class="grp">结论类</span></div>
+      <div class="case-desc">对话流中直接展示图片（生成图/配图）。点击可放大查看、旋转、下载。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <p class="md">这是为你生成的效果图：</p>
+        <img class="img-inline" src="image-inline-sample.jpg" alt="内嵌示例图" onclick="openLightbox('image-inline-sample.jpg')">
+        <div class="img-hint">点击放大 · 支持旋转 · 可下载原图</div>
+      </div></div></div>
+    </section>
+
+    <!-- 3. widget -->
+    <section class="case" id="widget">
+      <div class="case-head"><span class="type">widget</span><span class="name">可视化挂件（svg / echarts / html）</span><span class="grp">结论类</span></div>
+      <div class="case-desc">内联 SVG/HTML；标题栏操作菜单（下载到本地/下载为图片/复制代码/查看代码）；点击查看代码后渲染区切换为代码视图，菜单项变为「显示 UI」可切回渲染态；底部脚注。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <!-- svg 架构图 -->
+        <div class="widget" id="widget-svg">
+          <div class="wh"><span>🧩 展示详情</span><span class="menu" onclick="wmenu(this)">⋯
+            <div class="wmenu"><div onclick="toast('下载到本地')">下载到本地</div><div onclick="toast('下载为图片')">下载为图片</div><div onclick="toast('复制代码')">复制代码</div><div onclick="showCode('widget-svg')">查看代码</div></div></span></div>
+          <div class="wb"><svg viewBox="0 0 380 200" width="660" xmlns="http://www.w3.org/2000/svg">
+            <rect x="150" y="14" width="100" height="44" rx="9" fill="#2f6bff" opacity=".12" stroke="#2f6bff"/>
+            <text x="200" y="41" font-size="12" fill="#2f6bff" text-anchor="middle">总成本</text>
+            <rect x="14" y="120" width="84" height="50" rx="8" fill="#2ba471" opacity=".12" stroke="#2ba471"/><text x="56" y="150" font-size="11" fill="#2ba471" text-anchor="middle">输入</text>
+            <rect x="120" y="120" width="84" height="50" rx="8" fill="#7c5cff" opacity=".12" stroke="#7c5cff"/><text x="162" y="150" font-size="11" fill="#7c5cff" text-anchor="middle">输出</text>
+            <rect x="226" y="120" width="84" height="50" rx="8" fill="#e8830c" opacity=".12" stroke="#e8830c"/><text x="268" y="150" font-size="11" fill="#e8830c" text-anchor="middle">缓存</text>
+            <rect x="332" y="120" width="84" height="50" rx="8" fill="#e54a4a" opacity=".12" stroke="#e54a4a"/><text x="374" y="150" font-size="11" fill="#e54a4a" text-anchor="middle">其他</text>
+            <line x1="200" y1="58" x2="56" y2="120" stroke="#bbb"/><line x1="200" y1="58" x2="162" y2="120" stroke="#bbb"/>
+            <line x1="200" y1="58" x2="268" y2="120" stroke="#bbb"/><line x1="200" y1="58" x2="374" y2="120" stroke="#bbb"/>
+          </svg></div>
+          <div class="fn">图：基于归一化后的六厂商报价估算，单位 元/百万tokens。</div>
+        </div>
+        <!-- echarts 风格柱状图（SVG 模拟） -->
+        <div class="widget" id="widget-echarts" style="margin-top:14px">
+          <div class="wh"><span>🧩 展示详情</span><span class="menu" onclick="wmenu(this)">⋯
+            <div class="wmenu"><div onclick="toast('下载到本地')">下载到本地</div><div onclick="toast('下载为图片')">下载为图片</div><div onclick="toast('复制代码')">复制代码</div><div onclick="showCode('widget-echarts')">查看代码</div></div></span></div>
+          <div class="wb"><svg viewBox="0 0 360 180" width="640" xmlns="http://www.w3.org/2000/svg">
+            <line x1="40" y1="150" x2="340" y2="150" stroke="#ddd"/>
+            <rect x="60" y="70" width="40" height="80" fill="#2f6bff"/><text x="80" y="168" font-size="10" text-anchor="middle">百炼</text>
+            <rect x="130" y="40" width="40" height="110" fill="#7c5cff"/><text x="150" y="168" font-size="10" text-anchor="middle">OpenAI</text>
+            <rect x="200" y="100" width="40" height="50" fill="#2ba471"/><text x="220" y="168" font-size="10" text-anchor="middle">智谱</text>
+            <rect x="270" y="60" width="40" height="90" fill="#e8830c"/><text x="290" y="168" font-size="10" text-anchor="middle">DeepSeek</text>
+          </svg></div>
+          <div class="fn">format='echarts'：前端用 ECharts 实例化；此处用 SVG 占位以便离线预览。</div>
+        </div>
+        <!-- html 登录页 mockup -->
+        <div class="widget" id="widget-html" style="margin-top:14px">
+          <div class="wh"><span>🧩 展示详情</span><span class="menu" onclick="wmenu(this)">⋯
+            <div class="wmenu"><div onclick="toast('下载到本地')">下载到本地</div><div onclick="toast('下载为图片')">下载为图片</div><div onclick="toast('复制代码')">复制代码</div><div onclick="showCode('widget-html')">查看代码</div></div></span></div>
+          <div class="wb" style="padding:0;overflow:hidden;border-radius:0 0 10px 10px">
+            <div style="display:flex;width:100%;min-height:360px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">
+              <div style="flex:1;background:linear-gradient(160deg,#16172b 0%,#25284d 100%);color:#fff;padding:32px 28px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
+                <div style="position:absolute;top:-60px;right:-60px;width:260px;height:260px;border-radius:50%;background:rgba(91,77,255,.18)"></div>
+                <div style="position:absolute;bottom:-80px;left:-80px;width:260px;height:260px;border-radius:50%;background:rgba(52,211,153,.08)"></div>
+                <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:1">
+                  <div style="width:38px;height:38px;border-radius:10px;background:#5b4dff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px">C</div>
+                  <span style="font-size:19px;font-weight:600">CloudApp</span>
+                </div>
+                <div style="position:relative;z-index:1;margin-top:20px">
+                  <div style="font-size:28px;font-weight:700;line-height:1.35;margin-bottom:14px">智能协作<br>高效管理</div>
+                  <div style="font-size:13px;color:#a5a9c4;line-height:1.7">一站式企业管理与个人效率提升平台，数据安全，多端同步。</div>
+                </div>
+                <ul style="list-style:none;padding:0;margin:0;position:relative;z-index:1">
+                  <li style="display:flex;align-items:center;gap:10px;font-size:13px;color:#e8eaf6;margin:11px 0"><span style="width:7px;height:7px;border-radius:50%;background:#34d399"></span>企业级数据安全保障</li>
+                  <li style="display:flex;align-items:center;gap:10px;font-size:13px;color:#e8eaf6;margin:11px 0"><span style="width:7px;height:7px;border-radius:50%;background:#34d399"></span>多端实时同步协作</li>
+                  <li style="display:flex;align-items:center;gap:10px;font-size:13px;color:#e8eaf6;margin:11px 0"><span style="width:7px;height:7px;border-radius:50%;background:#34d399"></span>灵活的权限管理体系</li>
+                </ul>
+                <div style="font-size:11px;color:#5b6088;position:relative;z-index:1">© 2026 CloudApp Inc.</div>
+              </div>
+              <div style="flex:1.25;background:#fff;padding:32px 34px;display:flex;flex-direction:column">
+                <div style="text-align:center;margin-bottom:24px">
+                  <div style="display:inline-block;padding:7px 34px;border-radius:10px;background:#f5f6f8;font-size:13px;color:#333;font-weight:500">个人版</div>
+                </div>
+                <div style="font-size:22px;font-weight:700;color:#1f2329;margin-bottom:4px">欢迎回来</div>
+                <div style="font-size:13px;color:#8a9099;margin-bottom:20px">登录您的个人账户</div>
+                <div style="display:flex;gap:24px;font-size:14px;margin-bottom:18px;border-bottom:1px solid #e6e8eb;padding-bottom:10px">
+                  <span style="color:#4f46e5;border-bottom:2px solid #4f46e5;padding-bottom:10px;margin-bottom:-10px;font-weight:600">账号密码登录</span>
+                  <span style="color:#8a9099;cursor:pointer">短信验证码登录</span>
+                </div>
+                <label style="font-size:13px;color:#5f6368;margin:8px 0 6px">账号</label>
+                <div style="display:flex;align-items:center;gap:10px;border:1px solid #e6e8eb;border-radius:10px;padding:10px 14px;margin-bottom:12px">
+                  <span style="font-size:14px;color:#9ca3af">✉</span>
+                  <input type="text" placeholder="邮箱 / 手机号 / 用户名" style="border:none;outline:none;font-size:14px;flex:1;background:transparent;color:#1f2329" onclick="event.stopPropagation()">
+                </div>
+                <label style="font-size:13px;color:#5f6368;margin:6px 0 6px">密码</label>
+                <div style="display:flex;align-items:center;gap:10px;border:1px solid #e6e8eb;border-radius:10px;padding:10px 14px;margin-bottom:12px">
+                  <span style="font-size:14px;color:#9ca3af">🔒</span>
+                  <input type="password" placeholder="请输入密码" style="border:none;outline:none;font-size:14px;flex:1;background:transparent;color:#1f2329" onclick="event.stopPropagation()">
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;margin:8px 0 18px">
+                  <label style="display:flex;align-items:center;gap:8px;color:#5f6368;cursor:pointer"><input type="checkbox" checked style="accent-color:#4f46e5;width:15px;height:15px">记住登录状态</label>
+                  <span style="color:#4f46e5;cursor:pointer">忘记密码？</span>
+                </div>
+                <button style="width:100%;padding:12px;border-radius:10px;border:none;background:#5b4dff;color:#fff;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:2px" onclick="event.stopPropagation();toast('登录（沙箱演示）')">登 录</button>
+                <div style="display:flex;align-items:center;gap:12px;margin:20px 0;font-size:12px;color:#9ca3af">
+                  <span style="flex:1;height:1px;background:#e6e8eb"></span>其他登录方式<span style="flex:1;height:1px;background:#e6e8eb"></span>
+                </div>
+                <div style="display:flex;justify-content:center;gap:16px">
+                  <span style="width:38px;height:38px;border-radius:50%;border:1px solid #e6e8eb;display:flex;align-items:center;justify-content:center;font-size:15px;color:#22c55e;cursor:pointer">💬</span>
+                  <span style="width:38px;height:38px;border-radius:50%;border:1px solid #e6e8eb;display:flex;align-items:center;justify-content:center;font-size:15px;color:#3b82f6;cursor:pointer">●</span>
+                  <span style="width:38px;height:38px;border-radius:50%;border:1px solid #e6e8eb;display:flex;align-items:center;justify-content:center;font-size:15px;color:#8b5cf6;cursor:pointer">🛡</span>
+                  <span style="width:38px;height:38px;border-radius:50%;border:1px solid #e6e8eb;display:flex;align-items:center;justify-content:center;font-size:15px;color:#374151;cursor:pointer">▦</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="fn">format='html'：在沙箱 iframe 中渲染可交互原型。</div>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 4. tree_diagram -->
+    <section class="case" id="tree">
+      <div class="case-head"><span class="type">tree</span><span class="name">功能结构图 / 树状图</span><span class="grp">结论类</span></div>
+      <div class="case-desc">层级结构可视化：用缩进 + 线条表达父子关系，适合权限、组织架构、功能模块等场景。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="tree"><pre>超级管理员（拥有所有权限）
+│
+├──── 预置角色
+│     ├──── IT 管理员 → 组织架构 + 安全设置
+│     ├──── 应用管理员 → 应用管理 + 机器人管理
+│     ├──── 部门管理员 → 本部门成员管理
+│     └──── 安全管理员 → 审计日志 + 登录策略
+│
+└──── 自定义角色
+      └──── 自由组合权限项（粒度到功能模块级别）</pre></div>
+      </div></div></div>
+    </section>
+
+    <!-- 26. timeline -->
+    <section class="case" id="timeline">
+      <div class="case-head"><span class="type">timeline</span><span class="name">时间线 / 事件流</span><span class="grp">结论类</span></div>
+      <div class="case-desc">按时间顺序展示的里程碑或处理流程。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-dot green"></div><div class="tl-c"><div class="tl-time">09:12</div><div class="tl-t">需求确认完成</div><div class="tl-d">已与产品对齐验收标准</div></div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-c"><div class="tl-time">10:40</div><div class="tl-t">原型设计交付</div><div class="tl-d">提交 3 版方案供评审</div></div></div>
+          <div class="tl-item"><div class="tl-dot gray"></div><div class="tl-c"><div class="tl-time">进行中</div><div class="tl-t">开发联调</div><div class="tl-d">预计今日 18:00 完成</div></div></div>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 14. code_block -->
+    <section class="case" id="code">
+      <div class="case-head"><span class="type">code_block</span><span class="name">代码块</span><span class="grp">结论类</span></div>
+      <div class="case-desc">等宽代码 + 语言标签 + 复制按钮。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="code">
+          <div class="ch"><span class="lang">javascript</span>
+            <div class="ops"><button onclick="copyCode(this)">复制</button></div></div>
+          <pre><code><span class="k">function</span> <span class="f">price</span>(input, output){
+  <span class="k">return</span> input*<span class="s">0.004</span> + output*<span class="s">0.012</span>; <span class="c">// 元/千tokens</span>
+}
+<span class="f">console</span>.log(<span class="f">price</span>(<span class="s">10</span>, <span class="s">30</span>));</code></pre>
+        </div>
+        <div class="code">
+          <div class="ch"><span class="lang">python</span>
+            <div class="ops"><button onclick="copyCode(this)">复制</button></div></div>
+          <pre><code><span class="k">def</span> <span class="f">price</span>(input_tokens, output_tokens):
+    <span class="k">return</span> input_tokens * <span class="s">0.004</span> + output_tokens * <span class="s">0.012</span>  <span class="c"># 元/千tokens</span>
+
+<span class="f">print</span>(price(<span class="s">10</span>, <span class="s">30</span>))</code></pre>
+        </div>
+        <div class="code">
+          <div class="ch"><span class="lang">sql</span>
+            <div class="ops"><button onclick="copyCode(this)">复制</button></div></div>
+          <pre><code><span class="k">SELECT</span> model_name, input_price, output_price
+<span class="k">FROM</span> model_pricing
+<span class="k">WHERE</span> provider = <span class="s">'aliyun'</span>
+<span class="k">ORDER BY</span> input_price <span class="k">ASC</span>;</code></pre>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 6. tool_call (Shell) -->
+    <section class="case" id="tool">
+      <div class="case-head"><span class="type">tool_call</span><span class="name">Shell 工具调用</span><span class="grp">过程类</span></div>
+      <div class="case-desc">shell 类（Bash / PowerShell / CMD）：标题=命令目的、小字标 shell 类型、等宽命令、底部结果行，三种 shell 共用卡片骨架，以左侧色条与标签配色区分。默认折叠，展开看入参/返回。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="tool-bash" id="bash-demo">
+          <div class="tb-head" onclick="toggleBash('bash-demo')">
+            <span class="tb-title">Initialize ppt-to-html skill skeleton</span>
+            <span class="tb-arr">⌄</span>
+          </div>
+          <div class="tb-body">
+            <div class="tc-type">bash</div>
+            <div class="tc-cmd">/Applications/WorkBuddy.app/Contents/Resources/.../init_skill.py ppt-to-html \
+  --path /Users/j1hyo/workbuddy/skills/ppt-to-html</div>
+            <div class="tc-result">✓ 运行成功</div>
+          </div>
+        </div>
+        <div class="tool-ps" id="ps-demo" style="margin-top:8px">
+          <div class="tb-head" onclick="toggleBash('ps-demo')">
+            <span class="tb-title">Register WorkBuddy shell command in PATH</span>
+            <span class="tb-arr">⌄</span>
+          </div>
+          <div class="tb-body">
+            <div class="tc-type">powershell</div>
+            <div class="tc-cmd">$p = "$env:LOCALAPPDATA\WorkBuddy\bin"
+if (!(Test-Path $p)) { New-Item -ItemType Directory -Path $p | Out-Null }
+Copy-Item .\workbuddy.ps1 $p\
+[Environment]::SetEnvironmentVariable("Path", "$p;$env:Path", "User")</div>
+            <div class="tc-result">✓ 运行成功</div>
+          </div>
+        </div>
+        <div class="tool-cmd" id="cmd-demo" style="margin-top:8px">
+          <div class="tb-head" onclick="toggleBash('cmd-demo')">
+            <span class="tb-title">Build Windows installer package</span>
+            <span class="tb-arr">⌄</span>
+          </div>
+          <div class="tb-body">
+            <div class="tc-type">cmd</div>
+            <div class="tc-cmd">@echo off
+set BUILD_DIR=dist\win
+if not exist %BUILD_DIR% mkdir %BUILD_DIR%
+xcopy /E /I assets %BUILD_DIR%\assets
+powershell -Command "Compress-Archive -Path %BUILD_DIR%\* -DestinationPath setup.zip"</div>
+            <div class="tc-result fail">× 运行失败</div>
+          </div>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 6b. web_search -->
+    <section class="case" id="web">
+      <div class="case-head"><span class="type">web_search</span><span class="name">网页搜索</span><span class="grp">过程类</span></div>
+      <div class="case-desc">标题栏显示 🌐 网页搜索 + query，展开为带 favicon 的可点击结果列表（两行截断、hover 下划线）。点击网页可在右侧抽屉浏览器打开。默认折叠。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="tool-web" id="web-demo">
+          <div class="tw-head" onclick="toggleWeb('web-demo')">
+            <span class="ic">🌐</span>
+            <span class="tw-label">网页搜索</span>
+            <span class="tw-query">OpenAI reasoning_effort parameter o1 o3 o4 models 2025</span>
+            <span class="tw-arr">⌄</span>
+          </div>
+          <div class="tw-body">
+            <div class="tw-list">
+              <a class="tw-item" href="https://platform.openai.com/docs/latest" target="_blank" rel="noopener">
+                <span class="tw-favicon globe">🌐</span>
+                <div class="tw-info"><div class="tw-link">New tools and features in the Responses API</div></div>
+              </a>
+              <a class="tw-item" href="https://openai.com/index/introducing-o3-and-o4-mini/" target="_blank" rel="noopener">
+                <span class="tw-favicon globe">🌐</span>
+                <div class="tw-info"><div class="tw-link">Introducing OpenAI o3 and o4-mini</div></div>
+              </a>
+              <a class="tw-item" href="https://techcommunity.microsoft.com/blog/" target="_blank" rel="noopener">
+                <span class="tw-favicon globe">🌐</span>
+                <div class="tw-info"><div class="tw-link">Everything You Need to Know About Reasoning Models: o1, o3, o4-mini and Beyond | Microsoft Community Hub</div></div>
+              </a>
+              <a class="tw-item" href="https://help.openai.com/" target="_blank" rel="noopener">
+                <span class="tw-favicon clock">⏱</span>
+                <div class="tw-info"><div class="tw-link">OpenAI o1 思考时间太短怎么办?完整解决方案与参数配置指南【2025实测】</div></div>
+              </a>
+              <a class="tw-item" href="https://platform.openai.com/docs/guides/" target="_blank" rel="noopener">
+                <span class="tw-favicon globe">🌐</span>
+                <div class="tw-info"><div class="tw-link">控制 OpenAI 模型回應的長度</div></div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="tool-web" id="web-demo-2" style="margin-top:8px">
+          <div class="tw-head" onclick="toggleWeb('web-demo-2')">
+            <span class="ic">🌐</span>
+            <span class="tw-label">网页搜索</span>
+            <span class="tw-query">Anthropic Claude 3.7 thinking parameter reasoning effort tokens</span>
+            <span class="tw-arr">⌄</span>
+          </div>
+          <div class="tw-body">
+            <div class="tw-list">
+              <a class="tw-item" href="https://www.anthropic.com/news/claude-3-7-sonnet" target="_blank" rel="noopener">
+                <span class="tw-favicon globe">A</span>
+                <div class="tw-info"><div class="tw-link">Claude 3.7 Sonnet: Frontier reasoning made practical</div></div>
+              </a>
+              <a class="tw-item" href="https://www.anthropic.com/" target="_blank" rel="noopener">
+                <span class="tw-favicon globe">A</span>
+                <div class="tw-info"><div class="tw-link">Membangun dengan pemikiran yang diperluas - Anthropic</div></div>
+              </a>
+              <a class="tw-item" href="https://www.anthropic.com/research/" target="_blank" rel="noopener">
+                <span class="tw-favicon globe">🌐</span>
+                <div class="tw-info"><div class="tw-link">LLMs with Reasoning Capabilities</div></div>
+              </a>
+              <a class="tw-item" href="https://inspect.ai-safety.com/" target="_blank" rel="noopener">
+                <span class="tw-favicon globe">🌐</span>
+                <div class="tw-info"><div class="tw-link">Inspect</div></div>
+              </a>
+              <a class="tw-item" href="https://www.anthropic.com/research/" target="_blank" rel="noopener">
+                <span class="tw-favicon globe">A</span>
+                <div class="tw-info"><div class="tw-link">Claude 3.7 Sonnet Extended Thinking: A Deep Dive into Hybrid Reasoning Models</div></div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 7. mcp_call -->
+    <section class="case" id="mcp">
+      <div class="case-head"><span class="type">mcp_call</span><span class="name">MCP 工具调用</span><span class="grp">过程类</span></div>
+      <div class="case-desc">顶层"调用外部服务"可折叠，下方并列展示多个 MCP 调用结果，每个调用左侧带图标、标题带箭头、结果区为浅灰圆角卡片，JSON 文本区可横向/纵向滚动。默认折叠。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="tool-mcp">
+          <div class="mcp-step-head open" onclick="toggleMcpStep(this)">
+            <span class="ic">☎</span>
+            <span>调用外部服务</span>
+            <span class="arr">⌄</span>
+          </div>
+          <div class="mcp-step-body open">
+            <div class="mcp-call">
+              <div class="mcp-step-head" onclick="toggleMcpStep(this)">
+                <span class="ic">☎</span>
+                <span>Mcp Amap-maps Maps Geo</span>
+                <span class="arr">⌄</span>
+              </div>
+              <div class="mcp-step-body">
+                <div class="mcp-result">{
+  "type": "text",
+  "text": "{\n  \"return\": [\n    {\n      \"country\": \"中国\",\n      \"province\": \"浙江省\",\n      \"city\": \"杭州市\",\n      \"citycode\": \"0571\",\n      \"district\": \"上城区\",\n      \"street\": [],\n      \"number\": [],\n      \"adcode\": \"330102\",\n      \"location\": \"120.212600,30.290851\",\n      \"level\": \"门牌号\"\n    }\n  ]\n}"
+}</div>
+              </div>
+            </div>
+            <div class="mcp-call">
+              <div class="mcp-step-head open" onclick="toggleMcpStep(this)">
+                <span class="ic">☎</span>
+                <span>Mcp Amap-maps Maps Geo</span>
+                <span class="arr">⌄</span>
+              </div>
+              <div class="mcp-step-body open">
+                <div class="mcp-result">{
+  "type": "text",
+  "text": "{\n  \"return\": [\n    {\n      \"country\": \"中国\",\n      \"province\": \"上海市\",\n      \"city\": \"上海市\",\n      \"citycode\": \"021\",\n      \"district\": \"闵行区\",\n      \"street\": [],\n      \"number\": [],\n      \"adcode\": \"310112\",\n      \"location\": \"121.322861,31.194331\",\n      \"level\": \"兴趣点\"\n    },\n    {\n      \"country\": \"中国\",\n      \"province\": \"上海市\",\n      \"city\": \"上海市\",\n      \"citycode\": \"021\",\n      \"district\": \"闵行区\",\n      \"street\": [],\n      \"number\": [],\n      \"adcode\": \"310112\",\n      \"location\": \"121.320975,31.193346\",\n      \"level\": \"兴趣点\"\n    },\n    {\n      \"country\": \"中国\",\n      \"province\": \"上海市\",\n      \"city\": \"上海市\",\n      \"citycode\": \"021\",\n      \"district\": \"闵行区\",\n      \"street\": [],\n      \"number\": [],\n      \"adcode\": \"310112\",\n      \"location\": \"121.320832,31.193527\",\n      \"level\": \"兴趣点\"\n    },\n    {\n      \"country\": \"中国\",\n      \"province\": \"上海市\",\n      \"city\": \"上海市\",\n      \"citycode\": \"021\",\n      \"district\": \"闵行区\",\n      \"street\": [],\n      \"number\": [],\n      \"adcode\": \"310112\",\n      \"location\": \"121.320737,31.193573\",\n      \"level\": \"兴趣点\"\n    },\n    {\n      \"country\": \"中国\",\n      \"province\": \"上海市\",\n      \"city\": \"上海市\",\n      \"citycode\": \"021\",\n      \"district\": \"闵行区\",\n      \"street\": [],\n      \"number\": [],\n      \"adcode\": \"310112\",\n      \"location\": \"121.320717,31.193577\",\n      \"level\": \"兴趣点\"\n    },\n    {\n      \"country\": \"中国\",\n      \"province\": \"上海市\",\n      \"city\": \"上海市\",\n      \"citycode\": \"021\",\n      \"district\": \"闵行区\",\n      \"street\": [],\n      \"number\": [],\n      \"adcode\": \"310112\",\n      \"location\": \"121.320...\",\n      \"level\": \"兴趣点\"\n    }\n  ]\n}"
+}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 8. reasoning -->
+    <section class="case" id="reason">
+      <div class="case-head"><span class="type">reasoning</span><span class="name">深度思考</span><span class="grp">过程类</span></div>
+      <div class="case-desc">浅灰圆角卡片，标题栏可折叠，内容区左侧竖线、灰色文字，上下渐变遮罩暗示滚动。默认折叠。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="reason-block open" id="reason-demo">
+          <div class="reason-head" onclick="toggleReason('reason-demo')">
+            <span class="reason-title">深度思考</span>
+            <span class="reason-arr">⌄</span>
+          </div>
+          <div class="reason-body">
+            <div class="reason-content">
+              <div class="reason-line"></div>
+              <div class="reason-text">The user is asking about message card types for an agent reply in a multi-agent system's conversation frontend. They want to know what types of message cards an agent can send back.
+
+Let me think about this. The user is building a multi-agent system and needs to develop a conversation frontend interaction page. They want to know what types of message cards an agent can reply with.
+
+This is a general knowledge/design question about multi-agent system UI patterns. I should provide a comprehensive answer based on common patterns in agent/AI chat interfaces.
+
+Let me think about the common message card types in multi-agent systems.</div>
+            </div>
+          </div>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 12. todo_list -->
+    <section class="case" id="todo">
+      <div class="case-head"><span class="type">todo_list</span><span class="name">任务清单</span><span class="grp">过程类</span></div>
+      <div class="case-desc">顶部「任务列表」可收起，每项为圆角灰底行，左侧空心圆、右侧 › 可展开详情；当前项高亮。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="todo-wrap" id="todo-demo">
+          <div class="todo-head" onclick="toggleTodo('todo-demo')">
+            <span class="ic">🗒️</span>
+            <span class="todo-title">任务列表</span>
+            <span class="arr">⌄</span>
+          </div>
+          <div class="todo-body">
+            <div class="todo-item done"><span class="ck">✓</span><span class="txt">Create main ppt2html.py conversion script</span><span class="arr-right">›</span></div>
+            <div class="todo-item prog"><span class="ck">✳</span><span class="txt">Create HTML viewer templates and assets</span><span class="arr-right">›</span></div>
+            <div class="todo-item pend"><span class="ck">○</span><span class="txt">Write SKILL.md documentation</span><span class="arr-right">›</span></div>
+          </div>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 13. diff_block -->
+    <section class="case" id="diff">
+      <div class="case-head"><span class="type">File modification</span><span class="name">文件修正</span><span class="grp">过程类</span></div>
+      <div class="case-desc">支持 Git 风格行级差异，可展示 HTML / Markdown 等源码修正。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="fold open" id="diff-demo">
+          <div class="fh" onclick="toggle('diff-demo')"><span class="ic">❌</span> <b>文件修正示例</b> <span class="arr">⌄</span></div>
+          <div class="fb">
+          <p class="md" style="margin:14px 0 6px"><b>1. HTML 源码修正（严格按参考图，可点击展开/收起）</b></p>
+          <div class="diff-git open" id="diff-html">
+            <div class="dg-head" onclick="toggleDiffGit('diff-html')">
+              <span class="edit">✎ 编辑</span>
+              <span class="path">07-节点类型渲染案例.html</span>
+              <span class="stat"><span class="plus">+31</span> <span class="minus">−2</span></span>
+              <span class="arr">⌄</span>
+            </div>
+            <div class="dg-body">
+              <div class="line info"><span class="ln"></span><span class="mark"></span><span class="code">@@ -607,7 +607,7 @@</span></div>
+              <div class="line del"><span class="ln">607</span><span class="mark">−</span><span class="code">      &lt;div class="case-desc"&gt;标题带 ❌/⚠️；分组列出"原写→实际"修正项，支持高亮标签。默认展开（自我修正是关键结论）。&lt;/div&gt;</span></div>
+              <div class="line add"><span class="ln">607</span><span class="mark">+</span><span class="code">      &lt;div class="case-desc"&gt;标题带 ❌/⚠️；分组列出"原写→实际"修正项，支持高亮标签。默认展开（自我修正是关键结论）。 additionally 支持 Git 风格行级差异，可展示 HTML / Markdown 等源码修正。&lt;/div&gt;</span></div>
+              <div class="line"><span class="ln">608</span><span class="mark"></span><span class="code">      &lt;div class="canvas"&gt;&lt;div class="msg"&gt;&lt;div class="avatar"&gt;🤖&lt;/div&gt;&lt;div class="bubble"&gt;</span></div>
+              <div class="line"><span class="ln">609</span><span class="mark"></span><span class="code">        &lt;div class="fold open" id="diff-demo"&gt;</span></div>
+              <div class="line"><span class="ln">610</span><span class="mark"></span><span class="code">          &lt;div class="fh" onclick="toggle('diff-demo')"&gt;&lt;span class="ic"&gt;❌&lt;/span&gt; &lt;b&gt;发现并修正了阿里云百炼的三类错误&lt;/b&gt; &lt;span class="arr"&gt;⌄&lt;/span&gt;&lt;/div&gt;</span></div>
+              <div class="line add"><span class="ln">611</span><span class="mark">+</span><span class="code">          &lt;div class="fb"&gt;&lt;div class="diff"&gt;</span></div>
+              <div class="line add"><span class="ln">612</span><span class="mark">+</span><span class="code">            &lt;div class="dcat"&gt;&lt;div class="ctitle"&gt;1. 万相图像（差 10 倍级）&lt;/div&gt;</span></div>
+            </div>
+          </div>
+
+          <p class="md" style="margin:14px 0 6px"><b>2. HTML文件修正（修正中）</b></p>
+          <div class="diff-git modifying">
+            <div class="dg-head"><span class="status">修改中</span><a class="path clickable" href="javascript:void(0)" onclick="event.stopPropagation(); openFile('file:///C:/Users/zhaonan/WorkBuddy/2026-07-07-10-37-17/multi-agent-chat-prototype.html','multi-agent-chat-prototype.html')">C:\Users\zhaonan\WorkBuddy\2026-07-07-10-37-17\multi-agent-chat-prototype.html</a></div>
+            <div class="dg-body">
+              <div class="mline">.art-btn:hover { border-color: var(--purple-500); color: var(--purple-600); }</div>
+              <div class="mline">.art-btn.primary { background: var(--purple-500); color: white; border-color: var(--purple-500); }</div>
+              <div class="mline">.art-btn.primary:hover { background: var(--purple-600); }</div>
+              <div class="mline">.art-btn:disabled { opacity: 0.6; cursor: default; }</div>
+              <div class="mline"></div>
+              <div class="mline">/* Generic file */</div>
+              <div class="mline">.artifact-file { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: var(--radius-md); }</div>
+              <div class="mline">.artifact-icon { width: 38px; height: 38px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; letter-spacing: 0.3px; }</div>
+              <div class="mline">.artifact-icon.pdf { background: #dc2626; }</div>
+              <div class="mline">.artifact-icon.excel { background: #16a34a; }</div>
+              <div class="mline">.artifact-icon.code { background: #7c3aed; }</div>
+              <div class="mline">.artifact-icon.json { background: #0891b2; }</div>
+              <div class="mline">.artifact-icon.ppt { background: #ea580c; }</div>
+              <div class="mline">.artifact-icon.zip { background: #6b7280; }</div>
+            </div>
+          </div>
+
+          <p class="md" style="margin:14px 0 6px"><b>3. Markdown 文案修正（严格按参考图，文件可点击查看，可展开/收起）</b></p>
+          <div class="diff-git open" id="diff-md">
+            <div class="dg-head" onclick="toggleDiffGit('diff-md')">
+              <span class="edit">✎ 编辑</span>
+              <a class="path clickable" href="javascript:void(0)" onclick="event.stopPropagation(); openFile('file:///C:/Users/zhaonan/WorkBuddy/2026-07-18-13-36-33/.workbuddy/memory/2026-07-23.md','2026-07-23.md')">C:\Users\zhaonan\WorkBuddy\2026-07-18-13-36-33\.workbuddy\memory\2026-07-23.md</a>
+              <span class="stat"><span class="plus">+1</span> <span class="minus">−0</span></span>
+              <span class="arr">⌄</span>
+            </div>
+            <div class="dg-body">
+              <div class="line del"><span class="ln">1</span><span class="mark">−</span><span class="code">- 新增 HTML 修正示例（`07-节点类型渲染案例.html`）和 Markdown 修正示例（`README.md`）。</span></div>
+              <div class="line add"><span class="ln">1</span><span class="mark">+</span><span class="code">- 新增 HTML 修正示例（`07-节点类型渲染案例.html`）和 Markdown 修正示例（`README.md`）。</span></div>
+              <div class="line add"><span class="ln">2</span><span class="mark">+</span><span class="code">- HTML 源码修正示例严格按参考图复刻：文件头显示「✎ 编辑」+ 文件名 + `+31 -2`，点击头部可展开/收起差异体，默认展开。</span></div>
+            </div>
+          </div>
+
+          <p class="md" style="margin:14px 0 6px"><b>4. MD 文档修正（修改中）</b></p>
+          <div class="diff-git modifying">
+            <div class="dg-head"><span class="status">修改中</span><span class="path">C:\Users\zhaonan\WorkBuddy\2026-07-18-13-36-33\.workbuddy\memory\2026-07-23.md</span></div>
+            <div class="dg-body">
+              <div class="mline">- 在 `diff_block` 案例中新增 Git 风格行级差异渲染：</div>
+              <div class="mline">  - 新增 `.diff-git` 样式：文件头（路径 + +n/−m 统计）、行号、删除行（红底 −）、新增行（绿底 +）、上下文行。</div>
+              <div class="mline">  - 新增 HTML 修正示例（`07-节点类型渲染案例.html`）和 Markdown 修正示例（`README.md`）。</div>
+              <div class="mline">  - HTML 源码修正示例严格按参考图复刻：文件头显示「✎ 编辑」+ 文件名 + `+31 −2`，点击头部可展开/收起差异体。</div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 10. agent_collab -->
+    <section class="case" id="agent">
+      <div class="case-head"><span class="type">agent_collab</span><span class="name">子 Agent 协作（分会话页）</span><span class="grp">过程类</span></div>
+      <div class="case-desc">详见原型演示页。</div>
+    </section>
+
+    <!-- 16. artifact_card -->
+    <section class="case" id="artifact">
+      <div class="case-head"><span class="type">artifact_card</span><span class="name">产物卡片组</span><span class="grp">产物/系统</span></div>
+      <div class="case-desc">横向列表式产物卡片：文件类型彩色图标 + 文件名/大小 + 右侧外链打开 + 查看全部入口。与右侧结果区同源同步（产物双入口）。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div style="font-size:12px;color:var(--gray);margin-bottom:6px">📦 本次产物</div>
+        <div class="artcards">
+          <div class="artcard" onclick="toast('预览 xiaokai_opened.png')">
+            <div class="icon img">🖼</div>
+            <div class="info"><div class="nm">xiaokai_opened.png</div><div class="meta">66.0 KB</div></div>
+            <div class="open"><span>↗</span></div>
+          </div>
+          <div class="artcard" onclick="toast('预览 dataviz.html')">
+            <div class="icon html">&#60;&#47;&#62;</div>
+            <div class="info"><div class="nm">dataviz.html</div><div class="meta">网页 · 24.6 KB</div></div>
+            <div class="open"><span>↗</span></div>
+          </div>
+        </div>
+        <div class="art-foot">
+          <a onclick="toast('切换到产物 Tab')">查看所有产物<span class="count">(2)</span> ›</a>
+          <a onclick="toast('切换到变更 Tab')">查看所有变更<span class="count">(1)</span> ›</a>
+        </div>
+
+        <div style="font-size:12px;color:var(--gray);margin:18px 0 6px">📦 批量产物（2 个压缩包）</div>
+        <div class="artcards gray">
+          <div class="artcard" onclick="toast('下载 ppt-to0html.zip')">
+            <div class="icon zip">🗜</div>
+            <div class="info"><div class="nm">ppt-to0html.zip</div><div class="meta">14.7 KB</div></div>
+            <div class="open">↗</div>
+          </div>
+          <div class="artcard" onclick="toast('下载 ppt-to1html.zip')">
+            <div class="icon zip">🗜</div>
+            <div class="info"><div class="nm">ppt-to1html.zip</div><div class="meta">14.9 KB</div></div>
+            <div class="open">↗</div>
+          </div>
+        </div>
+        <div class="art-foot">
+          <a onclick="toast('切换到产物 Tab')">查看所有产物<span class="count">(2)</span> ›</a>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 17b. system - 模型切换 -->
+    <section class="case" id="sys-model">
+      <div class="case-head"><span class="type">system</span><span class="name">模型切换</span><span class="grp">产物/系统</span></div>
+      <div class="case-desc">会话过程中模型发生变更时的轻量提示。左右渐变分割线 + 居中文案说明模型来源与目标。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="model-switch">
+          <span class="line"></span>
+          <span class="text">模型已从 Hy3 更改为 GLM-5.2</span>
+          <span class="line"></span>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 17c. system - 上下文压缩 -->
+    <section class="case" id="sys-ctx">
+      <div class="case-head"><span class="type">system</span><span class="name">上下文压缩</span><span class="grp">产物/系统</span></div>
+      <div class="case-desc">上下文窗口超限时自动触发压缩。顶部显示已处理耗时，下方分割线分隔压缩进度与完成状态，图标 + 文案区分「压缩中」和「已压缩」两种态。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="ctx-compress" style="flex-direction:column;align-items:stretch">
+          <div class="ctx-time">已处理 1m 6s</div>
+          <div style="display:flex;align-items:center;gap:8px;padding-top:10px">
+            <svg class="ctx-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>
+            <span>正在压缩上下文</span>
+          </div>
+        </div>
+        <div class="ctx-compress done">
+          <svg class="ctx-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>
+          <span>上下文已压缩</span>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 18. ask -->
+    <section class="case" id="ask">
+      <div class="case-head"><span class="type">ask</span><span class="name">提问 / 选项</span><span class="grp">产物/系统（新增）</span></div>
+      <div class="case-desc">多选题或单选题卡片：顶部问题 + 分页，选项带编号和选中态，支持"其他"输入与跳过；选择选项或进入编辑态后显示提交按钮。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <!-- 可交互提问：选择或编辑后显示提交 -->
+        <div class="ask interactive" id="ask-interactive">
+          <div class="ask-head">
+            <div class="q">你的PPT文件是哪种格式？</div>
+            <div class="ask-pager">
+              <button class="ask-arrow" disabled onclick="toast('已经是第一题')">‹</button>
+              <span class="ask-page">1/2</span>
+              <button class="ask-arrow" onclick="toast('下一题')">›</button>
+            </div>
+          </div>
+          <div class="opts">
+            <div class="opt sel" onclick="askSelect(this)">
+              <span class="num">1</span>
+              <span class="txt">.pptx 文件（Office 2007以上版本）</span>
+              <span class="arrow">→</span>
+            </div>
+            <div class="opt" onclick="askSelect(this)">
+              <span class="num">2</span>
+              <span class="txt">.ppt 文件（Office 2003及以下旧版）</span>
+              <span class="arrow">→</span>
+            </div>
+            <div class="opt" onclick="askSelect(this)">
+              <span class="num">3</span>
+              <span class="txt">已导出的PDF文件</span>
+              <span class="arrow">→</span>
+            </div>
+            <div class="opt" onclick="askSelect(this)">
+              <span class="num">4</span>
+              <span class="txt">已导出的图片合集（PNG/JPG）</span>
+              <span class="arrow">→</span>
+            </div>
+          </div>
+          <div class="other-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <input type="text" placeholder="请输入" value="">
+          </div>
+          <div class="ask-foot">
+            <div class="ask-other" onclick="askEdit(this)">✎ 否，请告知 OmniX 如何调整</div>
+          </div>
+          <div class="submit-row">
+            <button class="ask-skip" onclick="toast('跳过当前问题')">跳过</button>
+            <button class="submit" onclick="toast('已提交选项')">提交 ↵</button>
+          </div>
+        </div>
+
+        <!-- 请求许可 / MCP 工具权限确认 -->
+        <div class="ask-perm" style="margin-top:14px">
+          <div class="perm-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>请求许可</span>
+          </div>
+          <div class="perm-q">允许 figma MCP服务器运行“use_figma”工具？</div>
+          <div class="perm-row">
+            <span class="l">Patterns</span>
+            <span class="v">- /app/opencode/*</span>
+          </div>
+          <div class="perm-btns">
+            <button class="primary" onclick="toast('已允许一次')">允许一次</button>
+            <button onclick="toast('已始终允许')">始终允许</button>
+            <button onclick="toast('已拒绝')">拒绝</button>
+          </div>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 34. plan -->
+    <section class="case" id="plan">
+      <div class="case-head"><span class="type">plan</span><span class="name">执行计划（可确认）</span><span class="grp">产物/系统</span></div>
+      <div class="case-desc">行动前的步骤预览，区别于 todo_list 的勾选管理，强调「确认后再执行」。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="plan">
+          <div class="pt">📋 我打算这样处理</div>
+          <div class="pstep"><span class="pn">1</span><div><div>读取两个 API 文件并解析结构</div><div class="pd">提取 path / schema / 参数</div></div></div>
+          <div class="pstep"><span class="pn">2</span><div><div>生成差异对比报告</div><div class="pd">分类：新增 / 变更 / 删除</div></div></div>
+          <div class="pstep"><span class="pn">3</span><div><div>输出 Markdown 与表格</div><div class="pd">供你评审</div></div></div>
+          <div class="plan-acts"><button class="ok" onclick="toast('已确认执行')">✓ 确认执行</button><button class="rev" onclick="toast('已发起修订')">✎ 修改</button></div>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 29. form -->
+    <section class="case" id="form">
+      <div class="case-head"><span class="type">form</span><span class="name">表单收集</span><span class="grp">产物/系统</span></div>
+      <div class="case-desc">结构化字段输入，区别于 ask 的选项式提问，用于采集自由填写信息。</div>
+      <div class="canvas"><div class="msg"><div class="avatar u">🤖</div><div class="bubble">
+        <div class="form">
+          <div class="fld"><label>公司名称</label><input type="text" placeholder="请输入"></div>
+          <div class="frow">
+            <div class="fld"><label>行业</label><select><option>互联网</option><option>制造</option><option>金融</option></select></div>
+            <div class="fld"><label>规模</label><select><option>1-50</option><option>50-200</option><option>200+</option></select></div>
+          </div>
+          <div class="fld"><label>需求描述</label><textarea rows="2" placeholder="简单描述你的场景"></textarea></div>
+          <button class="fsubmit">提交</button>
+        </div>
+      </div></div></div>
+    </section>
+
+    <!-- 17a. system - 错误提示 -->
+    <section class="case" id="sys-error">
+      <div class="case-head"><span class="type">system</span><span class="name">错误提示</span><span class="grp">产物/系统</span></div>
+      <div class="case-desc">工具/模型调用失败时展示的错误提示条。红色背景醒目提示，左侧图标 + 错误摘要文案。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="sys err"><span class="si">⛔</span><div>抓取 ali_pricing.json 失败：目标站点返回 403。</div></div>
+      </div></div></div>
+    </section>
+
+    <!-- 20. task-fail alert (UI 组件) -->
+    <section class="case" id="task-fail">
+      <div class="case-head"><span class="type">err</span><span class="name">任务失败提示框</span><span class="grp">产物/系统</span></div>
+      <div class="case-desc">工具/模型调用失败后的提示框：标题展示错误码与摘要，正文展示错误类型/错误码/Request ID，底部支持复制错误与重试。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="errbox" id="errbox-demo">
+          <div class="eh">
+            <span class="ic">⚠️</span>
+            <div class="title">400 1 validation error:<br>{'type': 'json_invalid', 'loc': ('body', 0), 'msg': 'JSON decode error', 'input': {}, 'ctx': {'error': 'Expecting value'}}<br>...</div>
+            <span class="close" onclick="document.getElementById('errbox-demo').style.display='none'">×</span>
+          </div>
+          <div class="eb">
+            <div class="edet">
+              <div><span class="lk">错误类型:</span> 400 1 validation error: {'type': 'json_invalid', 'loc': ('body', 0), 'msg': 'JSON decode error', 'input': {}, 'ctx': {'error': 'Expecting value'}} File "/root/miniconda3/envs/Kimi/lib/python3.12/site-packages/vllm/entrypoints/serve/utils/api_utils.py", line 40, in create_chat_completion POST /v1/chat/completions [{'type': '...</div>
+              <div><span class="lk">错误码:</span> custom-model-400</div>
+              <div><span class="lk">Request ID:</span> fc3e8b46a6e04ef89fca64633ed33f53</div>
+            </div>
+          </div>
+          <div class="ef">
+            <button onclick="copyErr(this)">📋 复制错误</button>
+            <button class="retry" onclick="toast('已触发重试')">↻ 重试</button>
+          </div>
+        </div>
+      </div></div></div>
+    </section>
+
+
+
+  </div>
+</div>
+
+<div class="lb-overlay" id="lb" onclick="if(event.target===this)closeLightbox()">
+  <button class="lb-close" onclick="closeLightbox()">×</button>
+  <div class="lb-fname" id="lb-fname">image-inline-sample.jpg</div>
+  <img class="lb-img" id="lb-img" src="" alt="放大预览">
+  <div class="lb-bar">
+    <button onclick="lbZoom(-0.2)">－</button>
+    <button onclick="lbZoom(0.2)">＋</button>
+    <button onclick="lbRotate(-90)">↺ 左旋</button>
+    <button onclick="lbRotate(90)">↻ 右旋</button>
+    <button onclick="lbDownload()">⬇ 下载</button>
+  </div>
+</div>
+
+<script>
+  function toggle(id){ if(id) document.getElementById(id).classList.toggle('open'); }
+  function toggle2(el){ el.closest('.fold').classList.toggle('open'); }
+  function wmenu(el){ var m=el.querySelector('.wmenu'); document.querySelectorAll('.wmenu.open').forEach(x=>{if(x!==m)x.classList.remove('open')}); m.classList.toggle('open'); }
+  document.addEventListener('click',function(e){ if(!e.target.closest('.menu')) document.querySelectorAll('.wmenu.open').forEach(x=>x.classList.remove('open')); });
+  function selOpt(el){ el.parentNode.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel')); el.classList.add('sel'); }
+  function askSelect(el){ selOpt(el); var ask=el.closest('.ask.interactive'); if(ask){ ask.classList.add('in-submit'); ask.classList.remove('in-edit'); } }
+  function askEdit(el){ var ask=el.closest('.ask.interactive'); if(ask){ ask.classList.add('in-submit','in-edit'); var input=ask.querySelector('.other-input input'); if(input){ setTimeout(function(){ input.focus(); },10); } } }
+  function copyCode(btn){ var code=btn.closest('.code').querySelector('code').innerText;
+    navigator.clipboard && navigator.clipboard.writeText(code); toast('已复制到剪贴板'); }
+  function toggleTodo(id){ document.getElementById(id).classList.toggle('closed'); }
+  function toggleBash(id){ document.getElementById(id).classList.toggle('closed'); }
+  function toggleWeb(id){ document.getElementById(id).classList.toggle('closed'); }
+  function toggleDiffGit(id){ document.getElementById(id).classList.toggle('open'); }
+  function toggleReason(id){ document.getElementById(id).classList.toggle('open'); }
+  function toast(msg){ console.log(msg); }
+  function openFile(path, name){ window.open(path, '_blank'); toast('打开文件：' + (name || path)); }
+  function toggleMcpStep(el){ el.classList.toggle('open'); var body=el.nextElementSibling; if(body && body.classList.contains('mcp-step-body')) body.classList.toggle('open'); }
+  function toggleSkillAgent(id){ document.getElementById(id).classList.toggle('open'); }
+
+  // image lightbox
+  var lb=document.getElementById('lb'), lbImg=document.getElementById('lb-img'), lbFname=document.getElementById('lb-fname'), lbScale=1, lbRot=0;
+  function openLightbox(src){ lbImg.src=src; lbFname.textContent=src.split('/').pop(); lbScale=1; lbRot=0; updateLb(); lb.classList.add('open'); }
+  function closeLightbox(){ lb.classList.remove('open'); }
+  function updateLb(){ lbImg.style.transform='scale('+lbScale+') rotate('+lbRot+'deg)'; }
+  function lbZoom(d){ lbScale=Math.max(0.2, Math.min(5, lbScale+d)); updateLb(); }
+  function lbRotate(d){ lbRot=(lbRot+d)%360; updateLb(); }
+  function lbDownload(){ fetch(lbImg.src).then(r=>r.blob()).then(b=>{ var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=lbFname.textContent; a.click(); }).catch(()=>toast('下载失败')); }
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && lb.classList.contains('open')) closeLightbox(); });
+
+  // task-fail alert
+  function copyErr(btn){
+    var box=btn.closest('.errbox');
+    var title=box.querySelector('.eh .title').innerText;
+    var details=Array.from(box.querySelectorAll('.edet div')).map(function(d){ return d.innerText; }).join('\n');
+    navigator.clipboard && navigator.clipboard.writeText(title + '\n' + details);
+    toast('已复制错误信息');
+  }
+
+  // widget 查看代码 / 显示UI 切换
+  function showCode(id){
+    var w=document.getElementById(id);
+    var wb=w.querySelector('.wb');
+    var svgHtml=wb.innerHTML;
+    wb.setAttribute('data-ui',svgHtml);
+    wb.innerHTML='<pre>'+svgHtml.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</pre>';
+    wb.classList.add('code-view');
+    var lastItem=w.querySelector('.wmenu div:last-child');
+    lastItem.textContent='显示 UI';
+    lastItem.setAttribute('onclick',"showUI('"+id+"')");
+  }
+  function showUI(id){
+    var w=document.getElementById(id);
+    var wb=w.querySelector('.wb');
+    var ui=wb.getAttribute('data-ui');
+    if(ui){wb.innerHTML=ui;wb.classList.remove('code-view');}
+    var lastItem=w.querySelector('.wmenu div:last-child');
+    lastItem.textContent='查看代码';
+    lastItem.setAttribute('onclick',"showCode('"+id+"')");
+  }
+</script>
+</body>
+</html>
