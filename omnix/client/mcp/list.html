@@ -254,13 +254,13 @@
       flex-shrink: 0;
     }
 
-    /* 右上角悬浮三点菜单 */
-    .mcp-menu-trigger {
+    /* 右上角悬浮卸载按钮 */
+    .mcp-uninstall-btn {
       position: absolute;
-      top: 2px;
-      right: 2px;
-      width: 26px;
-      height: 20px;
+      top: 20px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
       border: none;
       background: transparent;
       color: #a1a1aa;
@@ -268,16 +268,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      border-radius: 6px;
       opacity: 0;
       transition: opacity .15s, background .15s, color .15s;
     }
 
-    .mcp-card:hover .mcp-menu-trigger {
+    .mcp-card:hover .mcp-uninstall-btn {
       opacity: 1;
     }
 
-    .mcp-menu-trigger:hover {
-      color: #474747;
+    .mcp-uninstall-btn:hover {
+      background: #fef2f2;
+      color: #ef4444;
     }
 
     .mcp-menu {
@@ -459,6 +461,11 @@
       font-size: 13px;
       color: #71717a;
       margin-bottom: 6px;
+    }
+
+    .form-label.required::after {
+      content: ' *';
+      color: #ef4444;
     }
 
     .form-input,
@@ -765,11 +772,11 @@
 
       <div class="modal-body">
         <div class="form-group">
-          <label class="form-label" for="mcp-name">服务器名称</label>
+          <label class="form-label required" for="mcp-name">服务器名称</label>
           <input class="form-input" id="mcp-name" type="text" placeholder="请输入服务器名称">
         </div>
 
-        <div class="form-group">
+        <div class="form-group"  style="display: none">
           <label class="form-label">图标</label>
           <div class="avatar-field">
             <div class="avatar-preview" id="avatar-preview" role="button" tabindex="0" title="点击上传图标">
@@ -781,23 +788,22 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="mcp-protocol">传输协议</label>
+          <label class="form-label required" for="mcp-protocol">传输协议</label>
           <select class="form-select" id="mcp-protocol">
             <option value="" disabled selected>选择传输协议</option>
             <option value="sse">SSE</option>
             <option value="stdio">Stdio</option>
-            <option value="http">HTTP</option>
-            <option value="websocket">WebSocket</option>
+            <option value="http">Streamable HTTP</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="mcp-desc">描述</label>
+          <label class="form-label required" for="mcp-desc">描述</label>
           <textarea class="form-textarea" id="mcp-desc" placeholder="请输入MCP服务描述"></textarea>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="mcp-url">服务地址</label>
+          <label class="form-label required" for="mcp-url">服务地址</label>
           <input class="form-input" id="mcp-url" type="text" placeholder="请输入服务地址，如 http://localhost:8080/mcp">
         </div>
 
@@ -832,11 +838,11 @@
 
       <div class="modal-body">
         <div class="form-group">
-          <label class="form-label" for="edit-name">服务器名称</label>
+          <label class="form-label required" for="edit-name">服务器名称</label>
           <input class="form-input" id="edit-name" type="text" placeholder="请输入服务器名称">
         </div>
 
-        <div class="form-group">
+        <div class="form-group" style="display: none">
           <label class="form-label">图标</label>
           <div class="avatar-field">
             <div class="avatar-preview" id="edit-avatar-preview" role="button" tabindex="0" title="点击上传图标">
@@ -848,23 +854,22 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="edit-protocol">传输协议</label>
+          <label class="form-label required" for="edit-protocol">传输协议</label>
           <select class="form-select" id="edit-protocol">
             <option value="" disabled>选择传输协议</option>
             <option value="sse">SSE</option>
             <option value="stdio">Stdio</option>
-            <option value="http">HTTP</option>
-            <option value="websocket">WebSocket</option>
+            <option value="http">Streamable HTTP</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="edit-desc">描述</label>
+          <label class="form-label required" for="edit-desc">描述</label>
           <textarea class="form-textarea" id="edit-desc" placeholder="请输入MCP服务描述"></textarea>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="edit-url">服务地址</label>
+          <label class="form-label required" for="edit-url">服务地址</label>
           <input class="form-input" id="edit-url" type="text" placeholder="请输入服务地址，如 http://localhost:8080/mcp">
         </div>
 
@@ -987,6 +992,7 @@
 
         if (!name) { showToast('请输入服务器名称'); return; }
         if (!protocol) { showToast('请选择传输协议'); return; }
+        if (!desc) { showToast('请输入描述'); return; }
         if (!url) { showToast('请输入服务地址'); return; }
 
         console.log({ name, protocol, desc, url, headers, avatar });
@@ -1042,14 +1048,8 @@
       uninstallConfirmOk.addEventListener('click', () => {
         if (pendingUninstallCard) {
           const card = pendingUninstallCard;
-          /*恢复到未添加状态*/
-          // 移除已添加状态的元素（开关、三点菜单、下拉）
-          const actions = card.querySelector('.mcp-card-actions');
-          const trigger = card.querySelector('.mcp-menu-trigger');
-          const menu = card.querySelector('.mcp-menu');
-          if (actions) actions.remove();
-          if (trigger) trigger.remove();
-          if (menu) menu.remove();
+          const uninstallBtn = card.querySelector('.mcp-uninstall-btn');
+          if (uninstallBtn) uninstallBtn.remove();
 
           // 重建加号按钮，恢复为未添加状态
           const addBtn = document.createElement('button');
@@ -1080,40 +1080,17 @@
           btn.replaceWith(spinner);
           setTimeout(() => {
             showToast('添加' + name + '成功');
+            spinner.remove();
 
-            // 右侧：仅启禁用开关
-            const actions = document.createElement('div');
-            actions.className = 'mcp-card-actions';
-            actions.appendChild(createSwitch(true));
-            spinner.replaceWith(actions);
-
-            // 右上角：三点菜单（hover 显示）
-            const trigger = document.createElement('button');
-            trigger.className = 'mcp-menu-trigger';
-            trigger.setAttribute('aria-label', '更多操作');
-            trigger.innerHTML = '<strong>···</strong>';
-
-            const menu = document.createElement('div');
-            menu.className = 'mcp-menu';
-            const uninstallItem = document.createElement('button');
-            uninstallItem.className = 'mcp-menu-item';
-            uninstallItem.textContent = '卸载';
-            uninstallItem.addEventListener('click', (e) => {
+            const uninstallBtn = document.createElement('button');
+            uninstallBtn.className = 'mcp-uninstall-btn';
+            uninstallBtn.setAttribute('aria-label', '卸载');
+            uninstallBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+            uninstallBtn.addEventListener('click', (e) => {
               e.stopPropagation();
-              menu.classList.remove('open');
               openUninstallConfirm(card, name);
             });
-            menu.appendChild(uninstallItem);
-
-            trigger.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const willOpen = !menu.classList.contains('open');
-              closeAllCardMenus();
-              if (willOpen) menu.classList.add('open');
-            });
-
-            card.appendChild(trigger);
-            card.appendChild(menu);
+            card.appendChild(uninstallBtn);
           }, 1200);
         });
       }
@@ -1131,7 +1108,7 @@
           const source = card.dataset.source || '';
           // 是否添加：自定义恒为已添加；市场按卡片当前是否显示开关判断
           const isCustom = source === '自定义MCP';
-          const isAddedCard = !!card.querySelector('.mcp-card-actions');
+          const isAddedCard = !!card.querySelector('.mcp-uninstall-btn');
           const added = (isCustom || isAddedCard) ? 'true' : 'false';
           const qs = new URLSearchParams({ name: name, icon: icon, source: source, added: added });
           location.href = 'detail.html?' + qs.toString();
@@ -1222,6 +1199,7 @@
 
         if (!name) { showToast('请输入服务器名称'); return; }
         if (!protocol) { showToast('请选择传输协议'); return; }
+        if (!desc) { showToast('请输入描述'); return; }
         if (!url) { showToast('请输入服务地址'); return; }
 
         const nameEl = editingCard.querySelector('.mcp-name');

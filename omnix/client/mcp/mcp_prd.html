@@ -317,17 +317,6 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 18px; flex-shrink: 0;
   }
-  .mock-mcp-switch {
-    display: inline-block; width: 40px; height: 22px;
-    background: #22c55e; border-radius: 999px; position: relative;
-  }
-  .mock-mcp-switch::after {
-    content: ''; position: absolute; top: 3px; left: 21px;
-    width: 16px; height: 16px; background: #fff; border-radius: 50%;
-    box-shadow: 0 1px 2px rgba(0,0,0,.2);
-  }
-  .mock-mcp-switch.off { background: #e4e4e7; }
-  .mock-mcp-switch.off::after { left: 3px; }
   .mock-mcp-edit {
     display: inline-flex; align-items: center; gap: 5px;
     height: 32px; padding: 5px 6px;
@@ -387,16 +376,16 @@
     📋 目录导航
   </div>
   <ul class="nav-list">
-    <li><a href="#sec1" data-target="sec1">一、概述</a></li>
-    <li><a href="#sec2" data-target="sec2">二、功能架构与流程图</a></li>
+    <li><a href="#sec1" data-target="sec1" class="">一、概述</a></li>
+    <li><a href="#sec2" data-target="sec2" class="">二、功能架构与流程图</a></li>
     <li>
-      <a href="#sec3" data-target="sec3">三、子模块详细设计</a>
+      <a href="#sec3" data-target="sec3" class="">三、子模块详细设计</a>
       <ul class="nav-sub">
-        <li><a href="#sec3-1" data-target="sec3-1">3.1 MCP 列表管理</a></li>
-        <li><a href="#sec3-2" data-target="sec3-2">3.2 MCP 详情页</a></li>
+        <li><a href="#sec3-1" data-target="sec3-1" class="">3.1 MCP 列表管理</a></li>
+        <li><a href="#sec3-2" data-target="sec3-2" class="">3.2 MCP 详情页</a></li>
       </ul>
     </li>
-    <li><a href="#sec4" data-target="sec4">四、边界与异常情况</a></li>
+    <li><a href="#sec4" data-target="sec4" class="">四、边界与异常情况</a></li>
   </ul>
 </nav>
 
@@ -407,7 +396,7 @@
   <!-- Hero -->
   <div class="hero">
     <h1>MCP 服务管理模块</h1>
-    <p>Model Context Protocol 服务全生命周期管理 · 添加 · 编辑 · 启禁用 · 卸载 · 详情查看 —— 产品需求文档 v1.0</p>
+    <p>Model Context Protocol 服务全生命周期管理 · 添加 · 编辑 · 卸载 · 详情查看 —— 产品需求文档 v1.0</p>
   </div>
 
   <!-- Meta -->
@@ -434,9 +423,9 @@
       <li>用户需手动编写配置文件接入 MCP，门槛高、易出错</li>
       <li>缺乏统一的 MCP 管理入口，已接入的服务无法集中查看和管控</li>
       <li>无法快速了解某个 MCP 提供了哪些工具（Tools）及工具的具体能力</li>
-      <li>服务的启用/禁用、编辑、卸载操作散落在不同位置，操作链路长</li>
+      <li>服务的编辑、卸载操作散落在不同位置，操作链路长</li>
     </ul>
-    <p>MCP 服务管理模块旨在建立<strong>统一的 MCP 服务管理平台</strong>，支持 MCP 服务的添加（自定义/市场安装）、编辑配置、启用/禁用、卸载、详情查看（工具列表与服务介绍），实现 MCP 服务的标准化管理和便捷使用。</p>
+    <p>MCP 服务管理模块旨在建立<strong>统一的 MCP 服务管理平台</strong>，支持 MCP 服务的添加（自定义/市场安装）、编辑配置、卸载、详情查看（工具列表与服务介绍），实现 MCP 服务的标准化管理和便捷使用。</p>
 
     <h3>用户画像</h3>
     <div class="card-grid">
@@ -450,7 +439,7 @@
       </div>
       <div class="card">
         <h4>👁️ 服务管理员</h4>
-        <p>负责管控平台已接入 MCP 服务的管理员，需要查看所有服务状态、启用/禁用服务、编辑配置、卸载无用服务，关注管理效率和操作安全。</p>
+        <p>负责管控平台已接入 MCP 服务的管理员，需要查看所有服务状态、编辑配置、卸载无用服务，关注管理效率和操作安全。</p>
       </div>
     </div>
 
@@ -459,7 +448,7 @@
       <tbody><tr><th style="width:20%">目标</th><th>说明</th></tr>
       <tr><td>统一管理入口</td><td>提供 MCP 服务的集中管理页面，支持自定义和市场两类服务的统一浏览与操作</td></tr>
       <tr><td>低门槛接入</td><td>自定义 MCP 通过弹窗表单填写配置；市场 MCP 一键安装，降低接入门槛</td></tr>
-      <tr><td>状态可视化</td><td>每个 MCP 服务的启用/禁用状态、安装状态清晰可见，支持快速切换</td></tr>
+      <tr><td>状态可视化</td><td>每个 MCP 服务的安装状态清晰可见，支持快速操作</td></tr>
       <tr><td>工具能力透明</td><td>详情页展示 MCP 提供的全部工具（Tools）清单及每个工具的功能描述</td></tr>
       <tr><td>安全卸载</td><td>卸载操作二次确认，防止误操作；卸载后服务从列表移除，状态可恢复</td></tr>
     </tbody></table>
@@ -485,10 +474,7 @@
       <span class="actor">作为</span> 业务用户，<span class="want">我希望能够从 MCP 市场一键安装预置服务（如钉钉、飞书、QQ邮箱）</span>，<span class="goal">以便无需了解技术细节即可快速扩展 Agent 的外部服务能力。</span>
     </div>
     <div class="story">
-      <span class="actor">作为</span> 服务管理员，<span class="want">我希望能够在列表页查看所有已接入的 MCP 服务及其启用状态，并支持快速启停</span>，<span class="goal">以便灵活管控哪些服务对 Agent 生效，避免不必要的 API 调用。</span>
-    </div>
-    <div class="story">
-      <span class="actor">作为</span> 平台开发者，<span class="want">我希望能够查看某个 MCP 服务的详情页，了解其提供的全部工具及每个工具的功能描述</span>，<span class="goal">以便评估该服务的实际能力，决定是否启用或如何使用。</span>
+      <span class="actor">作为</span> 平台开发者，<span class="want">我希望能够查看某个 MCP 服务的详情页，了解其提供的全部工具及每个工具的功能描述</span>，<span class="goal">以便评估该服务的实际能力，决定是否使用。</span>
     </div>
     <div class="story">
       <span class="actor">作为</span> 服务管理员，<span class="want">我希望卸载 MCP 服务时能弹出二次确认弹窗，防止误操作</span>，<span class="goal">以便安全地移除不再需要的服务，避免误删导致 Agent 能力缺失。</span>
@@ -502,7 +488,7 @@
   <div class="section" id="sec2">
     <h2>二、功能架构与流程图</h2>
 
-    <p>MCP 服务管理模块包含两大子功能：<strong>MCP 列表管理</strong>（服务列表、添加、编辑、启停、卸载）和<strong>MCP 详情页</strong>（服务介绍、工具列表、添加/启停/卸载操作）。两个子功能通过列表页卡片点击跳转关联。</p>
+    <p>MCP 服务管理模块包含两大子功能：<strong>MCP 列表管理</strong>（服务列表、添加、编辑、卸载）和<strong>MCP 详情页</strong>（服务介绍、工具列表、添加/卸载操作）。两个子功能通过列表页卡片点击跳转关联。</p>
 
     <div style="text-align:center; margin: 20px 0;">
       <svg width="100%" height="420" viewBox="0 0 940 420" xmlns="http://www.w3.org/2000/svg">
@@ -521,7 +507,7 @@
 
         <rect x="600" y="110" width="240" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
         <text x="720" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">MCP 详情页</text>
-        <text x="720" y="156" text-anchor="middle" fill="#6B7280" font-size="11">服务介绍 · 工具列表 · 添加/启停</text>
+        <text x="720" y="156" text-anchor="middle" fill="#6B7280" font-size="11">服务介绍 · 工具列表 · 添加/卸载</text>
 
         <!-- List sub-items -->
         <line x1="220" y1="170" x2="100" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
@@ -565,24 +551,22 @@
         <text x="470" y="318" text-anchor="middle" fill="#92400E" font-size="14" font-weight="700">MCP 服务核心链路</text>
 
         <text x="80" y="350" text-anchor="middle" fill="#D97706" font-size="13">添加/安装</text>
-        <text x="145" y="350" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
-        <text x="220" y="350" text-anchor="middle" fill="#D97706" font-size="13">列表展示</text>
-        <text x="290" y="350" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
-        <text x="370" y="350" text-anchor="middle" fill="#D97706" font-size="13">启用/禁用</text>
-        <text x="445" y="350" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
-        <text x="525" y="350" text-anchor="middle" fill="#D97706" font-size="13">查看详情</text>
-        <text x="600" y="350" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
-        <text x="680" y="350" text-anchor="middle" fill="#D97706" font-size="13">编辑配置</text>
-        <text x="755" y="350" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
-        <text x="840" y="350" text-anchor="middle" fill="#D97706" font-size="13">卸载移除</text>
+        <text x="170" y="350" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
+        <text x="290" y="350" text-anchor="middle" fill="#D97706" font-size="13">列表展示</text>
+        <text x="380" y="350" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
+        <text x="500" y="350" text-anchor="middle" fill="#D97706" font-size="13">查看详情</text>
+        <text x="590" y="350" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
+        <text x="710" y="350" text-anchor="middle" fill="#D97706" font-size="13">编辑配置</text>
+        <text x="800" y="350" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
+        <text x="880" y="350" text-anchor="middle" fill="#D97706" font-size="13">卸载移除</text>
 
-        <text x="470" y="380" text-anchor="middle" fill="#B45309" font-size="11">MCP 服务从接入到移除的完整生命周期：添加/安装 → 列表可见 → 启用/禁用 → 查看详情工具 → 编辑配置 → 卸载</text>
+        <text x="470" y="380" text-anchor="middle" fill="#B45309" font-size="11">MCP 服务从接入到移除的完整生命周期：添加/安装 → 列表可见 → 查看详情工具 → 编辑配置 → 卸载</text>
       </svg>
     </div>
 
     <h3>核心交互流程</h3>
 
-    <h4>流程一：市场 MCP 安装 → 启用 → 卸载</h4>
+    <h4>流程一：市场 MCP 安装 → 卸载</h4>
     <div class="flow-step">
       <div class="flow-num">1</div>
       <div class="flow-content">
@@ -594,28 +578,21 @@
       <div class="flow-num">2</div>
       <div class="flow-content">
         <h4>加载完成 + Toast 提示</h4>
-        <p>约 1.2 秒后，Spinner 消失，顶部弹出 Toast「添加X成功」。卡片右侧出现启禁用开关（默认开启，绿色）和右上角三点菜单（hover 显示）。</p>
+        <p>约 1.2 秒后，Spinner 消失，顶部弹出 Toast「添加X成功」。卡片右侧出现右上角三点菜单（hover 显示）。</p>
       </div>
     </div>
     <div class="flow-step">
       <div class="flow-num">3</div>
-      <div class="flow-content">
-        <h4>启用/禁用切换</h4>
-        <p>用户点击开关切换启用/禁用状态。开启为绿色，关闭为灰色。切换时仅记录状态，不弹窗确认。</p>
-      </div>
-    </div>
-    <div class="flow-step">
-      <div class="flow-num">4</div>
       <div class="flow-content">
         <h4>点击三点菜单 → 卸载</h4>
         <p>用户 hover 卡片显示三点菜单按钮，点击后弹出下拉菜单（仅含「卸载」选项），点击「卸载」弹出卸载确认弹窗。</p>
       </div>
     </div>
     <div class="flow-step">
-      <div class="flow-num">5</div>
+      <div class="flow-num">4</div>
       <div class="flow-content">
         <h4>确认卸载 → 恢复未添加状态</h4>
-        <p>确认弹窗显示「确定要卸载 X 吗？此操作不可撤销」。点击「确认卸载」后移除开关和菜单，重建「+」添加按钮，Toast 提示「已卸载 X」。</p>
+        <p>确认弹窗显示「确定要卸载 X 吗？此操作不可撤销」。点击「确认卸载」后移除菜单，重建「+」添加按钮，Toast 提示「已卸载 X」。</p>
       </div>
     </div>
 
@@ -629,7 +606,7 @@
         <p>用户点击右上角「添加服务器」按钮，弹出添加 MCP 弹窗。</p>
       </div>
     </div>
-    <div class="flow-step">
+    <div class="flow-step" style="display: none">
       <div class="flow-num">2</div>
       <div class="flow-content">
         <h4>填写配置并提交</h4>
@@ -672,7 +649,7 @@
       <div class="flow-num">3</div>
       <div class="flow-content">
         <h4>头部操作区（按来源区分）</h4>
-        <p>自定义 MCP：无操作区（隐藏）。市场 MCP 未添加：显示「添加MCP」按钮（点击 → 0.8s 加载 → Toast + 进入已添加状态）。市场 MCP 已添加：显示启禁用开关 + 三点菜单（卸载）。</p>
+        <p>自定义 MCP：无操作区（隐藏）。市场 MCP 未添加：显示「添加MCP」按钮（点击 → 0.8s 加载 → Toast + 进入已添加状态）。市场 MCP 已添加：显示三点菜单（卸载）。</p>
       </div>
     </div>
   </div>
@@ -681,13 +658,13 @@
   <div class="section" id="sec3">
     <h2>三、子模块详细设计</h2>
 
-    <p>MCP 服务管理模块包含两个子功能：<strong>MCP 列表管理</strong>（列表展示、添加、编辑、启停、卸载）和<strong>MCP 详情页</strong>（服务介绍、工具列表、头部操作）。以下分别说明每个子功能的描述、字段设计、功能清单和特殊规则说明。</p>
+    <p>MCP 服务管理模块包含两个子功能：<strong>MCP 列表管理</strong>（列表展示、添加、编辑、卸载）和<strong>MCP 详情页</strong>（服务介绍、工具列表、头部操作）。以下分别说明每个子功能的描述、字段设计、功能清单和特殊规则说明。</p>
 
     <!-- 3.1 MCP 列表管理 -->
     <h3 id="sec3-1">🔹 3.1 MCP 列表管理</h3>
 
     <h4>功能描述</h4>
-    <p>MCP 列表管理是模块的核心入口页面，负责展示所有已接入的 MCP 服务，并支持添加、编辑、启停和卸载操作。列表按来源分为两大区块：<strong>自定义 MCP</strong>（用户通过表单配置的服务）和<strong>MCP 市场</strong>（预置可一键安装的服务）。自定义 MCP 卡片显示编辑按钮；市场 MCP 卡片在未安装时显示添加按钮，安装后切换为启禁用开关 + 三点菜单。</p>
+    <p>MCP 列表管理是模块的核心入口页面，负责展示所有已接入的 MCP 服务，并支持添加、编辑和卸载操作。列表按来源分为两大区块：<strong>自定义 MCP</strong>（用户通过表单配置的服务）和<strong>MCP 市场</strong>（预置可一键安装的服务）。自定义 MCP 卡片显示编辑按钮；市场 MCP 卡片在未安装时显示添加按钮，安装后切换为三点菜单。</p>
 
     <h4>字段设计</h4>
     <table>
@@ -699,16 +676,10 @@
         <td>MCP 服务名称，显示在卡片标题位置。自定义 MCP 可编辑修改；市场 MCP 为预置固定值</td>
       </tr>
       <tr>
-        <td>图标</td>
-        <td>图标</td>
-        <td>—</td>
-        <td>服务的视觉标识。市场 MCP 使用品牌色字母方块（如钉=蓝色、飞=青色）；自定义 MCP 使用内置 SVG 图标（globe/map/mail）或用户上传图片</td>
-      </tr>
-      <tr>
         <td>来源</td>
         <td>枚举</td>
         <td>✅</td>
-        <td>自定义MCP / MCP市场。决定卡片的操作区形态：自定义显示编辑按钮；市场显示添加/开关+菜单</td>
+        <td>自定义MCP / MCP市场。决定卡片的操作区形态：自定义显示编辑按钮；市场显示添加/菜单</td>
       </tr>
       <tr>
         <td>描述</td>
@@ -735,20 +706,14 @@
         <td>自定义请求头，JSON 格式，如 {"headers": {"Authorization":"Bearer xxx"}}</td>
       </tr>
       <tr>
-        <td>启用状态</td>
-        <td>布尔</td>
-        <td>自动</td>
-        <td>市场 MCP 安装后默认为启用（开关绿色）。支持切换为禁用（开关灰色）</td>
-      </tr>
-      <tr>
         <td>安装状态</td>
         <td>布尔</td>
         <td>自动</td>
-        <td>市场 MCP 的安装状态：未安装（显示+按钮）/ 已安装（显示开关+菜单）。自定义 MCP 恒为已安装</td>
+        <td>市场 MCP 的安装状态：未安装（显示+按钮）/ 已安装（显示菜单）。自定义 MCP 恒为已安装</td>
       </tr>
     </tbody></table>
 
-    <div class="note">💡 市场品牌色对照：钉钉(#3370ff 蓝)、飞书(#00d6b9 青)、SQL(#0055ff 蓝)、ima(#1f1f1f 黑)、QQ邮箱(#ffb800 黄)。自定义 MCP 图标统一灰色底(#f4f4f5) + 深灰图标(#52525b)。</div>
+    <div class="note">💡 市场品牌色对照：钉钉(#3370ff 蓝)、飞书(#00d6b9 青)、SQL(#0055ff 蓝)、ima(#1f1f1f 黑)、QQ邮箱(#ffb800 黄)。自定义 MCP 图标统一默认图标。</div>
 
     <h4>功能清单</h4>
     <table>
@@ -757,13 +722,13 @@
         <td>1</td>
         <td>MCP 列表展示</td>
         <td><span class="tag tag-p0">P0</span></td>
-        <td>页面分两个区块展示 MCP 服务：「自定义MCP」和「MCP市场」。每个卡片显示图标、名称、描述（两行截断）。自定义 MCP 右侧显示编辑按钮；市场 MCP 显示添加按钮或启禁用开关</td>
+        <td>页面分两个区块展示 MCP 服务：「自定义MCP」和「MCP市场」。每个卡片显示图标、名称、描述（两行截断）。自定义 MCP 右侧显示编辑按钮；市场 MCP 显示添加按钮或三点菜单</td>
       </tr>
       <tr>
         <td>2</td>
         <td>添加自定义 MCP</td>
         <td><span class="tag tag-p0">P0</span></td>
-        <td>点击「添加服务器」按钮弹出弹窗，填写服务器名称（必填）、图标（可选上传）、传输协议（必填：SSE/Stdio/HTTP/WebSocket）、描述、服务地址（必填）、HTTP Headers。提交后 Toast 提示成功，新卡片出现在自定义区域</td>
+        <td>点击「添加服务器」按钮弹出弹窗，填写服务器名称（必填）、传输协议（必填：SSE/Stdio/HTTP/WebSocket）、描述、服务地址（必填）、HTTP Headers。提交后 Toast 提示成功，新卡片出现在自定义区域</td>
       </tr>
       <tr>
         <td>3</td>
@@ -775,46 +740,40 @@
         <td>4</td>
         <td>市场 MCP 安装</td>
         <td><span class="tag tag-p0">P0</span></td>
-        <td>点击市场卡片「+」按钮 → Spinner 加载动画（约 1.2 秒）→ Toast「添加X成功」→ 按钮区域替换为启禁用开关（默认开启）+ 右上角三点菜单</td>
+        <td>点击市场卡片「+」按钮 → Spinner 加载动画（约 1.2 秒）→ Toast「添加X成功」→ 按钮区域替换为右上角三点菜单</td>
       </tr>
       <tr>
         <td>5</td>
-        <td>启用/禁用切换</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>已安装市场 MCP 卡片右侧显示启禁用开关。开启时绿色，关闭时灰色。点击切换状态，无确认弹窗，即时生效</td>
-      </tr>
-      <tr>
-        <td>6</td>
         <td>三点菜单（卸载入口）</td>
         <td><span class="tag tag-p0">P0</span></td>
         <td>已安装市场 MCP 卡片右上角显示三点菜单按钮（hover 时显示，非 hover 隐藏）。点击弹出下拉菜单，仅含「卸载」选项</td>
       </tr>
       <tr>
-        <td>7</td>
+        <td>6</td>
         <td>卸载 MCP（列表）</td>
         <td><span class="tag tag-p0">P0</span></td>
-        <td>从三点菜单点击「卸载」→ 弹出卸载确认弹窗（标题+副标题「此操作不可撤销」+确认文字）。确认后移除开关和菜单，重建「+」按钮恢复未安装状态。Toast「已卸载 X」</td>
+        <td>从三点菜单点击「卸载」→ 弹出卸载确认弹窗（标题+副标题「此操作不可撤销」+确认文字）。确认后移除菜单，重建「+」按钮恢复未安装状态。Toast「已卸载 X」</td>
       </tr>
       <tr>
-        <td>8</td>
+        <td>7</td>
         <td>卸载 MCP（编辑弹窗）</td>
         <td><span class="tag tag-p0">P0</span></td>
         <td>编辑弹窗左下角「卸载」按钮，需二次点击确认：首次点击变为「确认卸载？」红色状态，3 秒超时自动恢复；3 秒内再次点击执行卸载，移除整个卡片。Toast「已卸载 X」</td>
       </tr>
       <tr>
-        <td>9</td>
+        <td>8</td>
         <td>跳转详情页</td>
         <td><span class="tag tag-p0">P0</span></td>
         <td>点击卡片（非按钮区域）跳转到 detail.html，携带 URL 参数：name、icon、source、added（是否已安装）</td>
       </tr>
       <tr>
-        <td>10</td>
+        <td>9</td>
         <td>Toast 消息提示</td>
         <td><span class="tag tag-p0">P0</span></td>
         <td>操作成功时顶部弹出黑色 Toast 提示（如「MCP 添加成功」「保存成功」「已卸载 X」），2.5 秒后自动消失</td>
       </tr>
       <tr>
-        <td>11</td>
+        <td>10</td>
         <td>ESC 关闭弹窗</td>
         <td><span class="tag tag-p1">P1</span></td>
         <td>按 ESC 键关闭当前打开的任意弹窗（添加/编辑/卸载确认）</td>
@@ -827,7 +786,7 @@
       <tr>
         <td>1</td>
         <td>来源决定操作区形态</td>
-        <td>自定义 MCP 卡片右侧恒显示编辑（齿轮）按钮；市场 MCP 未安装时显示「+」按钮，安装后显示开关+三点菜单。两类卡片操作区完全不同，不混用</td>
+        <td>自定义 MCP 卡片右侧恒显示编辑（齿轮）按钮；市场 MCP 未安装时显示「+」按钮，安装后显示三点菜单。两类卡片操作区完全不同，不混用</td>
       </tr>
       <tr>
         <td>2</td>
@@ -841,36 +800,28 @@
       </tr>
       <tr>
         <td>4</td>
-        <td>开关点击不触发卡片跳转</td>
-        <td>点击开关时 stopPropagation，防止冒泡触发卡片点击跳转详情页。编辑按钮同理</td>
-      </tr>
-      <tr>
-        <td>5</td>
         <td>编辑弹窗卸载二次确认</td>
         <td>编辑弹窗左下角「卸载」按钮采用二次点击确认机制：首次点击变红+文字变为「确认卸载？」+3 秒倒计时自动恢复；3 秒内再次点击才真正执行卸载</td>
       </tr>
       <tr>
-        <td>6</td>
+        <td>5</td>
         <td>卸载后恢复状态</td>
-        <td>列表三点菜单卸载后：移除开关+菜单，重建「+」按钮，卡片恢复为未安装状态（可再次安装）。编辑弹窗卸载后：整个卡片从列表移除</td>
+        <td>列表三点菜单卸载后：移除菜单，重建「+」按钮，卡片恢复为未安装状态（可再次安装）。编辑弹窗卸载后：整个卡片从列表移除</td>
       </tr>
       <tr>
-        <td>7</td>
+        <td>6</td>
         <td>添加/编辑表单校验</td>
         <td>提交时校验：服务器名称非空、传输协议已选、服务地址非空。校验失败弹出 Toast 提示具体原因，不关闭弹窗</td>
       </tr>
       <tr>
-        <td>8</td>
-        <td>图标上传</td>
-        <td>添加/编辑弹窗支持点击图标区域上传图片（accept image/*），上传后预览区域显示图片，未上传时显示默认用户图标</td>
+        <td>0</td><td></td>
+        <td>xxx</td>
       </tr>
       <tr>
-        <td>9</td>
-        <td>弹窗关闭重置</td>
-        <td>添加弹窗关闭时重置所有表单字段和图标预览；编辑弹窗关闭时重置图标和卸载按钮状态。点击遮罩层（弹窗外部）可关闭弹窗</td>
+        <td><br></td><td></td><td><br></td>
       </tr>
       <tr>
-        <td>10</td>
+        <td>7</td>
         <td>跳转参数传递</td>
         <td>点击卡片跳转详情页时，URL 参数传递 name、icon、source、added。自定义 MCP 的 added 恒为 true；市场 MCP 根据当前是否已安装判断</td>
       </tr>
@@ -881,7 +832,7 @@
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);">
         <div style="display:flex; align-items:center; gap:8px;">
           <div style="width:32px; height:32px; border-radius:8px; background:#f4f4f5; display:flex; align-items:center; justify-content:center;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
           </div>
           <span style="font-size:18px; font-weight:600;">MCP</span>
         </div>
@@ -890,7 +841,7 @@
 
       <div class="mock-section-title">自定义MCP</div>
       <div class="mock-mcp-card">
-        <div class="mock-mcp-icon custom"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="mock-mcp-icon custom"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></div>
         <div class="mock-mcp-info">
           <div class="mock-mcp-name">联网搜索增强</div>
           <div class="mock-mcp-desc">提供专业级的联网搜索增强服务，支持多维数据分析与自动化处理。</div>
@@ -913,9 +864,6 @@
           <div class="mock-mcp-name">飞书文档集成 <span class="mock-source-badge mock-source-market" style="margin-left:6px;">已安装</span></div>
           <div class="mock-mcp-desc">通过命令行管理飞书 Lark 全产品能力：即时通讯、邮箱、日历、云文档...</div>
         </div>
-        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
-          <div class="mock-mcp-switch"></div>
-        </div>
       </div>
     </div>
 
@@ -925,7 +873,7 @@
     <h3 id="sec3-2">🔹 3.2 MCP 详情页</h3>
 
     <h4>功能描述</h4>
-    <p>MCP 详情页展示单个 MCP 服务的完整信息，包括服务介绍（Lead 概述 + 详细说明）和工具列表（Tool name + 功能描述）。页面顶部根据来源类型展示不同的操作区：自定义 MCP 无操作区，市场 MCP 根据安装状态展示「添加MCP」按钮或启禁用开关+三点菜单。详情页通过 URL 参数接收 name、icon、source、added 四个参数动态渲染。</p>
+    <p>MCP 详情页展示单个 MCP 服务的完整信息，包括服务介绍（Lead 概述 + 详细说明）和工具列表（Tool name + 功能描述）。页面顶部根据来源类型展示不同的操作区：自定义 MCP 无操作区，市场 MCP 根据安装状态展示「添加MCP」按钮或三点菜单。详情页通过 URL 参数接收 name、icon、source、added 四个参数动态渲染。</p>
 
     <h4>字段设计</h4>
     <table>
@@ -940,7 +888,7 @@
         <td>图标标识</td>
         <td>枚举</td>
         <td>URL参数</td>
-        <td>从 list.html 跳转时通过 ?icon= 传递。市场 MCP 映射为品牌色字母方块（钉/飞/S/i/Q）；自定义 MCP 映射为灰色底 SVG 图标（globe/map/mail）</td>
+        <td>从 list.html 跳转时通过 ?icon= 传递。市场 MCP 映射为品牌色字母方块（钉/飞/S/i/Q）；自定义 MCP默认图标</td>
       </tr>
       <tr>
         <td>来源类型</td>
@@ -1017,25 +965,25 @@
         <td>4</td>
         <td>操作区-自定义MCP</td>
         <td><span class="tag tag-p0">P0</span></td>
-        <td>自定义 MCP 详情页头部右侧操作区隐藏（不显示添加/开关/菜单）</td>
+        <td>自定义 MCP 详情页头部右侧操作区隐藏（不显示添加/菜单）</td>
       </tr>
       <tr>
         <td>5</td>
         <td>操作区-市场MCP未安装</td>
         <td><span class="tag tag-p0">P0</span></td>
-        <td>显示「添加MCP」按钮。点击 → Spinner 加载（约 0.8 秒）→ Toast「添加X成功」→ 进入已添加状态（显示开关+三点菜单）</td>
+        <td>显示「添加MCP」按钮。点击 → Spinner 加载（约 0.8 秒）→ Toast「添加X成功」→ 进入已添加状态（显示三点菜单）</td>
       </tr>
       <tr>
         <td>6</td>
         <td>操作区-市场MCP已安装</td>
         <td><span class="tag tag-p0">P0</span></td>
-        <td>直接显示启禁用开关（默认开启）+ 三点菜单按钮。点击三点弹出卸载菜单，点击卸载弹出确认弹窗</td>
+        <td>直接显示三点菜单按钮。点击三点弹出卸载菜单，点击卸载弹出确认弹窗</td>
       </tr>
       <tr>
         <td>7</td>
         <td>详情页卸载</td>
         <td><span class="tag tag-p0">P0</span></td>
-        <td>从三点菜单卸载 → 确认弹窗 → 确认后移除开关和菜单，恢复「添加MCP」按钮。Toast「已卸载 X」</td>
+        <td>从三点菜单卸载 → 确认弹窗 → 确认后移除菜单，恢复「添加MCP」按钮。Toast「已卸载 X」</td>
       </tr>
       <tr>
         <td>8</td>
@@ -1057,7 +1005,7 @@
       <tr>
         <td>1</td>
         <td>操作区按来源区分</td>
-        <td>自定义 MCP：操作区整体隐藏（display:none）。市场 MCP 未安装：显示添加按钮。市场 MCP 已安装：直接进入已添加状态（开关+菜单）。三种状态互斥</td>
+        <td>自定义 MCP：操作区整体隐藏（display:none）。市场 MCP 未安装：显示添加按钮。市场 MCP 已安装：直接进入已添加状态（三点菜单）。三种状态互斥</td>
       </tr>
       <tr>
         <td>2</td>
@@ -1067,7 +1015,7 @@
       <tr>
         <td>3</td>
         <td>Logo 渲染规则</td>
-        <td>市场 MCP：根据 icon 参数匹配品牌色映射（dingtalk→钉蓝、feishu→飞青、sql→S蓝、ima→i黑、qqmail→Q黄），渲染为彩色字母方块。自定义 MCP：灰色底+SVG 图标。无匹配时保留默认蓝色 Logo</td>
+        <td>市场 MCP：根据 icon 参数匹配品牌色映射（dingtalk→钉蓝、feishu→飞青、sql→S蓝、ima→i黑、qqmail→Q黄），渲染为彩色字母方块。自定义 MCP：默认图标</td>
       </tr>
       <tr>
         <td>4</td>
@@ -1082,7 +1030,7 @@
       <tr>
         <td>6</td>
         <td>卸载后状态恢复</td>
-        <td>详情页卸载后：移除已添加状态元素（开关+菜单），恢复显示「添加MCP」按钮，并重新绑定添加事件。用户可再次点击添加</td>
+        <td>详情页卸载后：移除已添加状态元素（菜单），恢复显示「添加MCP」按钮，并重新绑定添加事件。用户可再次点击添加</td>
       </tr>
       <tr>
         <td>7</td>
@@ -1091,11 +1039,6 @@
       </tr>
       <tr>
         <td>8</td>
-        <td>开关默认状态</td>
-        <td>市场 MCP 安装后开关默认为开启状态（checked=true，绿色）。切换时仅 console.log 记录状态</td>
-      </tr>
-      <tr>
-        <td>9</td>
         <td>页面标题动态更新</td>
         <td>根据 name 参数更新 document.title 为「{name} - MCP」，同时更新 header-title 文本内容</td>
       </tr>
@@ -1105,7 +1048,7 @@
     <div class="mock-ui">
       <!-- Top nav -->
       <div style="display:flex; align-items:center; gap:6px; font-size:14px; color:#6b7280; margin-bottom:16px;">
-        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4l-6 6 6 6"/></svg>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4l-6 6 6 6"></path></svg>
         <span>MCP</span>
       </div>
 
@@ -1117,7 +1060,6 @@
           <span class="mock-source-badge mock-source-market" style="margin-top:4px;">MCP市场</span>
         </div>
         <div style="display:flex; align-items:center; gap:10px;">
-          <div class="mock-mcp-switch"></div>
           <div style="width:30px; height:30px; border:1px solid #e5e7eb; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; color:#52525b;">···</div>
         </div>
       </div>
@@ -1166,42 +1108,35 @@
         <td>文本</td>
         <td>✅</td>
         <td>Input text</td>
-        <td>placeholder「请输入服务器名称」。提交时校验非空</td>
-      </tr>
-      <tr>
-        <td>图标</td>
-        <td>图片</td>
-        <td>—</td>
-        <td>File upload + Preview</td>
-        <td>点击图标区域触发文件选择（accept image/*），上传后预览图片。未上传显示默认用户图标 SVG</td>
+        <td>提示「请输入服务器名称」。提交时校验非空</td>
       </tr>
       <tr>
         <td>传输协议</td>
         <td>枚举</td>
         <td>✅</td>
         <td>Select 下拉</td>
-        <td>选项：SSE / Stdio / HTTP / WebSocket。placeholder「选择传输协议」。提交时校验已选</td>
+        <td>选项：SSE / Stdio / Streamable HTTP 。<span style="background-color: rgb(255, 255, 255);">提示</span>「选择传输协议」。提交时校验已选</td>
       </tr>
       <tr>
         <td>描述</td>
         <td>文本域</td>
-        <td>—</td>
+        <td><span style="background-color: rgb(255, 255, 255);">✅</span></td>
         <td>Textarea</td>
-        <td>placeholder「请输入MCP服务描述」。min-height 80px，支持垂直调整大小</td>
+        <td><span style="background-color: rgb(255, 255, 255);">提示</span>「请输入MCP服务描述」。min-height 80px，支持垂直调整大小</td>
       </tr>
       <tr>
         <td>服务地址</td>
         <td>文本(URL)</td>
         <td>✅</td>
         <td>Input text</td>
-        <td>placeholder「请输入服务地址，如 http://localhost:8080/mcp」。提交时校验非空</td>
+        <td><span style="background-color: rgb(255, 255, 255);">提示</span>「请输入服务地址，如 http://localhost:8080/mcp」。提交时校验非空</td>
       </tr>
       <tr>
         <td>HTTP Headers</td>
         <td>JSON</td>
         <td>—</td>
         <td>Input text</td>
-        <td>placeholder 'JSON 格式, 如: {"headers": {"Authorization":"Bearer xxx"} }'。选填</td>
+        <td><span style="background-color: rgb(255, 255, 255);">提示</span>&nbsp;'JSON 格式, 如: {"headers": {"Authorization":"Bearer xxx"} }'。选填</td>
       </tr>
     </tbody></table>
 
@@ -1242,7 +1177,7 @@
       <tr>
         <td>5</td>
         <td>市场 MCP 安装过程中重复点击</td>
-        <td>点击「+」后按钮被 Spinner 替换，无法重复点击。加载完成后按钮区域整体替换为开关+菜单</td>
+        <td>点击「+」后按钮被 Spinner 替换，无法重复点击。加载完成后按钮区域整体替换为菜单</td>
         <td>防重复提交</td>
       </tr>
       <tr>
@@ -1277,8 +1212,8 @@
       </tr>
       <tr>
         <td>11</td>
-        <td>点击开关/编辑按钮触发卡片跳转</td>
-        <td>开关和编辑按钮的 click 事件调用 stopPropagation()，阻止冒泡到卡片的跳转事件</td>
+        <td>点击编辑按钮触发卡片跳转</td>
+        <td>编辑按钮的 click 事件调用 stopPropagation()，阻止冒泡到卡片的跳转事件</td>
         <td>事件隔离</td>
       </tr>
       <tr>
@@ -1300,37 +1235,22 @@
         <td>键盘交互</td>
       </tr>
       <tr>
-        <td>15</td>
-        <td>图标上传非图片文件</td>
-        <td>file input 设置 accept="image/*"，文件选择器过滤非图片文件。若仍传入非图片，FileReader 读取后以 DataURL 展示</td>
-        <td>前端过滤</td>
+        <td>xxx</td><td></td><td></td><td></td>
       </tr>
       <tr>
-        <td>16</td>
+        <td>15</td>
         <td>HTTP Headers 格式错误</td>
         <td>前端不校验 JSON 格式有效性，以纯文本形式传递。后端需校验并返回错误提示</td>
         <td>后端校验</td>
       </tr>
       <tr>
-        <td>17</td>
+        <td>16</td>
         <td>列表页卸载 vs 编辑弹窗卸载的差异</td>
-        <td>列表三点菜单卸载：移除开关+菜单，重建「+」按钮，卡片保留在列表（恢复未安装）。编辑弹窗卸载：整个卡片从列表移除</td>
+        <td>列表三点菜单卸载：移除菜单，重建「+」按钮，卡片保留在列表（恢复未安装）。编辑弹窗卸载：整个卡片从列表移除</td>
         <td>两种卸载路径</td>
       </tr>
       <tr>
-        <td>18</td>
-        <td>添加弹窗关闭后表单未重置</td>
-        <td>关闭添加弹窗时重置所有 input/textarea/select 值，重置图标预览为默认 SVG，清空 avatarData</td>
-        <td>状态重置</td>
-      </tr>
-      <tr>
-        <td>19</td>
-        <td>编辑弹窗关闭后状态未重置</td>
-        <td>关闭编辑弹窗时重置图标预览、清空 avatarData、重置卸载按钮状态（取消 armed 状态和定时器）</td>
-        <td>状态重置</td>
-      </tr>
-      <tr>
-        <td>20</td>
+        <td>17</td>
         <td>详情页卸载后恢复添加按钮事件</td>
         <td>卸载后移除已添加状态元素，恢复「添加MCP」按钮显示，并重新绑定 handleAddClick 事件（先 removeEventListener 再 addEventListener）</td>
         <td>事件重绑定</td>

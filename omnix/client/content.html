@@ -248,8 +248,20 @@
       transition: background 0.15s;
       font-size: 13px;
       color: #333;
+      position: relative;
     }
     .select-dropdown-item:hover { background: #f5f5f5; }
+    .select-dropdown-item.selected { background: #f0f4ff; }
+    .select-dropdown-item.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
     .select-dropdown-item svg { width: 16px; height: 16px; color: #555; flex-shrink: 0; }
     .select-dropdown-divider {
       height: 1px;
@@ -1218,15 +1230,15 @@
                 上传照片和文件
               </div>
               <div class="select-dropdown-section-title">插件</div>
-              <div class="select-dropdown-item" onclick="handleSelectAction('browser')">
+              <div class="select-dropdown-item" data-name="Goole Chrome 浏览器插件" onclick="toggleSelectPlugin(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                 Goole Chrome 浏览器插件
               </div>
-			  <div class="select-dropdown-item" onclick="handleSelectAction('browser')">
+			  <div class="select-dropdown-item" data-name="Mineru 文档解析" onclick="toggleSelectPlugin(this)">
 			    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
 			    Mineru 文档解析
 			  </div>
-			  <div class="select-dropdown-item" onclick="handleSelectAction('browser')">
+			  <div class="select-dropdown-item" data-name="PPT 生成" onclick="toggleSelectPlugin(this)">
 			    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
 			    PPT 生成
 			  </div>
@@ -1713,9 +1725,51 @@
     }
 
     // Select dropdown logic
+    const addedSelectPlugins = new Set();
+
     function toggleSelectDropdown() {
       const dropdown = document.getElementById('selectDropdown');
       dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        document.querySelectorAll('#selectDropdown .select-dropdown-item[data-name]').forEach(el => {
+          el.classList.toggle('selected', addedSelectPlugins.has(el.dataset.name));
+        });
+      }
+    }
+
+    function toggleSelectPlugin(item) {
+      const name = item.dataset.name;
+      if (addedSelectPlugins.has(name)) {
+        addedSelectPlugins.delete(name);
+        item.classList.remove('selected');
+      } else {
+        addedSelectPlugins.add(name);
+        item.classList.add('selected');
+      }
+      renderSelectPluginTags();
+    }
+
+    function removeSelectPlugin(name) {
+      addedSelectPlugins.delete(name);
+      const el = document.querySelector(`#selectDropdown .select-dropdown-item[data-name="${name}"]`);
+      if (el) el.classList.remove('selected');
+      renderSelectPluginTags();
+    }
+
+    function renderSelectPluginTags() {
+      const area = document.getElementById('textareaTagsArea');
+      area.querySelectorAll('.skill-tag[data-plugin]').forEach(el => el.remove());
+      addedSelectPlugins.forEach(name => {
+        const tag = document.createElement('div');
+        tag.className = 'skill-tag';
+        tag.dataset.plugin = name;
+        tag.innerHTML = `
+          <div class="skill-tag-icon" style="background:#4a6cf7;color:#fff">🔌</div>
+          <span>${name}</span>
+          <div class="skill-tag-remove" onclick="removeSelectPlugin('${name}')">✕</div>
+        `;
+        area.appendChild(tag);
+      });
     }
 
     function handleSelectAction(action) {

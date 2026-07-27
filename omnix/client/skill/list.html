@@ -215,7 +215,7 @@
     .push-right { margin-left: auto; }
     .stat { display: inline-flex; align-items: center; gap: 4px; }
 
-    /* 已安装 Tab 下的来源标签 */
+    /* 去试试 Tab 下的来源标签 */
     .src-badge {
       display: inline-flex; align-items: center; gap: 5px;
       padding: 3px 10px; border-radius: 999px;
@@ -267,7 +267,7 @@
       pointer-events: auto;
     }
 
-    /* 安装中 / 已安装：常显不受 hover 影响 */
+    /* 安装中 / 去试试：常显不受 hover 影响 */
     .btn-install.loading,
     .btn-install.done {
       opacity: 1;
@@ -282,7 +282,7 @@
     .spinner { animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* 已安装技能：状态按钮 + 右上角三点菜单 */
+    /* 去试试技能：状态按钮 + 右上角三点菜单 */
     .card { position: relative; }
     .card-menu {
       position: absolute; top: 14px; right: 14px; z-index: 6;margin: -12px -10px 0px 0px;
@@ -563,7 +563,7 @@
         </div>
         <select class="status-filter" id="status-filter">
           <option value="all">全部</option>
-          <option value="installed">已安装</option>
+          <option value="installed">去试试</option>
           <option value="uninstalled">未安装</option>
         </select>
         <select class="status-filter" id="source-filter" style="display:none;">
@@ -737,7 +737,7 @@
       s.enabled = i % 4 !== 0;
     });
 
-    // 为每个技能标注来源（用于「已安装」标签页展示）
+    // 为每个技能标注来源（用于「去试试」标签页展示）
     SKILLS.forEach(s => {
       if ([1, 2, 3, 4, 6, 7, 8].includes(s.id)) s.source = "技能市场";
       else if ([5, 11, 13, 10].includes(s.id)) s.source = "企业技能";
@@ -756,7 +756,7 @@
       builtin: byId([12, 14]),
       installed: byId([1, 9, 10])
     };
-    // 系统内置 / 已安装 Tab 下的技能均为已安装且默认启用状态
+    // 系统内置 / 去试试 Tab 下的技能均为去试试且默认启用状态
     TAB_DATA.builtin.forEach(s => { s.installed = true; s.enabled = true; });
     TAB_DATA.installed.forEach(s => { s.installed = true; s.enabled = true; });
 
@@ -781,12 +781,12 @@
     const FILTER_OPTIONS = {
       market: [
         { value: "all", label: "全部" },
-        { value: "installed", label: "已安装" },
+        { value: "installed", label: "去试试" },
         { value: "uninstalled", label: "未安装" }
       ],
       enterprise: [
         { value: "all", label: "全部" },
-        { value: "installed", label: "已安装" },
+        { value: "installed", label: "去试试" },
         { value: "uninstalled", label: "未安装" }
       ],
       builtin: [
@@ -826,7 +826,7 @@
         const iconHtml = '<div class="icon-box" style="background:' + s.grad + '">' + (ICONS[s.icon] || "") + '</div>';
         const titleHtml = '<h3 class="card-title">' + s.name + '</h3>';
         const descHtml = '<p class="card-desc ' + (currentView === "card" ? "clamp-2" : "clamp-1") + '">' + s.desc + '</p>';
-        const showStats = currentTab !== 'builtin' && currentTab !== 'installed';
+        const showStats = currentTab !== 'builtin' && currentTab !== 'installed' && currentTab !== 'enterprise';
         const statsHtml = showStats
           ? '<div class="stats">' +
               '<span class="stat">' + STAR_SVG + s.stars + '</span>' +
@@ -840,17 +840,19 @@
         let actionHtml, menuHtml = '';
         if (s.installed) {
           actionHtml = '<button class="btn-installed" data-name="' + s.name + '">' +
-            '<span class="bi-installed">' + CHECK_SVG + '已安装</span>' +
+            '<span class="bi-installed">' + TRY_SVG + '去试试</span>' +
             '<span class="bi-try">' + TRY_SVG + '去试试</span>' +
             '</button>';
-          const showUninstall = currentTab !== 'builtin';
-          menuHtml = '<div class="card-menu">' +
-            '<button class="dots-btn" type="button" aria-label="更多操作">···</button>' +
-            '<div class="menu-dropdown hidden">' +
-              '<button class="menu-item" data-action="toggle">' + (s.enabled ? '禁用' : '启用') + '</button>' +
-              (showUninstall ? '<button class="menu-item danger" data-action="uninstall">卸载</button>' : '') +
-            '</div>' +
-          '</div>';
+          if (currentTab !== 'market' && currentTab !== 'enterprise') {
+            const showUninstall = currentTab !== 'builtin';
+            menuHtml = '<div class="card-menu">' +
+              '<button class="dots-btn" type="button" aria-label="更多操作">···</button>' +
+              '<div class="menu-dropdown hidden">' +
+                '<button class="menu-item" data-action="toggle">' + (s.enabled ? '禁用' : '启用') + '</button>' +
+                (showUninstall ? '<button class="menu-item danger" data-action="uninstall">卸载</button>' : '') +
+              '</div>' +
+            '</div>';
+          }
         } else if (s.featured) {
           actionHtml = '<button class="btn-try">' + TRY_SVG + '试一试</button>';
         } else {
@@ -949,7 +951,7 @@
       toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
     }
     skillContainer.addEventListener("click", e => {
-      // 已安装技能：去试试
+      // 去试试技能：去试试
       const instBtn = e.target.closest(".btn-installed");
       if (instBtn) {
         const card = instBtn.closest(".card");
@@ -990,7 +992,7 @@
         render();
         return;
       }
-      // 安装技能：loading -> 成功并转为已安装态
+      // 安装技能：loading -> 成功并转为去试试态
       const btn = e.target.closest(".btn-install");
       if (btn) {
         if (btn.classList.contains("loading") || btn.classList.contains("done")) return;
