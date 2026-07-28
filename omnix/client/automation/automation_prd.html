@@ -2,7 +2,7 @@
 <html lang="zh-CN"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>自动化模块 - PRD v1.0</title>
+<title>自动化模块 - 产品需求文档 v2.0</title>
 <style>
   :root {
     --primary: #4F46E5;
@@ -144,7 +144,13 @@
     scroll-margin-top: 24px;
   }
   .section h3:first-of-type { margin-top: 0; }
+  .section h4 {
+    font-size: 15px;
+    color: var(--primary);
+    margin: 24px 0 10px;
+  }
   .section p { margin-bottom: 12px; color: var(--text-secondary); }
+  .section p.note-text { color: var(--text-secondary); }
 
   .card-grid {
     display: grid;
@@ -171,13 +177,13 @@
     text-align: left;
     padding: 12px 16px;
     border-bottom: 1px solid var(--border);
+    vertical-align: top;
   }
   th {
     background: var(--primary-light);
     color: var(--primary);
     font-weight: 600;
     font-size: 13px;
-    text-transform: uppercase;
     letter-spacing: 0.3px;
   }
   tr:hover td { background: #FAFAFA; }
@@ -243,20 +249,10 @@
     font-size: 14px;
     color: #1E40AF;
   }
-  .warn {
-    background: #FEF2F2;
-    border: 1px solid #FECACA;
-    border-left: 4px solid #EF4444;
-    padding: 16px 20px;
-    border-radius: 0 8px 8px 0;
-    margin: 16px 0;
-    font-size: 14px;
-    color: #991B1B;
-  }
 
   hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
 
-  /* Mock UI */
+  /* ========== Mock UI ========== */
   .mock-ui {
     background: #F9FAFB;
     border: 1px solid var(--border);
@@ -360,20 +356,35 @@
 <nav class="sidebar">
   <div class="sidebar-title">
     目录导航
+    <span>自动化模块 PRD</span>
   </div>
   <ul class="nav-list">
     <li><a href="#sec1" data-target="sec1" class="">一、概述</a></li>
-    <li><a href="#sec2" data-target="sec2" class="">二、功能架构与流程图</a></li>
     <li>
-      <a href="#sec3" data-target="sec3">三、子模块详细设计</a>
       <ul class="nav-sub">
-        <li><a href="#sec3-1" data-target="sec3-1" class="">3.1 自动化列表管理</a></li>
-        <li><a href="#sec3-2" data-target="sec3-2" class="">3.2 已执行记录</a></li>
-        <li><a href="#sec3-3" data-target="sec3-3" class="">3.3 模板中心</a></li>
-        <li><a href="#sec3-4" data-target="sec3-4" class="active">3.4 创建/编辑自动化</a></li>
+        <li><a href="#sec1-1" data-target="sec1-1" class="">1.1 背景与问题</a></li>
+        <li><a href="#sec1-2" data-target="sec1-2" class="">1.2 目标用户与典型场景</a></li>
+        <li><a href="#sec1-3" data-target="sec1-3" class="active">1.3 核心概念</a></li>
+        <li><a href="#sec1-4" data-target="sec1-4" class="">1.4 用户故事</a></li>
+        <li><a href="#sec1-5" data-target="sec1-5" class="">1.5 非目标</a></li>
       </ul>
     </li>
-    <li><a href="#sec4" data-target="sec4" class="">四、边界与异常情况</a></li>
+    <li><a href="#sec2" data-target="sec2" class="">二、功能架构与流程图</a></li>
+    <li>
+      <ul class="nav-sub">
+        <li><a href="#sec2-1" data-target="sec2-1" class="">2.1 系统架构图</a></li>
+        <li><a href="#sec2-2" data-target="sec2-2" class="">2.2 业务流程图</a></li>
+      </ul>
+    </li>
+    <li><a href="#sec3" data-target="sec3" class="">三、详细设计</a></li>
+    <li>
+      <ul class="nav-sub">
+        <li><a href="#sec3-1" data-target="sec3-1" class="">3.1 自动化列表页</a></li>
+        <li><a href="#sec3-2" data-target="sec3-2" class="">3.2 已执行记录页</a></li>
+        <li><a href="#sec3-3" data-target="sec3-3" class="">3.3 模板中心页</a></li>
+        <li><a href="#sec3-4" data-target="sec3-4" class="">3.4 创建/编辑自动化页</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
 
@@ -384,7 +395,7 @@
   <!-- Hero -->
   <div class="hero">
     <h1>自动化模块</h1>
-    <p>任务调度尽在掌握 · 创建 · 编辑 · 运行 · 模板 · 执行历史 —— 产品需求文档 v1.0</p>
+    <p>任务调度尽在掌握 · 创建 · 编辑 · 运行 · 模板 · 执行历史 —— 产品需求文档 v2.0</p>
   </div>
 
   <!-- Meta -->
@@ -392,59 +403,78 @@
     <table style="margin:0;">
       <tbody><tr><th style="width:15%">文档版本</th><th style="width:15%">修改日期</th><th style="width:15%">修改人</th><th>修改说明</th></tr>
       <tr>
-        <td>v1.0</td>
-        <td>2026-07-23</td>
-        <td>孙礼飞</td>
-        <td>初稿，基于自动化模块的功能分析，包含背景目标、用户故事、功能架构、子模块详细设计、关键交互流程、边界与异常情况</td>
+        <td>v2.0</td>
+        <td>2026-07-28</td>
+        <td>产品</td>
+        <td>统一标准，描述字段来源、例外与边界</td>
       </tr>
     </tbody></table>
   </div>
 
-  <!-- 1. 概述 -->
+  <!-- ========== 一、概述 ========== -->
   <div class="section" id="sec1">
     <h2>一、概述</h2>
 
-    <h3>背景与目标</h3>
-    <p>在 AI Agent 平台中，用户经常需要重复执行某些任务（如每日新闻推送、每周周报、定时提醒等）。目前用户只能手动逐次触发 Agent 执行，无法设定周期性或定时任务，效率低且容易遗忘。<strong>自动化模块</strong>旨在提供一套完整的<strong>任务调度与自动化执行管理平台</strong>，让用户能够设定提示词、配置运行频率、绑定模型/技能/MCP，实现任务的定时或周期性自动执行，同时提供模板中心快速复用、执行历史追溯和运行状态管控。</p>
+    <h3 id="sec1-1">1.1 背景与问题</h3>
+    <p>在 AI Agent 平台中，用户经常需要重复执行某些任务，例如每日推送新闻、每周整理工作周报、在固定时间发出提醒等。当前用户只能手动逐次触发 Agent，无法预先设定周期性或定时任务，存在以下突出问题：</p>
+    <ul class="feature-list">
+      <li><strong>重复操作成本高</strong>：相同内容需要每天或每周手动发起，浪费时间且容易遗漏。</li>
+      <li><strong>缺乏可观测性</strong>：任务是否执行、执行结果成功还是失败难以追溯，出问题无从排查。</li>
+      <li><strong>创建门槛偏高</strong>：从零配置提示词、模型、技能、频率让用户望而却步，复用困难。</li>
+    </ul>
+    <p>为此，平台需要一套<strong>任务调度与自动化执行管理能力</strong>：让用户配置一次，系统按设定频率自动执行，并提供模板快速复用、执行历史追溯与运行状态管控。</p>
 
-    <h3>用户画像</h3>
+    <h3 id="sec1-2">1.2 目标用户与典型场景</h3>
     <div class="card-grid">
       <div class="card">
         <h4>日常效率型用户</h4>
-        <p>希望定时提醒（下班提醒、体检预约）、推送信息（新闻、单词），追求"不遗漏"的日常辅助</p>
+        <p>希望定时提醒（下班提醒、体检预约）、规律推送（新闻、单词），追求"不遗漏"的日常辅助。典型场景：每天 18:00 提醒下班、每天 07:00 提醒体检注意事项。</p>
       </div>
       <div class="card">
         <h4>内容创作者</h4>
-        <p>需要周期性生成内容（壁纸、冷知识、电影推荐），利用模板一键创建、自动产出</p>
+        <p>需要周期性产出内容（壁纸、冷知识、电影推荐），习惯从模板一键创建、自动产出。典型场景：从模板中心选择"每日新闻推送"后自动开启每日信息推送。</p>
       </div>
       <div class="card">
         <h4>项目管理型用户</h4>
-        <p>需要定期汇总信息（周报、PR/Issue梳理、会议准备），依赖 MCP 和技能获取数据</p>
+        <p>需要定期汇总信息（周报、仓库动态、会议准备），依赖技能与 MCP 获取业务数据。典型场景：每周五 17:00 自动从代码仓库提取 PR/Issue 并整理成周报。</p>
       </div>
     </div>
 
-    <h3>核心目标</h3>
-    <ul class="feature-list">
-      <li><strong>降低重复操作成本</strong>：用户设定一次，系统按频率自动执行，无需手动触发</li>
-      <li><strong>提升任务可观测性</strong>：执行历史、成功/失败状态一目了然，运行结果可追溯</li>
-      <li><strong>加速任务创建</strong>：模板中心提供预置模板，一键预填配置，降低创建门槛</li>
-      <li><strong>灵活的调度配置</strong>：支持按周期（每天/每周/双周/每月/每年）、按间隔、单次执行三种模式，附带生效区间控制</li>
-    </ul>
+    <h3 id="sec1-3">1.3 核心概念</h3>
+    <table>
+      <tbody><tr><th style="width:18%">概念</th><th>定义与说明</th></tr>
+      <tr>
+        <td>自动化任务</td>
+        <td>用户配置的一条"定时/周期性由 Agent 自动执行"的任务，包含名称、提示词、模型、技能、MCP、执行频率与生效区间。每条任务仅执行一条提示词（单步执行）。</td>
+      </tr>
+      <tr>
+        <td>运行状态</td>
+        <td>任务的生命周期状态，分为四态：<strong>生效中</strong>（正常按频率执行）、<strong>已暂停</strong>（用户主动暂停，不再触发）、<strong>已失效</strong>（如单次任务已过执行时间，不再运行）、<strong>执行中</strong>（手动或定时触发后临时展示的运行态）。</td>
+      </tr>
+      <tr>
+        <td>执行频率</td>
+        <td>决定任务何时运行的规则，提供三种模式：按周期（每天/每周/双周/每月/每年）、按间隔（每隔 N 小时，可限定星期）、单次（指定日期时间，仅执行一次）。</td>
+      </tr>
+      <tr>
+        <td>模板</td>
+        <td>平台预置的常见自动化配置（名称、提示词、模型、技能、MCP、频率均已填好），用户点击即可一键创建，降低配置门槛。</td>
+      </tr>
+      <tr>
+        <td>执行记录</td>
+        <td>每次任务运行的留痕，记录关联任务名称、执行结果（成功/失败/等待中）与执行时间，供用户追溯与排查。</td>
+      </tr>
+      <tr>
+        <td>模型 / 技能 / MCP</td>
+        <td>任务执行时可绑定的能力：模型决定使用哪个 AI 模型；技能提供特定领域能力（如腾讯文档、ima 知识库）；MCP 提供外部服务连接（如代码仓库、自定义服务）。三者均为可选绑定。</td>
+      </tr>
+    </tbody></table>
 
-    <h3>非目标（Non-goals）</h3>
-    <ul class="feature-list">
-      <li>不做<strong>触发式自动化</strong>（如"当收到邮件时自动执行"），本期仅支持时间触发</li>
-      <li>不做<strong>自动化任务的分支/条件逻辑</strong>（如 if-else 分支），每条自动化仅执行一条提示词</li>
-      <li>不做<strong>多步骤串联</strong>（如第一步执行 A → 第二步执行 B），每条自动化为单步执行</li>
-      <li>不做<strong>自动化任务共享/协作</strong>，自动化为个人级别，不跨用户</li>
-    </ul>
-
-    <h3>用户故事</h3>
+    <h3 id="sec1-4">1.4 用户故事</h3>
     <div class="story">
       作为 <span class="actor">日常效率型用户</span>，我希望 <span class="want">设定"每天 18:00 提醒我下班"的自动化任务</span>，以便 <span class="goal">不用每天手动触发，系统自动在下班时间提醒我，避免忘记休息</span>。
     </div>
     <div class="story">
-      作为 <span class="actor">项目管理型用户</span>，我希望 <span class="want">创建"每周五 17:00 工作周报"的自动化，绑定 GitHub MCP 和腾讯文档技能</span>，以便 <span class="goal">系统自动从仓库提取 PR/Issue 信息并整理成周报，节省每周手动汇总的时间</span>。
+      作为 <span class="actor">项目管理型用户</span>，我希望 <span class="want">创建"每周五 17:00 工作周报"自动化，绑定代码仓库 MCP 与文档技能</span>，以便 <span class="goal">系统自动提取仓库动态并整理成周报，节省每周手动汇总的时间</span>。
     </div>
     <div class="story">
       作为 <span class="actor">内容创作者</span>，我希望 <span class="want">从模板中心选择"每日新闻推送"模板一键创建自动化</span>，以便 <span class="goal">不用从零填写提示词和频率配置，快速开启每日信息推送</span>。
@@ -452,223 +482,242 @@
     <div class="story">
       作为 <span class="actor">所有用户</span>，我希望 <span class="want">在已执行列表中查看历史运行记录及成功/失败状态</span>，以便 <span class="goal">追溯任务执行效果，发现失败时能及时排查问题</span>。
     </div>
+
+    <h3 id="sec1-5">1.5 非目标</h3>
+    <ul class="feature-list">
+      <li>不做<strong>触发式自动化</strong>（如"当收到邮件时自动执行"），本期仅支持时间触发（定时/周期/单次）。</li>
+      <li>不做<strong>分支/条件逻辑</strong>（如 if-else），每条自动化仅执行一条提示词。</li>
+      <li>不做<strong>多步骤串联</strong>（如第一步执行 A → 第二步执行 B），每条自动化为单步执行。</li>
+      <li>不做<strong>任务共享/协作</strong>，自动化为个人级别，不跨用户。</li>
+      <li>不做<strong>失败自动重试与告警通知</strong>，执行结果仅记录与展示，不主动推送失败通知。</li>
+    </ul>
   </div>
 
 
-  <!-- 2. 功能架构与流程图 -->
+  <!-- ========== 二、功能架构与流程图 ========== -->
   <div class="section" id="sec2">
     <h2>二、功能架构与流程图</h2>
 
+    <h3 id="sec2-1">2.1 系统架构图</h3>
+    <p>自动化模块由四个功能页面构成：自动化列表是核心入口，已执行记录提供历史追溯，模板中心提供快速创建，创建/编辑自动化是任务配置中枢，其下挂载名称、提示词、模型、技能、MCP、执行频率与生效区间等配置项。</p>
     <div style="text-align:center; margin: 20px 0;">
-      <svg width="100%" height="360" viewBox="0 0 940 360" xmlns="http://www.w3.org/2000/svg">
+      <svg width="100%" height="380" viewBox="0 0 940 380" xmlns="http://www.w3.org/2000/svg">
         <!-- Top box -->
-        <rect x="300" y="10" width="300" height="50" rx="10" fill="#4F46E5"></rect>
-        <text x="450" y="42" text-anchor="middle" fill="white" font-size="17" font-weight="700">自动化模块</text>
+        <rect x="320" y="10" width="300" height="50" rx="10" fill="#4F46E5"></rect>
+        <text x="470" y="42" text-anchor="middle" fill="white" font-size="17" font-weight="700">自动化模块</text>
 
-        <!-- Lines from top to boxes -->
-        <line x1="380" y1="60" x2="100" y2="110" stroke="#4F46E5" stroke-width="2"></line>
-        <line x1="420" y1="60" x2="280" y2="110" stroke="#4F46E5" stroke-width="2"></line>
-        <line x1="470" y1="60" x2="470" y2="110" stroke="#4F46E5" stroke-width="2"></line>
-        <line x1="520" y1="60" x2="660" y2="110" stroke="#4F46E5" stroke-width="2"></line>
-        <line x1="560" y1="60" x2="840" y2="110" stroke="#4F46E5" stroke-width="2"></line>
+        <!-- Lines -->
+        <line x1="380" y1="60" x2="100" y2="115" stroke="#4F46E5" stroke-width="2"></line>
+        <line x1="440" y1="60" x2="300" y2="115" stroke="#4F46E5" stroke-width="2"></line>
+        <line x1="500" y1="60" x2="500" y2="115" stroke="#4F46E5" stroke-width="2"></line>
+        <line x1="560" y1="60" x2="700" y2="115" stroke="#4F46E5" stroke-width="2"></line>
+        <line x1="620" y1="60" x2="860" y2="115" stroke="#4F46E5" stroke-width="2"></line>
 
-        <!-- 5 sub-module boxes -->
-        <rect x="20" y="110" width="160" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
-        <text x="100" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">自动化列表</text>
-        <text x="100" y="156" text-anchor="middle" fill="#6B7280" font-size="11">查看 · 运行 · 暂停 · 编辑 · 删除</text>
+        <!-- 4 sub-module boxes -->
+        <rect x="20" y="115" width="170" height="62" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="105" y="142" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">自动化列表</text>
+        <text x="105" y="162" text-anchor="middle" fill="#6B7280" font-size="11">查看·运行·暂停·编辑·删除</text>
 
-        <rect x="200" y="110" width="160" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
-        <text x="280" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">已执行记录</text>
-        <text x="280" y="156" text-anchor="middle" fill="#6B7280" font-size="11">成功 · 失败 · 查看 · 删除</text>
+        <rect x="220" y="115" width="170" height="62" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="305" y="142" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">已执行记录</text>
+        <text x="305" y="162" text-anchor="middle" fill="#6B7280" font-size="11">成功·失败·查看·删除</text>
 
-        <rect x="390" y="110" width="160" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
-        <text x="470" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">模板中心</text>
-        <text x="470" y="156" text-anchor="middle" fill="#6B7280" font-size="11">预置模板 · 一键创建</text>
+        <rect x="420" y="115" width="170" height="62" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="505" y="142" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">模板中心</text>
+        <text x="505" y="162" text-anchor="middle" fill="#6B7280" font-size="11">预置模板·一键创建</text>
 
-        <rect x="580" y="110" width="160" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
-        <text x="660" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">创建/编辑自动化</text>
-        <text x="660" y="156" text-anchor="middle" fill="#6B7280" font-size="11">表单 · 频率 · 模型 · 技能 · MCP</text>
+        <rect x="620" y="115" width="170" height="62" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="705" y="142" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">创建/编辑自动化</text>
+        <text x="705" y="162" text-anchor="middle" fill="#6B7280" font-size="11">表单·频率·模型·技能·MCP</text>
 
-        <rect x="760" y="110" width="160" height="60" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
-        <text x="840" y="136" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">运行与状态管理</text>
-        <text x="840" y="156" text-anchor="middle" fill="#6B7280" font-size="11">手动运行 · 暂停恢复 · 进度动画</text>
+        <rect x="820" y="115" width="120" height="62" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="880" y="142" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">顶部入口</text>
+        <text x="880" y="162" text-anchor="middle" fill="#6B7280" font-size="11">添加自动化</text>
 
         <!-- Detail sub-items for 创建/编辑 -->
-        <line x1="660" y1="170" x2="370" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
-        <line x1="660" y1="170" x2="530" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
-        <line x1="660" y1="170" x2="700" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
-        <line x1="660" y1="170" x2="860" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="705" y1="177" x2="380" y2="225" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="705" y1="177" x2="540" y2="225" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="705" y1="177" x2="700" y2="225" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="705" y1="177" x2="860" y2="225" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
 
-        <rect x="310" y="210" width="130" height="46" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
-        <text x="375" y="238" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">频率配置</text>
+        <rect x="310" y="225" width="140" height="46" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="380" y="253" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">名称 / 提示词</text>
 
-        <rect x="470" y="210" width="130" height="46" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
-        <text x="536" y="238" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">模型选择</text>
+        <rect x="470" y="225" width="140" height="46" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="540" y="253" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">执行频率</text>
 
-        <rect x="630" y="210" width="130" height="46" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
-        <text x="698" y="238" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">技能多选</text>
+        <rect x="630" y="225" width="140" height="46" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="700" y="253" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">模型 / 技能</text>
 
-        <rect x="790" y="210" width="130" height="46" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
-        <text x="858" y="238" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">MCP</text>
+        <rect x="790" y="225" width="140" height="46" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="860" y="253" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">MCP / 生效区间</text>
 
         <!-- Bottom flow -->
-        <rect x="10" y="280" width="920" height="60" rx="10" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5"></rect>
-        <text x="450" y="300" text-anchor="middle" fill="#92400E" font-size="14" font-weight="700">自动化任务核心链路</text>
+        <rect x="10" y="300" width="920" height="62" rx="10" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5"></rect>
+        <text x="470" y="320" text-anchor="middle" fill="#92400E" font-size="14" font-weight="700">自动化任务核心链路</text>
 
-        <text x="80" y="330" text-anchor="middle" fill="#D97706" font-size="13">选择模板/手动创建</text>
-        <text x="200" y="330" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
-        <text x="300" y="330" text-anchor="middle" fill="#D97706" font-size="13">配置频率与提示词</text>
-        <text x="420" y="330" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
-        <text x="520" y="330" text-anchor="middle" fill="#D97706" font-size="13">保存生效</text>
-        <text x="600" y="330" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
-        <text x="680" y="330" text-anchor="middle" fill="#D97706" font-size="13">定时自动执行</text>
-        <text x="780" y="330" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
-        <text x="880" y="330" text-anchor="middle" fill="#D97706" font-size="13">查看执行历史</text>
+        <text x="90" y="345" text-anchor="middle" fill="#D97706" font-size="13">选择模板/手动创建</text>
+        <text x="205" y="345" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
+        <text x="305" y="345" text-anchor="middle" fill="#D97706" font-size="13">配置频率与提示词</text>
+        <text x="420" y="345" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
+        <text x="515" y="345" text-anchor="middle" fill="#D97706" font-size="13">保存生效</text>
+        <text x="600" y="345" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
+        <text x="690" y="345" text-anchor="middle" fill="#D97706" font-size="13">定时自动执行</text>
+        <text x="785" y="345" text-anchor="middle" fill="#6B7280" font-size="16">→</text>
+        <text x="885" y="345" text-anchor="middle" fill="#D97706" font-size="13">查看执行历史</text>
       </svg>
     </div>
+
+    <h3 id="sec2-2">2.2 业务流程图</h3>
+    <p>下图描述一条自动化任务从创建到运行、再到运维管控的完整业务流转。用户可通过手动创建或模板创建两种入口进入配置；配置完成后任务生效并进入调度；运行过程中可手动触发或等待定时触发，每次执行生成一条执行记录；用户可随时暂停、恢复、编辑或删除任务。</p>
+    <div style="text-align:center; margin: 20px 0;">
+      <svg width="100%" height="520" viewBox="0 0 940 520" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+        <!-- Start -->
+        <rect x="400" y="10" width="140" height="44" rx="22" fill="#059669"></rect>
+        <text x="470" y="38" text-anchor="middle" fill="white" font-size="14" font-weight="700">开始</text>
+
+        <!-- Branch: 手动 / 模板 -->
+        <line x1="470" y1="54" x2="470" y2="90" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="470,90 460,74 480,74" fill="#6B7280"></polygon>
+        <rect x="400" y="90" width="140" height="40" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="470" y="115" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">选择创建方式</text>
+
+        <line x1="400" y1="110" x2="250" y2="140" stroke="#6B7280" stroke-width="2"></line>
+        <line x1="540" y1="110" x2="690" y2="140" stroke="#6B7280" stroke-width="2"></line>
+        <text x="320" y="123" text-anchor="middle" fill="#6B7280" font-size="12">手动创建</text>
+        <text x="620" y="123" text-anchor="middle" fill="#6B7280" font-size="12">模板创建</text>
+
+        <rect x="160" y="140" width="180" height="40" rx="8" fill="#fff" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="250" y="165" text-anchor="middle" fill="#1F2937" font-size="13">空白表单填写</text>
+        <rect x="600" y="140" width="180" height="40" rx="8" fill="#fff" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="690" y="165" text-anchor="middle" fill="#1F2937" font-size="13">模板自动预填配置</text>
+
+        <line x1="250" y1="180" x2="250" y2="210" stroke="#6B7280" stroke-width="2"></line>
+        <line x1="690" y1="180" x2="690" y2="210" stroke="#6B7280" stroke-width="2"></line>
+        <line x1="250" y1="210" x2="690" y2="210" stroke="#6B7280" stroke-width="2"></line>
+        <line x1="470" y1="210" x2="470" y2="240" stroke="#6B7280" stroke-width="2"></line>
+
+        <!-- Configure -->
+        <rect x="370" y="240" width="200" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="470" y="262" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="700">配置任务</text>
+        <text x="470" y="279" text-anchor="middle" fill="#6B7280" font-size="11">名称·提示词·模型·技能·MCP·频率</text>
+
+        <line x1="470" y1="284" x2="470" y2="320" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="470,320 460,304 480,304" fill="#6B7280"></polygon>
+
+        <!-- Save -->
+        <rect x="380" y="320" width="180" height="40" rx="8" fill="#fff" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="470" y="345" text-anchor="middle" fill="#1F2937" font-size="13">保存并生效</text>
+
+        <line x1="470" y1="360" x2="470" y2="396" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="470,396 460,380 480,380" fill="#6B7280"></polygon>
+
+        <!-- Trigger branch -->
+        <rect x="370" y="396" width="200" height="40" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="470" y="421" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">触发执行</text>
+        <text x="300" y="419" text-anchor="middle" fill="#6B7280" font-size="12">定时触发</text>
+        <text x="640" y="419" text-anchor="middle" fill="#6B7280" font-size="12">手动运行</text>
+        <line x1="380" y1="416" x2="320" y2="416" stroke="#6B7280" stroke-width="2"></line>
+        <line x1="560" y1="416" x2="620" y2="416" stroke="#6B7280" stroke-width="2"></line>
+
+        <line x1="470" y1="436" x2="470" y2="468" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="470,468 460,452 480,452" fill="#6B7280"></polygon>
+
+        <!-- Record -->
+        <rect x="380" y="468" width="200" height="40" rx="8" fill="#fff" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="470" y="493" text-anchor="middle" fill="#1F2937" font-size="13">生成执行记录</text>
+
+        <line x1="580" y1="488" x2="720" y2="488" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="720,488 704,480 704,496" fill="#6B7280"></polygon>
+        <rect x="720" y="468" width="170" height="40" rx="8" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5"></rect>
+        <text x="805" y="493" text-anchor="middle" fill="#92400E" font-size="13" font-weight="600">查看运行结果</text>
+
+        <!-- Maintenance loop -->
+        <line x1="380" y1="488" x2="130" y2="488" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="130,488 146,480 146,496" fill="#6B7280"></polygon>
+        <line x1="130" y1="488" x2="130" y2="250" stroke="#6B7280" stroke-width="2"></line>
+        <line x1="130" y1="250" x2="370" y2="250" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="370,250 354,242 354,258" fill="#6B7280"></polygon>
+        <rect x="20" y="230" width="190" height="40" rx="8" fill="#fff" stroke="#6B7280" stroke-width="1.5"></rect>
+        <text x="115" y="255" text-anchor="middle" fill="#1F2937" font-size="13">运维管控</text>
+        <text x="115" y="218" text-anchor="middle" fill="#6B7280" font-size="11">暂停 / 恢复 · 编辑 · 删除</text>
+      </svg>
+    </div>
+    <div class="note">💡 业务闭环说明：任务保存生效后进入调度循环；用户既可在"自动化列表"进行运维管控（暂停、恢复、编辑、删除），也可在"已执行记录"查看每次运行结果，二者共同构成任务的完整生命周期管理。</div>
   </div>
 
 
-  <!-- 3. 子模块详细设计 -->
+  <!-- ========== 三、详细设计 ========== -->
   <div class="section" id="sec3">
-    <h2>三、子模块详细设计</h2>
+    <h2>三、详细设计</h2>
+    <p>自动化模块包含四个页面：<strong>自动化列表页</strong>（任务总览与运维）、<strong>已执行记录页</strong>（运行历史追溯）、<strong>模板中心页</strong>（预置模板一键创建）和<strong>创建/编辑自动化页</strong>（任务配置表单）。以下按页面分别说明功能描述、显示字段与表单字段。</p>
 
-    <p>自动化模块包含四个子功能：<strong>自动化列表管理</strong>（查看/运行/暂停/编辑/删除）、<strong>已执行记录</strong>（运行历史追溯）、<strong>模板中心</strong>（预置模板一键创建）和<strong>创建/编辑自动化</strong>（表单配置）。以下分别说明每个子功能的描述、字段设计、功能清单和特殊规则说明。</p>
-
-    <!-- 3.1 自动化列表管理 -->
-    <h3 id="sec3-1">🔹 3.1 自动化列表管理</h3>
+    <!-- ========== 3.1 自动化列表页 ========== -->
+    <h3 id="sec3-1">🔹 3.1 自动化列表页</h3>
 
     <h4>功能描述</h4>
-    <p>自动化列表是模块的核心入口，以卡片式列表展示用户所有自动化任务。每个任务项展示名称、状态标签、下次运行时间/频率描述。悬停时显示操作按钮（手动运行、编辑、删除）和状态切换按钮（暂停/恢复）。点击任务项可进入编辑模式。列表上方有 Hero 卡片引导区域和"添加自动化"入口按钮。</p>
+    <p>自动化列表页是模块的主入口（默认页签），以卡片列表形式展示用户全部自动化任务。每张卡片展示任务名称、运行状态、下次运行信息，并提供运行、编辑、删除操作，以及生效任务的暂停/恢复切换。列表顶部设有引导区与"添加自动化"入口；用户也可点击卡片本身进入编辑。该页面同时承载任务的即时运维：手动触发执行、暂停/恢复调度、删除任务。</p>
 
-    <h4>字段设计</h4>
+    <h4>显示字段说明</h4>
     <table>
-      <tbody><tr><th style="width:12%">字段</th><th style="width:10%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+      <tbody><tr><th style="width:16%">字段 / 按钮</th><th style="width:34%">规则</th><th>来源 / 例外 / 边界</th></tr>
       <tr>
-        <td>图标</td>
-        <td>系统图标</td>
-        <td>—</td>
-        <td>每个任务项使用时钟图标作为视觉标识，统一风格</td>
+        <td>添加自动化</td>
+        <td>顶部常驻入口，点击打开空白创建弹窗</td>
+        <td>来源：全局操作入口；例外：在任何页签下均可见，点击均进入创建流程</td>
       </tr>
       <tr>
-        <td>名称</td>
-        <td>文本</td>
-        <td>✅</td>
-        <td>自动化任务名称，如"提醒我下班"、"每日新闻推送"，用于标识和搜索</td>
+        <td>任务图标</td>
+        <td>统一以时钟图标呈现，作为任务视觉标识</td>
+        <td>来源：系统统一预设，用户不可更改</td>
+      </tr>
+      <tr>
+        <td>任务名称</td>
+        <td>展示自动化任务名称，如"提醒我下班""每日新闻推送"</td>
+        <td>来源：创建/编辑时由用户填写；边界：名称过长时以省略号收起，不换行撑破布局</td>
       </tr>
       <tr>
         <td>状态标签</td>
-        <td>枚举</td>
-        <td>✅</td>
-        <td>生效中 / 已暂停 / 已失效 / 执行中。新增默认为"生效中"</td>
+        <td>区分四态并以不同底色与文字区分：生效中、已暂停、已失效、执行中</td>
+        <td>来源：系统根据任务配置自动判定；例外：新建任务默认"生效中"；已失效任务（如单次任务已过执行时间）不展示暂停/恢复切换按钮</td>
       </tr>
       <tr>
-        <td>下次运行时间</td>
-        <td>文本描述</td>
-        <td>自动</td>
-        <td>展示下次运行倒计时或频率描述，如"下次运行 2小时后 · 工作日 18:00"、"即将运行 · 每天 07:00"</td>
+        <td>下次运行信息</td>
+        <td>展示下一次执行时间与频率描述，如"下次运行 2 小时后 · 工作日 18:00""即将运行 · 每天 07:00"</td>
+        <td>来源：系统依据执行频率配置与当前时间自动推算；边界：用户不可直接编辑；已失效任务展示"单次 X 时间"而非倒计时<br>------------<br><b>下次运行时间显示规范</b>：<br>&nbsp; &nbsp; ① 超出1天，则显示x天后；<br>&nbsp; &nbsp; ② 1天内，显示x小时后；<br>&nbsp; &nbsp; ③ 1小时内，显示x分钟后；<br>&nbsp; &nbsp; ④ 1分钟内，显示即将执行；<br>------------<br><b>执行频率显示规范</b>：<br>&nbsp; &nbsp; ① 按周期： 每天/每周/双周/每月/每年，周一、周二/1日、2日/1月、2月，08:30<br>&nbsp; &nbsp; ② 按间隔：周一、周二，每隔1小时执行；<br>&nbsp; &nbsp; ③ 按单次：单次 2026-07-28 16:00</td>
       </tr>
       <tr>
-        <td>操作按钮</td>
-        <td>交互</td>
-        <td>—</td>
-        <td>悬停显示：手动运行（播放图标）、编辑（笔图标）、删除（垃圾桶图标）</td>
+        <td>运行按钮</td>
+        <td>点击立即触发该任务执行一次，并展示执行进度</td>
+        <td>例外：仅鼠标悬停时显示；执行中状态仍允许点击，但任务已处于运行态；点击后状态切换为"执行中"</td>
       </tr>
       <tr>
-        <td>状态切换</td>
-        <td>交互</td>
-        <td>—</td>
-        <td>仅"生效中"任务显示暂停按钮；"已暂停"任务显示恢复按钮</td>
+        <td>编辑按钮</td>
+        <td>点击打开编辑弹窗，并回填该任务全部配置</td>
+        <td>来源：与点击任务卡片本身等效；例外：仅悬停时显示</td>
       </tr>
       <tr>
-        <td>进度条</td>
-        <td>动画</td>
-        <td>—</td>
-        <td>"执行中"状态时底部显示进度条动画，完成后恢复为"生效中"</td>
+        <td>删除按钮</td>
+        <td>点击弹出二次确认，确认后移除任务</td>
+        <td>例外：仅悬停时显示；确认弹窗内展示任务名称，确认后下方任务项平滑上移填补空位</td>
+      </tr>
+      <tr>
+        <td>暂停 / 恢复按钮</td>
+        <td>生效中任务显示"暂停"，已暂停任务显示"恢复"，点击切换状态并提示</td>
+        <td>例外：仅悬停时显示；已失效任务不显示该按钮；切换后状态标签与按钮形态同步更新</td>
+      </tr>
+      <tr>
+        <td>运行进度条</td>
+        <td>任务执行时在卡片底部展示进度动画，表示执行进行中</td>
+        <td>边界：进度约 3 秒后任务自动恢复为"生效中"，并提示用户可查看执行结果</td>
       </tr>
     </tbody></table>
 
-    <div class="note">💡 "下次运行时间"为系统根据频率配置和当前时间自动计算的展示字段，用户不可编辑。"已失效"状态的任务（如单次执行已过期的任务）不显示状态切换按钮。</div>
+    <div class="note">💡 "下次运行信息"为系统推算的只读展示字段，用户不可编辑；"已失效"状态（如单次任务已过执行时间）不再触发运行，且隐藏暂停/恢复切换，但仍支持运行、编辑与删除。</div>
 
-    <h4>功能清单</h4>
-    <table>
-      <tbody><tr><th style="width:6%">序号</th><th style="width:18%">功能名称</th><th style="width:8%">优先级</th><th>功能描述</th></tr>
-      <tr>
-        <td>1</td>
-        <td>自动化列表展示</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>以卡片列表展示所有自动化任务，显示名称、状态标签、下次运行描述。顶部 Hero 卡片引导</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>手动运行</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>点击运行按钮后，任务状态切换为"执行中"，底部显示进度条动画，完成后恢复"生效中"并 Toast 提示"任务执行完成，点击查看"</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>暂停/恢复切换</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>生效中 → 点击暂停按钮 → 状态变为"已暂停"；已暂停 → 点击恢复按钮 → 状态恢复"生效中"。切换时 Toast 提示</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>编辑任务</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>点击编辑按钮或任务项本身，打开编辑弹窗，预填当前任务所有配置数据</td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>删除任务</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>点击删除按钮弹出二次确认弹窗（"确定要删除「{名称}」吗？删除后不可恢复。"），确认后删除任务项并 Toast 提示</td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td>添加自动化入口</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>顶部导航栏"添加自动化"按钮，点击打开空白创建弹窗</td>
-      </tr>
-    </tbody></table>
-
-    <h4>特殊规则说明</h4>
-    <table>
-      <tbody><tr><th style="width:6%">序号</th><th style="width:22%">规则</th><th>说明</th></tr>
-      <tr>
-        <td>1</td>
-        <td>状态标签颜色映射</td>
-        <td>生效中（绿色 #ecfdf5）、已暂停（黄色 #fffbeb）、已失效（灰色 #f3f4f6）、执行中（蓝色 #eff6ff）</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>状态切换按钮显示规则</td>
-        <td>"生效中"任务：悬停显示暂停按钮（暂停图标）；"已暂停"任务：悬停显示恢复按钮（播放图标）；"已失效"任务：不显示状态切换按钮</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>操作按钮悬停显示</td>
-        <td>运行、编辑、删除按钮仅在鼠标悬停任务项时显示，离开时隐藏</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>手动运行动画</td>
-        <td>点击运行后：① 状态切换为"执行中"（蓝色标签）② 底部显示 3 秒进度条动画 ③ 3 秒后恢复为"生效中"④ Toast 提示"任务执行完成"，含可点击链接跳转执行结果页</td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>删除动画</td>
-        <td>删除确认后，任务项移除，下方任务项向上平滑位移填补空位（CSS transform 动画 0.3 秒）</td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td>点击任务项编辑</td>
-        <td>点击任务卡片本身（非操作按钮区域）等同于点击编辑按钮，打开编辑弹窗</td>
-      </tr>
-    </tbody></table>
-
-    <!-- Mock UI: Automation List -->
+    <!-- Mock UI -->
     <div class="mock-ui">
-      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">⬇️ 自动化列表 Mock UI</div>
+      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">⬇️ 自动化列表页 示意</div>
       <div class="mock-item-list">
         <div class="mock-item">
           <div class="mock-item-left">
@@ -676,7 +725,7 @@
             <span style="font-weight:600;">提醒我下班</span>
             <span class="mock-status mock-status-active">生效中</span>
           </div>
-          <div style="color:var(--text-secondary); font-size:12px;">下次运行 2小时后 · 工作日 18:00</div>
+          <div style="color:var(--text-secondary); font-size:12px;">下次运行 2 小时后 · 工作日 18:00</div>
           <div class="mock-actions">
             <span class="mock-action-btn">▶</span>
             <span class="mock-action-btn">✏</span>
@@ -702,7 +751,7 @@
             <span style="font-weight:600;">每周工作周报</span>
             <span class="mock-status mock-status-active">生效中</span>
           </div>
-          <div style="color:var(--text-secondary); font-size:12px;">下次运行 3天后 · 每周五 17:00</div>
+          <div style="color:var(--text-secondary); font-size:12px;">下次运行 3 天后 · 每周五 17:00</div>
           <div class="mock-actions">
             <span class="mock-action-btn">▶</span>
             <span class="mock-action-btn">✏</span>
@@ -714,115 +763,51 @@
 
     <hr>
 
-    <!-- 3.2 已执行记录 -->
-    <h3 id="sec3-2">🔹 3.2 已执行记录</h3>
+    <!-- ========== 3.2 已执行记录页 ========== -->
+    <h3 id="sec3-2">🔹 3.2 已执行记录页</h3>
 
     <h4>功能描述</h4>
-    <p>已执行记录是自动化任务运行历史的追溯入口，以列表展示所有已执行的自动化任务记录。每条记录显示任务名称、执行状态（成功/失败）和执行时间（相对时间描述如"19 小时前"）。悬停时显示删除按钮和 Tooltip 提示"点击查看任务运行结果"，点击记录跳转执行结果详情页。</p>
+    <p>已执行记录页以列表形式展示该用户全部自动化任务的运行历史。每条记录展示任务名称、执行结果（成功/失败/等待中）与执行时间（相对时间，如"19 小时前"）。点击记录可跳转至运行结果详情页查看 Agent 输出；悬停时显示删除按钮与"点击查看任务运行结果"提示气泡，便于追溯与清理。</p>
 
-    <h4>字段设计</h4>
+    <h4>显示字段说明</h4>
     <table>
-      <tbody><tr><th style="width:12%">字段</th><th style="width:10%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+      <tbody><tr><th style="width:16%">字段 / 按钮</th><th style="width:34%">规则</th><th>来源 / 例外 / 边界</th></tr>
       <tr>
-        <td>状态圆点</td>
-        <td>枚举</td>
-        <td>✅</td>
-        <td>成功（绿色圆点）、失败（红色圆点）、等待中（灰色圆点），标识执行结果</td>
+        <td>结果指示点</td>
+        <td>以圆点颜色区分执行结果：成功（绿）、失败（红）、等待中（灰）</td>
+        <td>来源：由每次执行的后台结果回填；边界：等待中表示已触发但尚未产出结果</td>
       </tr>
       <tr>
         <td>任务名称</td>
-        <td>文本</td>
-        <td>✅</td>
-        <td>关联的自动化任务名称</td>
+        <td>展示产生该记录的原自动化任务名称</td>
+        <td>来源：关联对应自动化任务，名称变更后历史记录仍保留原名称快照</td>
       </tr>
       <tr>
         <td>失败标签</td>
-        <td>标签</td>
-        <td>—</td>
-        <td>仅失败记录显示红色"失败"文字标签</td>
+        <td>仅失败记录额外展示红色"失败"文字标签</td>
+        <td>例外：成功与等待中记录不展示该标签</td>
       </tr>
       <tr>
         <td>执行时间</td>
-        <td>相对时间</td>
-        <td>✅</td>
-        <td>如"19 小时前"、"1 天前"、"3 天前"，精确到相对天数</td>
+        <td>以相对时间展示，如"19 小时前""1 天前""3 天前"</td>
+        <td>来源：执行发生时刻换算；边界：超过整天以"N 天前"展示，不显示精确时分</td>
       </tr>
       <tr>
         <td>删除按钮</td>
-        <td>交互</td>
-        <td>—</td>
-        <td>悬停显示删除按钮，点击删除该执行记录并 Toast 提示</td>
+        <td>悬停显示，点击删除该条执行记录并提示</td>
+        <td>例外：仅悬停时显示；点击删除不会触发跳转详情</td>
       </tr>
       <tr>
-        <td>Tooltip</td>
-        <td>交互</td>
-        <td>—</td>
-        <td>鼠标跟随显示"点击查看任务运行结果"浮动提示</td>
+        <td>结果提示气泡</td>
+        <td>悬停记录时跟随鼠标显示"点击查看任务运行结果"</td>
+        <td>例外：仅悬停时显示；点击记录本身跳转任务执行详情，与删除按钮互不干扰</td>
       </tr>
     </tbody></table>
 
-    <h4>功能清单</h4>
-    <table>
-      <tbody><tr><th style="width:6%">序号</th><th style="width:18%">功能名称</th><th style="width:8%">优先级</th><th>功能描述</th></tr>
-      <tr>
-        <td>1</td>
-        <td>已执行列表展示</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>列表展示所有已执行记录，显示状态圆点、名称、失败标签、相对时间</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>查看执行结果</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>点击已执行记录跳转执行结果详情页（content.html），查看 Agent 输出内容</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>删除执行记录</td>
-        <td><span class="tag tag-p1">P1</span></td>
-        <td>悬停显示删除按钮，点击删除该记录并 Toast 提示"已删除该执行记录"</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>Tooltip 提示</td>
-        <td><span class="tag tag-p2">P2</span></td>
-        <td>鼠标悬停已执行记录时，浮动 Tooltip 随鼠标移动显示"点击查看任务运行结果"</td>
-      </tr>
-    </tbody></table>
+    <div class="note">💡 点击记录跳转运行结果详情页，但点击删除按钮仅删除该记录、不触发跳转，二者通过交互隔离避免误操作。</div>
 
-    <h4>特殊规则说明</h4>
-    <table>
-      <tbody><tr><th style="width:6%">序号</th><th style="width:22%">规则</th><th>说明</th></tr>
-      <tr>
-        <td>1</td>
-        <td>状态圆点颜色映射</td>
-        <td>成功（绿色 #10b981）、失败（红色 #ef4444）</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>失败标签仅失败显示</td>
-        <td>仅失败记录显示红色"失败"文字标签，成功和等待中不显示</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>删除按钮仅悬停显示</td>
-        <td>默认 opacity:0 隐藏，鼠标悬停时 opacity:1 显示</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>Tooltip 跟随鼠标</td>
-        <td>Tooltip 固定定位，跟随鼠标移动，自动避让屏幕边缘</td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>点击跳转排除删除</td>
-        <td>点击已执行记录跳转详情页，但点击删除按钮时不触发跳转（stopPropagation）</td>
-      </tr>
-    </tbody></table>
-
-    <!-- Mock UI: Executed List -->
     <div class="mock-ui">
-      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">⬇️ 已执行记录 Mock UI</div>
+      <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">⬇️ 已执行记录页 示意</div>
       <div class="mock-item-list">
         <div class="mock-item">
           <div class="mock-item-left">
@@ -851,392 +836,169 @@
 
     <hr>
 
-    <!-- 3.3 模板中心 -->
-    <h3 id="sec3-3">🔹 3.3 模板中心</h3>
+    <!-- ========== 3.3 模板中心页 ========== -->
+    <h3 id="sec3-3">🔹 3.3 模板中心页</h3>
 
     <h4>功能描述</h4>
-    <p>模板中心提供预置自动化模板，帮助用户一键创建常见自动化任务。以 3 列卡片网格展示模板，每张卡片显示图标、名称、描述（最多 3 行截断）和默认执行时间。鼠标悬停时显示 Tooltip 提示"点击即可按此模板创建自动化任务"，点击卡片后自动打开创建弹窗并预填模板数据（名称、提示词、模型、技能、MCP、频率）。</p>
+    <p>模板中心页提供平台预置的常见自动化模板，以三列卡片网格展示，帮助用户一键创建高频场景任务。每张卡片展示图标、名称、描述与默认执行时间；鼠标悬停时显示气泡提示"点击即可按此模板创建自动化任务"。点击卡片即打开创建弹窗，并自动预填模板的名称、提示词、模型、技能、MCP 与执行频率，用户仅需确认或微调即可保存。</p>
 
-    <h4>字段设计</h4>
+    <h4>显示字段说明</h4>
     <table>
-      <tbody><tr><th style="width:12%">字段</th><th style="width:10%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+      <tbody><tr><th style="width:16%">字段 / 按钮</th><th style="width:34%">规则</th><th>来源 / 例外 / 边界</th></tr>
       <tr>
         <td>模板图标</td>
-        <td>SVG 图标</td>
-        <td>—</td>
-        <td>每个模板配专属 SVG 图标</td>
+        <td>每个模板配置专属图标，作为视觉识别</td>
+        <td>来源：模板数据内置，与模板主题对应</td>
       </tr>
       <tr>
         <td>模板名称</td>
-        <td>文本</td>
-        <td>✅</td>
-        <td>模板标题，如"每日新闻推送"、"每周工作周报"</td>
+        <td>展示模板标题，如"每日新闻推送""每周工作周报"</td>
+        <td>来源：模板预置名称；边界：与创建后的任务名称一致，用户可在弹窗内修改</td>
       </tr>
       <tr>
         <td>模板描述</td>
-        <td>文本</td>
-        <td>✅</td>
-        <td>功能简述，最多 3 行截断展示（-webkit-line-clamp:3）</td>
+        <td>简述模板功能与产出，如"关注当天 AI 领域的重要动态……"</td>
+        <td>来源：模板预置；边界：描述最多展示三行，超出部分以省略号收起，不强制展开</td>
       </tr>
       <tr>
         <td>默认执行时间</td>
-        <td>文本</td>
-        <td>—</td>
-        <td>预置执行时间描述，如"每天 08:00"</td>
+        <td>展示模板预设的执行时间，如"每天 08:00"</td>
+        <td>来源：模板频率配置换算；在创建弹窗内可调整</td>
+      </tr>
+      <tr>
+        <td>卡片（整体）</td>
+        <td>点击卡片即按该模板创建自动化，打开预填好的创建弹窗</td>
+        <td>例外：点击时先关闭悬停提示气泡，再打开弹窗，避免气泡残留</td>
       </tr>
     </tbody></table>
 
-    <h4>预置模板</h4>
-    <p>系统内提前预置模板。</p>
-    
+    <div class="note"></div>
 
-    <hr>
-
-    <!-- 3.4 创建/编辑自动化 -->
-    <h3 id="sec3-4">🔹 3.4 创建/编辑自动化</h3>
+    <!-- ========== 3.4 创建/编辑自动化页 ========== -->
+    <h3 id="sec3-4">🔹 3.4 创建/编辑自动化页（弹窗）</h3>
 
     <h4>功能描述</h4>
-    <p>创建/编辑自动化弹窗是任务配置的核心表单，包含名称、项目、提示词、模型选择、技能多选、MCP 多选、执行频率配置和生效区间设置。创建模式标题为"添加自动化"，编辑模式标题为"编辑自动化"，编辑时预填当前任务所有配置数据。弹窗顶部显示图标+标题+副标题，底部有取消和保存按钮。</p>
+    <p>创建/编辑自动化页以弹窗形式承载任务配置，是模块的配置中枢。创建模式由"添加自动化"或模板卡片打开，标题为"添加自动化"；编辑模式由列表的编辑按钮或点击卡片打开，标题为"编辑自动化"并回填当前任务全部配置。弹窗包含头部（图标、标题、副标题、关闭）、主体表单（名称、项目、提示词、模型、技能、MCP、执行频率、生效区间）与底部操作（取消、保存）。任一表单区域的展开面板互斥打开，面板智能定位以避免超出可视区域。</p>
 
-    <h4>字段设计</h4>
+    <h4>显示字段说明（弹窗框架）</h4>
     <table>
-      <tbody><tr><th style="width:12%">字段</th><th style="width:10%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+      <tbody><tr><th style="width:16%">字段 / 按钮</th><th style="width:34%">规则</th><th>来源 / 例外 / 边界</th></tr>
+      <tr>
+        <td>弹窗图标</td>
+        <td>头部左侧展示文档/卡片类图标，标识当前为自动化配置场景</td>
+        <td>来源：系统统一预设</td>
+      </tr>
+      <tr>
+        <td>弹窗标题</td>
+        <td>创建时显示"添加自动化"，编辑时显示"编辑自动化"</td>
+        <td>来源：根据打开模式动态切换</td>
+      </tr>
+      <tr>
+        <td>副标题</td>
+        <td>创建时"预设最佳流程，一键开启自动化。"，编辑时"修改自动化任务配置。"</td>
+        <td>来源：随模式切换</td>
+      </tr>
+      <tr>
+        <td>关闭按钮</td>
+        <td>点击关闭弹窗，放弃未保存的修改</td>
+        <td>例外：关闭不触发校验、不保存</td>
+      </tr>
+      <tr>
+        <td>取消按钮</td>
+        <td>底部左侧，点击关闭弹窗</td>
+        <td>与关闭按钮行为一致</td>
+      </tr>
+      <tr>
+        <td>保存按钮</td>
+        <td>底部右侧，点击校验必填项后保存并关闭</td>
+        <td>边界：名称或提示词为空时高亮对应输入并提示，阻止保存；创建成功提示"自动化任务已添加成功"，编辑成功提示"自动化任务已更新成功"</td>
+      </tr>
+    </tbody></table>
+
+    <h4>表单字段说明</h4>
+    <table>
+      <tbody><tr><th style="width:14%">字段</th><th style="width:14%">类型</th><th style="width:8%">必填</th><th>说明（含表单字段与表单按钮）</th></tr>
       <tr>
         <td>名称</td>
-        <td>文本输入</td>
-        <td>✅</td>
-        <td>自动化任务名称，为空时显示红色边框和"请输入任务名称"错误提示</td>
+        <td>单行文本</td>
+        <td>是</td>
+        <td>自动化任务名称；来源：用户输入。边界：为空时输入框高亮并提示"请输入任务名称"，开始输入后即时清除提示。</td>
       </tr>
       <tr>
         <td>项目</td>
         <td>下拉单选</td>
-        <td>—</td>
-        <td>关联项目选择（项目 Alpha / Beta / Gamma / Delta / Epsilon），非必填</td>
+        <td>否</td>
+        <td>关联项目（项目 Alpha / Beta / Gamma / Delta / Epsilon）；来源：平台项目列表。边界：未选时显示"选择项目"占位，不影响保存。</td>
       </tr>
       <tr>
         <td>提示词</td>
-        <td>文本域</td>
-        <td>✅</td>
-        <td>Agent 执行的提示词内容，支持多行输入，为空时红色边框 + "请输入提示词"错误提示</td>
+        <td>多行文本</td>
+        <td>是</td>
+        <td>Agent 实际执行的内容；来源：用户输入。边界：为空时高亮并提示"请输入提示词"，输入后即时清除；提示词区域附带模型与技能快捷选择。</td>
       </tr>
       <tr>
-        <td>模型选择</td>
-        <td>下拉单选</td>
-        <td>—</td>
-        <td>分组下拉：企业模型、个人模型；默认选中默认模型；</td>
+        <td>模型</td>
+        <td>下拉单选（分组）</td>
+        <td>否</td>
+        <td>选择执行使用的 AI 模型，分"企业模型""个人模型"两组（如 gpt-5.5、gpt-5、gpt-4o、claude-sonnet-4、deepseek-r1 等）；默认选中设置的默认模型。来源：设置页面 - 模型管理；分组下没有数据则不显示该分组。</td>
       </tr>
       <tr>
-        <td>技能多选</td>
+        <td>技能</td>
         <td>多选标签</td>
-        <td>—</td>
-        <td>下拉搜索多选，支持按名称/描述搜索。选中项以标签形式展示（含图标+名称+删除按钮）</td>
+        <td>否</td>
+        <td>下拉可搜索多选，选中项以标签（图标+名称+移除按钮）展示在触发器内；支持按名称/描述模糊搜索，无匹配时展示空状态提示。</td>
       </tr>
       <tr>
-        <td>MCP 多选</td>
+        <td>MCP</td>
         <td>分组多选</td>
-        <td>—</td>
-        <td>双 Tab（MCP市场 / 自定义MCP），下拉搜索，分组折叠选择。选中项按 MCP 服务分组展示标签</td>
+        <td>否</td>
+        <td>通过"MCP 市场 / 自定义 MCP"两个页签切换；服务可展开，支持父级全选/取消与子级单选；选中项按所属服务分组展示标签；部分选中时显示"服务名 (N)"标识已选数量。</td>
       </tr>
       <tr>
         <td>执行频率</td>
         <td>复合选择</td>
-        <td>✅</td>
-        <td>三种模式：按周期 / 按间隔 / 单次。为空时"请选择执行频率"错误提示</td>
+        <td>是</td>
+        <td>三种模式：按周期 / 按间隔 / 单次。来源：用户配置。边界：未选择时提示"请选择执行频率"。具体子配置见下表。</td>
+      </tr>
+      <tr>
+        <td>　└ 按周期</td>
+        <td>子配置</td>
+        <td>是</td>
+        <td>每天（设定时间，默认 08:30）/ 每周·双周（多选星期 + 设定时间）/ 每月（多选日期 1–31 日，支持全选/反选 + 时间）/ 每年（多选月份 + 多选日期 + 时间）。切换周期单位时仅展示对应子选项。</td>
+      </tr>
+      <tr>
+        <td>　└ 按间隔</td>
+        <td>子配置</td>
+        <td>是</td>
+        <td>可选多选星期限定执行日 + 每隔 N 小时执行（数字输入，默认 1）。</td>
+      </tr>
+      <tr>
+        <td>　└ 单次</td>
+        <td>子配置</td>
+        <td>是</td>
+        <td>选择日期 + 时间，仅执行一次，执行后任务关闭。边界：不能选择当前时间之前的时间。</td>
       </tr>
       <tr>
         <td>生效区间</td>
         <td>日期范围</td>
+        <td>否</td>
+        <td>设定开始日期与结束日期；边界：未填写则永久生效，界面以"（未填写则永久生效）"提示。</td>
+      </tr>
+      <tr>
+        <td>取消（按钮）</td>
+        <td>按钮</td>
         <td>—</td>
-        <td>开始日期和结束日期，未填写则永久生效</td>
-      </tr>
-    </tbody></table>
-
-    <h4>执行频率详细配置</h4>
-    <table>
-      <tbody><tr><th style="width:12%">模式</th><th style="width:15%">周期单位</th><th style="width:8%">必填</th><th>配置项</th></tr>
-      <tr>
-        <td>按周期</td>
-        <td>每天</td>
-        <td>✅</td>
-        <td>选择时间（默认 08:30）</td>
+        <td>关闭弹窗，放弃本次修改，不做任何保存。</td>
       </tr>
       <tr>
-        <td>按周期</td>
-        <td>每周/双周</td>
-        <td>✅</td>
-        <td>多选星期（周一至周日，Checkbox） + 选择时间</td>
-      </tr>
-      <tr>
-        <td>按周期</td>
-        <td>每月</td>
-        <td>✅</td>
-        <td>多选日期（1-31日，Checkbox + 全选/反选） + 选择时间</td>
-      </tr>
-      <tr>
-        <td>按周期</td>
-        <td>每年</td>
-        <td>✅</td>
-        <td>多选月份（1-12月，Checkbox + 全选/反选） + 多选日期 + 选择时间</td>
-      </tr>
-      <tr>
-        <td>按间隔</td>
+        <td>保存（按钮）</td>
+        <td>按钮</td>
         <td>—</td>
-        <td>✅</td>
-        <td>多选星期（可选） + 每隔 N 小时执行（数字输入，默认 1）</td>
-      </tr>
-      <tr>
-        <td>单次</td>
-        <td>—</td>
-        <td>✅</td>
-        <td>选择日期 + 选择时间。提示："仅执行一次，执行后关闭该任务；不能选择当前时间之前的时间"</td>
+        <td>校验必填项（名称、提示词、执行频率）通过后保存：若已选关联项目则在对应项目下创建会话，未选则自动归入自动化默认项目；随后关闭弹窗并提示创建/更新成功。</td>
       </tr>
     </tbody></table>
 
-    <h4>功能清单</h4>
-    <table>
-      <tbody><tr><th style="width:6%">序号</th><th style="width:18%">功能名称</th><th style="width:8%">优先级</th><th>功能描述</th></tr>
-      <tr>
-        <td>1</td>
-        <td>创建自动化弹窗</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>标题"添加自动化"，空白表单，填写名称、项目、提示词、模型、技能、MCP、频率、生效区间后保存</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>编辑自动化弹窗</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>标题"编辑自动化"，预填当前任务所有配置数据，修改后保存</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>必填校验</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>名称和提示词为必填项，为空时显示红色边框和错误提示；频率为必填项</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>模型选择下拉</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>分组下拉选择模型（企业模型/个人模型），选中后更新标签文本和选中状态</td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>技能多选下拉</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>下拉搜索多选技能，选中项以标签形式展示在触发器中，支持单个删除</td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td>MCP 多选下拉</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>双 Tab（MCP市场 / 自定义MCP），分组折叠（父级全选/取消 + 子级单选），选中项按 MCP 服务分组展示标签</td>
-      </tr>
-      <tr>
-        <td>7</td>
-        <td>频率模式切换</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>按周期 / 按间隔 / 单次 三种模式切换，切换时显示对应配置面板和子选项</td>
-      </tr>
-      <tr>
-        <td>8</td>
-        <td>周期单位切换</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>按周期模式下，每天/每周/双周/每月/每年切换，显示对应时间/星期/日期配置</td>
-      </tr>
-      <tr>
-        <td>9</td>
-        <td>星期/日期多选弹出</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>星期、日期、月份多选以 Checkbox 弹出面板形式选择，支持全选/反选</td>
-      </tr>
-      <tr>
-        <td>10</td>
-        <td>生效区间设置</td>
-        <td><span class="tag tag-p1">P1</span></td>
-        <td>开始/结束日期选择，未填写则永久生效，提示文本"（未填写则永久生效）"</td>
-      </tr>
-      <tr>
-        <td>11</td>
-        <td>保存与 Toast</td>
-        <td><span class="tag tag-p0">P0</span></td>
-        <td>保存按钮校验必填项，校验通过后关闭弹窗并 Toast 提示"自动化任务已添加成功"或"自动化任务已更新成功"<br>自动化执行，如果选了项目，则在项目中每个自动化创建一个会话；如果没有选项目，自动创建一个项目（名称：自动化任务-2026-07-27 16:54:06）</td>
-      </tr>
-    </tbody></table>
-
-    <h4>特殊规则说明</h4>
-    <table>
-      <tbody><tr><th style="width:6%">序号</th><th style="width:22%">规则</th><th>说明</th></tr>
-      <tr>
-        <td>1</td>
-        <td>必填校验即时清除</td>
-        <td>输入内容后即时清除对应红色边框和错误提示</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>下拉互斥关闭</td>
-        <td>打开任一下拉（频率/项目/模型/技能/MCP/星期弹出）时自动关闭其他已打开的下拉</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>下拉定位适配</td>
-        <td>下拉面板使用 position:fixed 定位，根据触发按钮位置动态计算位置，避免溢出屏幕</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>MCP 分组折叠</td>
-        <td>MCP 服务默认折叠，点击展开图标展开子级；点击非展开区域执行全选/取消；选中子级数量实时显示"2/4 项已选"</td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>MCP 标签分组展示</td>
-        <td>选中 MCP 项按父级服务分组展示标签；全选显示服务名，部分选择显示"服务名 (2)"</td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td>技能搜索过滤</td>
-        <td>输入搜索关键词时，按技能名称和描述模糊匹配过滤，无匹配时显示"未找到匹配的技能"</td>
-      </tr>
-      <tr>
-        <td>7</td>
-        <td>MCP 搜索过滤</td>
-        <td>搜索匹配 MCP 服务名和子级名称，匹配子级时自动展开父级分组</td>
-      </tr>
-      <tr>
-        <td>8</td>
-        <td>频率子选项联动</td>
-        <td>按周期：切换周期单位时隐藏其他子面板，仅显示对应子选项（每天→时间，每周→星期+时间，每月→日期+时间，每年→月份+日期+时间）</td>
-      </tr>
-      <tr>
-        <td>9</td>
-        <td>单次执行提示</td>
-        <td>单次模式面板显示提示文本："仅执行一次，执行后关闭该任务；不能选择当前时间之前的时间"</td>
-      </tr>
-    </tbody></table>
-
-  </div>
-
-
-  <!-- 4. 边界情况 -->
-  <div class="section" id="sec4">
-    <h2>四、边界与异常情况</h2>
-
-    <table>
-      <tbody><tr><th style="width:5%">序号</th><th style="width:25%">场景</th><th style="width:35%">处理策略</th><th>备注</th></tr>
-      <tr>
-        <td>1</td>
-        <td>创建自动化时名称为空</td>
-        <td>输入框红色边框 + 显示"请输入任务名称"错误提示，阻止保存</td>
-        <td>即时校验 + 保存时兜底</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>创建自动化时提示词为空</td>
-        <td>文本域红色边框 + 显示"请输入提示词"错误提示，阻止保存</td>
-        <td>即时校验 + 保存时兜底</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>必填校验后输入内容清除错误</td>
-        <td>输入内容后即时移除红色边框和错误提示文字</td>
-        <td>on input 事件清除</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>多个下拉同时打开冲突</td>
-        <td>打开任一下拉时自动关闭其他已打开的下拉面板</td>
-        <td>防止界面混乱</td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>下拉面板溢出屏幕</td>
-        <td>使用 position:fixed 定位，根据触发按钮位置动态计算，适配视窗边界</td>
-        <td>确保面板可见</td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td>删除自动化任务</td>
-        <td>弹出确认弹窗"确定要删除「{名称}」吗？删除后不可恢复。"，确认后删除并下方项平滑上移</td>
-        <td>二次确认 + 动画</td>
-      </tr>
-      <tr>
-        <td>7</td>
-        <td>手动运行动画期间再次操作</td>
-        <td>运行状态 3 秒动画期间，进度条使用 CSS animation forwards，不阻止其他操作</td>
-        <td>动画为前端展示效果</td>
-      </tr>
-      <tr>
-        <td>8</td>
-        <td>技能搜索无匹配</td>
-        <td>显示"未找到匹配的技能"空状态提示</td>
-        <td>前端即时反馈</td>
-      </tr>
-      <tr>
-        <td>9</td>
-        <td>MCP 搜索无匹配</td>
-        <td>显示"未找到匹配的MCP"空状态提示</td>
-        <td>前端即时反馈</td>
-      </tr>
-      <tr>
-        <td>10</td>
-        <td>已失效任务操作</td>
-        <td>"已失效"状态（如单次执行已过期）不显示暂停/恢复切换按钮，但仍可运行/编辑/删除</td>
-        <td>保持可用性</td>
-      </tr>
-      <tr>
-        <td>11</td>
-        <td>已执行记录删除跳转冲突</td>
-        <td>点击删除按钮时 stopPropagation 阻止触发跳转，仅删除记录</td>
-        <td>事件隔离</td>
-      </tr>
-      <tr>
-        <td>12</td>
-        <td>模板 Tooltip 与弹窗切换</td>
-        <td>点击模板卡片时先关闭 Tooltip，再打开创建弹窗</td>
-        <td>避免残留 Tooltip</td>
-      </tr>
-      <tr>
-        <td>13</td>
-        <td>星期/日期弹出面板全选与反选</td>
-        <td>提供"全选"和"反选"按钮，仅对当前弹出面板内 Checkbox 生效</td>
-        <td>便捷操作</td>
-      </tr>
-      <tr>
-        <td>14</td>
-        <td>编辑弹窗回填频率配置</td>
-        <td>编辑时根据原始数据切换频率模式、周期单位、时间、星期/日期，完整还原配置状态</td>
-        <td>完整回填</td>
-      </tr>
-      <tr>
-        <td>15</td>
-        <td>点击任务项触发编辑而非其他操作</td>
-        <td>点击任务项卡片（排除操作按钮和状态切换按钮区域）触发编辑弹窗</td>
-        <td>stopPropagation 区分</td>
-      </tr>
-      <tr>
-        <td>16</td>
-        <td>MCP 分组全选/取消交互</td>
-        <td>点击 MCP 服务头部（非展开图标区域）：全选所有子级或取消所有子级选中</td>
-        <td>一键操作</td>
-      </tr>
-      <tr>
-        <td>17</td>
-        <td>MCP 部分选中状态标识</td>
-        <td>部分选中时父级显示横线 Check（而非全选勾），选中计数显示"N/M 项已选"</td>
-        <td>状态清晰</td>
-      </tr>
-      <tr>
-        <td>18</td>
-        <td>点击外部关闭所有下拉</td>
-        <td>document 全局 click 事件关闭所有打开的下拉面板、弹出面板、Tooltip</td>
-        <td>统一关闭逻辑</td>
-      </tr>
-    </tbody></table>
-
-    <div class="note">💡 以上 18 个边界场景覆盖了必填校验、下拉互斥、删除确认、搜索空状态、状态切换、编辑回填、事件隔离等核心风险点。建议在开发阶段逐一编写测试用例验证。</div>
-  </div>
-
-  <div style="text-align:center; padding:40px 0; color: var(--text-secondary); font-size:13px;">
-    — 文档结束 · 欢迎评审讨论 —
+    </div><div style="text-align:center; padding:40px 0; color: var(--text-secondary); font-size:13px;"><br>— 文档结束 · 欢迎评审讨论 —
   </div>
 
 </div>
@@ -1288,5 +1050,6 @@
   onScroll();
 })();
 </script>
+
 
 </body></html>
