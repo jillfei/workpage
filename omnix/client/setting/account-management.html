@@ -884,19 +884,44 @@
                 </div>
             </div>
 
-            <!-- 登录密码 -->
-            <div class="card">
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <span class="setting-label">登录密码</span>
-                        <span class="setting-desc">用于登录身份验证，请定期更换以保障安全</span>
+            <!-- 密码管理区域 -->
+            <div style="margin-left: -120px; padding-left: 120px; position: relative;">
+                <!-- 登录密码 -->
+                <div style="position: relative; margin-bottom: 12px;">
+                    <div style="position: absolute; left: -110px; top: 18px; color: #ff4d4f; font-size: 14px; white-space: nowrap;">设置密码后展示</div>
+                    <div class="card">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">登录密码</span>
+                                <span class="setting-desc">用于登录身份验证，请定期更换以保障安全</span>
+                            </div>
+                            <button class="btn btn-outline" onclick="openModal('changePasswordModal')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                                </svg>
+                                修改密码
+                            </button>
+                        </div>
                     </div>
-                    <button class="btn btn-outline" onclick="openModal('changePasswordModal')">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-                        </svg>
-                        修改密码
-                    </button>
+                </div>
+
+                <!-- 设置密码（手机注册用户） -->
+                <div style="position: relative;">
+                    <div style="position: absolute; left: -110px; top: 18px; color: #ff4d4f; font-size: 14px; white-space: nowrap;">未设置密码时展示</div>
+                    <div class="card">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-label">设置密码</span>
+                                <span class="setting-desc">手机注册用户可在此设置登录密码，以便使用密码登录</span>
+                            </div>
+                            <button class="btn btn-outline" onclick="openModal('setPasswordModal')">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                设置密码
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1070,6 +1095,51 @@
             <div class="modal-footer">
                 <button class="btn btn-text" onclick="closeModal('changePasswordModal')">取消</button>
                 <button class="btn btn-primary" id="savePasswordBtn" onclick="savePassword()" disabled>保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 设置密码弹窗 -->
+    <div class="modal-overlay" id="setPasswordModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    设置密码
+                </div>
+                <button class="modal-close" onclick="closeModal('setPasswordModal')">×</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">密码</label>
+                <div class="password-wrapper">
+                    <input type="password" class="form-input" id="setNewPasswordInput" placeholder="8-20位，包含大小写字母、数字" oninput="validateSetNewPassword()">
+                    <button class="password-toggle" onclick="togglePassword(this)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="error-message" id="setNewPasswordError"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">确认密码</label>
+                <div class="password-wrapper">
+                    <input type="password" class="form-input" id="setConfirmPasswordInput" placeholder="请确认新密码" oninput="validateSetConfirmPassword()">
+                    <button class="password-toggle" onclick="togglePassword(this)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="error-message" id="setConfirmPasswordError"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-text" onclick="closeModal('setPasswordModal')">取消</button>
+                <button class="btn btn-primary" id="saveSetPasswordBtn" onclick="saveSetPassword()" disabled>保存</button>
             </div>
         </div>
     </div>
@@ -1548,6 +1618,9 @@
             if (modalId === 'changePasswordModal') {
                 resetPasswordForm();
             }
+            if (modalId === 'setPasswordModal') {
+                resetSetPasswordForm();
+            }
         };
 
         // 修改密码验证逻辑
@@ -1652,6 +1725,91 @@
 
         // 添加输入事件监听
         document.getElementById('oldPasswordInput')?.addEventListener('input', checkPasswordFormValid);
+
+        // 设置密码验证逻辑
+        function validateSetNewPassword() {
+            const password = document.getElementById('setNewPasswordInput').value;
+            const errorDiv = document.getElementById('setNewPasswordError');
+
+            const isLengthValid = password.length >= 8 && password.length <= 20;
+            const hasUpper = /[A-Z]/.test(password);
+            const hasLower = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+
+            if (password.length === 0) {
+                errorDiv.textContent = '';
+                document.getElementById('setNewPasswordInput').classList.remove('error', 'success');
+            } else if (isLengthValid && hasUpper && hasLower && hasNumber) {
+                errorDiv.textContent = '';
+                document.getElementById('setNewPasswordInput').classList.remove('error');
+                document.getElementById('setNewPasswordInput').classList.add('success');
+            } else {
+                errorDiv.textContent = '密码格式不满足要求';
+                document.getElementById('setNewPasswordInput').classList.remove('success');
+                document.getElementById('setNewPasswordInput').classList.add('error');
+            }
+
+            validateSetConfirmPassword();
+            checkSetPasswordFormValid();
+        }
+
+        function validateSetConfirmPassword() {
+            const newPassword = document.getElementById('setNewPasswordInput').value;
+            const confirmPassword = document.getElementById('setConfirmPasswordInput').value;
+            const errorDiv = document.getElementById('setConfirmPasswordError');
+            const input = document.getElementById('setConfirmPasswordInput');
+
+            if (confirmPassword.length === 0) {
+                errorDiv.textContent = '';
+                input.classList.remove('error', 'success');
+            } else if (newPassword !== confirmPassword) {
+                errorDiv.textContent = '两次密码不相同';
+                input.classList.remove('success');
+                input.classList.add('error');
+            } else {
+                errorDiv.textContent = '';
+                input.classList.remove('error');
+                input.classList.add('success');
+            }
+
+            checkSetPasswordFormValid();
+        }
+
+        function checkSetPasswordFormValid() {
+            const newPassword = document.getElementById('setNewPasswordInput').value;
+            const confirmPassword = document.getElementById('setConfirmPasswordInput').value;
+            const saveBtn = document.getElementById('saveSetPasswordBtn');
+
+            const isNewValid = newPassword.length >= 8 && newPassword.length <= 20 && 
+                              /[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) && /[0-9]/.test(newPassword);
+            const isConfirmValid = newPassword === confirmPassword && confirmPassword.length > 0;
+
+            saveBtn.disabled = !(isNewValid && isConfirmValid);
+        }
+
+        function saveSetPassword() {
+            const newPassword = document.getElementById('setNewPasswordInput').value;
+            const confirmPassword = document.getElementById('setConfirmPasswordInput').value;
+
+            if (newPassword !== confirmPassword) {
+                document.getElementById('setConfirmPasswordError').textContent = '两次密码不相同';
+                return;
+            }
+
+            alert('密码设置成功');
+            closeModal('setPasswordModal');
+            resetSetPasswordForm();
+        }
+
+        function resetSetPasswordForm() {
+            document.getElementById('setNewPasswordInput').value = '';
+            document.getElementById('setConfirmPasswordInput').value = '';
+            document.getElementById('setNewPasswordError').textContent = '';
+            document.getElementById('setConfirmPasswordError').textContent = '';
+            document.getElementById('setNewPasswordInput').classList.remove('error', 'success');
+            document.getElementById('setConfirmPasswordInput').classList.remove('error', 'success');
+            document.getElementById('saveSetPasswordBtn').disabled = true;
+        }
     </script>
 </body>
 </html>

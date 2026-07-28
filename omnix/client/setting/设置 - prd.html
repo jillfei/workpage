@@ -501,7 +501,7 @@
                                 </tr>
                                 <tr>
                                     <td><strong>密码管理</strong></td>
-                                    <td>修改登录密码（格式校验）</td>
+                                    <td>修改登录密码、设置密码（手机注册用户）</td>
                                 </tr>
                                 <tr>
                                     <td><strong>系统偏好设置</strong></td>
@@ -976,6 +976,179 @@
                                     <td>确认密码</td>
                                     <td>必须与新密码一致</td>
                                     <td><span class="error-example">两次密码不相同</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 设置密码 -->
+                <section class="card" id="set-password">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        设置密码
+                    </h2>
+
+                    <h3 class="section-title">功能说明</h3>
+                    <div class="validation-card">
+                        <div class="validation-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 16v-4"/>
+                                <path d="M12 8h.01"/>
+                            </svg>
+                            适用场景
+                        </div>
+                        <div class="validation-list">
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                手机注册用户首次登录后，可在此设置登录密码
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                设置密码后，用户可使用手机号+密码方式登录
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                已设置密码的用户显示"修改密码"，未设置密码的用户显示"设置密码"
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">触发方式</h3>
+                    <p style="color: #666;">点击"设置密码"按钮，弹出设置密码弹窗</p>
+
+                    <h3 class="section-title">弹窗内容</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>元素</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>密码输入框</td>
+                                    <td>密码类型，8-20位字符，包含大写字母、小写字母、数字，可切换显示/隐藏</td>
+                                </tr>
+                                <tr>
+                                    <td>确认密码输入框</td>
+                                    <td>密码类型，校验是否与密码一致，可切换显示/隐藏</td>
+                                </tr>
+                                <tr>
+                                    <td>取消/保存按钮</td>
+                                    <td>取消关闭弹窗，保存设置密码</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="section-title">交互逻辑</h3>
+                    <div class="validation-card">
+                        <div class="validation-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            交互流程
+                        </div>
+                        <div class="validation-list">
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                输入密码 → 实时校验格式（8-20位，含大写、小写、数字）
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                输入确认密码 → 实时校验是否与密码一致
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                所有校验通过 → "保存"按钮启用
+                            </div>
+                            <div class="validation-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                点击"保存" → 设置密码成功，关闭弹窗
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">校验规则</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>校验项</th>
+                                    <th>规则</th>
+                                    <th>错误提示</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>密码长度</td>
+                                    <td>8-20位字符</td>
+                                    <td><span class="error-example">密码格式不满足要求</span></td>
+                                </tr>
+                                <tr>
+                                    <td>密码大写</td>
+                                    <td>必须包含大写字母</td>
+                                    <td><span class="error-example">密码格式不满足要求</span></td>
+                                </tr>
+                                <tr>
+                                    <td>密码小写</td>
+                                    <td>必须包含小写字母</td>
+                                    <td><span class="error-example">密码格式不满足要求</span></td>
+                                </tr>
+                                <tr>
+                                    <td>密码数字</td>
+                                    <td>必须包含数字</td>
+                                    <td><span class="error-example">密码格式不满足要求</span></td>
+                                </tr>
+                                <tr>
+                                    <td>确认密码</td>
+                                    <td>必须与密码一致</td>
+                                    <td><span class="error-example">两次密码不相同</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="section-title">密码管理区域显示逻辑</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>用户状态</th>
+                                    <th>显示内容</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>未设置密码</td>
+                                    <td>显示"设置密码"卡片</td>
+                                    <td>手机注册用户首次登录后显示，可点击设置密码</td>
+                                </tr>
+                                <tr>
+                                    <td>已设置密码</td>
+                                    <td>显示"登录密码"卡片</td>
+                                    <td>可点击修改密码</td>
                                 </tr>
                             </tbody>
                         </table>
