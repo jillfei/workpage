@@ -221,6 +221,7 @@
       padding: 3px 10px; border-radius: 999px;
       font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap;
       background: #f4f4f5; color: #52525b;
+	  display: none;
     }
     .src-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #a1a1aa; }
     .src-badge[data-src="技能市场"] { background: #eff6ff; color: #2563eb; }
@@ -561,7 +562,7 @@
             卡片
           </button>
         </div>
-        <select class="status-filter" id="status-filter">
+        <select class="status-filter" id="status-filter" style="display: none;">
           <option value="all">全部</option>
           <option value="installed">去试试</option>
           <option value="uninstalled">未安装</option>
@@ -854,7 +855,7 @@
             '</div>';
           }
         } else if (s.featured) {
-          actionHtml = '<button class="btn-try">' + TRY_SVG + '试一试</button>';
+          actionHtml = '<button class="btn-try">' + TRY_SVG + '去试试</button>';
         } else {
           actionHtml = '<button class="btn-install" data-name="' + s.name + '">' + PLUS_SVG + '安装技能</button>';
         }
@@ -904,7 +905,7 @@
         btn.classList.add("active");
         currentTab = btn.dataset.tab;
         rebuildFilterSelect();
-        sourceFilter.style.display = currentTab === "installed" ? "" : "none";
+        sourceFilter.style.display = currentTab === "installed" ? "none" : "none";
         if (currentTab !== "installed") { currentSource = "all"; sourceFilter.value = "all"; }
         catsEl.style.display = (currentTab === "market" || currentTab === "enterprise") ? "flex" : "none";
         render();

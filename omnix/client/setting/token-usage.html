@@ -343,6 +343,89 @@
             min-width: 140px;
         }
 
+        /* 自定义下拉选择器 */
+        .custom-dropdown {
+            position: relative;
+            min-width: 140px;
+        }
+
+        .custom-dropdown .dropdown-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .custom-dropdown .dropdown-trigger:hover {
+            border-color: #ccc;
+        }
+
+        .custom-dropdown .dropdown-icon {
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .custom-dropdown .dropdown-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .custom-dropdown .dropdown-label {
+            flex: 1;
+        }
+
+        .custom-dropdown .dropdown-arrow {
+            width: 14px;
+            height: 14px;
+            color: #999;
+        }
+
+        .custom-dropdown .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 4px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: none;
+        }
+
+        .custom-dropdown.open .dropdown-menu {
+            display: block;
+        }
+
+        .custom-dropdown .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .custom-dropdown .dropdown-item:hover {
+            background: #f5f5f5;
+        }
+
+        .custom-dropdown .dropdown-item.selected {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
         /* Tooltip */
         .tooltip {
             position: absolute;
@@ -497,7 +580,38 @@
             <div class="chart-section">
                 <div class="chart-header">
                     <h3 class="chart-title">模型 Token 消耗</h3>
-                    <select class="model-selector" id="modelSelector" onchange="changeModel()">
+                    <div class="custom-dropdown" id="modelDropdown">
+                        <div class="dropdown-trigger" onclick="toggleModelDropdown()">
+                            <div class="dropdown-icon" id="selectedModelIcon">
+                                <svg viewBox="0 0 24 24" fill="#0ea5e9"><circle cx="12" cy="12" r="10"/></svg>
+                            </div>
+                            <span class="dropdown-label" id="selectedModelLabel">Qwen3.7-plus</span>
+                            <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m6 9 6 6 6-6"/>
+                            </svg>
+                        </div>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item selected" data-value="qwen3.7-plus" onclick="selectModel(this)">
+                                <div class="dropdown-icon">
+                                    <svg viewBox="0 0 24 24" fill="#0ea5e9"><circle cx="12" cy="12" r="10"/></svg>
+                                </div>
+                                <span class="dropdown-label">Qwen3.7-plus</span>
+                            </div>
+                            <div class="dropdown-item" data-value="gpt-4" onclick="selectModel(this)">
+                                <div class="dropdown-icon">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073z"/></svg>
+                                </div>
+                                <span class="dropdown-label">GPT-4</span>
+                            </div>
+                            <div class="dropdown-item" data-value="claude-3" onclick="selectModel(this)">
+                                <div class="dropdown-icon">
+                                    <svg viewBox="0 0 24 24" fill="#d97706"><circle cx="12" cy="12" r="10"/></svg>
+                                </div>
+                                <span class="dropdown-label">Claude-3</span>
+                            </div>
+                        </div>
+                    </div>
+                    <select class="model-selector" id="modelSelector" style="display:none;" onchange="changeModel()">
                         <option value="qwen3.7-plus">Qwen3.7-plus</option>
                         <option value="gpt-4">GPT-4</option>
                         <option value="claude-3">Claude-3</option>
@@ -895,6 +1009,44 @@
             console.log('切换模型:', model);
             drawChart('modelChart', chartData);
         }
+
+        // 自定义下拉选择器
+        function toggleModelDropdown() {
+            const dropdown = document.getElementById('modelDropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        function selectModel(item) {
+            const dropdown = document.getElementById('modelDropdown');
+            const value = item.getAttribute('data-value');
+            const label = item.querySelector('.dropdown-label').textContent;
+            const icon = item.querySelector('.dropdown-icon').innerHTML;
+
+            // 更新选中状态
+            dropdown.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+
+            // 更新显示
+            document.getElementById('selectedModelLabel').textContent = label;
+            document.getElementById('selectedModelIcon').innerHTML = icon;
+
+            // 更新隐藏的select值
+            document.getElementById('modelSelector').value = value;
+
+            // 关闭下拉菜单
+            dropdown.classList.remove('open');
+
+            // 触发图表更新
+            changeModel();
+        }
+
+        // 点击外部关闭下拉菜单
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('modelDropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
 
         // 侧边栏导航切换
         document.querySelectorAll('.nav-item').forEach(item => {
