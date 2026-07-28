@@ -346,6 +346,23 @@
   .errbox .ef button:hover{background:#fff3e6}
   .errbox .ef .retry{background:#e8830c;color:#fff}
   .errbox .ef .retry:hover{background:#d4740a}
+  /* desktop notification — 桌面右下角任务完成弹窗 */
+  .toast-stage{position:relative;min-height:230px;background:linear-gradient(135deg,#f5f7fb 0%,#eef1f7 100%);border-radius:10px;overflow:hidden}
+  .toast-stage .ts-bg{position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(140,150,180,.25) 1px,transparent 0);background-size:14px 14px;opacity:.55}
+  .toast-popup{position:absolute;right:20px;bottom:20px;width:320px;background:#fff;border-radius:12px;box-shadow:0 12px 36px rgba(28,38,72,.16),0 2px 6px rgba(28,38,72,.06);padding:16px 18px 18px;cursor:pointer;transition:transform .18s,box-shadow .18s}
+  .toast-popup:hover{transform:translateY(-2px);box-shadow:0 18px 44px rgba(28,38,72,.22),0 4px 10px rgba(28,38,72,.08)}
+  .toast-popup::before{content:"";position:absolute;top:-7px;left:46px;width:14px;height:14px;background:#fff;transform:rotate(45deg);border-radius:2px;box-shadow:-1px -1px 2px rgba(28,38,72,.04)}
+  .toast-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .toast-avatar{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#3b82f6,#7c5cff);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0;font-weight:600}
+  .toast-title{font-size:18px;font-weight:600;color:#1f2329;letter-spacing:.2px}
+  .toast-close{margin-left:auto;font-size:18px;color:#9ca3af;cursor:pointer;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px;line-height:1}
+  .toast-close:hover{color:#1f2329;background:#f1f3f5}
+  .toast-body{padding-left:46px}
+  .toast-h{font-size:14px;color:#1f2329;font-weight:500;margin-bottom:4px}
+  .toast-d{font-size:13.5px;color:#4b5563;line-height:1.65}
+  .toast-hint{position:absolute;left:18px;top:18px;font-size:12px;color:#5f6368;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.78);padding:5px 10px;border-radius:6px;backdrop-filter:blur(4px)}
+  .toast-anno{position:absolute;right:20px;top:18px;font-size:13px;color:#e54a4a;font-weight:500;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.85);padding:5px 10px;border-radius:6px;backdrop-filter:blur(4px);line-height:1.4}
+  .toast-anno::before{content:"⏱";font-size:14px}
   /* ask */
   .ask{background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px;max-width:560px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
   .ask-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
@@ -473,7 +490,6 @@
     <a href="#image"><span class="tag">image</span>内嵌图片</a>
     <a href="#widget"><span class="tag">widget</span>可视化挂件</a>
     <a href="#tree"><span class="tag">tree</span>功能结构图</a>
-    <a href="#timeline"><span class="tag">timeline</span>时间线</a>
     <a href="#code"><span class="tag">code</span>代码块</a>
     <h2>过程/透明类</h2>
     <a href="#tool"><span class="tag">tool</span>Shell 工具调用</a>
@@ -492,6 +508,7 @@
     <a href="#form"><span class="tag">form</span>表单收集</a>
     <a href="#sys-error"><span class="tag">system</span>错误提示</a>
     <a href="#task-fail"><span class="tag">err</span>任务失败提示</a>
+    <a href="#toast"><span class="tag">system</span>任务提示</a>
   </nav>
 
   <!-- 主内容 -->
@@ -511,8 +528,10 @@
             <span class="uchip"><span class="uicon html">&#60;/&#62;</span>htmledit.html</span>
             <span class="uchip"><span class="uicon doc">📄</span>原型Skill.doc</span>
             <span class="uchip"><span class="uicon txt">T</span>账号管理.txt</span>
-            <span class="utext">这些是什么文件</span>
           </div>
+        </div>
+        <div class="umsg">
+          <div class="utext">这些是什么文件</div>
         </div>
       </div></div></div>
     </section>
@@ -548,11 +567,11 @@
     <!-- 2. image_inline -->
     <section class="case" id="image">
       <div class="case-head"><span class="type">image_inline</span><span class="name">内嵌图片</span><span class="grp">结论类</span></div>
-      <div class="case-desc">对话流中直接展示图片（生成图/配图）。点击可放大查看、旋转、下载。</div>
+      <div class="case-desc">对话流中直接展示图片（生成图/配图）。点击可放大查看、旋转、打开文件夹。</div>
       <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
         <p class="md">这是为你生成的效果图：</p>
         <img class="img-inline" src="image-inline-sample.jpg" alt="内嵌示例图" onclick="openLightbox('image-inline-sample.jpg')">
-        <div class="img-hint">点击放大 · 支持旋转 · 可下载原图</div>
+        <div class="img-hint">点击放大 · 支持旋转 · 可打开文件夹</div>
       </div></div></div>
     </section>
 
@@ -653,6 +672,19 @@
           </div>
           <div class="fn">format='html'：在沙箱 iframe 中渲染可交互原型。</div>
         </div>
+        <!-- timeline 任务进度（来自截图） -->
+        <div class="widget" id="widget-timeline" style="margin-top:14px">
+          <div class="wh"><span>🧩 项目进度时间线</span><span class="menu" onclick="wmenu(this)">⋯
+            <div class="wmenu"><div onclick="toast('下载到本地')">下载到本地</div><div onclick="toast('下载为图片')">下载为图片</div><div onclick="toast('复制代码')">复制代码</div><div onclick="showCode('widget-timeline')">查看代码</div></div></span></div>
+          <div class="wb" style="background:#fff">
+            <div class="timeline" style="max-width:420px;padding:6px 4px 6px 10px">
+              <div class="tl-item"><div class="tl-dot green"></div><div class="tl-c"><div class="tl-time">09:12</div><div class="tl-t">需求确认完成</div><div class="tl-d">已与产品对齐验收标准</div></div></div>
+              <div class="tl-item"><div class="tl-dot"></div><div class="tl-c"><div class="tl-time">10:40</div><div class="tl-t">原型设计交付</div><div class="tl-d">提交 3 版方案供评审</div></div></div>
+              <div class="tl-item"><div class="tl-dot gray"></div><div class="tl-c"><div class="tl-time">进行中</div><div class="tl-t">开发联调</div><div class="tl-d">预计今日 18:00 完成</div></div></div>
+            </div>
+          </div>
+          <div class="fn">图：项目当日里程碑 · 绿点已完成 / 蓝点进行中 / 灰点待开始。</div>
+        </div>
       </div></div></div>
     </section>
 
@@ -671,19 +703,6 @@
 │
 └──── 自定义角色
       └──── 自由组合权限项（粒度到功能模块级别）</pre></div>
-      </div></div></div>
-    </section>
-
-    <!-- 26. timeline -->
-    <section class="case" id="timeline">
-      <div class="case-head"><span class="type">timeline</span><span class="name">时间线 / 事件流</span><span class="grp">结论类</span></div>
-      <div class="case-desc">按时间顺序展示的里程碑或处理流程。</div>
-      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
-        <div class="timeline">
-          <div class="tl-item"><div class="tl-dot green"></div><div class="tl-c"><div class="tl-time">09:12</div><div class="tl-t">需求确认完成</div><div class="tl-d">已与产品对齐验收标准</div></div></div>
-          <div class="tl-item"><div class="tl-dot"></div><div class="tl-c"><div class="tl-time">10:40</div><div class="tl-t">原型设计交付</div><div class="tl-d">提交 3 版方案供评审</div></div></div>
-          <div class="tl-item"><div class="tl-dot gray"></div><div class="tl-c"><div class="tl-time">进行中</div><div class="tl-t">开发联调</div><div class="tl-d">预计今日 18:00 完成</div></div></div>
-        </div>
       </div></div></div>
     </section>
 
@@ -1225,7 +1244,29 @@ Let me think about the common message card types in multi-agent systems.</div>
       </div></div></div>
     </section>
 
-
+    <!-- 30. desktop notification — 任务完成弹窗 -->
+    <section class="case" id="toast">
+      <div class="case-head"><span class="type">system</span><span class="name">任务提示 · 桌面右下角弹窗</span><span class="grp">产物/系统</span></div>
+      <div class="case-desc">当软件被最小化时，长任务完成后的桌面反馈形式：右下角浮窗，展示来源（应用名 + logo）、标题、正文。点击弹窗即可唤起并跳回软件对应页面；右上角 × 可关闭；默认展示 10 秒后自动关闭。</div>
+      <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
+        <div class="toast-stage">
+          <div class="ts-bg"></div>
+          <div class="toast-hint">桌面右下角 · 长任务完成反馈</div>
+          <div class="toast-anno">展示 10 秒自动关闭</div>
+          <div class="toast-popup" onclick="toast('已唤起 OmniX，跳转至编辑器页面')">
+            <div class="toast-head">
+              <div class="toast-avatar">O</div>
+              <div class="toast-title">OmniX</div>
+              <span class="toast-close" onclick="event.stopPropagation();this.closest('.toast-popup').style.display='none'">×</span>
+            </div>
+            <div class="toast-body">
+              <div class="toast-h">任务已完成</div>
+              <div class="toast-d">「创作一首诗歌」已成功完成，您可以在编辑器中查看结果。</div>
+            </div>
+          </div>
+        </div>
+      </div></div></div>
+    </section>
 
   </div>
 </div>
@@ -1239,7 +1280,7 @@ Let me think about the common message card types in multi-agent systems.</div>
     <button onclick="lbZoom(0.2)">＋</button>
     <button onclick="lbRotate(-90)">↺ 左旋</button>
     <button onclick="lbRotate(90)">↻ 右旋</button>
-    <button onclick="lbDownload()">⬇ 下载</button>
+    <button onclick="openFolder()">📁 打开文件夹</button>
   </div>
 </div>
 
@@ -1270,7 +1311,7 @@ Let me think about the common message card types in multi-agent systems.</div>
   function updateLb(){ lbImg.style.transform='scale('+lbScale+') rotate('+lbRot+'deg)'; }
   function lbZoom(d){ lbScale=Math.max(0.2, Math.min(5, lbScale+d)); updateLb(); }
   function lbRotate(d){ lbRot=(lbRot+d)%360; updateLb(); }
-  function lbDownload(){ fetch(lbImg.src).then(r=>r.blob()).then(b=>{ var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=lbFname.textContent; a.click(); }).catch(()=>toast('下载失败')); }
+  function openFolder(){ toast('打开文件夹功能需要本地文件系统访问权限'); }
   document.addEventListener('keydown',function(e){ if(e.key==='Escape' && lb.classList.contains('open')) closeLightbox(); });
 
   // task-fail alert
