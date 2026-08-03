@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OmniX</title>
     <style>
+		:root {
+		  --primary: #4F46E5;
+		  --primary-light: #EEF2FF;
+		  --text: #1F2937;
+		  --text-secondary: #6B7280;
+		  --bg: #F9FAFB;
+		  --card-bg: #FFFFFF;
+		  --border: #E5E7EB;
+		  --success: #059669;
+		  --warning: #D97706;
+		  --danger: #DC2626;
+		  --sidebar-width: 260px;
+		}
         /* ===== reset & base ===== */
         * {
             margin: 0;
@@ -626,6 +639,25 @@
             display: none;
         }
         /* 不用 tooltip，保持简洁，灰色 + 不可点击已经足够表达 */
+		
+		
+		
+		.status-dot{
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			flex-shrink: 0;
+		}
+		.status-dot.success{
+			background: var(--success);
+		}
+		.status-dot.failed{
+			background: var(--danger);
+		}
+		.status-dot.pending{
+			background: #d1d5db;
+		}
+		
     </style>
 </head>
 <body>
@@ -660,7 +692,7 @@
                 📜 版本日志
                 <span style="font-size:10px;color:#999;margin-left:auto;">prd文档，无需开发</span>
             </li>
-            <li class="nav-item active" data-src="./content.html">
+            <li class="nav-item active" data-src="content.html">
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
                 新会话
             </li>
@@ -693,9 +725,16 @@
                 <span class="section-title">💬 会话 (3)</span>
             </div>
             <ul class="section-list">
-                <li class="section-item" data-src="./session/agents.html">🗋 创建一个PPT转html的skill...</li>
-                <li class="section-item" data-src="content.html?view=conv-2">🗋 设计一个人个简历网页、内...</li>
-                <li class="section-item" data-src="content.html?view=conv-4">🗋 了解 OmniX 通用场景</li>
+                <li class="section-item" data-src="./session/agents.html">
+					<svg class="loading-spin" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#007aff" stroke-width="1.8">
+					  <style>.loading-spin{margin:-4px; animation:spin 0.8s linear infinite}@keyframes spin{100%{transform:rotate(360deg)}}</style>
+					  <path d="M16 10A6 6 0 1 1 10 4" stroke-linecap="round"></path>
+					</svg>
+					每日AI新闻推送...<span style="font-size:11px;color:#b8860b;background:#fdf6e3;padding:1px 8px;border-radius:10px;margin-left:auto;">等待回复</span>
+				</li>
+                <li class="section-item" data-src="./session/agents.html"><span class="status-dot success"></span> 创建一个PPT转html的skill...</li>
+                <li class="section-item" data-src="content.html?view=conv-2"><span class="status-dot failed"></span> 设计一个人个、...<span style="font-size:11px;color:var(--danger);background:#fee2e2;padding:1px 8px;border-radius:10px;margin-left:auto;">失败</span></li>
+                <li class="section-item" data-src="content.html"><span class="status-dot pending"></span> 了解 OmniX 通用场景</li>
             </ul>
         </div>
 
@@ -711,17 +750,25 @@
                     <svg class="project-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                 </li>
                 <ul class="sub-group">
-                    <li class="sub-item" data-src="content.html?view=neoomni-1">🗋 设计一个企业管理经营首...</li>
-                    <li class="sub-item" data-src="content.html?view=neoomni-3">🗋 了解 NeoOmni官方产品</li>
+                    <li class="sub-item" data-src="content.html?view=neoomni-1"><span class="status-dot success"></span> 设计一个企业管理经营首...</li>
+                    <li class="sub-item" data-src="content.html?view=neoomni-3"><span class="status-dot pending"></span> 了解 NeoOmni官方产品</li>
                 </ul>
 				
 				<li class="section-item project-row expanded" data-src="content.html?view=autu1">
 					📋 提醒我下班
+                    <svg class="project-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+
 				</li>
-				
+                <ul class="sub-group">
+                    <li class="sub-item" data-src="content.html?view=neoomni-1"><span class="status-dot pending"></span> 提醒下班...</li>
+                </ul>
 				<li class="section-item project-row expanded" data-src="content.html?view=autu2">
 					📋 每日新闻推送
+                    <svg class="project-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
 				</li>
+                <ul class="sub-group">
+                    <li class="sub-item" data-src="content.html?view=neoomni-1"><span class="status-dot pending"></span> 今日新闻推送...</li>
+                </ul>
             </ul>
         </div>
 
@@ -863,6 +910,29 @@
                 // 如果带有 disabled 类，跳过交互绑定
                 if (el.classList.contains('item-disabled')) return;
 
+                // project-row 类型：点击切换展开/收起，不跳转
+                if (el.classList.contains('project-row')) {
+                    el.setAttribute('role', 'button');
+                    el.setAttribute('tabindex', '0');
+
+                    const toggleExpand = () => {
+                        const expanded = el.classList.toggle('expanded');
+                        const subGroup = el.nextElementSibling;
+                        if (subGroup && subGroup.classList.contains('sub-group')) {
+                            subGroup.style.display = expanded ? 'block' : 'none';
+                        }
+                    };
+
+                    el.addEventListener('click', toggleExpand);
+                    el.addEventListener('keydown', e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            toggleExpand();
+                        }
+                    });
+                    return;
+                }
+
                 el.setAttribute('role', 'button');
                 el.setAttribute('tabindex', '0');
 
@@ -995,15 +1065,7 @@
                 }, 500);
             });
 
-            // 项目下 NeoOmni 行的子列表折叠（点箭头切换，点整行切 iframe）
-            const projectRow = document.querySelector('.project-row');
-            const projectChevron = projectRow.querySelector('.project-chevron');
-            const subGroup = projectRow.parentElement.querySelector('.sub-group');
-            projectChevron.addEventListener('click', e => {
-                e.stopPropagation();
-                const expanded = projectRow.classList.toggle('expanded');
-                subGroup.style.display = expanded ? 'block' : 'none';
-            });
+            // 项目行子列表折叠逻辑已移至上方统一处理
 
         })();
 	

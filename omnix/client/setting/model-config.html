@@ -329,7 +329,8 @@
 
         .form-actions {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
             margin-top: 20px;
         }
 
@@ -352,8 +353,15 @@
             color: #333;
         }
 
-        .btn-outline:hover {
+        .btn-outline:hover:not(:disabled) {
             border-color: #999;
+        }
+
+        .btn-outline:disabled {
+            background: #f5f5f5;
+            color: #ccc;
+            border-color: #e0e0e0;
+            cursor: not-allowed;
         }
 
         .btn-primary {
@@ -777,7 +785,8 @@
 
         .modal-footer {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
             gap: 12px;
             margin-top: 24px;
         }
@@ -841,6 +850,15 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spin {
+            animation: spin 1s linear infinite;
         }
 
         .provider-card {
@@ -1046,10 +1064,6 @@
                                     <input type="checkbox" name="modelCapability" value="image_input">
                                     <span class="checkbox-label">图片输入</span>
                                 </label>
-                                <label class="checkbox-item">
-                                    <input type="checkbox" name="modelCapability" value="video_input">
-                                    <span class="checkbox-label">视频输入</span>
-                                </label>
                             </div>
                         </div>
                     </div>
@@ -1062,7 +1076,22 @@
                         </div>
                     </div>
 
+                    <!-- 百炼业务空间ID输入 -->
+                    <div id="bailianWorkspaceField" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">业务空间ID <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="workspaceIdInput" placeholder="请输入百炼业务空间ID" oninput="validateForm()">
+                        </div>
+                    </div>
+
                     <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="testConnectionBtn" onclick="testConnection()" disabled>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            测试连接
+                        </button>
                         <button class="btn btn-primary" id="addModelBtn" onclick="addModel()" disabled>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
@@ -1147,7 +1176,7 @@
                                     <span class="model-name">GPT-4.1 nano</span>
                                 </div>
                             </div>
-                            <button class="switch-default-btn" onclick="setDefaultModel(this)">切换为默认</button>
+                            <button class="switch-default-btn" onclick="setDefaultModel(this)">设置为默认</button>
                         </div>
                     </div>
 
@@ -1287,7 +1316,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <button class="switch-default-btn" onclick="setDefaultModel(this)">切换为默认</button>
+                            <button class="switch-default-btn" onclick="setDefaultModel(this)">设置为默认</button>
                         </div>
                     </div>
 
@@ -1335,7 +1364,7 @@
                                     <span class="model-name">qwen-plus</span>
                                 </div>
                             </div>
-                            <button class="switch-default-btn" onclick="setDefaultModel(this)">切换为默认</button>
+                            <button class="switch-default-btn" onclick="setDefaultModel(this)">设置为默认</button>
                         </div>
                     </div>
 
@@ -1377,7 +1406,7 @@
                                     <span class="model-name">glm-4</span>
                                 </div>
                             </div>
-                            <button class="switch-default-btn" onclick="setDefaultModel(this)">切换为默认</button>
+                            <button class="switch-default-btn" onclick="setDefaultModel(this)">设置为默认</button>
                         </div>
                     </div>
                 </div>
@@ -1410,16 +1439,20 @@
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">模型名称</label>
+                <label class="form-label">模型名称 <span class="required">*</span></label>
                 <input type="text" class="form-input" id="editModelName" value="GPT 5.6">
             </div>
             <div class="form-group">
-                <label class="form-label">API Base</label>
+                <label class="form-label">API Base <span class="required">*</span></label>
                 <input type="text" class="form-input" id="editApiBase" placeholder="例如: https://api.openai.com/v1">
             </div>
             <div class="form-group">
                 <label class="form-label">API Key</label>
                 <input type="text" class="form-input" id="editApiKey" placeholder="请输入 API Key">
+            </div>
+            <div class="form-group" id="editBailianWorkspaceField" style="display: none;">
+                <label class="form-label">业务空间ID <span class="required">*</span></label>
+                <input type="text" class="form-input" id="editWorkspaceId" placeholder="请输入百炼业务空间ID">
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -1442,15 +1475,20 @@
                         <input type="checkbox" name="editModelCapability" value="image_input">
                         <span class="checkbox-label">图片输入</span>
                     </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="editModelCapability" value="video_input">
-                        <span class="checkbox-label">视频输入</span>
-                    </label>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-text" onclick="closeModal('editModelModal')">取消</button>
-                <button class="btn btn-primary" onclick="saveModelEdit()">保存</button>
+                <button type="button" class="btn btn-outline" id="editTestConnectionBtn" onclick="testConnection()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    测试连接
+                </button>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-text" onclick="closeModal('editModelModal')">取消</button>
+                    <button class="btn btn-primary" onclick="saveModelEdit()">保存</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1516,15 +1554,23 @@
         function validateForm() {
             const provider = document.getElementById('providerSelect').value;
             const addModelBtn = document.getElementById('addModelBtn');
+            const testConnectionBtn = document.getElementById('testConnectionBtn');
             let isValid = false;
             
             if (provider === 'custom') {
                 const modelName = document.getElementById('modelNameInput').value.trim();
                 const apiBase = document.getElementById('apiBaseInput').value.trim();
                 isValid = modelName !== '' && apiBase !== '';
+                testConnectionBtn.disabled = !isValid;
+            } else if (provider === 'alibaba') {
+                const apiKey = document.getElementById('presetApiKeyInput').value.trim();
+                const workspaceId = document.getElementById('workspaceIdInput').value.trim();
+                isValid = apiKey !== '' && workspaceId !== '';
+                testConnectionBtn.disabled = !isValid;
             } else {
                 const apiKey = document.getElementById('presetApiKeyInput').value.trim();
                 isValid = apiKey !== '';
+                testConnectionBtn.disabled = !isValid;
             }
             
             addModelBtn.disabled = !isValid;
@@ -1578,14 +1624,46 @@
             const select = document.getElementById('providerSelect');
             const customFields = document.getElementById('customModelFields');
             const presetField = document.getElementById('presetApiKeyField');
+            const bailianWorkspaceField = document.getElementById('bailianWorkspaceField');
             
             if (select.value === 'custom') {
                 customFields.style.display = 'block';
                 presetField.style.display = 'none';
+                bailianWorkspaceField.style.display = 'none';
+            } else if (select.value === 'alibaba') {
+                customFields.style.display = 'none';
+                presetField.style.display = 'block';
+                bailianWorkspaceField.style.display = 'block';
             } else {
                 customFields.style.display = 'none';
                 presetField.style.display = 'block';
+                bailianWorkspaceField.style.display = 'none';
             }
+        }
+
+        // 测试连接
+        function testConnection() {
+            const testConnectionBtn = document.getElementById('testConnectionBtn');
+            testConnectionBtn.disabled = true;
+            testConnectionBtn.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                </svg>
+                测试中...
+            `;
+            
+            // 模拟测试连接
+            setTimeout(() => {
+                testConnectionBtn.disabled = false;
+                testConnectionBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    测试连接
+                `;
+                showToast('测试连接成功', 'success');
+            }, 1500);
         }
 
         // 展开/折叠供应商
@@ -1609,7 +1687,7 @@
             const providerCard = modelItem.closest('.provider-card');
             const switchBtn = providerCard.querySelector('.switch-default-btn');
             
-            // 如果选择的是非默认模型，显示"切换为默认"按钮
+            // 如果选择的是非默认模型，显示"设置为默认"按钮
             if (modelName !== currentDefault) {
                 switchBtn.classList.add('visible');
                 switchBtn.dataset.model = modelName;
@@ -1617,7 +1695,7 @@
                 switchBtn.classList.remove('visible');
             }
             
-            // 隐藏其他供应商卡片的"切换为默认"按钮
+            // 隐藏其他供应商卡片的"设置为默认"按钮
             document.querySelectorAll('.provider-card').forEach(card => {
                 if (card !== providerCard) {
                     card.querySelector('.switch-default-btn').classList.remove('visible');
@@ -1653,7 +1731,7 @@
                 }
             });
             
-            // 隐藏所有"切换为默认"按钮
+            // 隐藏所有"设置为默认"按钮
             document.querySelectorAll('.switch-default-btn').forEach(b => {
                 b.classList.remove('visible');
             });
@@ -1689,6 +1767,15 @@
             document.getElementById('editApiKey').value = 'sk-***************';
             document.getElementById('editContextLength').value = config.contextLength;
             document.getElementById('editMaxTokens').value = config.maxTokens;
+            
+            // 显示/隐藏百炼业务空间ID字段
+            const bailianWorkspaceField = document.getElementById('editBailianWorkspaceField');
+            if (currentEditProvider === 'alibaba') {
+                bailianWorkspaceField.style.display = 'block';
+                document.getElementById('editWorkspaceId').value = '';
+            } else {
+                bailianWorkspaceField.style.display = 'none';
+            }
             
             openModal('editModelModal');
         }
@@ -1771,6 +1858,7 @@
             const provider = document.getElementById('providerSelect').value;
             let modelName = '';
             let apiKey = '';
+            let workspaceId = '';
             
             if (provider === 'custom') {
                 modelName = document.getElementById('modelNameInput').value.trim();
@@ -1786,6 +1874,19 @@
                     return;
                 }
                 apiKey = '123456789';
+            } else if (provider === 'alibaba') {
+                apiKey = document.getElementById('presetApiKeyInput').value.trim();
+                workspaceId = document.getElementById('workspaceIdInput').value.trim();
+                modelName = getProviderDefaultModel(provider);
+                
+                if (!apiKey || !workspaceId) {
+                    showToast('添加模型失败');
+                    return;
+                }
+                if (apiKey !== '123456789') {
+                    showToast('添加模型失败');
+                    return;
+                }
             } else {
                 apiKey = document.getElementById('presetApiKeyInput').value.trim();
                 modelName = getProviderDefaultModel(provider);
@@ -1818,7 +1919,7 @@
             const isDefault = modelName === currentDefault;
             const modelItem = createModelItem(modelName, isCustom, isDefault);
             
-            // 插入到"切换为默认"按钮之前
+            // 插入到"设置为默认"按钮之前
             const switchBtn = modelsList.querySelector('.switch-default-btn');
             if (switchBtn) {
                 modelsList.insertBefore(modelItem, switchBtn);
@@ -1894,7 +1995,7 @@
                     </div>
                 </div>
                 <div class="models-list">
-                    <button class="switch-default-btn" onclick="setDefaultModel(this)">切换为默认</button>
+                    <button class="switch-default-btn" onclick="setDefaultModel(this)">设置为默认</button>
                 </div>
             `;
             return card;

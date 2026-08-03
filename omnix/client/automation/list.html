@@ -376,12 +376,18 @@
     .executed-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 4 px;
+    }
+    .executed-left svg{
+      width: 16px;
+	  height: 16px;
+	  margin: 0px 8px 0px -4px;
     }
 
     .status-dot {
       width: 8px;
       height: 8px;
+	  margin:0px 12px 0px 0px;
       border-radius: 50%;
       flex-shrink: 0;
     }
@@ -1023,6 +1029,80 @@
 
     .model-item.selected .model-check {
       opacity: 1;
+    }
+
+    .quality-dropdown-wrapper {
+      position: relative;
+      display: inline-flex;
+    }
+
+    .quality-select-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all .15s ease;
+      white-space: nowrap;
+    }
+
+    .quality-select-trigger:hover {
+      border-color: #d1d5db;
+      color: var(--text-main);
+    }
+
+    .quality-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 6px;
+      width: 140px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.12), 0 4px 10px -4px rgba(0,0,0,0.1);
+      padding: 6px 0;
+      display: none;
+      z-index: 1002;
+    }
+
+    .quality-dropdown.is-fixed {
+      position: fixed;
+    }
+
+    .quality-dropdown.show {
+      display: block;
+    }
+
+    .quality-option {
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+      position: relative;
+    }
+
+    .quality-option:hover {
+      background: #f5f5f5;
+    }
+
+    .quality-option.selected {
+      background: #f0f4ff;
+      color: #4a6cf7;
+    }
+
+    .quality-option.selected::after {
+      content: '\2713';
+      position: absolute;
+      right: 14px;
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
     }
 
     /* Skill multi-select */
@@ -2139,6 +2219,375 @@
     }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
 
+    .task-complete-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 320px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1);
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .task-complete-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .task-complete-toast .toast-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .task-complete-toast .toast-icon svg {
+      width: 18px;
+      height: 18px;
+      color: #fff;
+      stroke-width: 3;
+    }
+
+    .task-complete-toast .toast-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-complete-toast .toast-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .task-complete-toast .toast-desc {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .task-complete-toast .toast-link {
+      display: inline-block;
+      font-size: 13px;
+      color: #fff;
+      background: #111827;
+      padding: 6px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.15s ease;
+    }
+
+    .task-complete-toast .toast-link:hover {
+      background: #1f2937;
+    }
+
+
+    .hide-link {
+      display: inline-block;
+      font-size: 13px;
+      color: --text-main;
+      border: 1px solid #e4e4e7; 
+      padding: 6px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.15s ease;
+    }
+
+    .hide-link:hover {
+      background: #fafafa;
+    }
+
+    .task-complete-toast .toast-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .task-complete-toast .toast-close {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      flex-shrink: 0;
+      padding: 0;
+      transition: all 0.2s ease;
+    }
+
+    .task-complete-toast .toast-close:hover {
+      background: #f3f4f6;
+      color: #374151;
+      transform: scale(1.1);
+    }
+
+    .task-complete-toast .toast-close:active {
+      transform: scale(0.95);
+      background: #e5e7eb;
+    }
+
+    .task-complete-toast .toast-close svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .task-failed-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 320px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1);
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .task-failed-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .task-failed-toast .toast-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #ef4444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .task-failed-toast .toast-icon svg {
+      width: 18px;
+      height: 18px;
+      color: #fff;
+      stroke-width: 3;
+    }
+
+    .task-failed-toast .toast-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-failed-toast .toast-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .task-failed-toast .toast-desc {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .task-failed-toast .toast-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .task-failed-toast .toast-link {
+      display: inline-block;
+      font-size: 13px;
+      color: #fff;
+      background: #111827;
+      padding: 6px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.15s ease;
+    }
+
+    .task-failed-toast .toast-link:hover {
+      background: #1f2937;
+    }
+
+    .task-failed-toast .toast-close {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      flex-shrink: 0;
+      padding: 0;
+      transition: all 0.2s ease;
+    }
+
+    .task-failed-toast .toast-close:hover {
+      background: #f3f4f6;
+      color: #374151;
+      transform: scale(1.1);
+    }
+
+    .task-failed-toast .toast-close:active {
+      transform: scale(0.95);
+      background: #e5e7eb;
+    }
+
+    .task-failed-toast .toast-close svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .task-pending-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 320px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1);
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .task-pending-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .task-pending-toast .toast-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #f59e0b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .task-pending-toast .toast-icon svg {
+      width: 18px;
+      height: 18px;
+      color: #fff;
+      stroke-width: 3;
+    }
+
+    .task-pending-toast .toast-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-pending-toast .toast-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .task-pending-toast .toast-desc {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .task-pending-toast .toast-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .task-pending-toast .toast-link {
+      display: inline-block;
+      font-size: 13px;
+      color: #fff;
+      background: #111827;
+      padding: 6px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.15s ease;
+    }
+
+    .task-pending-toast .toast-link:hover {
+      background: #1f2937;
+    }
+
+    .task-pending-toast .toast-close {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      flex-shrink: 0;
+      padding: 0;
+      transition: all 0.2s ease;
+    }
+
+    .task-pending-toast .toast-close:hover {
+      background: #f3f4f6;
+      color: #374151;
+      transform: scale(1.1);
+    }
+
+    .task-pending-toast .toast-close:active {
+      transform: scale(0.95);
+      background: #e5e7eb;
+    }
+
+    .task-pending-toast .toast-close svg {
+      width: 14px;
+      height: 14px;
+    }
+
   </style>
 </head>
 <body>
@@ -2459,7 +2908,10 @@
       <section class="executed-list">
         <article class="executed-item" onclick="manageKb('content.html?view=autu1')">
           <div class="executed-left">
-            <span class="status-dot success"></span>
+			<svg class="loading-spin" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#007aff" stroke-width="1.8">
+				  <style>.loading-spin{animation:spin 0.8s linear infinite}@keyframes spin{100%{transform:rotate(360deg)}}</style>
+				  <path d="M16 10A6 6 0 1 1 10 4" stroke-linecap="round"></path>
+				</svg>
             <span class="executed-name">每日新闻推送</span>
           </div>
           <div class="executed-right">
@@ -2819,6 +3271,18 @@
                     <svg class="model-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </button>
                 </div>
+              </div>
+            </div>
+            <div class="quality-dropdown-wrapper" id="qualityDropdownWrapper">
+              <div class="quality-select-trigger" id="qualitySelectTrigger">
+                <span id="qualitySelectLabel">极高</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="quality-dropdown" id="qualityDropdown">
+                <div class="quality-option" data-value="轻度">轻度</div>
+                <div class="quality-option" data-value="中">中</div>
+                <div class="quality-option" data-value="高">高</div>
+                <div class="quality-option selected" data-value="极高">极高</div>
               </div>
             </div>
             <div class="skill-select-wrap" id="skillSelectWrap">
@@ -3201,6 +3665,49 @@
   <div class="template-tooltip" id="template-tooltip"></div>
   <div class="executed-tooltip" id="executed-tooltip">点击查看任务运行结果</div>
 
+  <div class="task-complete-toast" id="taskCompleteToast">
+    <div class="toast-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="toast-content">
+      <div class="toast-title" id="toasTitle">任务运行完成</div>
+      <div class="toast-desc" id="toastDesc">运行结果：今日 AI 新闻简报已生成，含 5 条动态。</div>
+      <div class="toast-actions">
+        <a class="toast-link" id="toastLink" onclick="manageKb('content.html?view=autu1')">打开对话</a>
+        <a class="hide-link" id="hideLink" onclick="hideTaskCompleteToast()">关闭</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="task-failed-toast" id="taskFailedToast">
+    <div class="toast-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+    <div class="toast-content">
+      <div class="toast-title" id="failedToastTitle">任务运行失败</div>
+      <div class="toast-desc" id="failedToastDesc">错误原因：网络连接超时，请检查网络设置。</div>
+      <div class="toast-actions">
+        <a class="toast-link" id="failedToastLink" onclick="manageKb('content.html?view=autu1')">打开对话</a>
+        <a class="hide-link" id="failedHideLink" onclick="hideTaskFailedToast()">关闭</a>
+		
+      </div>
+    </div>
+  </div>
+
+  <div class="task-pending-toast" id="taskPendingToast">
+    <div class="toast-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="toast-content">
+      <div class="toast-title" id="pendingToastTitle">等待回复</div>
+      <div class="toast-desc" id="pendingToastDesc">任务正在执行中，请稍候...</div>
+      <div class="toast-actions">
+        <a class="toast-link" id="pendingToastLink" onclick="manageKb('content.html?view=autu1')">查看进度</a>
+        <a class="hide-link" id="pendingHideLink" onclick="hideTaskPendingToast()">关闭</a>
+      </div>
+    </div>
+  </div>
+
   <div id="toast"></div>
 
   <script>
@@ -3216,6 +3723,68 @@
       setTimeout(() => {
         toast.classList.remove('show');
       }, 2000);
+    }
+
+    let taskRunCount = 0;
+
+    function showTaskCompleteToast(taskName) {
+      const toastEl = document.getElementById('taskCompleteToast');
+      const titleEl = document.getElementById('toasTitle');
+      const descEl = document.getElementById('toastDesc');
+      if (!toastEl || !descEl) return;
+      titleEl.textContent = `${taskName}`;
+      descEl.textContent = `运行结果：${taskName} 已成功执行完成。`;
+      toastEl.classList.add('show');
+    }
+
+    function hideTaskCompleteToast() {
+      const toastEl = document.getElementById('taskCompleteToast');
+      if (!toastEl) return;
+      toastEl.classList.remove('show');
+    }
+
+    function showTaskFailedToast(taskName) {
+      const toastEl = document.getElementById('taskFailedToast');
+      const titleEl = document.getElementById('failedToastTitle');
+      const descEl = document.getElementById('failedToastDesc');
+      if (!toastEl || !descEl) return;
+      titleEl.textContent = `${taskName}`;
+      descEl.textContent = `错误原因：网络连接超时，请检查网络设置。`;
+      toastEl.classList.add('show');
+    }
+
+    function hideTaskFailedToast() {
+      const toastEl = document.getElementById('taskFailedToast');
+      if (!toastEl) return;
+      toastEl.classList.remove('show');
+    }
+
+    function showTaskPendingToast(taskName) {
+      const toastEl = document.getElementById('taskPendingToast');
+      const titleEl = document.getElementById('pendingToastTitle');
+      const descEl = document.getElementById('pendingToastDesc');
+      if (!toastEl || !descEl) return;
+      titleEl.textContent = `${taskName}`;
+      descEl.textContent = `任务正在执行中，请稍候...`;
+      toastEl.classList.add('show');
+    }
+
+    function hideTaskPendingToast() {
+      const toastEl = document.getElementById('taskPendingToast');
+      if (!toastEl) return;
+      toastEl.classList.remove('show');
+    }
+
+    function showTaskResultToast(taskName) {
+      taskRunCount++;
+      const mod = taskRunCount % 3;
+      if (mod === 1) {
+        showTaskCompleteToast(taskName);
+      } else if (mod === 2) {
+        showTaskFailedToast(taskName);
+      } else {
+        showTaskPendingToast(taskName);
+      }
     }
 
     // Tab switching
@@ -3299,6 +3868,7 @@
             modelSelectLabel.textContent = modelItem.dataset.name;
           }
           updateModelItemsState();
+          updateQualityVisibility();
         }
 
         if (data.skills && skillTags) {
@@ -3404,10 +3974,12 @@
             modelSelectLabel.textContent = modelItem.dataset.name;
           }
           updateModelItemsState();
+          updateQualityVisibility();
         } else {
           currentModelId = 'gpt-5.5';
           modelSelectLabel.textContent = 'gpt-5.5';
           updateModelItemsState();
+          updateQualityVisibility();
         }
 
         if (data?.skills && skillTags) {
@@ -3555,7 +4127,7 @@
           taskItem.classList.remove('is-running');
           statusTag.className = 'item-status-tag active';
           statusTag.textContent = '生效中';
-          showToast(`"${taskName}"任务执行完成，<a onclick="manageKb('content.html?view=autu1')" style="color:#60a5fa;text-decoration:underline;cursor: pointer;">点击查看</a>`, true);
+          showTaskResultToast(taskName);
         }, 3000);
       });
     });
@@ -4124,6 +4696,7 @@
       closeSkillDropdown();
       closeModelDropdown();
       closeMcpDropdown();
+      closeQualityDropdown();
     });
 
     // Weekday multi-select (textbox + popup panel) — shared by 按间隔 & 按周期(每周/双周)
@@ -4398,12 +4971,76 @@
         modelSelectLabel.textContent = name;
         updateModelItemsState();
         closeModelDropdown();
+        updateQualityVisibility();
       });
     });
 
     if (modelDropdown) {
       modelDropdown.addEventListener('click', (e) => e.stopPropagation());
     }
+
+    const qualityDropdownWrapper = document.getElementById('qualityDropdownWrapper');
+    const qualitySelectTrigger = document.getElementById('qualitySelectTrigger');
+    const qualityDropdown = document.getElementById('qualityDropdown');
+    const qualitySelectLabel = document.getElementById('qualitySelectLabel');
+    const qualityOptions = qualityDropdown ? qualityDropdown.querySelectorAll('.quality-option') : [];
+
+    function updateQualityVisibility() {
+      if (!qualityDropdownWrapper) return;
+      if (currentModelId === 'gpt-5.5') {
+        qualityDropdownWrapper.style.display = '';
+      } else {
+        qualityDropdownWrapper.style.display = 'none';
+        closeQualityDropdown();
+      }
+    }
+
+    function closeQualityDropdown() {
+      if (!qualityDropdown) return;
+      qualityDropdown.classList.remove('show', 'is-fixed');
+      qualityDropdown.style.top = '';
+      qualityDropdown.style.left = '';
+    }
+
+    function toggleQualityDropdown() {
+      if (!qualityDropdown) return;
+      const isOpen = qualityDropdown.classList.contains('show');
+      if (isOpen) {
+        closeQualityDropdown();
+      } else {
+        positionDropdown(qualitySelectTrigger, qualityDropdown);
+        qualityDropdown.classList.add('show', 'is-fixed');
+      }
+    }
+
+    function selectQuality(item) {
+      qualityOptions.forEach(el => el.classList.remove('selected'));
+      item.classList.add('selected');
+      qualitySelectLabel.textContent = item.dataset.value;
+      qualityDropdown.classList.remove('show', 'is-fixed');
+      qualityDropdown.style.top = '';
+      qualityDropdown.style.left = '';
+    }
+
+    if (qualitySelectTrigger) {
+      qualitySelectTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleQualityDropdown();
+      });
+    }
+
+    qualityOptions.forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectQuality(opt);
+      });
+    });
+
+    if (qualityDropdown) {
+      qualityDropdown.addEventListener('click', (e) => e.stopPropagation());
+    }
+
+    updateQualityVisibility();
 
     const datePop = document.querySelector('.date-pop');
     if (datePop) {

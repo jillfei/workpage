@@ -274,6 +274,29 @@
   .widget .wb.code-view{justify-content:stretch;padding:0;background:#fff}
   .widget .wb.code-view pre{margin:0;padding:14px;font-family:var(--mono);font-size:12.5px;overflow-x:auto;background:#fbfbfd;width:100%;white-space:pre;color:#333;line-height:1.6}
   .widget .fn{font-size:11px;color:var(--gray);padding:7px 14px;border-top:1px solid var(--border);background:var(--panel2)}
+
+  /* 产物抽屉 */
+  .artifacts-drawer{position:fixed;right:-420px;top:0;width:420px;height:100vh;background:var(--panel);box-shadow:-4px 0 24px rgba(0,0,0,.12);z-index:1000;transition:right .3s ease;display:flex;flex-direction:column}
+  .artifacts-drawer.show{right:0}
+  .artifacts-drawer-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--panel)}
+  .artifacts-drawer-header h3{margin:0;font-size:16px;font-weight:600}
+  .artifacts-drawer-close{width:32px;height:32px;border:none;background:transparent;cursor:pointer;border-radius:8px;font-size:18px;color:var(--sub);display:flex;align-items:center;justify-content:center}
+  .artifacts-drawer-close:hover{background:var(--bg);color:var(--text)}
+  .artifacts-drawer-body{flex:1;overflow-y:auto;padding:16px 20px}
+  .artifacts-list{display:flex;flex-direction:column;gap:10px}
+  .artifacts-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--panel2);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s}
+  .artifacts-item:hover{border-color:var(--brand);background:var(--brand-soft)}
+  .artifacts-item .file-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
+  .artifacts-item .file-icon.html{background:#2f6bff}
+  .artifacts-item .file-icon.md{background:#2ba471}
+  .artifacts-item .file-icon.svg{background:#7c5cff}
+  .artifacts-item .file-icon.png{background:#e8830c}
+  .artifacts-item .file-icon.json{background:#e54a4a}
+  .artifacts-item .file-info{flex:1;min-width:0}
+  .artifacts-item .file-name{font-size:14px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .artifacts-item .file-meta{font-size:12px;color:var(--gray);margin-top:2px}
+  .artifacts-item .file-action{font-size:12px;color:var(--brand);white-space:nowrap}
+
   /* artifact_card */
   .artcards{display:flex;flex-direction:column;gap:8px;margin-top:6px}
   .artcard{border:1px solid transparent;border-radius:10px;padding:12px 14px;cursor:pointer;background:#f1f3f5;transition:.15s;display:flex;align-items:center;gap:12px}
@@ -353,7 +376,8 @@
   .toast-popup:hover{transform:translateY(-2px);box-shadow:0 18px 44px rgba(28,38,72,.22),0 4px 10px rgba(28,38,72,.08)}
   .toast-popup::before{content:"";position:absolute;top:-7px;left:46px;width:14px;height:14px;background:#fff;transform:rotate(45deg);border-radius:2px;box-shadow:-1px -1px 2px rgba(28,38,72,.04)}
   .toast-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-  .toast-avatar{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#3b82f6,#7c5cff);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0;font-weight:600}
+  .toast-avatar{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#3b82f6,#7c5cff);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0;font-weight:600;overflow:hidden}
+  .toast-avatar img{width:100%;height:100%;object-fit:cover}
   .toast-title{font-size:18px;font-weight:600;color:#1f2329;letter-spacing:.2px}
   .toast-close{margin-left:auto;font-size:18px;color:#9ca3af;cursor:pointer;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px;line-height:1}
   .toast-close:hover{color:#1f2329;background:#f1f3f5}
@@ -583,7 +607,7 @@
         <!-- svg 架构图 -->
         <div class="widget" id="widget-svg">
           <div class="wh"><span>🧩 展示详情</span><span class="menu" onclick="wmenu(this)">⋯
-            <div class="wmenu"><div onclick="toast('下载到本地')">下载到本地</div><div onclick="toast('下载为图片')">下载为图片</div><div onclick="toast('复制代码')">复制代码</div><div onclick="showCode('widget-svg')">查看代码</div></div></span></div>
+            <div class="wmenu"><div onclick="openArtifacts()">打开文件</div><div onclick="toast('下载为图片')">下载为图片</div><div onclick="toast('复制代码')">复制代码</div><div onclick="showCode('widget-svg')">查看代码</div></div></span></div>
           <div class="wb"><svg viewBox="0 0 380 200" width="660" xmlns="http://www.w3.org/2000/svg">
             <rect x="150" y="14" width="100" height="44" rx="9" fill="#2f6bff" opacity=".12" stroke="#2f6bff"/>
             <text x="200" y="41" font-size="12" fill="#2f6bff" text-anchor="middle">总成本</text>
@@ -599,7 +623,7 @@
         <!-- echarts 风格柱状图（SVG 模拟） -->
         <div class="widget" id="widget-echarts" style="margin-top:14px">
           <div class="wh"><span>🧩 展示详情</span><span class="menu" onclick="wmenu(this)">⋯
-            <div class="wmenu"><div onclick="toast('下载到本地')">下载到本地</div><div onclick="toast('下载为图片')">下载为图片</div><div onclick="toast('复制代码')">复制代码</div><div onclick="showCode('widget-echarts')">查看代码</div></div></span></div>
+            <div class="wmenu"><div onclick="openArtifacts()">打开文件</div><div onclick="toast('下载为图片')">下载为图片</div><div onclick="toast('复制代码')">复制代码</div><div onclick="showCode('widget-echarts')">查看代码</div></div></span></div>
           <div class="wb"><svg viewBox="0 0 360 180" width="640" xmlns="http://www.w3.org/2000/svg">
             <line x1="40" y1="150" x2="340" y2="150" stroke="#ddd"/>
             <rect x="60" y="70" width="40" height="80" fill="#2f6bff"/><text x="80" y="168" font-size="10" text-anchor="middle">百炼</text>
@@ -612,7 +636,7 @@
         <!-- html 登录页 mockup -->
         <div class="widget" id="widget-html" style="margin-top:14px">
           <div class="wh"><span>🧩 展示详情</span><span class="menu" onclick="wmenu(this)">⋯
-            <div class="wmenu"><div onclick="toast('下载到本地')">下载到本地</div><div onclick="toast('下载为图片')">下载为图片</div><div onclick="toast('复制代码')">复制代码</div><div onclick="showCode('widget-html')">查看代码</div></div></span></div>
+            <div class="wmenu"><div onclick="openArtifacts()">打开文件</div><div onclick="toast('下载为图片')">下载为图片</div><div onclick="toast('复制代码')">复制代码</div><div onclick="showCode('widget-html')">查看代码</div></div></span></div>
           <div class="wb" style="padding:0;overflow:hidden;border-radius:0 0 10px 10px">
             <div style="display:flex;width:100%;min-height:360px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">
               <div style="flex:1;background:linear-gradient(160deg,#16172b 0%,#25284d 100%);color:#fff;padding:32px 28px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
@@ -675,7 +699,7 @@
         <!-- timeline 任务进度（来自截图） -->
         <div class="widget" id="widget-timeline" style="margin-top:14px">
           <div class="wh"><span>🧩 项目进度时间线</span><span class="menu" onclick="wmenu(this)">⋯
-            <div class="wmenu"><div onclick="toast('下载到本地')">下载到本地</div><div onclick="toast('下载为图片')">下载为图片</div><div onclick="toast('复制代码')">复制代码</div><div onclick="showCode('widget-timeline')">查看代码</div></div></span></div>
+            <div class="wmenu"><div onclick="openArtifacts()">打开文件</div><div onclick="toast('下载为图片')">下载为图片</div><div onclick="toast('复制代码')">复制代码</div><div onclick="showCode('widget-timeline')">查看代码</div></div></span></div>
           <div class="wb" style="background:#fff">
             <div class="timeline" style="max-width:420px;padding:6px 4px 6px 10px">
               <div class="tl-item"><div class="tl-dot green"></div><div class="tl-c"><div class="tl-time">09:12</div><div class="tl-t">需求确认完成</div><div class="tl-d">已与产品对齐验收标准</div></div></div>
@@ -1163,11 +1187,7 @@ Let me think about the common message card types in multi-agent systems.</div>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             <span>请求许可</span>
           </div>
-          <div class="perm-q">允许 figma MCP服务器运行“use_figma”工具？</div>
-          <div class="perm-row">
-            <span class="l">Patterns</span>
-            <span class="v">- /app/opencode/*</span>
-          </div>
+          <div class="perm-q">读取文件 /Users/zhaonan/Documents/项目资料/config.yaml？</div>
           <div class="perm-btns">
             <button class="primary" onclick="toast('已允许一次')">允许一次</button>
             <button onclick="toast('已始终允许')">始终允许</button>
@@ -1247,21 +1267,65 @@ Let me think about the common message card types in multi-agent systems.</div>
     <!-- 30. desktop notification — 任务完成弹窗 -->
     <section class="case" id="toast">
       <div class="case-head"><span class="type">system</span><span class="name">任务提示 · 桌面右下角弹窗</span><span class="grp">产物/系统</span></div>
-      <div class="case-desc">当软件被最小化时，长任务完成后的桌面反馈形式：右下角浮窗，展示来源（应用名 + logo）、标题、正文。点击弹窗即可唤起并跳回软件对应页面；右上角 × 可关闭；默认展示 10 秒后自动关闭。</div>
+      <div class="case-desc">当软件被最小化时，长任务完成后的桌面反馈形式：右下角浮窗，展示来源（应用名 + logo）、标题、正文。点击弹窗即可唤起并跳回软件对应页面；右上角 × 可关闭。</div>
       <div class="canvas"><div class="msg"><div class="avatar">🤖</div><div class="bubble">
         <div class="toast-stage">
           <div class="ts-bg"></div>
           <div class="toast-hint">桌面右下角 · 长任务完成反馈</div>
-          <div class="toast-anno">展示 10 秒自动关闭</div>
           <div class="toast-popup" onclick="toast('已唤起 OmniX，跳转至编辑器页面')">
             <div class="toast-head">
-              <div class="toast-avatar">O</div>
+              <div class="toast-avatar"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%233b82f6' width='100' height='100' rx='20'/%3E%3Cpath d='M25 35 Q30 20 40 30' stroke='%23fff' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Cpath d='M75 35 Q70 20 60 30' stroke='%23fff' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='35' cy='45' r='8' fill='%23fff'/%3E%3Ccircle cx='65' cy='45' r='8' fill='%23fff'/%3E%3Ccircle cx='35' cy='45' r='4' fill='%233b82f6'/%3E%3Ccircle cx='65' cy='45' r='4' fill='%233b82f6'/%3E%3Cpath d='M30 68 L38 60 L46 68 L54 60 L62 68 L70 60' stroke='%23fff' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" alt="OmniX"></div>
               <div class="toast-title">OmniX</div>
               <span class="toast-close" onclick="event.stopPropagation();this.closest('.toast-popup').style.display='none'">×</span>
             </div>
             <div class="toast-body">
               <div class="toast-h">任务已完成</div>
               <div class="toast-d">「创作一首诗歌」已成功完成，您可以在编辑器中查看结果。</div>
+            </div>
+          </div>
+        </div>
+        <div class="toast-stage" style="margin-top:14px">
+          <div class="ts-bg"></div>
+          <div class="toast-hint">桌面右下角 · 任务失败反馈</div>
+          <div class="toast-popup" style="border-left:3px solid #1f2329" onclick="toast('已唤起 OmniX，查看错误详情')">
+            <div class="toast-head">
+              <div class="toast-avatar" style="background:#e54a4a"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%233b82f6' width='100' height='100' rx='20'/%3E%3Cpath d='M25 35 Q30 20 40 30' stroke='%23fff' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Cpath d='M75 35 Q70 20 60 30' stroke='%23fff' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='35' cy='45' r='8' fill='%23fff'/%3E%3Ccircle cx='65' cy='45' r='8' fill='%23fff'/%3E%3Ccircle cx='35' cy='45' r='4' fill='%233b82f6'/%3E%3Ccircle cx='65' cy='45' r='4' fill='%233b82f6'/%3E%3Cpath d='M30 68 L38 60 L46 68 L54 60 L62 68 L70 60' stroke='%23fff' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" alt="OmniX"></div>
+              <div class="toast-title">OmniX</div>
+              <span class="toast-close" onclick="event.stopPropagation();this.closest('.toast-popup').style.display='none'">×</span>
+            </div>
+            <div class="toast-body">
+              <div class="toast-h" style="color:#e54a4a">任务失败</div>
+              <div class="toast-d">「生成数据报表」执行失败。错误码：ERR_TIMEOUT_504；服务器响应超时，请检查网络后重试。</div>
+            </div>
+          </div>
+        </div>
+        <div class="toast-stage" style="margin-top:14px">
+          <div class="ts-bg"></div>
+          <div class="toast-hint">桌面右下角 · 等待回复</div>
+          <div class="toast-popup" style="border-left:3px solid #1f2329" onclick="toast('已唤起 OmniX，跳转至授权页面')">
+            <div class="toast-head">
+              <div class="toast-avatar" style="background:#e8830c"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%233b82f6' width='100' height='100' rx='20'/%3E%3Cpath d='M25 35 Q30 20 40 30' stroke='%23fff' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Cpath d='M75 35 Q70 20 60 30' stroke='%23fff' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='35' cy='45' r='8' fill='%23fff'/%3E%3Ccircle cx='65' cy='45' r='8' fill='%23fff'/%3E%3Ccircle cx='35' cy='45' r='4' fill='%233b82f6'/%3E%3Ccircle cx='65' cy='45' r='4' fill='%233b82f6'/%3E%3Cpath d='M30 68 L38 60 L46 68 L54 60 L62 68 L70 60' stroke='%23fff' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" alt="OmniX"></div>
+              <div class="toast-title">OmniX</div>
+              <span class="toast-close" onclick="event.stopPropagation();this.closest('.toast-popup').style.display='none'">×</span>
+            </div>
+            <div class="toast-body">
+              <div class="toast-h" style="color:#e8830c">等待回复</div>
+              <div class="toast-d">「访问外部API」需进行授权，返回页面后可点击授权按钮继续操作。</div>
+            </div>
+          </div>
+        </div>
+        <div class="toast-stage" style="margin-top:14px">
+          <div class="ts-bg"></div>
+          <div class="toast-hint">桌面右下角 · 等待回复</div>
+          <div class="toast-popup" style="border-left:3px solid #1f2329" onclick="toast('已唤起 OmniX，回复消息')">
+            <div class="toast-head">
+              <div class="toast-avatar" style="background:#e8830c"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%233b82f6' width='100' height='100' rx='20'/%3E%3Cpath d='M25 35 Q30 20 40 30' stroke='%23fff' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Cpath d='M75 35 Q70 20 60 30' stroke='%23fff' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='35' cy='45' r='8' fill='%23fff'/%3E%3Ccircle cx='65' cy='45' r='8' fill='%23fff'/%3E%3Ccircle cx='35' cy='45' r='4' fill='%233b82f6'/%3E%3Ccircle cx='65' cy='45' r='4' fill='%233b82f6'/%3E%3Cpath d='M30 68 L38 60 L46 68 L54 60 L62 68 L70 60' stroke='%23fff' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" alt="OmniX"></div>
+              <div class="toast-title">OmniX</div>
+              <span class="toast-close" onclick="event.stopPropagation();this.closest('.toast-popup').style.display='none'">×</span>
+            </div>
+            <div class="toast-body">
+              <div class="toast-h" style="color:#e8830c">等待回复</div>
+              <div class="toast-d">「生成数据报表」任务触发提问，返回页面回复确认。</div>
             </div>
           </div>
         </div>
@@ -1344,6 +1408,67 @@ Let me think about the common message card types in multi-agent systems.</div>
     lastItem.textContent='查看代码';
     lastItem.setAttribute('onclick',"showCode('"+id+"')");
   }
+
+  // 打开产物抽屉
+  function openArtifacts(){
+    document.getElementById('artifactsDrawer').classList.add('show');
+  }
+  function closeArtifacts(){
+    document.getElementById('artifactsDrawer').classList.remove('show');
+  }
 </script>
+
+<!-- 产物抽屉 -->
+<div class="artifacts-drawer" id="artifactsDrawer">
+  <div class="artifacts-drawer-header">
+    <h3>产物文件</h3>
+    <button class="artifacts-drawer-close" onclick="closeArtifacts()">✕</button>
+  </div>
+  <div class="artifacts-drawer-body">
+    <div class="artifacts-list">
+      <div class="artifacts-item" onclick="toast('打开 cost-architecture.svg')">
+        <div class="file-icon svg">SVG</div>
+        <div class="file-info">
+          <div class="file-name">cost-architecture.svg</div>
+          <div class="file-meta">2.4 KB · 刚刚创建</div>
+        </div>
+        <div class="file-action">打开</div>
+      </div>
+      <div class="artifacts-item" onclick="toast('打开 model-comparison.png')">
+        <div class="file-icon png">PNG</div>
+        <div class="file-info">
+          <div class="file-name">model-comparison.png</div>
+          <div class="file-meta">156 KB · 刚刚创建</div>
+        </div>
+        <div class="file-action">打开</div>
+      </div>
+      <div class="artifacts-item" onclick="toast('打开 login-mockup.html')">
+        <div class="file-icon html">HTML</div>
+        <div class="file-info">
+          <div class="file-name">login-mockup.html</div>
+          <div class="file-meta">8.2 KB · 刚刚创建</div>
+        </div>
+        <div class="file-action">打开</div>
+      </div>
+      <div class="artifacts-item" onclick="toast('打开 project-timeline.json')">
+        <div class="file-icon json">JSON</div>
+        <div class="file-info">
+          <div class="file-name">project-timeline.json</div>
+          <div class="file-meta">1.1 KB · 刚刚创建</div>
+        </div>
+        <div class="file-action">打开</div>
+      </div>
+      <div class="artifacts-item" onclick="toast('打开 analysis-report.md')">
+        <div class="file-icon md">MD</div>
+        <div class="file-info">
+          <div class="file-name">analysis-report.md</div>
+          <div class="file-meta">3.8 KB · 刚刚创建</div>
+        </div>
+        <div class="file-action">打开</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
