@@ -556,6 +556,7 @@
             flex-wrap: wrap;
         }
         .icon-preview-box {
+            position: relative;
             width: 56px;
             height: 56px;
             border-radius: 12px;
@@ -568,6 +569,27 @@
             flex-shrink: 0;
             transition: all 0.2s;
             overflow: hidden;
+        }
+        .icon-preview-clear {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            z-index: 1;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            background: rgba(17, 24, 39, 0.62);
+            color: #fff;
+            font-size: 12px;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .icon-preview-clear:hover {
+            background: #DC2626;
         }
         .icon-preview-box.has-icon {
             border-color: #4f46e5;
@@ -1108,7 +1130,7 @@
 
     <!-- ═════ 新建技能弹窗 ═════ -->
     <div id="createModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('createModal')">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[800px] mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-bold text-gray-900">新建技能</h3>
                 <button onclick="closeModal('createModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
@@ -1120,7 +1142,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">名称 <span class="text-red-500">*</span></label>
                     <input type="text" id="create-name" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入术语名称" maxlength="50" />
-                    <p class="text-xs text-gray-400 mt-1">同一类别下不可重名，最大 50 字符</p>
+                    <p class="text-xs text-gray-400 mt-1">不可重名，最大 50 字符</p>
                 </div>
 
                 <div>
@@ -1142,19 +1164,14 @@
                     <div class="icon-preview-wrap">
                         <div class="icon-preview-box" id="create-icon-preview">
                             <span id="create-icon-preview-text">🤖</span>
+                            <button type="button" class="icon-preview-clear" onclick="event.stopPropagation();clearCreateIcon()" title="清除图标" aria-label="清除图标">
+                                <iconify-icon icon="mdi:close"></iconify-icon>
+                            </button>
                         </div>
                         <div class="icon-actions">
-                            <button class="btn-icon-action primary" onclick="openCustomIconPicker('create')">
-                                <iconify-icon icon="mdi:emoticon-outline" class="text-base"></iconify-icon>
-                                选择图标
-                            </button>
                             <button class="btn-icon-action" onclick="document.getElementById('create-icon-upload').click()">
                                 <iconify-icon icon="mdi:upload-outline" class="text-base"></iconify-icon>
                                 上传图标
-                            </button>
-                            <button class="btn-icon-action danger" onclick="clearCreateIcon()">
-                                <iconify-icon icon="mdi:close-circle-outline" class="text-base"></iconify-icon>
-                                清除
                             </button>
                         </div>
                         <input type="file" id="create-icon-upload" accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp" class="hidden" onchange="handleCreateIconUpload(event)" />
@@ -1162,6 +1179,7 @@
                             <div class="bar" id="create-icon-progress-bar"></div>
                         </div>
                     </div>
+					<p class="text-xs text-gray-400 mt-1">支持 JPG、PNG、GIF 格式，图片大小不超过 1MB，建议尺寸 128×128px</p>
                 </div>
 
                 <div>
@@ -1180,7 +1198,7 @@
 
     <!-- ═════ 编辑技能弹窗 ═════ -->
     <div id="editModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('editModal')">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[800px] mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-bold text-gray-900">编辑技能</h3>
                 <button onclick="closeModal('editModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
@@ -1192,7 +1210,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">名称 <span class="text-red-500">*</span></label>
                     <input type="text" id="edit-name" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入术语名称" maxlength="50" />
-                    <p class="text-xs text-gray-400 mt-1">同一类别下不可重名，最大 50 字符</p>
+                    <p class="text-xs text-gray-400 mt-1">不可重名，最大 50 字符</p>
                 </div>
 
                 <div>
@@ -1214,19 +1232,14 @@
                     <div class="icon-preview-wrap">
                         <div class="icon-preview-box" id="edit-icon-preview">
                             <span id="edit-icon-preview-text">🤖</span>
+                            <button type="button" class="icon-preview-clear" onclick="event.stopPropagation();clearEditIcon()" title="清除图标" aria-label="清除图标">
+                                <iconify-icon icon="mdi:close"></iconify-icon>
+                            </button>
                         </div>
                         <div class="icon-actions">
-                            <button class="btn-icon-action primary" onclick="openCustomIconPicker('edit')">
-                                <iconify-icon icon="mdi:emoticon-outline" class="text-base"></iconify-icon>
-                                选择图标
-                            </button>
                             <button class="btn-icon-action" onclick="document.getElementById('edit-icon-upload').click()">
                                 <iconify-icon icon="mdi:upload-outline" class="text-base"></iconify-icon>
                                 上传图标
-                            </button>
-                            <button class="btn-icon-action danger" onclick="clearEditIcon()">
-                                <iconify-icon icon="mdi:close-circle-outline" class="text-base"></iconify-icon>
-                                清除
                             </button>
                         </div>
                         <input type="file" id="edit-icon-upload" accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp" class="hidden" onchange="handleEditIconUpload(event)" />
@@ -1234,6 +1247,8 @@
                             <div class="bar" id="edit-icon-progress-bar"></div>
                         </div>
                     </div>
+					
+					<p class="text-xs text-gray-400 mt-1">支持 JPG、PNG、GIF 格式，图片大小不超过 1MB，建议尺寸 128×128px</p>
                 </div>
 
                 <div>
@@ -1252,7 +1267,7 @@
 
     <!-- ═════ 导入技能弹窗 ═════ -->
     <div id="importModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('importModal')">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[800px] mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-bold text-gray-900">导入技能</h3>
                 <button onclick="closeModal('importModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
@@ -1305,7 +1320,7 @@
 
     <!-- ═════ 类别管理弹窗 ═════ -->
     <div id="categoryModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('categoryModal')">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[80vh] overflow-hidden flex flex-col">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[800px] mx-4 max-h-[80vh] overflow-hidden flex flex-col">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-bold text-gray-900">类别管理</h3>
                 <button onclick="closeModal('categoryModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
@@ -1340,7 +1355,7 @@
 
     <!-- ═════ 新增/编辑类别弹窗 ═════ -->
     <div id="categoryFormModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('categoryFormModal')">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[800px] mx-4 overflow-hidden">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-bold text-gray-900" id="category-form-title">新增类别</h3>
                 <button onclick="closeModal('categoryFormModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
@@ -1382,7 +1397,7 @@
 
     <!-- ═════ 确认删除弹窗 ═════ -->
     <div id="deleteConfirmModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('deleteConfirmModal')">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[800px] mx-4">
             <div class="px-6 py-8 text-center">
                 <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
                     <iconify-icon icon="mdi:alert-circle-outline" class="text-3xl text-red-500"></iconify-icon>
@@ -1399,7 +1414,7 @@
 
     <!-- ═════ 彻底删除确认弹窗 ═════ -->
     <div id="permanentDeleteModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('permanentDeleteModal')">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[800px] mx-4">
             <div class="px-6 py-8 text-center">
                 <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
                     <iconify-icon icon="mdi:alert-outline" class="text-3xl text-red-600"></iconify-icon>
@@ -1493,6 +1508,7 @@
         let editIconData = '🤖';
         let editIconType = 'emoji';
         let detailMode = 'view';
+        let editFromList = false;
 
         // ═══════════════════════════════════════════════
         // 用户自定义图标面板入口
@@ -1593,11 +1609,9 @@
                             <span onclick="event.stopPropagation();exportSkill(${s.id})" class="card-action-btn" title="导出">
                                 <iconify-icon icon="mdi:download-outline" class="text-base"></iconify-icon>
                             </span>
-							<!--
-                            <span onclick="event.stopPropagation();openDetail(${s.id}, 'edit')" class="card-action-btn" title="编辑">
+                            <span onclick="event.stopPropagation();openEditModal(${s.id})" class="card-action-btn" title="编辑">
                                 <iconify-icon icon="mdi:pencil-outline" class="text-base"></iconify-icon>
                             </span>
-							-->
                             <span onclick="event.stopPropagation();openDeleteConfirm(${s.id})" class="card-action-btn danger" title="删除">
                                 <iconify-icon icon="mdi:trash-can-outline" class="text-base"></iconify-icon>
                             </span>
@@ -2027,7 +2041,7 @@
             const saveBtn = document.getElementById('btn-save-detail');
             const publishBtn = document.getElementById('btn-publish-detail');
             const fileBtn = document.getElementById('btnFile');
-            if (editBtn) editBtn.style.display = detailMode === 'edit' ? '' : 'none';
+            if (editBtn) editBtn.style.display = '';
             if (saveBtn) saveBtn.style.display = detailMode === 'edit' ? '' : 'none';
             if (publishBtn) publishBtn.style.display = detailMode === 'edit' ? '' : 'none';
             if (fileBtn) fileBtn.style.display = detailMode === 'edit' ? '' : 'none';
@@ -2066,7 +2080,7 @@
             if (existingImg) existingImg.remove();
 
             if (createIconType === 'emoji') {
-                text.textContent = createIconData || '🤖';
+                text.textContent = createIconData || '';
                 text.style.display = 'block';
                 box.classList.toggle('has-icon', !!createIconData);
             } else if (createIconType === 'image') {
@@ -2120,7 +2134,7 @@
         }
 
         function clearCreateIcon() {
-            createIconData = '🤖';
+            createIconData = '';
             createIconType = 'emoji';
             updateCreateIconPreview();
             showToast('已清除图标', 'success');
@@ -2136,7 +2150,7 @@
             if (existingImg) existingImg.remove();
 
             if (editIconType === 'emoji') {
-                text.textContent = editIconData || '🤖';
+                text.textContent = editIconData || '';
                 text.style.display = 'block';
                 box.classList.toggle('has-icon', !!editIconData);
             } else if (editIconType === 'image') {
@@ -2190,7 +2204,7 @@
         }
 
         function clearEditIcon() {
-            editIconData = '🤖';
+            editIconData = '';
             editIconType = 'emoji';
             updateEditIconPreview();
             showToast('已清除图标', 'success');
@@ -2252,7 +2266,11 @@
             document.getElementById('edit-char-count').textContent = el.value.length;
         }
 
-        function openEditModal() {
+        function openEditModal(id) {
+            editFromList = id !== undefined;
+            if (id !== undefined) {
+                currentSkill = skills.find(s => s.id === id);
+            }
             if (!currentSkill) return;
 
             document.getElementById('edit-name').value = currentSkill.name;
@@ -2263,7 +2281,7 @@
                 editIconData = currentSkill.icon;
                 editIconType = 'image';
             } else {
-                editIconData = currentSkill.icon || '🤖';
+                editIconData = currentSkill.icon || '';
                 editIconType = 'emoji';
             }
             updateEditIconPreview();
@@ -2294,8 +2312,12 @@
                 day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-');
 
             closeModal('editModal');
-            openDetail(currentSkill.id, 'edit');
-            renderSkillGrid();
+            if (editFromList) {
+                renderSkillGrid();
+            } else {
+                openDetail(currentSkill.id, 'edit');
+                renderSkillGrid();
+            }
             showToast('技能更新成功', 'success');
         }
 
