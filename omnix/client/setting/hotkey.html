@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快捷键 - OmniX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .main-content {
+            padding: 32px 40px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .main-content-inner {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 12px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .hotkey-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .hotkey-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .hotkey-item:first-child {
+            padding-top: 0;
+        }
+
+        .hotkey-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .hotkey-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .hotkey-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hotkey-value {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 100px;
+            justify-content: center;
+        }
+
+        .hotkey-value:hover {
+            border-color: #999;
+            background: #fafafa;
+        }
+
+        .hotkey-value.editing {
+            background: #fff;
+            border-color: #333;
+            border-style: dashed;
+            color: #999;
+        }
+
+        .hotkey-value.system {
+            background: #f0f0f0;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .hotkey-value.system:hover {
+            border-color: #e0e0e0;
+            background: #f0f0f0;
+        }
+
+        .hotkey-value.unbound {
+            color: #999;
+            border-style: dashed;
+        }
+
+        .key-separator {
+            color: #999;
+            font-size: 11px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
+            color: #666;
+        }
+
+        .btn:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .btn-restore {
+            color: #1890ff;
+        }
+
+        .btn-restore:hover {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .btn-delete {
+            color: #ff4d4f;
+        }
+
+        .btn-delete:hover {
+            background: #fff1f0;
+            color: #ff4d4f;
+        }
+
+        .btn-confirm {
+            background: #333;
+            color: #fff;
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        .btn-confirm:hover {
+            background: #444;
+        }
+
+        .lock-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            cursor: help;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .lock-icon:hover {
+            background: #f5f5f5;
+        }
+
+        .lock-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .edit-hint {
+            font-size: 11px;
+            color: #999;
+            margin-left: 8px;
+        }
+
+        .empty-key {
+            color: #ccc;
+            font-style: italic;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .hotkey-value.editing::after {
+            content: "|";
+            animation: blink 1s infinite;
+            margin-left: 2px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <main class="main-content">
+            <div class="main-content-inner">
+                <h1 class="page-title">快捷键</h1>
+                <p class="page-subtitle">查看和修改快捷键</p>
+
+                <div class="card" id="hotkeyList">
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const hotkeysData = [
+            { id: 'open-settings', name: '打开设置', desc: '打开应用设置面板', defaultKey: 'Ctrl + ,', currentKey: 'Ctrl + ,', status: 'default', isSystem: false, column: 1 },
+            { id: 'voice-record', name: '语音录制开关', desc: '开启或关闭语音录制功能', defaultKey: 'Ctrl + D', currentKey: 'Ctrl + D', status: 'default', isSystem: false, column: 1 },
+            { id: 'search-in-chat', name: '对话内搜索', desc: '在当前对话中搜索内容', defaultKey: 'Ctrl + F', currentKey: 'Ctrl + F', status: 'default', isSystem: false, column: 1 },
+            { id: 'send-message', name: '发送消息', desc: '在聊天输入框中发送当前消息', defaultKey: 'Enter', currentKey: 'Enter', status: 'default', isSystem: false, column: 1 },
+            { id: 'newline-input', name: '输入时换行', desc: '在输入框中换行而不发送消息', defaultKey: 'Shift + Enter', currentKey: 'Shift + Enter', status: 'default', isSystem: false, column: 1 },
+            { id: 'new-conversation', name: '新建对话', desc: '创建一个新的对话', defaultKey: 'Ctrl + N', currentKey: 'Ctrl + N', status: 'default', isSystem: false, column: 1 },
+            
+            { id: 'stop-generation', name: '停止生成', desc: '停止当前AI生成任务', defaultKey: 'Esc', currentKey: 'Esc', status: 'default', isSystem: false, column: 2 },
+            { id: 'prev-task', name: '上一个任务', desc: '切换到上一个任务', defaultKey: 'Ctrl + [', currentKey: 'Ctrl + [', status: 'default', isSystem: false, column: 2 },
+            { id: 'next-task', name: '下一个任务', desc: '切换到下一个任务', defaultKey: 'Ctrl + ]', currentKey: 'Ctrl + ]', status: 'default', isSystem: false, column: 2 },
+            { id: 'toggle-sidebar', name: '切换左侧栏', desc: '显示或隐藏左侧边栏', defaultKey: 'Ctrl + B', currentKey: 'Ctrl + B', status: 'default', isSystem: false, column: 2 },
+            { id: 'toggle-result-panel', name: '切换右侧产物面板', desc: '显示或隐藏右侧产物面板', defaultKey: 'Ctrl + Shift + B', currentKey: 'Ctrl + Shift + B', status: 'default', isSystem: false, column: 2 },
+            { id: 'toggle-fullscreen', name: '进入/退出全屏', desc: '切换全屏显示模式', defaultKey: 'F11', currentKey: 'F11', status: 'default', isSystem: false, column: 2 },
+            
+            { id: 'toggle-main-window', name: '唤起/隐藏主窗口', desc: '显示或隐藏应用主窗口', defaultKey: 'Shift + Alt + W', currentKey: 'Shift + Alt + W', status: 'default', isSystem: false, column: 3 },
+            { id: 'zoom-in', name: '放大内容字号', desc: '放大页面内容字号', defaultKey: 'Ctrl + +', currentKey: 'Ctrl + +', status: 'system', isSystem: true, column: 3 },
+            { id: 'zoom-out', name: '缩小内容字号', desc: '缩小页面内容字号', defaultKey: 'Ctrl + -', currentKey: 'Ctrl + -', status: 'system', isSystem: true, column: 3 },
+            { id: 'zoom-reset', name: '重置内容字号', desc: '重置页面内容字号为默认', defaultKey: 'Ctrl + 0', currentKey: 'Ctrl + 0', status: 'system', isSystem: true, column: 3 },
+            { id: 'invoke-selector', name: '唤起选择器', desc: '输入@唤起选择器', defaultKey: '@', currentKey: '@', status: 'system', isSystem: true, column: 3 },
+            { id: 'invoke-slash-command', name: '唤起斜杠命令', desc: '输入/唤起斜杠命令', defaultKey: '/', currentKey: '/', status: 'system', isSystem: true, column: 3 }
+        ];
+
+        let editingId = null;
+        let editingKeys = [];
+
+        function formatKeyCombo(keys) {
+            if (!keys || keys.length === 0) return '';
+            return keys.join(' + ');
+        }
+
+        function parseKeyCombo(keyStr) {
+            if (!keyStr) return [];
+            return keyStr.split('+').map(k => k.trim());
+        }
+
+        function renderHotkeyKey(item) {
+            const data = hotkeysData.find(h => h.id === item.id);
+            
+            if (editingId === item.id) {
+                const keysDisplay = editingKeys.length > 0 ? formatKeyCombo(editingKeys) : '按下快捷键...';
+                return `<div class="hotkey-value editing">${keysDisplay}</div>
+                    <button class="btn btn-confirm" onclick="saveEdit()">确认</button>
+                    <span class="edit-hint">按 Esc 取消</span>`;
+            }
+
+            if (data.isSystem) {
+                return `<div class="hotkey-value system">${formatKeyCombo(parseKeyCombo(data.currentKey))}</div>`;
+            }
+
+            if (data.status === 'unbound') {
+                return `<div class="hotkey-value unbound" onclick="startEdit('${item.id}')">未绑定</div>`;
+            }
+
+            return `<div class="hotkey-value" onclick="startEdit('${item.id}')">${formatKeyCombo(parseKeyCombo(data.currentKey))}</div>`;
+        }
+
+        function renderActions(item) {
+            const data = hotkeysData.find(h => h.id === item.id);
+
+            if (editingId === item.id) {
+                return '';
+            }
+
+            if (data.isSystem) {
+                return `<div class="lock-icon tooltip" data-tooltip="系统快捷键，不可修改">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </div>`;
+            }
+
+            let actions = '';
+
+            if (data.status === 'unbound') {
+                actions += `<button class="btn btn-restore" onclick="restoreDefault('${item.id}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                    </svg>
+                </button>`;
+            } else if (data.status === 'default') {
+                actions += `<button class="btn btn-delete" onclick="deleteKey('${item.id}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18"/>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    </svg>
+                </button>`;
+            } else if (data.status === 'custom') {
+                actions += `<button class="btn btn-restore" onclick="restoreDefault('${item.id}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                    </svg>
+                </button>`;
+                actions += `<button class="btn btn-delete" onclick="deleteKey('${item.id}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18"/>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    </svg>
+                </button>`;
+            }
+
+            return actions;
+        }
+
+        function render() {
+            const container = document.getElementById('hotkeyList');
+            container.innerHTML = hotkeysData.map(item => `
+                <div class="hotkey-item" id="item-${item.id}">
+                    <div class="hotkey-info">
+                        <span class="hotkey-name">${item.name}</span>
+                    </div>
+                    <div class="hotkey-actions">
+                        ${renderHotkeyKey(item)}
+                        ${renderActions(item)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function startEdit(id) {
+            const data = hotkeysData.find(h => h.id === id);
+            if (data.isSystem) return;
+
+            editingId = id;
+            editingKeys = [];
+            render();
+
+            document.addEventListener('keydown', handleKeyDown);
+        }
+
+        function handleKeyDown(e) {
+            e.preventDefault();
+
+            if (e.key === 'Escape') {
+                cancelEdit();
+                return;
+            }
+
+            if (e.key === 'Enter' && editingKeys.length > 0) {
+                saveEdit();
+                return;
+            }
+
+            const keys = [];
+            if (e.ctrlKey || e.metaKey) keys.push('Ctrl');
+            if (e.shiftKey) keys.push('Shift');
+            if (e.altKey) keys.push('Alt');
+
+            const key = e.key;
+            if (!['Control', 'Shift', 'Alt', 'Meta'].includes(key)) {
+                let displayKey = key;
+                if (key.length === 1) {
+                    displayKey = key.toUpperCase();
+                } else if (key === ' ') {
+                    displayKey = 'Space';
+                }
+                keys.push(displayKey);
+            }
+
+            if (keys.length > 0 && !['Control', 'Shift', 'Alt', 'Meta'].includes(keys[keys.length - 1])) {
+                editingKeys = keys;
+                render();
+            }
+        }
+
+        function cancelEdit() {
+            editingId = null;
+            editingKeys = [];
+            document.removeEventListener('keydown', handleKeyDown);
+            render();
+        }
+
+        function saveEdit() {
+            if (editingId && editingKeys.length > 0) {
+                const data = hotkeysData.find(h => h.id === editingId);
+                data.currentKey = formatKeyCombo(editingKeys);
+                if (data.currentKey === data.defaultKey) {
+                    data.status = 'default';
+                } else {
+                    data.status = 'custom';
+                }
+            }
+            editingId = null;
+            editingKeys = [];
+            document.removeEventListener('keydown', handleKeyDown);
+            render();
+        }
+
+        function restoreDefault(id) {
+            const data = hotkeysData.find(h => h.id === id);
+            data.currentKey = data.defaultKey;
+            data.status = 'default';
+            render();
+        }
+
+        function deleteKey(id) {
+            const data = hotkeysData.find(h => h.id === id);
+            data.currentKey = null;
+            data.status = 'unbound';
+            render();
+        }
+
+        render();
+    </script>
+</body>
+</html>

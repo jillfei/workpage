@@ -909,6 +909,87 @@
             background: #fff7e6;
             color: #fa8c16;
         }
+
+        .thinking-level-section {
+            margin-top: 4px;
+        }
+
+        .thinking-level-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .thinking-level-header .form-label {
+            margin-bottom: 0;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 20px;
+        }
+
+        .switch-slider::before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        .switch input:checked + .switch-slider {
+            background-color: #1890ff;
+        }
+
+        .switch input:checked + .switch-slider::before {
+            transform: translateX(16px);
+        }
+
+        .thinking-level-details {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .thinking-level-details.visible {
+            display: block;
+        }
+
+        .thinking-level-details .form-label {
+            margin-bottom: 8px;
+        }
+
+        .thinking-level-details .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-select.placeholder-shown {
+            color: #bbb;
+        }
     </style>
 </head>
 <body>
@@ -1064,6 +1145,48 @@
                                     <input type="checkbox" name="modelCapability" value="image_input">
                                     <span class="checkbox-label">图片输入</span>
                                 </label>
+                            </div>
+                        </div>
+                        <div class="form-group thinking-level-section">
+                            <div class="thinking-level-header">
+                                <label class="form-label">思考等级</label>
+                                <label class="switch">
+                                    <input type="checkbox" onchange="toggleThinkingLevel('add', this)">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="thinking-level-details" id="addThinkingDetails">
+                                <div class="form-group">
+                                    <label class="form-label">支持的思考等级 (多选)</label>
+                                    <div class="checkbox-group" id="addThinkingLevelGroup">
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="addThinkingLevel" value="low" onchange="updateThinkingDropdown('add')">
+                                            <span class="checkbox-label">低</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="addThinkingLevel" value="medium" onchange="updateThinkingDropdown('add')">
+                                            <span class="checkbox-label">中</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="addThinkingLevel" value="high" onchange="updateThinkingDropdown('add')">
+                                            <span class="checkbox-label">高</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="addThinkingLevel" value="xhigh" onchange="updateThinkingDropdown('add')">
+                                            <span class="checkbox-label">超高</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="addThinkingLevel" value="max" onchange="updateThinkingDropdown('add')">
+                                            <span class="checkbox-label">极致</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">默认思考强度</label>
+                                    <div class="select-wrapper">
+                                        <select class="form-select placeholder-shown" id="addDefaultThinking"></select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1475,6 +1598,48 @@
                         <input type="checkbox" name="editModelCapability" value="image_input">
                         <span class="checkbox-label">图片输入</span>
                     </label>
+                </div>
+            </div>
+            <div class="form-group thinking-level-section">
+                <div class="thinking-level-header">
+                    <label class="form-label">思考等级</label>
+                    <label class="switch">
+                        <input type="checkbox" onchange="toggleThinkingLevel('edit', this)">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+                <div class="thinking-level-details" id="editThinkingDetails">
+                    <div class="form-group">
+                        <label class="form-label">支持的思考等级 (多选)</label>
+                        <div class="checkbox-group" id="editThinkingLevelGroup">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="editThinkingLevel" value="low" onchange="updateThinkingDropdown('edit')">
+                                <span class="checkbox-label">低</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="editThinkingLevel" value="medium" onchange="updateThinkingDropdown('edit')">
+                                <span class="checkbox-label">中</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="editThinkingLevel" value="high" onchange="updateThinkingDropdown('edit')">
+                                <span class="checkbox-label">高</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="editThinkingLevel" value="xhigh" onchange="updateThinkingDropdown('edit')">
+                                <span class="checkbox-label">超高</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="editThinkingLevel" value="max" onchange="updateThinkingDropdown('edit')">
+                                <span class="checkbox-label">极致</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">默认思考强度</label>
+                        <div class="select-wrapper">
+                            <select class="form-select placeholder-shown" id="editDefaultThinking"></select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -2079,6 +2244,57 @@
                 this.classList.add('active');
             });
         });
+
+        const thinkingLevelLabels = {
+            'low': '低',
+            'medium': '中',
+            'high': '高',
+            'xhigh': '超高',
+            'max': '极致'
+        };
+
+        function updateThinkingDropdown(context) {
+            const groupId = context === 'add' ? 'addThinkingLevelGroup' : 'editThinkingLevelGroup';
+            const selectId = context === 'add' ? 'addDefaultThinking' : 'editDefaultThinking';
+            const group = document.getElementById(groupId);
+            const select = document.getElementById(selectId);
+            const currentValue = select.value;
+            const checked = group.querySelectorAll('input[type="checkbox"]:checked');
+            select.innerHTML = '';
+            if (checked.length === 0) {
+                const placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.textContent = '请选择支持的思考等级';
+                placeholder.disabled = true;
+                placeholder.selected = true;
+                select.appendChild(placeholder);
+                select.classList.add('placeholder-shown');
+            } else {
+                select.classList.remove('placeholder-shown');
+                checked.forEach(cb => {
+                    const option = document.createElement('option');
+                    option.value = cb.value;
+                    option.textContent = thinkingLevelLabels[cb.value];
+                    select.appendChild(option);
+                });
+                if (currentValue && select.querySelector(`option[value="${currentValue}"]`)) {
+                    select.value = currentValue;
+                } else {
+                    select.selectedIndex = 0;
+                }
+            }
+        }
+
+        function toggleThinkingLevel(context, checkbox) {
+            const detailsId = context === 'add' ? 'addThinkingDetails' : 'editThinkingDetails';
+            const details = document.getElementById(detailsId);
+            if (checkbox.checked) {
+                details.classList.add('visible');
+                updateThinkingDropdown(context);
+            } else {
+                details.classList.remove('visible');
+            }
+        }
 
         // 初始化
         handleProviderChange();

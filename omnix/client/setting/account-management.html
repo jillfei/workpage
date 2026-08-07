@@ -773,6 +773,104 @@
             font-size: 11px;
             color: #ccc;
         }
+
+        /* 字体大小滑块 */
+        .font-size-slider-wrapper {
+            padding: 0 4px;
+        }
+
+        .font-size-track {
+            position: relative;
+            height: 2px;
+            background: #e0e0e0;
+            border-radius: 1px;
+            margin: 12px 0 8px;
+            cursor: pointer;
+        }
+
+        .font-size-ticks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 0;
+        }
+
+        .font-size-ticks .tick {
+            width: 1px;
+            height: 8px;
+            background: #d0d0d0;
+        }
+
+        .font-size-hit-areas {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+            display: flex;
+            justify-content: space-between;
+            height: 24px;
+            pointer-events: none;
+        }
+
+        .font-size-hit-areas .hit-area {
+            width: 28px;
+            height: 24px;
+            margin-left: -14px;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .font-size-hit-areas .hit-area:first-child {
+            margin-left: 0;
+        }
+
+        .font-size-hit-areas .hit-area:last-child {
+            margin-right: 0;
+        }
+
+        .font-size-thumb {
+            position: absolute;
+            top: 50%;
+            left: 25%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            background: #333;
+            border-radius: 50%;
+            cursor: grab;
+            transition: box-shadow 0.2s;
+            z-index: 2;
+        }
+
+        .font-size-thumb:active {
+            cursor: grabbing;
+            box-shadow: 0 0 0 4px rgba(0,0,0,0.1);
+        }
+
+        .font-size-labels {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .font-label {
+            font-size: 12px;
+            color: #999;
+			width: 40px;
+		    text-align: center;
+		    margin: 0px -20px;
+        }
+
+        .font-label-default {
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -832,6 +930,20 @@
                         <path d="m19 9-5 5-4-4-3 3"/>
                     </svg>
                     Token用量
+                </li>
+                <li class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="M6 8h.01"/>
+                        <path d="M10 8h.01"/>
+                        <path d="M14 8h.01"/>
+                        <path d="M18 8h.01"/>
+                        <path d="M8 12h.01"/>
+                        <path d="M12 12h.01"/>
+                        <path d="M16 12h.01"/>
+                        <path d="M7 16h10"/>
+                    </svg>
+                    快捷键
                 </li>
             </ul>
         </aside>
@@ -945,6 +1057,47 @@
                 </div>
             </div>
 
+            <!-- 字体大小（2px） -->
+            <div class="card">
+                <div class="setting-item" style="display: block;">
+                    <div class="setting-info" style="margin-bottom: 16px;">
+                        <span class="setting-label">字体大小</span>
+                    </div>
+                    <div class="font-size-slider-wrapper">
+                    <div class="font-size-track" id="fontSizeTrack">
+                        <div class="font-size-ticks">
+                            <span class="tick"></span>
+                            <span class="tick"></span>
+                            <span class="tick"></span>
+                            <span class="tick"></span>
+                            <span class="tick"></span>
+                            <span class="tick"></span>
+                            <span class="tick"></span>
+                        </div>
+                        <div class="font-size-hit-areas">
+                            <span class="hit-area" data-index="0"></span>
+                            <span class="hit-area" data-index="1"></span>
+                            <span class="hit-area" data-index="2"></span>
+                            <span class="hit-area" data-index="3"></span>
+                            <span class="hit-area" data-index="4"></span>
+                            <span class="hit-area" data-index="5"></span>
+                            <span class="hit-area" data-index="6"></span>
+                        </div>
+                        <div class="font-size-thumb" id="fontSizeThumb" style="left: 16.67%;"></div>
+                    </div>
+                        <div class="font-size-labels">
+                            <span class="font-label">小</span>
+                            <span class="font-label font-label-default">默认</span>
+                            <span class="font-label"></span>
+                            <span class="font-label"></span>
+                            <span class="font-label"></span>
+                            <span class="font-label"></span>
+                            <span class="font-label">大</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 技能自动更新 -->
             <div class="card">
                 <div class="setting-item">
@@ -1000,6 +1153,11 @@
             <!-- Token用量内容区 -->
             <div class="tab-content" id="tab-token" style="display: none; flex: 1; overflow: hidden;">
                 <iframe src="./token-usage.html" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+
+            <!-- 快捷键内容区 -->
+            <div class="tab-content" id="tab-hotkey" style="display: none; flex: 1; overflow: hidden;">
+                <iframe src="./hotkey.html" style="width: 100%; height: 100%; border: none;"></iframe>
             </div>
         </main>
     </div>
@@ -1262,6 +1420,7 @@
         navItems[1].dataset.tab = 'tab-model';
         navItems[2].dataset.tab = 'tab-plugin';
         navItems[3].dataset.tab = 'tab-token';
+        navItems[4].dataset.tab = 'tab-hotkey';
         
         navItems.forEach(item => {
             item.addEventListener('click', function() {
@@ -1276,7 +1435,7 @@
                 const tabId = this.dataset.tab;
                 document.getElementById(tabId).style.display = 'block';
                 
-                if (tabId === 'tab-token' || tabId === 'tab-model') {
+                if (tabId === 'tab-token' || tabId === 'tab-model' || tabId === 'tab-hotkey') {
                     mainContent.classList.add('tab-active-fullscreen');
                     document.body.style.overflow = 'hidden';
                 }
@@ -1320,6 +1479,75 @@
                 alert('已退出登录');
             }
         });
+
+        // 字体大小滑块拖拽
+        (function() {
+            const track = document.getElementById('fontSizeTrack');
+            const thumb = document.getElementById('fontSizeThumb');
+            if (!track || !thumb) return;
+
+            let isDragging = false;
+            const tickCount = 7;
+            const tickPositions = [];
+            for (let i = 0; i < tickCount; i++) {
+                tickPositions.push(i / (tickCount - 1));
+            }
+
+            function snapToNearest(percent) {
+                let nearest = tickPositions[0];
+                let minDist = Math.abs(percent - nearest);
+                for (let i = 1; i < tickPositions.length; i++) {
+                    const dist = Math.abs(percent - tickPositions[i]);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        nearest = tickPositions[i];
+                    }
+                }
+                return nearest;
+            }
+
+            function updateThumbPosition(clientX, snap) {
+                const rect = track.getBoundingClientRect();
+                let percent = (clientX - rect.left) / rect.width;
+                percent = Math.max(0, Math.min(1, percent));
+                if (snap) {
+                    percent = snapToNearest(percent);
+                }
+                thumb.style.left = (percent * 100) + '%';
+            }
+
+            thumb.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                e.preventDefault();
+            });
+
+            track.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains('hit-area')) {
+                    const index = parseInt(e.target.dataset.index);
+                    const percent = tickPositions[index];
+                    thumb.style.left = (percent * 100) + '%';
+                    return;
+                }
+                isDragging = true;
+                updateThumbPosition(e.clientX, true);
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    updateThumbPosition(e.clientX, false);
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    const rect = track.getBoundingClientRect();
+                    const currentLeft = parseFloat(thumb.style.left) / 100;
+                    const snapped = snapToNearest(currentLeft);
+                    thumb.style.left = (snapped * 100) + '%';
+                }
+                isDragging = false;
+            });
+        })();
 
         // 头像文件选择
         document.getElementById('avatarFileInput')?.addEventListener('change', function(e) {
