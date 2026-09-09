@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>图片 1:1 还原模板</title>
+<style>
+  /* ===== 颜色变量：用 analyze_image.py 主色板替换 ===== */
+  :root{
+    --c-bg:#F5F5F7;
+    --c-surface:#FFFFFF;
+    --c-primary:#1677FF;
+    --c-text:#1F2329;
+    --c-text-sub:#8A8F99;
+    --c-border:#E5E6EB;
+    --radius:8px;
+    --shadow:0 2px 8px rgba(0,0,0,.06);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",
+           "Hiragino Sans GB",Arial,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--font);color:var(--c-text);background:var(--c-bg);
+       -webkit-font-smoothing:antialiased;padding:24px 0}
+  /* 固定宽度画布：把 1200 改为源图宽度实现 1:1 */
+  .canvas{width:1200px;margin:0 auto;background:var(--c-surface);
+          border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+
+  /* ===== 按需启用以下组件片段（来自 css-patterns.md） ===== */
+  .nav{height:64px;display:flex;align-items:center;padding:0 24px;gap:24px;
+       border-bottom:1px solid var(--c-border)}
+  .nav .logo{font-weight:700;font-size:18px;color:var(--c-primary)}
+  .nav .menu{display:flex;gap:20px;margin-left:auto}
+  .nav .menu a{color:var(--c-text-sub);text-decoration:none;font-size:14px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;height:36px;
+       padding:0 16px;border-radius:var(--radius);font-size:14px;cursor:pointer;
+       border:1px solid transparent}
+  .btn-primary{background:var(--c-primary);color:#fff}
+  .ph{display:flex;align-items:center;justify-content:center;
+      background:repeating-linear-gradient(45deg,#eee,#eee 10px,#e3e3e3 10px,#e3e3e3 20px);
+      color:#999;font-size:12px}
+
+  /* ===== 在此按源图分区补充结构样式 ===== */
+</style>
+</head>
+<body>
+  <!-- canvas 宽度改为源图宽度即可 1:1 -->
+  <div class="canvas">
+    <!-- 顶部导航（示例） -->
+    <header class="nav">
+      <div class="logo">Logo</div>
+      <nav class="menu">
+        <a href="#" class="active">首页</a>
+        <a href="#">产品</a>
+        <a href="#">关于</a>
+      </nav>
+    </header>
+
+    <!-- 主体内容：按源图分区替换为真实结构与文字 -->
+    <main style="padding:24px">
+      <div class="ph" style="width:100%;height:200px;border-radius:var(--radius)">
+        <!-- 替换为真实图 -->
+        内容区占位
+      </div>
+      <div style="margin-top:16px">
+        <button class="btn btn-primary">主按钮</button>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

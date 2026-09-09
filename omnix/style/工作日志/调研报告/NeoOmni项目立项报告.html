@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeoOmni 企业级智能体平台 — 项目立项报告（v1.0）</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --card: #ffffff;
+    --accent: #1a365d;
+    --accent2: #2b6cb0;
+    --accent3: #4299e1;
+    --text: #1a202c;
+    --text2: #4a5568;
+    --border: #e2e8f0;
+    --highlight: #ebf8ff;
+    --warn: #fef3c7;
+    --green: #d1fae5;
+    --red: #fee2e2;
+    --purple: #ede9fe;
+    --code: #805ad5;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #e8e8e8;
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 13px;
+  }
+  .container { margin: 0 auto; padding: 0 24px 0 224px; }
+  .sidebar {
+    position: fixed; top: 0; left: 0; width: 200px; height: 100vh;
+    background: #1a202c; color: #e2e8f0; overflow-y: auto; z-index: 100;
+    display: flex; flex-direction: column; box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+  }
+  .sidebar-header { padding: 20px 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
+  .sidebar-header .logo { font-size: 11px; font-weight: 700; color: #63b3ed; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+  .sidebar-header .title { font-size: 14px; font-weight: 600; color: #fff; line-height: 1.4; }
+  .sidebar-header .meta-info { font-size: 10px; color: #718096; margin-top: 8px; line-height: 1.5; }
+  .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+  .sidebar-nav a { display: flex; align-items: flex-start; gap: 8px; padding: 9px 16px; color: #a0aec0; text-decoration: none; font-size: 12px; line-height: 1.4; transition: all 0.15s ease; border-left: 3px solid transparent; }
+  .sidebar-nav a:hover, .sidebar-nav a.active { color: #fff; background: rgba(66,153,225,0.12); border-left: 3px solid var(--accent3); }
+  .sidebar-nav a .n { font-weight: 700; color: #63b3ed; font-size: 11px; min-width: 14px; }
+  .sidebar-footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 10px; color: #718096; line-height: 1.5; }
+  .page { width: 100%; background: white; padding: 28px 32px; }
+  .report-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 50%, #4299e1 100%);
+    color: white; padding: 36px 40px; border-radius: 12px; margin-bottom: 24px; position: relative; overflow: hidden;
+  }
+  .report-header::before { content: ''; position: absolute; top: -50%; right: -20%; width: 400px; height: 400px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+  .report-header h1 { font-size: 27px; font-weight: 700; margin-bottom: 8px; letter-spacing: 1px; }
+  .report-header .subtitle { font-size: 14px; opacity: 0.85; margin-bottom: 16px; }
+  .report-header .meta { font-size: 12px; opacity: 0.65; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px; }
+  .section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 26px 30px; margin-bottom: 22px; }
+  h2 { font-size: 20px; color: var(--accent); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid var(--accent2); display: flex; align-items: center; gap: 10px; }
+  h2 .num { background: var(--accent); color: #fff; width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; }
+  h3 { font-size: 15px; color: var(--accent2); margin: 18px 0 10px; }
+  h4 { font-size: 13.5px; color: var(--text); margin: 14px 0 8px; }
+  p { margin-bottom: 10px; color: var(--text2); }
+  ul, ol { margin: 8px 0 12px 22px; color: var(--text2); }
+  li { margin-bottom: 5px; }
+  .exec-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .exec-tab { background: #f1f5f9; border: 1px solid var(--border); border-radius: 20px; padding: 7px 16px; font-size: 12.5px; cursor: pointer; color: var(--text2); transition: all 0.15s; }
+  .exec-tab.active { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+  .exec-panel { display: none; }
+  .exec-panel.active { display: block; }
+  .exec-metric-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 12px; margin-bottom: 16px; }
+  .exec-metric { background: linear-gradient(135deg,#f8fafc,#eef2f7); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .exec-metric .val { font-size: 23px; font-weight: 700; color: var(--accent); line-height: 1.2; }
+  .exec-metric .lbl { font-size: 11.5px; color: var(--text2); margin-top: 4px; }
+  .exec-highlight { background: var(--highlight); border-left: 4px solid var(--accent3); border-radius: 6px; padding: 14px 18px; margin: 14px 0; }
+  .exec-highlight strong { color: var(--accent); }
+  .exec-conclusion { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 12px 16px; margin-top: 12px; font-size: 12.5px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+  .card { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card.blue { background: #eff6ff; border-color: #bfdbfe; }
+  .card.green { background: #f0fdf4; border-color: #bbf7d0; }
+  .card.amber { background: #fffbeb; border-color: #fde68a; }
+  .card.purple { background: #f5f3ff; border-color: #ddd6fe; }
+  .card .ct { font-size: 13.5px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+  .card .cb { font-size: 12px; color: var(--text2); line-height: 1.6; }
+  .card .big { font-size: 22px; font-weight: 700; color: var(--accent2); }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 12px; }
+  th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--accent); color: #fff; font-weight: 600; font-size: 11.5px; }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+  td.center, th.center { text-align: center; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10.5px; font-weight: 600; }
+  .tag.win { background: var(--green); color: #065f46; }
+  .tag.loss { background: var(--red); color: #991b1b; }
+  .tag.draw { background: #e2e8f0; color: #475569; }
+  .tag.partial { background: var(--warn); color: #92400e; }
+  .kpi-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin: 14px 0; }
+  .kpi { background: linear-gradient(135deg,#1a365d,#2b6cb0); color: #fff; border-radius: 10px; padding: 14px; text-align: center; }
+  .kpi .v { font-size: 24px; font-weight: 700; }
+  .kpi .l { font-size: 11px; opacity: 0.85; margin-top: 4px; }
+  .arch-flow { display: flex; align-items: stretch; gap: 0; margin: 16px 0; flex-wrap: wrap; }
+  .arch-box { flex: 1; min-width: 130px; border: 2px solid var(--accent2); border-radius: 10px; padding: 14px 12px; text-align: center; position: relative; background: #f8fafc; }
+  .arch-box .at { font-size: 14px; font-weight: 700; color: var(--accent); }
+  .arch-box .ad { font-size: 11px; color: var(--text2); margin-top: 5px; }
+  .arch-arrow { display: flex; align-items: center; color: var(--accent3); font-size: 20px; padding: 0 4px; font-weight: 700; }
+  .roadmap { border-left: 3px solid var(--accent2); padding-left: 18px; margin: 14px 0; }
+  .roadmap-item { position: relative; margin-bottom: 18px; }
+  .roadmap-item::before { content: ''; position: absolute; left: -26px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent2); border: 2px solid #fff; box-shadow: 0 0 0 2px var(--accent2); }
+  .roadmap-item .rt { font-weight: 700; color: var(--accent); font-size: 13.5px; }
+  .roadmap-item .rd { font-size: 12px; color: var(--text2); }
+  .footer { text-align: center; font-size: 11px; color: #94a3b8; padding: 20px; }
+  .note { font-size: 11px; color: #718096; font-style: italic; margin-top: 6px; }
+  .assume { background: #fffbeb; border: 1px dashed #d6b86a; border-radius: 8px; padding: 12px 16px; margin: 14px 0; font-size: 12px; color: #713f12; }
+  .assume strong { color: #92400e; }
+  .src-note { background: #f5f3ff; border-left: 4px solid var(--code); border-radius: 6px; padding: 12px 16px; margin: 14px 0; font-size: 12px; color: #5b21b6; }
+
+  /* ===== 数据来源引用样式 ===== */
+  a.src { color: var(--code); text-decoration: none; border-bottom: 1px dotted var(--code); font-size: 10.5px; white-space: nowrap; cursor: pointer; }
+  a.src:hover { background: #f3edfc; }
+  sup.ref { color: var(--code); font-weight: 700; font-size: 10.5px; cursor: help; }
+  .src-tooltip {
+    position: fixed; max-width: 360px; padding: 10px 14px; background: rgba(30,40,55,0.96); color: #fff;
+    font-size: 12px; line-height: 1.6; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    pointer-events: none; opacity: 0; transform: translateY(4px); transition: opacity 0.15s, transform 0.15s;
+    z-index: 9999; white-space: normal; word-wrap: break-word;
+  }
+  .src-tooltip.show { opacity: 1; transform: translateY(0); }
+  .src-tooltip::before { content: ''; position: absolute; top: -5px; left: 20px; width: 10px; height: 10px; background: rgba(30,40,55,0.96); transform: rotate(45deg); }
+  .src-tooltip .code-tag { display: inline-block; background: var(--accent3); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-right: 6px; }
+  .src-list { font-size: 12.5px; }
+  .src-list .item { display: flex; gap: 12px; padding: 11px 0; border-bottom: 1px solid #eef1f6; align-items: flex-start; }
+  .src-list .code { background: var(--accent); color: #fff; font-weight: 700; font-size: 11px; padding: 3px 9px; border-radius: 5px; white-space: nowrap; min-width: 42px; text-align: center; }
+  .src-list .body { flex: 1; }
+  .src-list .body .ttl { font-weight: 600; color: var(--text); }
+  .src-list .body a { color: var(--code); text-decoration: none; word-break: break-all; font-size: 11.5px; }
+  .src-list .body a:hover { text-decoration: underline; }
+  .src-group-title { font-size: 14px; color: var(--accent2); margin: 18px 0 6px; font-weight: 700; }
+
+  @media (max-width: 900px){ .container{ padding-left: 16px; } .sidebar{ display:none; } .grid-2,.grid-3,.kpi-strip{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">NEOOMNI PROJECT</div>
+    <div class="title">企业级智能体平台<br>项目立项报告</div>
+    <div class="meta-info">v1.0 · 2026-08-06<br>思维特数字科技 × WorkBuddy</div>
+  </div>
+  <div class="sidebar-nav">
+    <a href="#exec"><span class="n">*</span> 汇报总览 / 预览</a>
+    <a href="#s1"><span class="n">1</span> 项目预览</a>
+    <a href="#s2"><span class="n">2</span> 市场论证</a>
+    <a href="#s3"><span class="n">3</span> 里程碑规划</a>
+    <a href="#s4"><span class="n">4</span> 投入产出</a>
+    <a href="#s5"><span class="n">5</span> 风险与假设来源</a>
+  </div>
+  <div class="sidebar-footer">
+    本文档为内部立项决策材料。<br>
+    <strong style="color:#cbd5e0;">市场论证章节数据均标注权威来源 [代码]；</strong><br>
+    投入产出 / 里程碑中的规划数字为<strong style="color:#fbbf24;">内部测算假设</strong>，须经财务与决策层核定。
+  </div>
+</div>
+
+<div class="container">
+<div class="page">
+
+  <div class="report-header">
+    <h1>NeoOmni 企业级智能体平台 — 项目立项报告</h1>
+    <div class="subtitle">多端协同 · 私有化安全合规 · 行业 Know-How 沉淀的 Agent 编排平台</div>
+    <div class="meta">编制：产品管理团队　|　版本：v1.0　|　日期：2026-08-06　|　密级：内部（立项决策用）</div>
+  </div>
+
+  <!-- ============ 汇报总览 / 预览 ============ -->
+  <div class="section" id="exec">
+    <h2><span class="num">*</span> 汇报总览 / 预览</h2>
+    <div class="exec-tabs">
+      <div class="exec-tab active" data-tab="t1">项目定位</div>
+      <div class="exec-tab" data-tab="t2">核心价值</div>
+      <div class="exec-tab" data-tab="t3">关键数字</div>
+      <div class="exec-tab" data-tab="t4">决策建议</div>
+    </div>
+
+    <div class="exec-panel active" id="t1">
+      <p><strong>NeoOmni</strong> 是一款面向中大型企业 / 政企客户的<strong>企业级智能体编排平台</strong>，以<strong>四端协同</strong>架构（BOSS 端 / GPT 端 / Chat 端 / 桌面端）覆盖"租户管理—智能体开发—对话使用—桌面工作流"全链路，并以<strong>私有化部署 + 数据不出域 + 行业模板</strong>切入制造、化工、能源、金融等高合规场景。</p>
+      <div class="exec-highlight">
+        <strong>一句话定位：</strong>把 Dify 的开发力、Coze 的易用性、WorkBuddy 的桌面入口、Agentar 的合规力，封装进一个<strong>私有化、懂制造 / 化工业务</strong>的四端平台，填补"既安全合规、又懂产业"的空白带。
+      </div>
+      <p>立项本质：不是再造一个聊天机器人，而是填补企业从"试验智能体"到"规模化用好智能体"之间的产品化鸿沟——以<strong>可治理、可审计、可私有化、可嵌入工作流</strong>的能力构建差异化护城河。</p>
+    </div>
+
+    <div class="exec-panel" id="t2">
+      <div class="grid-3">
+        <div class="card green"><div class="ct">① 私有化安全合规</div><div class="cb">原生多租户隔离、RBAC 细粒度权限、私有化部署、数据不出域；RAG 强制 + 置信度阈值 + 人工在环三重控幻觉。呼应三部门"决策权限边界 + 注册平台"监管要求 <a class="src" href="#s5">[P2]</a>。</div></div>
+        <div class="card blue"><div class="ct">② 四端统一入口</div><div class="cb">BOSS 端治理、GPT 端开发、Chat 端使用、桌面端工作流——一个平台覆盖"管 / 建 / 用 / 干"，降低企业多工具拼装成本。</div></div>
+        <div class="card purple"><div class="ct">③ 行业资产沉淀</div><div class="cb">以制造 / 化工 / 纺织行业方案包 + 数据集资产形成可复制交付，把项目制交付升级为"平台 + 模板"的产品化模式。</div></div>
+      </div>
+      <p class="note">治理即卖点：将 BOSS 端"配额 / 模型管控 / 审计"作为差异化能力，直接回应 Gartner 预警中 40%+ 代理型项目被取消的"风险管控不足"根因 <a class="src" href="#s5">[D2]</a>。</p>
+    </div>
+
+    <div class="exec-panel" id="t3">
+      <div class="exec-metric-row">
+        <div class="exec-metric"><div class="val">449 亿</div><div class="lbl">2026 中国企业级 AI 智能体整体市场（CAGR 107%） <a class="src" href="#s5">[M3] IDC</a></div></div>
+        <div class="exec-metric"><div class="val">87.5%</div><div class="lbl">私有化占中国智能体开发平台收入比重，主攻赛道 <a class="src" href="#s5">[M2] IDC</a></div></div>
+        <div class="exec-metric"><div class="val">>70%</div><div class="lbl">制造/能源/金融/政务四大行业占智能体份额 <a class="src" href="#s5">[M1] 赛迪</a></div></div>
+        <div class="exec-metric"><div class="val">18%</div><div class="lbl">仅 18% 企业将智能体纳入核心流程——"用好"空间巨大 <a class="src" href="#s5">[M3] IDC</a></div></div>
+      </div>
+      <div class="assume">
+        <strong>内部测算基线（需决策层核定）</strong>：三年累计投入约 <strong>1,000 万</strong>，基线情景累计营收约 <strong>3,000 万</strong>、签约客户 30+，净收益约 <strong>800–950 万</strong>，回收期约第 2.5 年。详见 §4。
+      </div>
+    </div>
+
+    <div class="exec-panel" id="t4">
+      <div class="exec-conclusion">
+        <strong>决策建议：建议立项。</strong>市场处于渗透率拐点（Gartner 预测 2026 年底 40% 企业软件嵌入智能体 <a class="src" href="#s5">[M4]</a>）、政策强力支持（国务院 2027 普及率 >70% <a class="src" href="#s5">[P1]</a>）、且存在"私有化 + 行业 Know-How"的明确空白带。建议以<strong>先内后外、聚焦垂直</strong>策略推进：短期补齐 P0/P1 功能短板，中期构建 Agent 市场与多租户，长期成为行业级平台。
+      </div>
+      <p class="note">立项须以"可量化 ROI"而非"技术炫技"驱动；投入产出数字为内部规划假设，须财务部门核定后作为考核基线。</p>
+    </div>
+  </div>
+
+  <!-- ============ 1. 项目预览 ============ -->
+  <div class="section" id="s1">
+    <h2><span class="num">1</span> 项目预览</h2>
+
+    <h3>1.1 项目背景与 Why</h3>
+    <p>企业智能体正从"尝鲜"走向"生产级部署"。McKinsey 2025 调研显示 <strong>88% 企业已在至少 1 个职能使用 AI、62% 至少处于智能体试验阶段</strong> <a class="src" href="#s5">[D1]</a>，但<strong>仅 6% 企业从 AI 拿到显著 EBIT、仅 23% 实现规模化</strong> <a class="src" href="#s5">[D1]</a>。Gartner 更预警<strong>到 2027 年底超过 40% 的代理型 AI 项目将被取消</strong>，主因是成本失控、价值不清、风险管控不足 <a class="src" href="#s5">[D2]</a>。</p>
+    <p>矛盾点在于：需求侧已验证，但供给侧呈"哑铃型"——一端轻量但强绑公有云（Coze / 元器），一端重但昂贵（蚂蚁 Agentar / 华为）。中间存在一个<strong>空白带：既私有化安全合规、又深耕制造业 / 化工业务 Know-How、且提供从开发到桌面端统一入口的产品</strong>。NeoOmni 四端架构正是为填补这一空白而生。</p>
+
+    <h3>1.2 项目目标</h3>
+    <div class="grid-2">
+      <div class="card blue">
+        <div class="ct">北极星指标</div>
+        <div class="cb"><strong>私有化部署的月活跃智能体调用次数</strong>——衡量平台是否真正进入企业生产流程，而非"搭了不用"。该指标直接对应 IDC"仅 18% 纳入核心流程"的差距 <a class="src" href="#s5">[M3]</a>。</div>
+      </div>
+      <div class="card">
+        <div class="ct">业务目标（3 年）</div>
+        <div class="cb">
+          <ul style="margin-left:18px;margin-bottom:0;">
+            <li>成为制造 / 化工行业私有化智能体平台的差异化标杆；</li>
+            <li>打通"开发—治理—使用—桌面"全链路四端体验；</li>
+            <li>形成可复制的行业方案包与数据集资产（详见 §4 产出）。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="exec-highlight"><strong>驱动指标：</strong>四端开通率、上线智能体数、行业模板复用率、私有化部署数、单客户 ARR、续约率。</div>
+
+    <h3>1.3 四端架构与产品范围</h3>
+    <div class="arch-flow">
+      <div class="arch-box"><div class="at">BOSS 端</div><div class="ad">租户 / 配额 / 模型管控 / 审计治理</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box"><div class="at">GPT 端</div><div class="ad">智能体开发（类 Dify 编排）</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box"><div class="at">Chat 端</div><div class="ad">对话使用（类 Coze 网页端）</div></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-box"><div class="at">桌面端</div><div class="ad">桌面工作流（类 WorkBuddy）</div></div>
+    </div>
+    <table>
+      <thead><tr><th>端</th><th>对标对象</th><th>核心职责</th><th>关键能力</th></tr></thead>
+      <tbody>
+        <tr><td><strong>BOSS 端</strong></td><td>企业租户管理后台</td><td>租户 / 配额 / 模型管控 / 审计</td><td>多租户、RBAC、成本分摊、合规审计</td></tr>
+        <tr><td><strong>GPT 端</strong></td><td>Dify</td><td>智能体可视化开发</td><td>多模型接入、RAG、工作流、MCP、模板</td></tr>
+        <tr><td><strong>Chat 端</strong></td><td>Coze 网页端</td><td>智能体对话使用</td><td>对话流、发布渠道、知识问答</td></tr>
+        <tr><td><strong>桌面端</strong></td><td>WorkBuddy</td><td>桌面工作流编排</td><td>本地文件 / 应用交互、跨系统执行</td></tr>
+      </tbody>
+    </table>
+
+    <h3>1.4 非目标（Non-goals · 范围控制）</h3>
+    <div class="grid-2">
+      <div class="card amber"><div class="ct">明确不做</div><div class="cb">
+        <ul style="margin-left:18px;margin-bottom:0;">
+          <li>不直接做通用 C 端流量产品，避开与巨头的正面竞争；</li>
+          <li>不自研底层大模型，采用多模型热插拔接入；</li>
+          <li>首期不铺公有云大规模 SaaS，聚焦私有化政企。</li>
+        </ul>
+      </div></div>
+      <div class="card"><div class="ct">边界说明</div><div class="cb">以"平台 + 行业模板"模式交付，行业深度由样板客户共建沉淀，而非一次性全行业铺开。技术可行性优先，不承诺当前工程无法实现的泛化能力。</div></div>
+    </div>
+  </div>
+
+  <!-- ============ 2. 市场论证 ============ -->
+  <div class="section" id="s2">
+    <h2><span class="num">2</span> 市场论证</h2>
+    <div class="src-note">本章所有外部市场 / 政策 / 竞品数据均标注来源代码 [M/P/D/C]，鼠标悬停看来源、点击打开官方链接，详见 §5 来源附录。内部规划数字不在本章出现。</div>
+
+    <h3>2.1 市场规模与增速（TAM / SAM / SOM）</h3>
+    <div class="kpi-strip">
+      <div class="kpi"><div class="v">449 亿</div><div class="l">2026 企业级 AI 智能体市场 <a class="src" href="#s5">[M3]</a></div></div>
+      <div class="kpi"><div class="v">17.5 亿</div><div class="l">2025 私有化平台层（占 87.5%） <a class="src" href="#s5">[M2]</a></div></div>
+      <div class="kpi"><div class="v">135.3 亿</div><div class="l">2026 中国智能体市场（赛迪 +70%） <a class="src" href="#s5">[M1]</a></div></div>
+      <div class="kpi"><div class="v">2,026 亿</div><div class="l">2029 预测（CAGR 107%） <a class="src" href="#s5">[M3]</a></div></div>
+    </div>
+    <table>
+      <thead><tr><th>层级</th><th>定义</th><th>规模 / 增速</th><th>覆盖</th></tr></thead>
+      <tbody>
+        <tr><td><strong>TAM</strong><br>总潜在市场</td><td>中国企业级 AI 智能体整体市场</td><td>2026 ≈ 449 亿，2029 ≈ 2,026 亿（CAGR 107%） <a class="src" href="#s5">[M3] IDC</a></td><td>所有行业、所有形态智能体支出</td></tr>
+        <tr><td><strong>SAM</strong><br>可服务市场</td><td>需私有化 / 高合规部署、具备复杂业务系统的中大型企业</td><td>私有化平台层 ≈ 17.5 亿（2025）→ 预计 2026 超 40 亿 <a class="src" href="#s5">[M2] IDC</a>；叠加政务 / 制造 / 能源 / 金融四大行业（占智能体份额 >70%） <a class="src" href="#s5">[M1] 赛迪</a></td><td>强合规 + 多系统 + 数据不出域客户</td></tr>
+        <tr><td><strong>SOM</strong><br>可获取市场</td><td>化工 / 化纤 / 纺织 / 制造行业 + 已验证对外案例行业</td><td>以正凯产业链为锚点的行业垂直切入（具体商业目标见 §4，属内部规划假设）</td><td>私有化 + 行业模板 + 治理管控的差异化路径</td></tr>
+      </tbody>
+    </table>
+    <p><strong>平台软件层（NeoOmni 直接赛道）</strong>：据 IDC《中国智能体开发平台市场份额，2025》，2025 年智能体开发平台软件产品总收入约 <strong>20 亿元</strong>，其中<strong>私有化 17.5 亿（87.5%）、公有云 2.5 亿</strong>。私有化已初具规模，是当下收入主战场 <a class="src" href="#s5">[M2] IDC</a>。</p>
+
+    <h3>2.2 政策红利</h3>
+    <div class="grid-2">
+      <div class="card green"><div class="ct">国务院《人工智能+行动意见》 <a class="src" href="#s5">[P1]</a></div><div class="cb">明确 2027 年智能体普及率 <strong>>70%</strong>、2030 年 <strong>>90%</strong>，从国家层面确立智能体战略地位。</div></div>
+      <div class="card blue"><div class="ct">三部门《智能体实施意见》 <a class="src" href="#s5">[P2]</a></div><div class="cb">2026-05-08 发布，5 方向 19 场景，首次厘清"用户本人 / 授权 / 自主"决策边界、探索智能体注册平台——直接利好合规型私有化平台。</div></div>
+    </div>
+
+    <h3>2.3 需求验证（无需假设，权威实证）</h3>
+    <table>
+      <thead><tr><th>维度</th><th>数据</th><th>来源</th></tr></thead>
+      <tbody>
+        <tr><td>采用广度</td><td>88% 企业已在至少 1 个职能使用 AI；62% 企业"至少在试验"智能体</td><td><a class="src" href="#s5">[D1] McKinsey</a></td></tr>
+        <tr><td>规模化鸿沟</td><td>仅 23% 实现规模化、仅 6% 获显著 EBIT</td><td><a class="src" href="#s5">[D1] McKinsey</a></td></tr>
+        <tr><td>渗透率拐点</td><td>2026 年底 40% 企业软件嵌入智能体（2025 不足 5%）；2031 年达 3.5 亿活跃智能体</td><td><a class="src" href="#s5">[M4] Gartner</a> / <a class="src" href="#s5">[M3] IDC</a></td></tr>
+        <tr><td>失败预警</td><td>到 2027 年底 >40% 代理型 AI 项目将被取消，主因成本失控 / 价值不清 / 风险管控不足</td><td><a class="src" href="#s5">[D2] Gartner</a></td></tr>
+        <tr><td>供给侧膨胀</td><td>2026-02 国内智能体服务商突破 300 家，但仅 18% 企业纳入核心流程</td><td><a class="src" href="#s5">[M3] IDC</a></td></tr>
+      </tbody>
+    </table>
+
+    <h3>2.4 竞争格局与空白带</h3>
+    <p>2025 私有化市场前五：<strong>火山引擎 HiAgent（17.8%）</strong> &gt; 腾讯云 ADP（8.8%）&gt; 阿里云百炼专属版（8.6%）&gt; 蚂蚁数科 Agentar（非云厂商第一）&gt; 电信 AI <a class="src" href="#s5">[C4] IDC 2025</a>。公有云前三：火山引擎扣子、百度智能云千帆、腾讯云 ADP。</p>
+    <table>
+      <thead><tr><th>阵营</th><th>代表</th><th>与 NeoOmni 关系</th></tr></thead>
+      <tbody>
+        <tr><td>开源灵活型</td><td>Dify（148K+ Stars、280+ 企业客户 <a class="src" href="#s5">[C1]</a>）、LangChain、n8n</td><td>对应 NeoOmni 的 GPT 端（类 Dify 编排），但缺企业级多租户 / 安全治理</td></tr>
+        <tr><td>轻量绑云型</td><td>Coze（1 亿+ Agent、月活 1500 万 <a class="src" href="#s5">[C2]</a>）、元器</td><td>强绑公有云、数据合规存疑、行业 Know-How 浅</td></tr>
+        <tr><td>桌面入口型</td><td>腾讯 WorkBuddy（PC 月访问 2097 万、国内第一 <a class="src" href="#s5">[C3]</a>）</td><td>对应 NeoOmni 桌面端，但偏 C 端通用</td></tr>
+        <tr><td><strong>全栈高合规型</strong></td><td>蚂蚁 Agentar、华为盘古</td><td><span class="tag win">直接对标</span> NeoOmni 主航道，但价格高昂、行业 Know-How 弱</td></tr>
+      </tbody>
+    </table>
+    <div class="exec-highlight"><strong>关键洞察：</strong>现有阵营缺少"既私有化安全合规、又深耕制造业 / 化工业务、且提供开发到桌面统一入口"的产品。<strong>NeoOmni 以"数据不出域 + 行业样板 + 四端协同"切入，错位竞争，避开 C 端流量战。</strong></div>
+
+    <h3>2.5 市场论证结论</h3>
+    <div class="exec-conclusion">
+      <strong>市场成立，且窗口期明确。</strong>① 规模高速增长（CAGR 107% <a class="src" href="#s5">[M3]</a>）；② 私有化是当下收入主战场（占 87.5% <a class="src" href="#s5">[M2]</a>）；③ 政策强力托底（2027 >70% 普及率 <a class="src" href="#s5">[P1]</a>）；④ 需求已实证但"用好"存在巨大产品化空间（仅 18% 纳入核心 <a class="src" href="#s5">[M3]</a>）；⑤ 竞争存在"私有化 + 行业 Know-How"空白带。NeoOmni 的产品定义与这一空白带高度契合，<strong>立项具备充分的市场依据。</strong>
+    </div>
+  </div>
+
+  <!-- ============ 3. 里程碑规划 ============ -->
+  <div class="section" id="s3">
+    <h2><span class="num">3</span> 里程碑规划</h2>
+    <p class="note">里程碑为项目实施计划（内部规划），交付物与节奏基于产品现状与资源假设设定，须随资源到位情况滚动修订。</p>
+
+    <h3>3.1 三期实施路线</h3>
+    <div class="roadmap">
+      <div class="roadmap-item"><div class="rt">第一期（2026 Q3 – 2027 Q1）基础能力建设</div><div class="rd">BOSS 端核心、GPT 端基础开发环境、Chat 端基础对话、模型接入 3+、基础 RAG、私有化 V1。聚焦私有化 + 治理底座。</div></div>
+      <div class="roadmap-item"><div class="rt">第二期（2027 Q2 – 2028 Q2）能力增强与规模化</div><div class="rd">知识图谱引擎、多 Agent 协作、高级 RAG、成本管控、组织权限完善、ERP/MES 集成；目标 50+ 智能体上线。</div></div>
+      <div class="roadmap-item"><div class="rt">第三期（2028 Q3 – 2030）生态构建与商业化</div><div class="rd">多租户 SaaS、智能体市场、行业解决方案包、外部商业化输出、生态合作伙伴体系。</div></div>
+    </div>
+
+    <h3>3.2 详细里程碑表（交付物 / 退出标准）</h3>
+    <table>
+      <thead><tr><th>里程碑</th><th>时间窗</th><th>关键交付物</th><th>退出标准（可验收）</th></tr></thead>
+      <tbody>
+        <tr><td>M0 立项启动</td><td>2026 Q3 初</td><td>立项获批、团队组建、技术选型锁定</td><td>预算 / 人力到位，架构蓝图评审通过</td></tr>
+        <tr><td>M1 治理底座</td><td>2026 Q3–Q4</td><td>BOSS 端核心（多租户 / RBAC / 审计）、私有化 V1</td><td>单租户私有化部署跑通，权限 / 审计可用</td></tr>
+        <tr><td>M2 开发闭环</td><td>2026 Q4–2027 Q1</td><td>GPT 端（单 / 多 Agent、工作流、RAG、MCP）、Chat 端基础</td><td>P0/P1 功能清单达标，可搭建行业智能体</td></tr>
+        <tr><td>M3 桌面入口</td><td>2027 Q1–Q2</td><td>桌面端工作流、ERP/MES 集成试点</td><td>端到端链路打通，样板客户内测</td></tr>
+        <tr><td>M4 规模化</td><td>2027 Q2–2028 Q2</td><td>高级 RAG、多 Agent 协作、成本管控、模板市场</td><td>50+ 智能体上线，续约 / 调用指标达标</td></tr>
+        <tr><td>M5 商业化生态</td><td>2028 Q3–2030</td><td>多租户 SaaS、Agent 市场、行业方案包、伙伴体系</td><td>外部签约客户数 / ARR 达 §4 基线目标</td></tr>
+      </tbody>
+    </table>
+
+    <h3>3.3 MVP 三阶段（产品化聚焦）</h3>
+    <div class="grid-3">
+      <div class="card amber"><div class="ct">MVP-A · 补齐标配</div><div class="cb">优先 P0/P1：单 Agent、对话流、工作流、模板市场、MCP。让"能搭"达到行业基准，消除选型硬伤。</div></div>
+      <div class="card amber"><div class="ct">MVP-B · 强化治理</div><div class="cb">补齐统计看板、API Key 管理、安全护栏、Token 成本分摊。呼应 IDC"治理侧"竞争焦点 <a class="src" href="#s5">[M2]</a>，凸显企业级差异。</div></div>
+      <div class="card amber"><div class="ct">MVP-C · 行业样板</div><div class="cb">打包"化工 / 化纤 / 纺织行业解决方案 + 数据集资产 + 桌面端"，形成对外可复制的一站式交付。</div></div>
+    </div>
+
+    <h3>3.4 关键依赖与前提</h3>
+    <ul>
+      <li><strong>资源前提</strong>：核心研发团队按计划到位（人力规划见 §4）；</li>
+      <li><strong>技术前提</strong>：多模型接入抽象层、信创 / 私有化部署环境就绪；</li>
+      <li><strong>业务前提</strong>：至少 1 个行业样板客户共建，沉淀可复制资产；</li>
+      <li><strong>合规前提</strong>：满足三部门"决策权限边界 + 注册平台"监管要求 <a class="src" href="#s5">[P2]</a>。</li>
+    </ul>
+  </div>
+
+  <!-- ============ 4. 投入产出 ============ -->
+  <div class="section" id="s4">
+    <h2><span class="num">4</span> 投入产出</h2>
+    <div class="assume">
+      <strong>重要声明：</strong>本章投入与收益数字为<strong>内部测算假设（基线情景）</strong>，用于立项论证与资源申请，<strong>非外部权威数据</strong>，须经财务部门与决策层核定后作为正式考核基线。所有外部市场参照已在 §2 标注来源。
+    </div>
+
+    <h3>4.1 投入结构（三年累计，内部假设）</h3>
+    <table>
+      <thead><tr><th>投入项</th><th>测算（万元）</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>人力（核心团队 15–18 人）</td><td class="center">≈ 700</td><td>研发 / 算法 / 前后端 / 测试 / 实施，分三期扩张</td></tr>
+        <tr><td>基础设施与算力</td><td class="center">≈ 200</td><td>私有化部署、模型推理资源、信创适配、安全合规认证</td></tr>
+        <tr><td>市场 / 销售 / 生态</td><td class="center">≈ 100</td><td>行业样板共建、渠道、伙伴体系</td></tr>
+        <tr><td><strong>三年累计投入</strong></td><td class="center"><strong>≈ 1,000</strong></td><td>基线假设，按资源到位滚动修订</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.2 产出与收益模型（内部假设）</h3>
+    <div class="grid-2">
+      <div class="card blue"><div class="ct">直接产出（能力资产）</div><div class="cb">
+        <ul style="margin-left:18px;margin-bottom:0;">
+          <li>四端平台（BOSS/GPT/Chat/桌面）私有化可用；</li>
+          <li>行业方案包（化工 / 化纤 / 纺织）+ 数据集资产；</li>
+          <li>可复制交付模板与实施方法论；</li>
+          <li>标杆案例与生态伙伴。</li>
+        </ul>
+      </div></div>
+      <div class="card green"><div class="ct">商业回报模型</div><div class="cb">
+        <ul style="margin-left:18px;margin-bottom:0;">
+          <li><strong>平台授权</strong>：私有化一次性 / 订阅授权（主力）；</li>
+          <li><strong>定制实施</strong>：行业方案包 + 定制开发；</li>
+          <li><strong>运维 / 订阅（ARR）</strong>：续费与增购；</li>
+          <li>三类收入叠加形成可持续现金流。</li>
+        </ul>
+      </div></div>
+    </div>
+
+    <h3>4.3 ROI 三情景测算（内部假设）</h3>
+    <table>
+      <thead><tr><th>指标</th><th class="center">悲观</th><th class="center">基线（申请基准）</th><th class="center">乐观</th></tr></thead>
+      <tbody>
+        <tr><td>三年累计营收（万元）</td><td class="center">≈ 1,500</td><td class="center"><strong>≈ 3,000</strong></td><td class="center">≈ 5,000</td></tr>
+        <tr><td>签约客户数</td><td class="center">≈ 15</td><td class="center"><strong>≈ 30+</strong></td><td class="center">≈ 60+</td></tr>
+        <tr><td>毛利率假设</td><td class="center">≈ 55%</td><td class="center"><strong>≈ 60%</strong></td><td class="center">≈ 65%</td></tr>
+        <tr><td>毛利（万元）</td><td class="center">≈ 825</td><td class="center"><strong>≈ 1,800</strong></td><td class="center">≈ 3,250</td></tr>
+        <tr><td>净收益＝毛利－投入</td><td class="center">≈ -175</td><td class="center"><strong>≈ 800</strong></td><td class="center">≈ 2,250</td></tr>
+        <tr><td>ROI</td><td class="center"><span class="tag loss">-17%</span></td><td class="center"><span class="tag partial">≈ +80%</span></td><td class="center"><span class="tag win">≈ +225%</span></td></tr>
+        <tr><td>回收期</td><td class="center">＞3 年</td><td class="center"><strong>≈ 第 2.5 年</strong></td><td class="center">≈ 第 1.5 年</td></tr>
+      </tbody>
+    </table>
+    <p class="note">基线情景净收益约 800 万（与历史内部测算 950 万区间一致，差异源于毛利率假设口径）。悲观情景下仍可通过"先内后外、控制扩张节奏"将回收期控制在可承受范围——即立项风险可控。</p>
+
+    <h3>4.4 立项回报逻辑</h3>
+    <div class="exec-highlight">
+      <strong>为什么值得投：</strong>① 市场处于 CAGR 107% 的高速赛道 <a class="src" href="#s5">[M3]</a>，先发占位价值高；② 私有化占收入 87.5% <a class="src" href="#s5">[M2]</a>，主攻赛道现金流属性好；③ 以"行业样板 + 平台授权"模式，单位客户价值与续约率随模板复用提升；④ 即便悲观情景，投入规模（≈1,000 万）相对市场机会仍属可控赌注。<strong>建议以基线情景作为资源申请与考核基准，设悲观情景为红线预警。</strong>
+    </div>
+  </div>
+
+  <!-- ============ 5. 风险与假设来源 ============ -->
+  <div class="section" id="s5">
+    <h2><span class="num">5</span> 风险与假设来源</h2>
+
+    <h3>5.1 风险矩阵</h3>
+    <table>
+      <thead><tr><th>维度</th><th>风险 / 依据</th><th>应对</th></tr></thead>
+      <tbody>
+        <tr><td>市场风险</td><td>Gartner 预警 40%+ 代理型项目 2027 前取消 <a class="src" href="#s5">[D2]</a>；McKinsey 显示仅 6% 企业从 AI 拿到显著 EBIT <a class="src" href="#s5">[D1]</a></td><td>以"可量化 ROI"而非"技术炫技"驱动签约；设悲观情景红线</td></tr>
+        <tr><td>合规风险</td><td>三部门要求厘清"用户 / 授权 / 自主"决策边界并探索注册平台 <a class="src" href="#s5">[P2]</a></td><td>内置决策权限与审计能力（BOSS 端），提前对齐监管</td></tr>
+        <tr><td>竞争风险</td><td>字节 / 腾讯 / 阿里 / 火山在资本、生态、流量全面占优</td><td>错位竞争：私有化政企 + 行业模板，避开 C 端通用赛道</td></tr>
+        <tr><td>技术风险</td><td>模型迭代快，自建能力易被追平</td><td>抽象层热插拔、多模型接入、行业资产沉淀形成护城河</td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.2 数据来源与假设声明</h3>
+    <div class="src-note">
+      <strong>两类数据严格区分：</strong>
+      <br>① <strong>外部权威数据</strong>（§2 市场论证）— 来源代码 [M/P/D/C] 见下方附录，均来自 Gartner、IDC、McKinsey、赛迪顾问、国务院、国家网信办 / 发改委 / 工信部，及 Dify / Coze / WorkBuddy / HiAgent 官方或权威媒体披露；
+      <br>② <strong>内部规划假设</strong>（§1.2 / §3 / §4 的预览、里程碑、投入产出数字）— 为立项测算基线，<strong>非外部数据</strong>，须经财务与决策层核定。
+    </div>
+
+    <div class="src-group-title">市场 / 规模（M）</div>
+    <div class="src-list">
+      <div class="item"><span class="code">M1</span><div class="body"><div class="ttl">赛迪顾问 — 中国智能体市场 2026E 135.3 亿元（同比 +70%）；制造 / 能源 / 金融 / 政务四大行业占比超 70%</div><a href="http://cms.ccidconsulting.com/article/8130" target="_blank">http://cms.ccidconsulting.com/article/8130</a> ｜ <a href="https://www.21jingji.com/article/20260508/herald/5749e520050cbe04fcd735c0df1d7623.html" target="_blank">21 世纪经济报道</a></div></div>
+      <div class="item"><span class="code">M2</span><div class="body"><div class="ttl">IDC —《中国智能体开发平台市场份额，2025》：私有化 17.5 亿（占 87.5%）、公有云 2.5 亿；AI 应用公有云 137.3 亿 vs 大模型训推 79.4 亿</div><a href="https://ifnews.com/news.html?aid=841918" target="_blank">ifnews.com</a> ｜ <a href="https://qa.idc.com/resource-center/press-releases/idc%e9%a6%96%e5%8f%91%e6%99%ba%e8%83%bd%e4%bd%93%e5%bc%80%e5%8f%91%e5%b9%b3%e5%8f%b0%e5%b8%82%e5%9c%ba%e4%bb%bd%e9%a2%9d%e6%8a%a5%e5%91%8a-%e7%a7%81%e6%9c%89%e5%8c%96%e5%88%9d" target="_blank">qa.idc.com（IDC 首发）</a></div></div>
+      <div class="item"><span class="code">M3</span><div class="body"><div class="ttl">IDC — 中国企业级 AI 智能体整体市场：2025 年 212 亿 → 2026 年 449 亿 → 2029 年 2,026 亿（CAGR 107%）；2031 年 3.5 亿活跃智能体；仅 18% 企业纳入核心流程；2026-02 服务商突破 300 家</div><a href="https://qa.idc.com/resource-center/press-releases/idc%e9%a6%96%e5%8f%91%e6%99%ba%e8%83%bd%e4%bd%93%e5%bc%80%e5%8f%91%e5%b9%b3%e5%8f%b0%e5%b8%82%e5%9c%ba%e4%bb%bd%e9%a2%9d%e6%8a%a5%e5%91%8a-%e7%a7%81%e6%9c%89%e5%8c%96%e5%88%9d" target="_blank">qa.idc.com（IDC 中国智能体市场）</a></div></div>
+      <div class="item"><span class="code">M4</span><div class="body"><div class="ttl">Gartner — 2026 年底 40% 企业软件将嵌入智能体（2025 不足 5%）；2028 年 45% IT 交互经智能体完成</div><a href="https://gartner.com/en/articles/3-bold-and-actionable-predictions-for-the-future-of-genai" target="_blank">gartner.com / predictions for the future of GenAI</a></div></div>
+    </div>
+
+    <div class="src-group-title">政策（P）</div>
+    <div class="src-list">
+      <div class="item"><span class="code">P1</span><div class="body"><div class="ttl">国务院 —《关于深入实施"人工智能+"行动的意见》（2025-08）：2027 年智能体普及率 >70%、2030 年 >90%</div><a href="https://www.gov.cn/zhengce/202508/content_7037929.htm" target="_blank">www.gov.cn/zhengce/202508/content_7037929.htm</a></div></div>
+      <div class="item"><span class="code">P2</span><div class="body"><div class="ttl">国家网信办 / 发改委 / 工信部 —《智能体规范应用与创新发展实施意见》（2026-05-08）：5 方向 19 场景、决策权限边界、注册平台</div><a href="https://www.cac.gov.cn/2026-05/08/c_1779979789523320.htm" target="_blank">www.cac.gov.cn/2026-05/08/c_1779979789523320.htm</a></div></div>
+    </div>
+
+    <div class="src-group-title">需求验证（D）</div>
+    <div class="src-list">
+      <div class="item"><span class="code">D1</span><div class="body"><div class="ttl">McKinsey — The State of AI 2025：88% 用 AI、62% 试智能体、23% 规模化、6% 高绩效</div><a href="https://www.mckinsey.com/our-insights/the-state-of-ai" target="_blank">mckinsey.com/our-insights/the-state-of-ai</a></div></div>
+      <div class="item"><span class="code">D2</span><div class="body"><div class="ttl">Gartner — 到 2027 年底超过 40% 代理型 AI 项目将被取消（成本失控 / 价值不清 / 风险管控不足）</div><a href="https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-predicts-over-40-percent-of-agentic-ai-projects-will-be-canceled-by-end-of-2027" target="_blank">gartner.com / newsroom / 2025-06-25</a></div></div>
+    </div>
+
+    <div class="src-group-title">竞品 / 行业（C）</div>
+    <div class="src-list">
+      <div class="item"><span class="code">C1</span><div class="body"><div class="ttl">Dify — 148K+ GitHub Stars、$30M Pre-A（红杉中国领投，估值 ~$180M）、280+ 企业客户、140 万+ 部署</div><a href="https://www.dify.ai/zh/about-us" target="_blank">dify.ai/zh/about-us</a> ｜ <a href="https://aiqicha.baidu.com/details/ugknowledge?id=4a36c04fa06da6768c6e2b2e6eb4b5ce" target="_blank">爱企查 / Dify</a></div></div>
+      <div class="item"><span class="code">C2</span><div class="body"><div class="ttl">Coze 扣子 — 100,512,211 个 Agent 工作中、Web 月活 1500 万、开发者 300 万+、企业 8 万+；Coze Studio 开源</div><a href="https://www.coze.cn" target="_blank">coze.cn</a> ｜ <a href="https://adg.csdn.net/6a66bc7010ee7a33f292b611.html" target="_blank">CSDN 智能体开发服务商盘点</a></div></div>
+      <div class="item"><span class="code">C3</span><div class="body"><div class="ttl">腾讯 WorkBuddy — 2026-06 PC 端月访问 2097 万次（国内第一，易观 Q2）、日活 1300 万+</div><a href="https://m.10jqka.com.cn/20260804/c678660998.shtml" target="_blank">同花顺 / WorkBuddy 给腾讯长脸了</a> ｜ <a href="https://xueqiu.com/8196113483/403798050" target="_blank">雪球 / AI 时代的新船票</a></div></div>
+      <div class="item"><span class="code">C4</span><div class="body"><div class="ttl">火山引擎 HiAgent — IDC 2025 中国智能体开发平台私有化市场份额第一（17.8%）；私有化前三：HiAgent、腾讯云 ADP（8.8%）、阿里云百炼专属版（8.6%）</div><a href="https://ifnews.com/news.html?aid=841918" target="_blank">ifnews.com / IDC 首发智能体开发平台市场份额</a></div></div>
+    </div>
+
+    <div class="assume" style="margin-top:18px;">
+      <strong>内部规划假设（非外部数据，待核定）：</strong>§1.2 北极星 / 驱动指标、§3 里程碑时间窗与交付物、§4 投入（≈1,000 万）与收益（基线营收 ≈3,000 万 / 客户 30+ / 净收益 800–950 万 / 回收期 ≈2.5 年）均为基于产品现状的测算基线，须经财务与决策层核定后生效。
+    </div>
+  </div>
+
+  <div class="footer">NeoOmni 企业级智能体平台 · 项目立项报告 v1.0 · 2026-08-06 · 思维特数字科技 × WorkBuddy · 内部立项决策用</div>
+</div>
+</div>
+
+<script>
+  // 侧边栏滚动高亮
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+  const sections = [...navLinks].map(a => document.querySelector(a.getAttribute('href')));
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const id = '#'+e.target.id;
+        navLinks.forEach(l=>l.classList.toggle('active', l.getAttribute('href')===id));
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px'});
+  sections.forEach(s=>s && obs.observe(s));
+
+  // 汇报总览标签切换
+  const tabs = document.querySelectorAll('.exec-tab');
+  const panels = document.querySelectorAll('.exec-panel');
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    panels.forEach(p=>p.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.tab).classList.add('active');
+  }));
+
+  // 数据来源 tooltip：悬停显示标题，点击打开来源链接
+  (function(){
+    const srcMap = {};
+    const srcItems = document.querySelectorAll('#s5 .src-list .item');
+    srcItems.forEach(item => {
+      const code = item.querySelector('.code');
+      const ttl = item.querySelector('.ttl');
+      const link = item.querySelector('.body a[href]');
+      if (code && ttl) {
+        srcMap[code.textContent.trim()] = {
+          title: ttl.textContent.trim(),
+          url: link ? link.href : ''
+        };
+      }
+    });
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'src-tooltip';
+    document.body.appendChild(tooltip);
+
+    function showTooltip(e, code, data) {
+      let html = '<span class="code-tag">' + code + '</span>' + data.title;
+      if (data.url) {
+        html += '<div style="margin-top:4px;font-size:10px;color:rgba(255,255,255,0.5);word-break:break-all;">' + data.url.replace(/^https?:\/\//, '') + '</div>';
+      }
+      tooltip.innerHTML = html;
+      tooltip.classList.add('show');
+      const rect = e.target.getBoundingClientRect();
+      let left = rect.left;
+      let top = rect.bottom + 8;
+      tooltip.style.left = Math.max(10, left) + 'px';
+      tooltip.style.top = top + 'px';
+      requestAnimationFrame(() => {
+        if (left + tooltip.offsetWidth > window.innerWidth - 10) {
+          left = window.innerWidth - tooltip.offsetWidth - 10;
+          tooltip.style.left = Math.max(10, left) + 'px';
+        }
+        if (top + tooltip.offsetHeight > window.innerHeight) {
+          top = rect.top - tooltip.offsetHeight - 8;
+          tooltip.style.top = top + 'px';
+        }
+      });
+    }
+    function hideTooltip() { tooltip.classList.remove('show'); }
+    function handleClick(e, data) {
+      if (data.url) {
+        e.preventDefault();
+        hideTooltip();
+        window.open(data.url, '_blank');
+      }
+    }
+
+    document.querySelectorAll('a.src[href="#s5"]').forEach(a => {
+      const match = a.textContent.trim().match(/\[([^\]]+)\]/);
+      if (match && srcMap[match[1]]) {
+        const code = match[1];
+        const data = srcMap[code];
+        a.addEventListener('mouseenter', function(e) { showTooltip(e, code, data); });
+        a.addEventListener('mouseleave', hideTooltip);
+        a.addEventListener('click', function(e) { handleClick(e, data); });
+      }
+    });
+  })();
+</script>
+</body>
+</html>

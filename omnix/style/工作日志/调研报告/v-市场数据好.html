@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeoOmni 企业级智能体构建平台 · 市场调研报告 v1</title>
+<style>
+  :root{
+    --accent:#1a365d;
+    --accent-2:#2b6cb0;
+    --accent-soft:#eef3f9;
+    --accent-line:#d4ddec;
+    --ink:#1f2733;
+    --ink-2:#4a5568;
+    --ink-3:#718096;
+    --bg:#f7f9fc;
+    --card:#ffffff;
+    --warn:#b7791f;
+    --warn-bg:#fffaf0;
+    --good:#2f855a;
+    --good-bg:#f0fff4;
+    --code:#805ad5;
+    --shadow:0 1px 3px rgba(26,54,93,.08),0 1px 2px rgba(26,54,93,.06);
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;font-size:15px;
+  }
+  /* Sidebar */
+  .sidebar{
+    position:fixed;top:0;left:0;width:268px;height:100vh;background:var(--accent);
+    color:#fff;padding:26px 18px;overflow-y:auto;z-index:50;
+  }
+  .sidebar .brand{font-size:18px;font-weight:700;letter-spacing:.5px;margin-bottom:4px;}
+  .sidebar .brand small{display:block;font-size:11px;font-weight:400;opacity:.7;letter-spacing:1px;margin-top:3px;}
+  .sidebar .meta{font-size:11px;opacity:.6;border-top:1px solid rgba(255,255,255,.15);margin-top:14px;padding-top:12px;line-height:1.6;}
+  .sidebar nav{margin-top:18px;}
+  .sidebar nav a{
+    display:block;color:rgba(255,255,255,.82);text-decoration:none;padding:8px 12px;border-radius:7px;
+    font-size:13.5px;margin-bottom:2px;transition:all .15s;border-left:3px solid transparent;
+  }
+  .sidebar nav a:hover{background:rgba(255,255,255,.1);color:#fff;}
+  .sidebar nav a.active{background:rgba(255,255,255,.16);color:#fff;border-left:3px solid #8fb3e0;}
+  .sidebar nav .grp{font-size:10.5px;text-transform:uppercase;letter-spacing:1.5px;opacity:.5;margin:16px 12px 6px;}
+  /* Main */
+  .main{margin-left:268px;padding:0 0 80px;}
+  .hero{
+    background:linear-gradient(135deg,var(--accent) 0%,#2c5282 100%);color:#fff;
+    padding:46px 48px 38px;
+  }
+  .hero h1{margin:0 0 8px;font-size:30px;font-weight:700;letter-spacing:.5px;}
+  .hero .sub{font-size:14px;opacity:.85;max-width:760px;}
+  .hero .tags{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap;}
+  .hero .tags span{background:rgba(255,255,255,.14);padding:5px 12px;border-radius:20px;font-size:12px;}
+  .content{padding:0 48px;}
+  section{padding-top:46px;scroll-margin-top:0;}
+  h2.sec{font-size:23px;color:var(--accent);border-bottom:2px solid var(--accent-line);padding-bottom:10px;margin:0 0 6px;display:flex;align-items:center;gap:10px;}
+  h2.sec .num{background:var(--accent);color:#fff;font-size:13px;font-weight:700;border-radius:6px;padding:3px 9px;letter-spacing:1px;}
+  .sec-desc{color:var(--ink-3);font-size:13.5px;margin:8px 0 22px;}
+  h3{font-size:17px;color:var(--accent-2);margin:30px 0 12px;}
+  h4{font-size:14.5px;color:var(--ink);margin:20px 0 8px;}
+  p{margin:10px 0;}
+  /* Exec summary tabs */
+  .exec-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:18px;border-bottom:1px solid var(--accent-line);}
+  .exec-tabs button{
+    background:none;border:none;padding:11px 16px;font-size:13.5px;cursor:pointer;color:var(--ink-2);
+    border-bottom:3px solid transparent;font-weight:600;font-family:inherit;transition:all .15s;
+  }
+  .exec-tabs button:hover{color:var(--accent);}
+  .exec-tabs button.active{color:var(--accent);border-bottom:3px solid var(--accent);}
+  .exec-panel{display:none;padding:22px 0 4px;animation:fade .25s;}
+  .exec-panel.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+  .exec-panel ul{margin:8px 0;padding-left:20px;}
+  .exec-panel li{margin:7px 0;}
+  /* KPI */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:18px 0 8px;}
+  .kpi-card{background:var(--card);border:1px solid var(--accent-line);border-radius:var(--radius);padding:18px 18px 14px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+  .kpi-card::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:var(--accent-2);}
+  .kpi-card .val{font-size:26px;font-weight:800;color:var(--accent);line-height:1.2;}
+  .kpi-card .val small{font-size:14px;font-weight:600;}
+  .kpi-card .lab{font-size:12.5px;color:var(--ink-2);margin-top:6px;line-height:1.45;}
+  .kpi-card .src{margin-top:10px;font-size:11px;color:var(--code);}
+  /* Tables */
+  .tbl-wrap{overflow-x:auto;margin:16px 0;border:1px solid var(--accent-line);border-radius:var(--radius);box-shadow:var(--shadow);}
+  table{border-collapse:collapse;width:100%;font-size:13px;background:var(--card);}
+  th{background:var(--accent-soft);color:var(--accent);text-align:left;padding:11px 14px;font-weight:700;border-bottom:1px solid var(--accent-line);white-space:nowrap;}
+  td{padding:10px 14px;border-bottom:1px solid #eef1f6;vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#fafcff;}
+  td .src,.tbl-src{color:var(--code);font-size:11px;white-space:nowrap;}
+  .tag-y{background:var(--good-bg);color:var(--good);padding:2px 8px;border-radius:5px;font-size:11px;font-weight:600;}
+  .tag-n{background:#fff5f5;color:#c53030;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:600;}
+  .tag-w{background:var(--warn-bg);color:var(--warn);padding:2px 8px;border-radius:5px;font-size:11px;font-weight:600;}
+  /* Callout */
+  .callout{border-left:4px solid var(--accent-2);background:var(--accent-soft);padding:14px 18px;border-radius:0 8px 8px 0;margin:18px 0;font-size:13.5px;}
+  .callout.warn{border-left-color:var(--warn);background:var(--warn-bg);}
+  .callout.good{border-left-color:var(--good);background:var(--good-bg);}
+  .callout b{color:var(--accent);}
+  /* Insight box */
+  .insight{background:#fff;border:1px dashed var(--accent-2);border-radius:var(--radius);padding:16px 20px;margin:16px 0;box-shadow:var(--shadow);}
+  .insight .t{font-weight:700;color:var(--accent-2);font-size:13px;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+  .insight ul{margin:6px 0;padding-left:18px;font-size:13px;}
+  .insight li{margin:5px 0;}
+  /* Source link */
+  a.src{color:var(--code);text-decoration:none;border-bottom:1px dotted var(--code);font-size:11px;white-space:nowrap;cursor:pointer;}
+  a.src:hover{background:#f3edfc;}
+  /* Source tooltip */
+  .src-tooltip{
+    position:fixed;
+    max-width:360px;
+    padding:10px 14px;
+    background:rgba(30,40,55,0.96);
+    color:#fff;
+    font-size:12px;
+    line-height:1.6;
+    border-radius:8px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    pointer-events:none;
+    opacity:0;
+    transform:translateY(4px);
+    transition:opacity 0.15s,transform 0.15s;
+    z-index:9999;
+    white-space:normal;
+    word-wrap:break-word;
+  }
+  .src-tooltip.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .src-tooltip::before{
+    content:'';
+    position:absolute;
+    top:-5px;
+    left:20px;
+    width:10px;
+    height:10px;
+    background:rgba(30,40,55,0.96);
+    transform:rotate(45deg);
+  }
+  .src-tooltip .code-tag{
+    display:inline-block;
+    background:var(--accent-2);
+    color:#fff;
+    font-size:10px;
+    font-weight:700;
+    padding:2px 6px;
+    border-radius:4px;
+    margin-right:6px;
+  }
+  /* 4-end architecture cards */
+  .end-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:18px 0;}
+  .end-card{background:var(--card);border:1px solid var(--accent-line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+  .end-card .ic{width:42px;height:42px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px;}
+  .end-card h4{margin:0 0 4px;color:var(--accent);font-size:15.5px;}
+  .end-card .role{font-size:11.5px;color:var(--ink-3);margin-bottom:10px;}
+  .end-card ul{margin:0;padding-left:16px;font-size:12.5px;color:var(--ink-2);}
+  .end-card li{margin:4px 0;}
+  /* Footnote */
+  .fn{font-size:11.5px;color:var(--ink-3);margin-top:6px;}
+  sup.ref{color:var(--code);font-weight:700;font-size:11px;cursor:help;}
+  /* Sources appendix */
+  .src-list{font-size:12.5px;}
+  .src-list .item{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid #eef1f6;align-items:flex-start;}
+  .src-list .code{background:var(--accent);color:#fff;font-weight:700;font-size:11px;padding:3px 9px;border-radius:5px;white-space:nowrap;min-width:42px;text-align:center;}
+  .src-list .body{flex:1;}
+  .src-list .body .ttl{font-weight:600;color:var(--ink);}
+  .src-list .body a{color:var(--code);text-decoration:none;word-break:break-all;font-size:11.5px;}
+  .src-list .body a:hover{text-decoration:underline;}
+  /* footer */
+  .foot{padding:30px 48px 0;color:var(--ink-3);font-size:11.5px;border-top:1px solid var(--accent-line);margin-top:40px;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-3);margin:10px 0 0;}
+  .legend span{display:inline-flex;align-items:center;gap:5px;}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block;}
+  @media (max-width:880px){
+    .sidebar{display:none;}
+    .main{margin-left:0;}
+    .hero,.content,.foot{padding-left:20px;padding-right:20px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar">
+  <div class="brand">NeoOmni 市场调研报告<small>MARKET RESEARCH · v1.0</small></div>
+  <div class="meta">
+    编制：正凯集团 · 产品调研总监<br>
+    日期：2026-08-06<br>
+    对标基准：Dify / Coze扣子 / WorkBuddy / HiAgent<br>
+    数据原则：所有数据点均标注权威出处
+  </div>
+  <nav id="nav">
+    <a href="#s1" class="active">01 · 执行摘要</a>
+    <a href="#s2">02 · 市场规模与趋势</a>
+    <a href="#s3">03 · 政策环境</a>
+    <a href="#s4">04 · 需求验证</a>
+    <a href="#s5">05 · 竞品分析（四端对标）</a>
+    <a href="#s6">06 · 行业痛点</a>
+    <a href="#s7">07 · NeoOmni 四端产品定位</a>
+    <a href="#s8">08 · 产品策略与 GTM</a>
+    <a href="#s9">09 · 风险与边界（Non-goals）</a>
+    <a href="#s10">10 · 数据来源附录</a>
+  </nav>
+</aside>
+
+<!-- ============ MAIN ============ -->
+<div class="main">
+  <div class="hero">
+    <h1>NeoOmni 企业级智能体构建平台<br>市场调研报告</h1>
+    <div class="sub">面向 BOSS端（租户管理）· GPT端（智能体开发，对标 Dify）· Chat端（智能体使用，对标 Coze扣子）· 桌面端（全场景办公工作台，对标 WorkBuddy）的四端一体化智能体编排产品。本报告基于 Gartner、IDC、McKinsey、MarketsandMarkets、Grand View Research、赛迪顾问及国务院 / 国家网信办等权威来源，对市场规模、政策环境、需求验证、竞争格局与产品策略进行系统调研。</div>
+    <div class="tags">
+      <span>代理型 AI（Agentic AI）</span>
+      <span>企业级智能体平台</span>
+      <span>多端一体化</span>
+      <span>私有化部署</span>
+      <span>智能体治理</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ============ S1 EXEC SUMMARY ============ -->
+    <section id="s1">
+      <h2 class="sec"><span class="num">01</span>执行摘要</h2>
+      <p class="sec-desc">以下六个维度概括了 NeoOmni 面临的市场机会、需求基础、竞争态势与策略要点。每个结论均可追溯至第 10 章的数据来源。</p>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="val">$52.62<small> B</small></div>
+          <div class="lab">全球 AI Agent 市场（2030E），CAGR 46.3%</div>
+          <div class="src"><a class="src" href="#s10">[M1] MarketsandMarkets</a></div>
+        </div>
+        <div class="kpi-card">
+          <div class="val">¥135.3<small> 亿</small></div>
+          <div class="lab">中国智能体市场（2026E），同比 +70%</div>
+          <div class="src"><a class="src" href="#s10">[M2] 赛迪顾问</a></div>
+        </div>
+        <div class="kpi-card">
+          <div class="val">¥20<small> 亿</small></div>
+          <div class="lab">中国智能体开发平台市场（2025）：私有化 17.5 + 公有云 2.5</div>
+          <div class="src"><a class="src" href="#s10">[M3] IDC</a></div>
+        </div>
+        <div class="kpi-card">
+          <div class="val">&gt;70<small>% / &gt;90%</small></div>
+          <div class="lab">智能体应用普及率目标（2027 / 2030）</div>
+          <div class="src"><a class="src" href="#s10">[P1] 国务院《人工智能+行动意见》</a></div>
+        </div>
+        <div class="kpi-card">
+          <div class="val">88<small>% / 23%</small></div>
+          <div class="lab">企业已用 AI / 已规模化智能体（McKinsey 2025）</div>
+          <div class="src"><a class="src" href="#s10">[D1] McKinsey</a></div>
+        </div>
+      </div>
+
+      <div class="exec-tabs" id="execTabs">
+        <button class="active" data-tab="t1">市场机会</button>
+        <button data-tab="t2">需求验证</button>
+        <button data-tab="t3">竞品分析</button>
+        <button data-tab="t4">NeoOmni 产品定位</button>
+        <button data-tab="t5">产品策略</button>
+        <button data-tab="t6">风险与边界</button>
+      </div>
+
+      <!-- T1 -->
+      <div class="exec-panel active" id="t1">
+        <p><b>代理型 AI 进入企业级爆发期，平台层是确定性最高的价值捕获环节。</b></p>
+        <ul>
+          <li>全球 AI Agent 市场预计从 2025 年 $78.4 亿增至 2030 年 $526.2 亿（CAGR 46.3%）<sup class="ref">[M1]</sup>；另一机构 Grand View Research 给出 2030 年 $503.1 亿、CAGR 45.8% 的相近预测<sup class="ref">[M1b]</sup>，两大机构高度一致。</li>
+          <li>Gartner 预测到 2028 年 <b>33% 的企业软件将内嵌代理型 AI</b>（2024 年不足 1%）<sup class="ref">[M4]</sup>；IDC 判断 AI 超级周期已从"基础设施建设"转向"企业级应用爆发"，<b>"Tokens 是成本核心，Agent 是价值核心"</b><sup class="ref">[M5]</sup>。</li>
+          <li>中国市场增速领先全球：赛迪顾问测算 2025 年中国智能体市场 78.4 亿元、2026 年 135.3 亿元（同比 +70%）<sup class="ref">[M2]</sup>；IDC 中国智能体开发平台 2025 年软件收入约 20 亿元，其中私有化 17.5 亿元构成主体<sup class="ref">[M3]</sup>。</li>
+          <li><b>政策强驱动：</b>国务院《人工智能+行动意见》明确 2027 年智能体普及率 >70%、2030 年 >90%<sup class="ref">[P1]</sup>；三部门《智能体规范应用与创新发展实施意见》列出 5 方向 19 个典型场景，并首次从国家层面明确"用户保留最终决策权与叫停权"<sup class="ref">[P2]</sup>。</li>
+        </ul>
+        <div class="insight">
+          <div class="t">💡 核心判断</div>
+          <ul>
+            <li>市场处于"政策 + 资本 + 技术"三重共振的导入期，<b>智能体开发 / 治理平台（即 NeoOmni GPT端 + BOSS端）是私有化政企市场最稳妥的切入点</b>——IDC 数据显示私有化占中国开发平台收入的 87.5%<sup class="ref">[M3]</sup>。</li>
+            <li>四端一体化（开发 + 治理 + 使用 + 桌面）是当前国内竞品中覆盖最完整的架构，可形成差异化护城河。</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- T2 -->
+      <div class="exec-panel" id="t2">
+        <p><b>需求真实存在，但"规模化落地"是核心鸿沟——这正是 NeoOmni 的机会。</b></p>
+        <ul>
+          <li>McKinsey 2025 调研：88% 企业已在至少一个职能使用 AI，但仅 23% 开始规模化智能体，仅约 6% 为高绩效者（AI 贡献 >5% EBIT）<sup class="ref">[D1]</sup>。</li>
+          <li>62% 企业"至少在试验"智能体，但"真正规模化部署的不到 10%"<sup class="ref">[P2]</sup>——技术碎片化、安全性存疑、难以融入工作流是横亘在企业面前的"三座大山"。</li>
+          <li>Gartner 预警：<b>到 2027 年底超过 40% 的代理型 AI 项目将被取消</b>，主因成本失控、业务价值不清或风险管控不足<sup class="ref">[D2]</sup>。</li>
+          <li>企业自建智能体的现实成本（来自 NeoOmni 立项报告）：平均需 <b>6 个月 + 10 人团队</b>完成从 0 到 1，能力碎片化、缺乏企业级治理是普遍痛点<sup class="ref">[Z1]</sup>。</li>
+        </ul>
+        <div class="callout warn">
+          <b>需求缺口 = NeoOmni 价值锚点：</b>企业不需要"再一个聊天机器人"，而是需要"能治理、可审计、可私有化、能嵌入工作流"的智能体平台。NeoOmni 的 BOSS端（租户 / 配额 / 模型管控）与 GPT端（可视化编排 + 知识基础设施 + Token 运营）正是为填平"试验 → 规模化"鸿沟而生。
+        </div>
+      </div>
+
+      <!-- T3 -->
+      <div class="exec-panel" id="t3">
+        <p><b>竞争已成"巨头主场"，但四端全覆盖的整合者仍稀缺。</b></p>
+        <ul>
+          <li><b>GPT端对标 Dify：</b>GitHub 148K+ Stars、280+ 企业客户、140 万+ 部署、2026-03 完成 $30M Pre-A（红杉中国领投，估值约 $180M）<sup class="ref">[C1]</sup>——开源生态与全球化是其主要壁垒。</li>
+          <li><b>Chat端对标 Coze扣子：</b>已有 100,512,211 个 Agent 在工作、Web 端月活 1500 万、开发者 300 万+、企业客户 8 万+<sup class="ref">[C2]</sup>——零代码与渠道分发是壁垒。</li>
+          <li><b>桌面端对标 WorkBuddy：</b>2026-03 上线，6 月 PC 端月访问 2097 万次居国内第一（易观 Q2），日活突破 1300 万<sup class="ref">[C3]</sup>——生态导流（微信 / 企微 / 腾讯文档）是壁垒。</li>
+          <li><b>私有化对标 HiAgent（火山引擎）：</b>IDC 2025 中国智能体开发平台<b>私有化市场份额第一</b><sup class="ref">[C4]</sup>。</li>
+        </ul>
+        <div class="insight">
+          <div class="t">🎯 竞争空位</div>
+          <ul>
+            <li>Dify 强在"开发"、Coze 强在"使用"、WorkBuddy 强在"桌面"、HiAgent 强在"私有化"——<b>但没有一个产品把"开发 + 治理（BOSS）+ 使用（Chat）+ 桌面"四端打通</b>。</li>
+            <li>NeoOmni 的差异化不是单点超越，而是<b>以 BOSS端租户治理为中枢，串联 GPT/Chat/桌面三端</b>，为企业提供"一个平台管全部智能体"的统一体验。</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- T4 -->
+      <div class="exec-panel" id="t4">
+        <p><b>NeoOmni 四端架构：以"治理"统领"构建—使用—桌面"全链路。</b></p>
+        <ul>
+          <li><b>BOSS端（租户管理）：</b>租户开通 / 配额 / 部署模式（私有化 / 公有云）/ 模型供应商配置——对应企业"买得起、管得住"的采购与治理诉求。</li>
+          <li><b>GPT端（智能体开发）：</b>可视化编排、知识基础设施（RAG / 知识图谱 / 数据库 / 提示词 / 工具）、运营配置（Token 统计）、组织管理（4 级角色 / SSO）——对标 Dify 并补强企业治理。</li>
+          <li><b>Chat端（智能体使用）：</b>基础模型体验、智能问答、智能体广场——对标 Coze 扣子，承接业务人员与终端用户。</li>
+          <li><b>桌面端（全场景办公工作台）：</b>对标 WorkBuddy，将智能体能力嵌入文档 / 表格 / 会议等办公现场。</li>
+        </ul>
+        <div class="callout good">
+          <b>产品定位一句话：</b>NeoOmni 是面向中大型企业的"智能体操作系统"——BOSS端管租户、GPT端造智能体、Chat端用智能体、桌面端把智能体带进工作现场，四端共享一套治理与知识底座。
+        </div>
+      </div>
+
+      <!-- T5 -->
+      <div class="exec-panel" id="t5">
+        <p><b>GTM 主线：以"私有化 + 行业模板 + 治理合规"切入政企市场，避开与巨头的 C 端流量战。</b></p>
+        <ul>
+          <li><b>主攻私有化政企：</b>私有化占中国开发平台收入 87.5%<sup class="ref">[M3]</sup>，且符合三部门"分级治理、备案检测、注册平台"的监管导向<sup class="ref">[P2]</sup>。</li>
+          <li><b>行业模板先行：</b>赛迪指出制造 / 能源 / 金融 / 政务四大领域占中国智能体市场超 70%<sup class="ref">[M2]</sup>；立项报告亦将制造业（如正凯集团化纤业务）作为首站场景。</li>
+          <li><b>治理即卖点：</b>将 BOSS端"配额 / 模型管控 / 审计"作为差异化能力，回应 Gartner 40% 取消预警中的"风险管控不足"根因<sup class="ref">[D2]</sup>。</li>
+          <li><b>首年目标（立项报告）：</b>50 家企业签约、500 个活跃智能体、首年营收 ¥800 万<sup class="ref">[Z1]</sup>。</li>
+        </ul>
+      </div>
+
+      <!-- T6 -->
+      <div class="exec-panel" id="t6">
+        <p><b>风险可控，但边界必须写清。</b></p>
+        <ul>
+          <li><b>市场风险：</b>Gartner 预警 40%+ 代理型项目 2027 前取消<sup class="ref">[D2]</sup>；McKinsey 显示仅 6% 企业从 AI 拿到显著 EBIT 提升<sup class="ref">[D1]</sup>——需以"可量化 ROI"而非"技术炫技"驱动签约。</li>
+          <li><b>合规风险：</b>三部门要求厘清"用户本人决策 / 授权决策 / 智能体自主决策"边界，并探索智能体注册平台<sup class="ref">[P2]</sup>——NeoOmni 须在 GPT端 / BOSS端内置决策权限与审计能力。</li>
+          <li><b>竞争风险：</b>巨头（字节 / 腾讯 / 阿里 / 火山）在资本、生态、流量上全面占优<sup class="ref">[C3]</sup>，NeoOmni 不应在 C 端通用赛道正面交锋。</li>
+          <li><b>Non-goals（明确不做什么）：</b>不自研基础大模型；不替代 ERP/MES 等现有系统（而是让其"活"起来）；不做 C 端泛娱乐 / 情感陪伴类智能体。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ S2 MARKET SIZE ============ -->
+    <section id="s2">
+      <h2 class="sec"><span class="num">02</span>市场规模与趋势</h2>
+      <p class="sec-desc">从全球 TAM 到中国 SAM，再到 NeoOmni 可触达的 SOM，逐层收敛。所有数字均来自权威机构公开报告。</p>
+
+      <h3>2.1 全球 AI Agent 市场（TAM）</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>机构</th><th>2024</th><th>2025</th><th>2030E</th><th>CAGR</th><th>来源</th></tr></thead>
+          <tbody>
+            <tr><td>MarketsandMarkets</td><td>$5.26B</td><td>$7.84B</td><td><b>$52.62B</b></td><td>46.3%（2025–2030）</td><td class="tbl-src"><a class="src" href="#s10">[M1]</a></td></tr>
+            <tr><td>Grand View Research</td><td>—</td><td>—</td><td><b>$50.31B</b></td><td>45.8%（2025–2030）</td><td class="tbl-src"><a class="src" href="#s10">[M1b]</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fn">两家独立机构预测高度吻合（2030 年约 $500–526 亿，CAGR ~46%），交叉验证增强了"高速增长"结论的可信度。<a class="src" href="#s10">[M1][M1b]</a></p>
+
+      <h3>2.2 中国市场（SAM）</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>指标</th><th>数值</th><th>说明</th><th>来源</th></tr></thead>
+          <tbody>
+            <tr><td>中国智能体市场规模（2025）</td><td><b>¥78.4 亿</b></td><td>赛迪顾问测算</td><td class="tbl-src"><a class="src" href="#s10">[M2]</a></td></tr>
+            <tr><td>中国智能体市场规模（2026E）</td><td><b>¥135.3 亿</b></td><td>同比 +70%</td><td class="tbl-src"><a class="src" href="#s10">[M2]</a></td></tr>
+            <tr><td>中国智能体开发平台（2025，私有化）</td><td><b>¥17.5 亿</b></td><td>占开发平台总收入约 87.5%</td><td class="tbl-src"><a class="src" href="#s10">[M3]</a></td></tr>
+            <tr><td>中国智能体开发平台（2025，公有云）</td><td><b>¥2.5 亿</b></td><td>商业化试点起步阶段</td><td class="tbl-src"><a class="src" href="#s10">[M3]</a></td></tr>
+            <tr><td>中国 MaaS 市场（2026E）</td><td><b>Token 4 万万亿次 / 营收 ¥186 亿</b></td><td>2024–2030 CAGR 1154.9%</td><td class="tbl-src"><a class="src" href="#s10">[M6]</a></td></tr>
+            <tr><td>全球企业 AI 支出（2026 → 2029）</td><td><b>$940B → $2.1T</b></td><td>中国为全球增长最快市场之一</td><td class="tbl-src"><a class="src" href="#s10">[M5]</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <b>结构洞察：</b>中国智能体开发平台收入中 <b>私有化占 87.5%</b><sup class="ref">[M3]</sup>，这与政企"数据安全、合规可控"的采购偏好一致。NeoOmni 定位私有化优先，恰好踩在中国市场最肥的那块收入上。
+      </div>
+
+      <h3>2.3 NeoOmni 可触达市场（SOM）</h3>
+      <p>基于立项报告首年目标，NeoOmni 的 SOM 收敛路径如下：</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>层级</th><th>口径</th><th>数值</th><th>依据</th></tr></thead>
+          <tbody>
+            <tr><td>SOM（首年）</td><td>签约企业 / 活跃智能体 / 营收</td><td><b>50 家 / 500 个 / ¥800 万</b></td><td>NeoOmni 立项报告 <a class="src" href="#s10">[Z1]</a></td></tr>
+            <tr><td>切入点行业</td><td>制造 / 能源 / 金融 / 政务</td><td>占市场 >70%</td><td>赛迪顾问 <a class="src" href="#s10">[M2]</a></td></tr>
+            <tr><td>市场背景</td><td>2026 中国企业 AI 市场</td><td>¥120B，Agent 增速 >60%，客户意愿 72%</td><td>NeoOmni 立项报告 <a class="src" href="#s10">[Z1]</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fn">注：SOM 数字来自 NeoOmni 内部立项报告 <a class="src" href="#s10">[Z1]</a>，属企业规划目标而非第三方市场预测，已在来源中单独标注以免与权威市场数据混淆。</p>
+    </section>
+
+    <!-- ============ S3 POLICY ============ -->
+    <section id="s3">
+      <h2 class="sec"><span class="num">03</span>政策环境</h2>
+      <p class="sec-desc">2025–2026 年是中国智能体政策的密集落地期，顶层设计 + 部委细则双轮驱动，为 NeoOmni 的"合规治理"卖点提供政策背书。</p>
+
+      <h3>3.1 国务院《关于深入实施"人工智能+"行动的意见》（2025-08）</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>时间节点</th><th>目标</th><th>意义</th></tr></thead>
+          <tbody>
+            <tr><td>2027 年</td><td>新一代智能终端、智能体等应用普及率 <b>超 70%</b></td><td rowspan="3">首次将"智能体普及率"写入国家级量化目标，释放确定性需求信号 <a class="src" href="#s10">[P1]</a></td></tr>
+            <tr><td>2030 年</td><td>智能体等应用普及率 <b>超 90%</b></td></tr>
+            <tr><td>2035 年</td><td>全面步入智能经济和智能社会新阶段</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>3.2 三部门《智能体规范应用与创新发展实施意见》（2026-05-08）</h3>
+      <p>国家网信办、国家发展改革委、工业和信息化部联合印发，是智能体领域首份国家级专项实施意见 <a class="src" href="#s10">[P2]</a>。</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>要点</th><th>具体内容</th><th>对 NeoOmni 的启示</th></tr></thead>
+          <tbody>
+            <tr><td>19 个典型场景</td><td>科学研究 / 产业发展 / 提振消费 / 民生福祉 / 社会治理 5 大方向</td><td>行业模板设计可直接映射这些场景</td></tr>
+            <tr><td>决策权限边界</td><td>厘清"用户本人决策 / 授权决策 / 智能体自主决策"，用户保留<b>知情权和最终叫停权</b></td><td>GPT端 / BOSS端须内置决策权限与"叫停"能力</td></tr>
+            <tr><td>分级治理</td><td>敏感领域备案 / 检测 / 召回；低风险领域自测 + 行业自律</td><td>租户级合规配置成为刚需</td></tr>
+            <tr><td>智能体注册平台</td><td>探索建立"数字身份证"，可查询开发者 / 数据权限 / 安全等级</td><td>BOSS端"资产目录 + 审计"能力对应此趋势</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout good">
+        <b>政策红利：</b>监管不是阻力而是<b>准入壁垒</b>——具备"分级治理 + 决策权限 + 审计追溯"能力的平台，将更契合政企采购要求。NeoOmni 的 BOSS端治理中枢恰与此同向。
+      </div>
+    </section>
+
+    <!-- ============ S4 DEMAND ============ -->
+    <section id="s4">
+      <h2 class="sec"><span class="num">04</span>需求验证</h2>
+      <p class="sec-desc">需求侧的真实状态："人人都在试，少数人跑通"。本节用权威调研验证 NeoOmni 的价值假设。</p>
+
+      <h3>4.1 采用率鸿沟（McKinsey State of AI 2025）</h3>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="val">88<small>%</small></div><div class="lab">企业已在至少 1 个职能使用 AI</div><div class="src"><a class="src" href="#s10">[D1]</a></div></div>
+        <div class="kpi-card"><div class="val">62<small>%</small></div><div class="lab">企业至少在试验 AI 智能体</div><div class="src"><a class="src" href="#s10">[D1]</a></div></div>
+        <div class="kpi-card"><div class="val">23<small>%</small></div><div class="lab">已规模化智能体系统</div><div class="src"><a class="src" href="#s10">[D1]</a></div></div>
+        <div class="kpi-card"><div class="val">6<small>%</small></div><div class="lab">高绩效者（AI 贡献 >5% EBIT）</div><div class="src"><a class="src" href="#s10">[D1]</a></div></div>
+      </div>
+      <div class="callout">
+        <b>解读：</b>采用广度（88%）与规模化深度（23%）之间存在巨大断层。高绩效者的共同特征是<b>重构工作流 + 高层承诺 + 治理框架</b>——这正是 NeoOmni"GPT端编排 + BOSS端治理"欲解决的核心。
+      </div>
+
+      <h3>4.2 项目失败预警（Gartner）</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>预警</th><th>内容</th><th>对 NeoOmni 的启示</th></tr></thead>
+          <tbody>
+            <tr><td>40%+ 取消率</td><td>到 2027 年底超过 40% 代理型 AI 项目将被取消，主因成本失控 / 价值不清 / 风险管控不足 <a class="src" href="#s10">[D2]</a></td><td>须以"可量化 ROI + 治理闭环"作为签约前提</td></tr>
+            <tr><td>33% 渗透率</td><td>2028 年 33% 企业软件内嵌代理型 AI（2024 年 <1%）<a class="src" href="#s10">[M4]</a></td><td>平台化能力（非单点 Agent）是主流形态</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>4.3 企业自建痛点（NeoOmni 立项调研）</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>痛点</th><th>描述</th><th>NeoOmni 对应解法</th></tr></thead>
+          <tbody>
+            <tr><td>自建成本高</td><td>平均 6 个月 + 10 人团队从 0 到 1 <a class="src" href="#s10">[Z1]</a></td><td>GPT端可视化编排 + 行业模板，降至天级</td></tr>
+            <tr><td>能力碎片化</td><td>模型 / 知识 / 工具 / 工作流彼此割裂</td><td>GPT端统一知识基础设施（RAG / 图谱 / 库 / 工具）</td></tr>
+            <tr><td>缺乏治理</td><td>无配额、无审计、无权限边界</td><td>BOSS端租户 / 配额 / 模型管控 / 审计</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ S5 COMPETITORS ============ -->
+    <section id="s5">
+      <h2 class="sec"><span class="num">05</span>竞品分析（四端对标）</h2>
+      <p class="sec-desc">将 NeoOmni 四端逐一映射到代表性竞品，识别各自壁垒与 NeoOmni 的差异化空位。</p>
+
+      <h3>5.1 四端对标矩阵</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>NeoOmni 端</th><th>代表竞品</th><th>核心壁垒（竞品）</th><th>NeoOmni 差异化</th><th>来源</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>GPT端</b><br>智能体开发</td>
+              <td>Dify</td>
+              <td>148K+ GitHub Stars；280+ 企业客户；140 万+ 部署；150+ 国家；$30M Pre-A（红杉中国领投，估值 ~$180M，2026-03）</td>
+              <td>在 Dify 的可视化编排之上，补强<b>企业级治理</b>（配额 / 模型管控 / 审计 / 4 级角色 SSO）</td>
+              <td class="tbl-src"><a class="src" href="#s10">[C1]</a></td>
+            </tr>
+            <tr>
+              <td><b>Chat端</b><br>智能体使用</td>
+              <td>Coze 扣子</td>
+              <td>100,512,211 个 Agent 在工作中；Web 端月活 1500 万；开发者 300 万+；企业客户 8 万+；Coze Studio 已开源（Apache 2.0）</td>
+              <td>以<b>行业智能体广场 + 企业私有知识</b>切入，而非泛娱乐通用广场</td>
+              <td class="tbl-src"><a class="src" href="#s10">[C2]</a></td>
+            </tr>
+            <tr>
+              <td><b>桌面端</b><br>办公工作台</td>
+              <td>腾讯 WorkBuddy</td>
+              <td>2026-03 上线，6 月 PC 端月访问 2097 万次（国内第一，易观 Q2）；日活 1300 万+；微信 / 企微 / 腾讯文档生态导流</td>
+              <td>聚焦<b>企业内网 + 私有数据</b>的桌面执行，不依赖公有云社交生态</td>
+              <td class="tbl-src"><a class="src" href="#s10">[C3]</a></td>
+            </tr>
+            <tr>
+              <td><b>私有化</b><br>部署底座</td>
+              <td>火山引擎 HiAgent</td>
+              <td>IDC 2025 中国智能体开发平台<b>私有化市场份额第一</b></td>
+              <td>以"四端一体 + 行业模板"对抗单点私有化平台</td>
+              <td class="tbl-src"><a class="src" href="#s10">[C4]</a></td>
+            </tr>
+            <tr>
+              <td><b>开发范式</b><br>代码智能体</td>
+              <td>Codex / Claude Code / Manus</td>
+              <td>通用 coding agent 范式成熟，开发者心智占优</td>
+              <td>GPT端内置代码智能体作为子能力，而非独立产品</td>
+              <td class="tbl-src"><a class="src" href="#s10">[C5]</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>5.2 竞品格局关键事实</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>竞品</th><th>关键数据</th><th>来源</th></tr></thead>
+          <tbody>
+            <tr><td>Dify</td><td>151K+ GitHub Stars（官网）、148K+（第三方）；$30M Pre-A，2026-03，红杉中国（HSG）领投，估值 ~$180M；280+ 企业客户含马士基 / 诺华 / 安克</td><td class="tbl-src"><a class="src" href="#s10">[C1]</a></td></tr>
+            <tr><td>Coze 扣子</td><td>100,512,211 个 Agent 正在工作；Web 端月活 1500 万；开发者 300 万+；企业 8 万+；2025-07 开源 Coze Studio（Apache 2.0）</td><td class="tbl-src"><a class="src" href="#s10">[C2]</a></td></tr>
+            <tr><td>WorkBuddy</td><td>2026-06 PC 端月访问 2097 万次，国内第一；字节 Trae 1279 万、阿里 QoderWork 788 万；17 款主流桌面端合计 6062 万；日活 1300 万+、月活 2000 万+</td><td class="tbl-src"><a class="src" href="#s10">[C3]</a></td></tr>
+            <tr><td>HiAgent</td><td>IDC 2025 中国智能体开发平台私有化市场份额第一；私有化市场前三为火山引擎 HiAgent、腾讯云 ADP、阿里云百炼专属版</td><td class="tbl-src"><a class="src" href="#s10">[C4]</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="insight">
+        <div class="t">🎯 竞争空位总结</div>
+        <ul>
+          <li>Dify / Coze / WorkBuddy / HiAgent 各自在"单端"领先，但<b>没有任何一个产品打通"开发 + 治理 + 使用 + 桌面"四端</b>。</li>
+          <li>巨头优势在 C 端流量与公有云生态；NeoOmni 应<b>以私有化政企 + 行业模板 + 治理合规</b>错位竞争，避免在通用赛道正面消耗。</li>
+          <li>开源（Dify / Coze Studio）降低了"开发"门槛，使竞争从"能不能造"转向"<b>能不能管、能不能私有化、能不能嵌入工作流</b>"——这正是 NeoOmni BOSS端 + GPT端治理能力的价值区。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ S6 PAIN ============ -->
+    <section id="s6">
+      <h2 class="sec"><span class="num">06</span>行业痛点</h2>
+      <p class="sec-desc">从"为什么企业自己搞不定"的角度，巩固 NeoOmni 的必要性。</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>痛点层级</th><th>具体表现</th><th>数据 / 来源</th></tr></thead>
+          <tbody>
+            <tr><td>战略层</td><td>"叫好不叫座"：试验多、规模化少</td><td>仅 23% 企业规模化智能体 <a class="src" href="#s10">[D1]</a>；真正规模化部署不到 10% <a class="src" href="#s10">[P2]</a></td></tr>
+            <tr><td>成本层</td><td>自建周期长、人力重</td><td>平均 6 个月 + 10 人 <a class="src" href="#s10">[Z1]</a></td></tr>
+            <tr><td>技术层</td><td>能力碎片化、集成复杂</td><td>Gartner：集成遗留系统技术复杂、成本高 <a class="src" href="#s10">[D2]</a></td></tr>
+            <tr><td>治理层</td><td>无权限边界、无审计、无合规</td><td>三部门要求厘清决策权限、探索注册平台 <a class="src" href="#s10">[P2]</a></td></tr>
+            <tr><td>价值层</td><td>业务价值不清，ROI 难证</td><td>40%+ 项目因"价值不清"取消 <a class="src" href="#s10">[D2]</a>；仅 6% 高绩效 <a class="src" href="#s10">[D1]</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <b>结论：</b>企业智能体的瓶颈已从"技术可行性"转移到"<b>治理可行性 + 价值可证性</b>"。NeoOmni 的产品设计须把"可观测、可审计、可量化"作为一等公民，而非附加功能。
+      </div>
+    </section>
+
+    <!-- ============ S7 PRODUCT ============ -->
+    <section id="s7">
+      <h2 class="sec"><span class="num">07</span>NeoOmni 四端产品定位与优势</h2>
+      <p class="sec-desc">以"治理中枢"串联四端，形成国内少见的完整智能体生命周期闭环。</p>
+
+      <div class="end-grid">
+        <div class="end-card">
+          <div class="ic">🏢</div>
+          <h4>BOSS端 · 租户管理</h4>
+          <div class="role">对标：企业管理后台 / 运营中枢</div>
+          <ul>
+            <li>租户开通与生命周期管理</li>
+            <li>配额（Token / 存储 / 调用）管控</li>
+            <li>部署模式（私有化 / 公有云）</li>
+            <li>模型供应商配置与切换</li>
+            <li>审计与合规看板</li>
+          </ul>
+        </div>
+        <div class="end-card">
+          <div class="ic">⚙️</div>
+          <h4>GPT端 · 智能体开发</h4>
+          <div class="role">对标：Dify（并补强企业治理）</div>
+          <ul>
+            <li>可视化编排 / 工作流</li>
+            <li>知识基础设施：RAG / 知识图谱 / 数据库 / 提示词 / 工具</li>
+            <li>运营配置：Token 统计与成本归因</li>
+            <li>组织管理：4 级角色 / SSO</li>
+          </ul>
+        </div>
+        <div class="end-card">
+          <div class="ic">💬</div>
+          <h4>Chat端 · 智能体使用</h4>
+          <div class="role">对标：Coze 扣子（聚焦企业场景）</div>
+          <ul>
+            <li>基础模型体验与智能问答</li>
+            <li>智能体广场（行业模板）</li>
+            <li>终端用户低门槛调用</li>
+            <li>与 GPT端知识底座打通</li>
+          </ul>
+        </div>
+        <div class="end-card">
+          <div class="ic">🖥️</div>
+          <h4>桌面端 · 办公工作台</h4>
+          <div class="role">对标：WorkBuddy（聚焦企业内网）</div>
+          <ul>
+            <li>文档 / 表格 / 会议等办公现场嵌入</li>
+            <li>本地文件与私有数据协同</li>
+            <li>跨应用任务执行</li>
+            <li>与 BOSS端配额 / 权限联动</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>7.1 差异化优势</h3>
+      <div class="insight">
+        <div class="t">🏆 NeoOmni 的四项核心优势</div>
+        <ul>
+          <li><b>治理优先：</b>BOSS端将"配额 / 模型 / 审计"作为平台级能力，呼应三部门决策权限与注册平台要求 <a class="src" href="#s10">[P2]</a>，是政企采购的硬门槛。</li>
+          <li><b>四端一体：</b>开发（GPT）→ 治理（BOSS）→ 使用（Chat）→ 桌面（桌面端）共享一套知识 / 权限底座，避免"工具孤岛"。</li>
+          <li><b>私有化友好：</b>契合中国开发平台 87.5% 私有化收入结构 <a class="src" href="#s10">[M3]</a>，数据不出域。</li>
+          <li><b>行业模板：</b>直接映射三部门 19 个典型场景 <a class="src" href="#s10">[P2]</a> 与制造 / 能源 / 金融 / 政务四大高占比领域 <a class="src" href="#s10">[M2]</a>。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ S8 STRATEGY ============ -->
+    <section id="s8">
+      <h2 class="sec"><span class="num">08</span>产品策略与 GTM</h2>
+      <p class="sec-desc">基于市场与竞争格局，给出 NeoOmni 的进入策略与首年节奏。</p>
+
+      <h3>8.1 定位陈述</h3>
+      <div class="callout good">
+        <b>"面向中大型企业的智能体操作系统"</b>——以 BOSS端治理中枢统领 GPT端（造）、Chat端（用）、桌面端（落地），让企业"买得起、造得出、管得住、用得顺"。
+      </div>
+
+      <h3>8.2 进入策略</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>策略</th><th>动作</th><th>依据</th></tr></thead>
+          <tbody>
+            <tr><td>私有化切入</td><td>主攻政企私有化部署，避开 C 端流量战</td><td>私有化占开发平台收入 87.5% <a class="src" href="#s10">[M3]</a></td></tr>
+            <tr><td>行业模板</td><td>制造（正凯化纤）/ 能源 / 金融 / 政务优先</td><td>四领域占市场 >70% <a class="src" href="#s10">[M2]</a></td></tr>
+            <tr><td>治理卖点</td><td>BOSS端配额 / 审计 / 决策权限作为差异化</td><td>回应 40% 取消中的"风险管控不足" <a class="src" href="#s10">[D2]</a></td></tr>
+            <tr><td>ROI 驱动</td><td>以"可量化降本 / 增效"签约，而非技术炫技</td><td>仅 6% 企业从 AI 获显著 EBIT <a class="src" href="#s10">[D1]</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>8.3 首年目标（立项报告）</h3>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="val">50<small> 家</small></div><div class="lab">企业签约目标</div><div class="src"><a class="src" href="#s10">[Z1]</a></div></div>
+        <div class="kpi-card"><div class="val">500<small> 个</small></div><div class="lab">月活智能体目标</div><div class="src"><a class="src" href="#s10">[Z1]</a></div></div>
+        <div class="kpi-card"><div class="val">¥800<small> 万</small></div><div class="lab">首年营收目标</div><div class="src"><a class="src" href="#s10">[Z1]</a></div></div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--good)"></i> 机会</span>
+        <span><i style="background:var(--warn)"></i> 风险 / 待验证</span>
+        <span><i style="background:var(--accent-2)"></i> 已验证（权威来源）</span>
+      </div>
+    </section>
+
+    <!-- ============ S9 RISK ============ -->
+    <section id="s9">
+      <h2 class="sec"><span class="num">09</span>风险与边界（Non-goals）</h2>
+      <p class="sec-desc">明确风险敞口与"不做什么"，防止范围蔓延与战略误判。</p>
+
+      <h3>9.1 风险登记</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>风险</th><th>描述</th><th>缓解</th><th>来源</th></tr></thead>
+          <tbody>
+            <tr><td>项目取消率高</td><td>40%+ 代理型项目 2027 前取消</td><td>签约前置"可量化 ROI + 治理闭环"</td><td class="tbl-src"><a class="src" href="#s10">[D2]</a></td></tr>
+            <tr><td>价值难证</td><td>仅 6% 企业从 AI 获显著 EBIT</td><td>行业模板绑定明确业务指标</td><td class="tbl-src"><a class="src" href="#s10">[D1]</a></td></tr>
+            <tr><td>合规压力</td><td>决策权限 / 注册平台 / 分级治理</td><td>BOSS端内置权限与审计</td><td class="tbl-src"><a class="src" href="#s10">[P2]</a></td></tr>
+            <tr><td>巨头碾压</td><td>字节 / 腾讯 / 阿里资本与生态占优</td><td>错位竞争：私有化政企 + 行业</td><td class="tbl-src"><a class="src" href="#s10">[C3]</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>9.2 Non-goals（明确不做什么）</h3>
+      <div class="insight">
+        <ul>
+          <li>❌ <b>不自研基础大模型</b>——聚焦编排与治理，模型通过 BOSS端多供应商接入。</li>
+          <li>❌ <b>不替代 ERP / MES 等现有系统</b>——定位"让现有系统活起来"的智能体层，而非重构。</li>
+          <li>❌ <b>不做 C 端泛娱乐 / 情感陪伴智能体</b>——遵循三部门低风险领域自律导向，专注企业价值场景。</li>
+          <li>❌ <b>不在通用 C 端流量赛道与巨头正面交锋</b>——资源应集中于私有化政企与行业模板。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ S10 SOURCES ============ -->
+    <section id="s10">
+      <h2 class="sec"><span class="num">10</span>数据来源附录</h2>
+      <p class="sec-desc">本报告所有关键数据均来自以下权威机构公开资料与企业内部立项文件。链接可点击核验。</p>
+
+      <h3>市场 / 规模（M）</h3>
+      <div class="src-list">
+        <div class="item"><span class="code">M1</span><div class="body"><div class="ttl">MarketsandMarkets — AI Agents Market worth $52.62 billion by 2030</div><a href="https://www.marketsandmarkets.com/PressReleases/ai-agents.asp" target="_blank">https://www.marketsandmarkets.com/PressReleases/ai-agents.asp</a></div></div>
+        <div class="item"><span class="code">M1b</span><div class="body"><div class="ttl">Grand View Research — AI Agents Market Size to Hit $50.31 Billion by 2030 at CAGR 45.8%</div><a href="https://www.prnewswire.co.uk/news-releases/ai-agents-market-size-to-hit-50-31-billion-by-2030-at-cagr-45-8---grand-view-research-inc-302447061.html" target="_blank">prnewswire.co.uk / Grand View Research</a></div></div>
+        <div class="item"><span class="code">M2</span><div class="body"><div class="ttl">赛迪顾问 — 中国智能体市场 2025 年 78.4 亿元、2026 年 135.3 亿元（同比 +70%），制造/能源/金融/政务占比超 70%</div><a href="http://cms.ccidconsulting.com/article/8130" target="_blank">http://cms.ccidconsulting.com/article/8130</a> ｜ <a href="https://www.21jingji.com/article/20260508/herald/5749e520050cbe04fcd735c0df1d7623.html" target="_blank">21 世纪经济报道</a></div></div>
+        <div class="item"><span class="code">M3</span><div class="body"><div class="ttl">IDC —《中国智能体开发平台市场份额，2025》：私有化 17.5 亿、公有云 2.5 亿；HiAgent 私有化份额第一</div><a href="https://ifnews.com/news.html?aid=841918" target="_blank">ifnews.com</a> ｜ <a href="https://qa.idc.com/resource-center/press-releases/idc%e9%a6%96%e5%8f%91%e6%99%ba%e8%83%bd%e4%bd%93%e5%bc%80%e5%8f%91%e5%b9%b3%e5%8f%b0%e5%b8%82%e5%9c%ba%e4%bb%bd%e9%a2%9d%e6%8a%a5%e5%91%8a-%e7%a7%81%e6%9c%89%e5%8c%96%e5%88%9d" target="_blank">qa.idc.com（IDC 首发）</a></div></div>
+        <div class="item"><span class="code">M4</span><div class="body"><div class="ttl">Gartner — 到 2028 年 33% 企业软件将内嵌代理型 AI（2024 年 <1%）</div><a href="https://gartner.com/en/articles/3-bold-and-actionable-predictions-for-the-future-of-genai" target="_blank">gartner.com / predictions for the future of GenAI</a></div></div>
+        <div class="item"><span class="code">M5</span><div class="body"><div class="ttl">IDC — 全球企业 AI 支出 2026 年 $940B → 2029 年 $2.1T；中国 MaaS 2026 Token 4 万万亿次、营收 186 亿元</div><a href="https://look.huanqiu.com/article/4RiqKiWfkiG" target="_blank">环球网科技 / IDC Directions 2026</a> ｜ <a href="https://www.cns.com.cn/cj/2026/05-20/10625383.shtml" target="_blank">中国新闻网</a></div></div>
+        <div class="item"><span class="code">M6</span><div class="body"><div class="ttl">IDC — 中国 MaaS 市场 2026：Token 调用 40000 万亿次，营收约 186 亿元，2024–2030 CAGR 1154.9%</div><a href="https://look.huanqiu.com/article/4RiqKiWfkiG" target="_blank">环球网科技 / IDC Directions 2026</a></div></div>
+      </div>
+
+      <h3>政策（P）</h3>
+      <div class="src-list">
+        <div class="item"><span class="code">P1</span><div class="body"><div class="ttl">国务院 —《关于深入实施"人工智能+"行动的意见》（2025-08）：2027 普及率 >70%、2030 >90%</div><a href="https://www.gov.cn/zhengce/202508/content_7037929.htm" target="_blank">www.gov.cn/zhengce/202508/content_7037929.htm</a></div></div>
+        <div class="item"><span class="code">P2</span><div class="body"><div class="ttl">国家网信办 / 发改委 / 工信部 —《智能体规范应用与创新发展实施意见》（2026-05-08）：5 方向 19 场景、决策权限边界、注册平台</div><a href="https://www.cac.gov.cn/2026-05/08/c_1779979789523320.htm" target="_blank">www.cac.gov.cn/2026-05/08/c_1779979789523320.htm</a></div></div>
+      </div>
+
+      <h3>需求 / 采用（D）</h3>
+      <div class="src-list">
+        <div class="item"><span class="code">D1</span><div class="body"><div class="ttl">McKinsey — The State of AI 2025：88% 用 AI、62% 试智能体、23% 规模化、6% 高绩效</div><a href="https://www.mckinsey.com/our-insights/the-state-of-ai" target="_blank">mckinsey.com/our-insights/the-state-of-ai</a></div></div>
+        <div class="item"><span class="code">D2</span><div class="body"><div class="ttl">Gartner — 到 2027 年底超过 40% 代理型 AI 项目将被取消</div><a href="https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-predicts-over-40-percent-of-agentic-ai-projects-will-be-canceled-by-end-of-2027" target="_blank">gartner.com / newsroom / 2025-06-25</a></div></div>
+      </div>
+
+      <h3>竞品（C）</h3>
+      <div class="src-list">
+        <div class="item"><span class="code">C1</span><div class="body"><div class="ttl">Dify — 151K+ GitHub Stars、$30M Pre-A（红杉中国领投，估值 ~$180M）、280+ 企业客户、140 万+ 部署</div><a href="https://www.dify.ai/zh/about-us" target="_blank">dify.ai/zh/about-us</a> ｜ <a href="https://aiqicha.baidu.com/details/ugknowledge?id=4a36c04fa06da6768c6e2b2e6eb4b5ce" target="_blank">爱企查 / Dify</a></div></div>
+        <div class="item"><span class="code">C2</span><div class="body"><div class="ttl">Coze 扣子 — 100,512,211 个 Agent 工作中、Web 月活 1500 万、开发者 300 万+、企业 8 万+；Coze Studio 开源</div><a href="https://www.coze.cn" target="_blank">coze.cn</a> ｜ <a href="https://adg.csdn.net/6a66bc7010ee7a33f292b611.html" target="_blank">CSDN 智能体开发服务商盘点</a></div></div>
+        <div class="item"><span class="code">C3</span><div class="body"><div class="ttl">腾讯 WorkBuddy — 2026-06 PC 端月访问 2097 万次（国内第一，易观 Q2）、日活 1300 万+</div><a href="https://m.10jqka.com.cn/20260804/c678660998.shtml" target="_blank">同花顺 / WorkBuddy 给腾讯长脸了</a> ｜ <a href="https://xueqiu.com/8196113483/403798050" target="_blank">雪球 / AI 时代的新船票</a></div></div>
+        <div class="item"><span class="code">C4</span><div class="body"><div class="ttl">火山引擎 HiAgent — IDC 2025 中国智能体开发平台私有化市场份额第一</div><a href="https://ifnews.com/news.html?aid=841918" target="_blank">ifnews.com / IDC 首发智能体开发平台市场份额</a></div></div>
+        <div class="item"><span class="code">C5</span><div class="body"><div class="ttl">OpenAI Codex / Claude Code / Manus — 通用 coding agent 范式（行业公开报道综合）</div><a href="https://www.marketsandmarkets.com/PressReleases/ai-agents.asp" target="_blank">参照 M1 中 Key Companies 列表（OpenAI / Google / IBM / AWS / Microsoft / Salesforce 等）</a></div></div>
+      </div>
+
+      <h3>内部资料（Z）</h3>
+      <div class="src-list">
+        <div class="item"><span class="code">Z1</span><div class="body"><div class="ttl">NeoOmni 企业级智能体构建平台立项报告（正凯集团内部）：首年目标 50 家 / 500 活跃 / ¥800 万；自建成本 6 月 +10 人；2026 企业 AI 市场 ¥120B</div><div style="color:var(--ink-3);font-size:11.5px;">内部文件，未公开。本报告中所有 [Z1] 标注数据均属企业规划目标，非第三方市场预测。</div></div></div>
+      </div>
+
+      <div class="callout warn" style="margin-top:24px;">
+        <b>严谨性声明：</b>本报告市场 / 政策 / 竞品数据均引自上述公开权威来源（可点击核验）；唯一内部来源 [Z1] 为 NeoOmni 立项规划目标，已在文中与第三方预测明确区分，避免混淆。竞品数据截取时点为 2026 年公开报道，随时间变化请以最新官方披露为准。
+      </div>
+    </section>
+
+    <div class="foot">
+      NeoOmni 企业级智能体构建平台 · 市场调研报告 v1.0 ｜ 编制：正凯集团产品调研总监 ｜ 日期：2026-08-06 ｜ 数据原则：所有数据点均标注权威出处，来源见第 10 章。
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Scroll-spy: highlight active nav item
+  const navLinks = Array.from(document.querySelectorAll('#nav a'));
+  const sections = navLinks.map(a => document.querySelector(a.getAttribute('href')));
+  const spy = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const id = '#'+e.target.id;
+        navLinks.forEach(l=>l.classList.toggle('active', l.getAttribute('href')===id));
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px',threshold:0});
+  sections.forEach(s=>s&&spy.observe(s));
+
+  // Exec summary tabs
+  const tabs = document.querySelectorAll('#execTabs button');
+  const panels = document.querySelectorAll('.exec-panel');
+  tabs.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      tabs.forEach(b=>b.classList.remove('active'));
+      panels.forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Source tooltip: hover shows title, click opens source URL
+  (function(){
+    const srcMap = {};
+    const srcItems = document.querySelectorAll('#s10 .src-list .item');
+    srcItems.forEach(item => {
+      const code = item.querySelector('.code');
+      const ttl = item.querySelector('.ttl');
+      const link = item.querySelector('.body a[href]');
+      if (code && ttl) {
+        srcMap[code.textContent.trim()] = {
+          title: ttl.textContent.trim(),
+          url: link ? link.href : ''
+        };
+      }
+    });
+
+    // Create tooltip element
+    const tooltip = document.createElement('div');
+    tooltip.className = 'src-tooltip';
+    document.body.appendChild(tooltip);
+
+    function showTooltip(e, code, data) {
+      let html = '<span class="code-tag">' + code + '</span>' + data.title;
+      if (data.url) {
+        html += '<div style="margin-top:4px;font-size:10px;color:rgba(255,255,255,0.5);word-break:break-all;">' + data.url.replace(/^https?:\/\//, '') + '</div>';
+      }
+      tooltip.innerHTML = html;
+      tooltip.classList.add('show');
+      const rect = e.target.getBoundingClientRect();
+      let left = rect.left;
+      let top = rect.bottom + 8;
+      tooltip.style.left = Math.max(10, left) + 'px';
+      tooltip.style.top = top + 'px';
+      requestAnimationFrame(() => {
+        if (left + tooltip.offsetWidth > window.innerWidth - 10) {
+          left = window.innerWidth - tooltip.offsetWidth - 10;
+          tooltip.style.left = Math.max(10, left) + 'px';
+        }
+        if (top + tooltip.offsetHeight > window.innerHeight) {
+          top = rect.top - tooltip.offsetHeight - 8;
+          tooltip.style.top = top + 'px';
+        }
+      });
+    }
+
+    function hideTooltip() {
+      tooltip.classList.remove('show');
+    }
+
+    function handleClick(e, code, data) {
+      if (data.url) {
+        e.preventDefault();
+        hideTooltip();
+        window.open(data.url, '_blank');
+      }
+    }
+
+    // Bind events to a.src
+    document.querySelectorAll('a.src[href="#s10"]').forEach(a => {
+      const match = a.textContent.trim().match(/\[([^\]]+)\]/);
+      if (match && srcMap[match[1]]) {
+        const code = match[1];
+        const data = srcMap[code];
+        a.addEventListener('mouseenter', function(e) { showTooltip(e, code, data); });
+        a.addEventListener('mouseleave', hideTooltip);
+        a.addEventListener('click', function(e) { handleClick(e, code, data); });
+      }
+    });
+
+    // Bind events to sup.ref
+    document.querySelectorAll('sup.ref').forEach(ref => {
+      const match = ref.textContent.trim().match(/\[([^\]]+)\]/);
+      if (match && srcMap[match[1]]) {
+        const code = match[1];
+        const data = srcMap[code];
+        ref.style.cursor = 'pointer';
+        ref.addEventListener('mouseenter', function(e) { showTooltip(e, code, data); });
+        ref.addEventListener('mouseleave', hideTooltip);
+        ref.addEventListener('click', function(e) { handleClick(e, code, data); });
+      }
+    });
+  })();
+</script>
+</body>
+</html>
