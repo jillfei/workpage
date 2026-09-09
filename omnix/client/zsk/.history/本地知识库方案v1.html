@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>本地知识库构建方案 · RAG + GraphRAG 混合架构（2025–2026）</title>
+<style>
+  :root{
+    --bg:#f6f8fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --line:#e2e8f0; --blue:#2563eb; --teal:#0d9488; --amber:#d97706;
+    --purple:#7c3aed; --green:#16a34a; --red:#dc2626; --slate:#475569;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.7;font-size:15px}
+  header.hero{background:linear-gradient(135deg,#1e3a8a 0%,#0d9488 100%);color:#fff;padding:46px 32px 38px}
+  header.hero h1{margin:0 0 8px;font-size:28px;letter-spacing:.5px}
+  header.hero p{margin:0;opacity:.92;font-size:15px}
+  header.hero .tag{display:inline-block;margin-top:14px;padding:4px 12px;border:1px solid rgba(255,255,255,.5);
+    border-radius:999px;font-size:12px;margin-right:8px}
+  .wrap{max-width:1080px;margin:0 auto;padding:26px 22px 60px}
+  nav.toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:-26px 0 28px;
+    position:relative;box-shadow:0 8px 24px rgba(15,23,42,.06)}
+  nav.toc b{display:block;margin-bottom:8px;color:var(--slate)}
+  nav.toc a{color:var(--blue);text-decoration:none;margin:0 14px 4px 0;display:inline-block;font-size:14px}
+  nav.toc a:hover{text-decoration:underline}
+  section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin:0 0 24px;
+    box-shadow:0 4px 18px rgba(15,23,42,.04)}
+  section h2{margin:0 0 6px;font-size:21px;display:flex;align-items:center;gap:10px}
+  section h2 .n{background:var(--blue);color:#fff;width:30px;height:30px;display:inline-flex;align-items:center;
+    justify-content:center;border-radius:9px;font-size:15px;flex:0 0 auto}
+  section h3{margin:22px 0 8px;font-size:16px;color:var(--slate)}
+  p{margin:10px 0}
+  .muted{color:var(--muted)}
+  .callout{border-left:4px solid var(--blue);background:#eff6ff;padding:14px 18px;border-radius:10px;margin:16px 0}
+  .callout.ok{border-color:var(--green);background:#f0fdf4}
+  .callout.warn{border-color:var(--amber);background:#fffbeb}
+  .callout b{color:var(--ink)}
+  ul{margin:10px 0;padding-left:22px}
+  li{margin:6px 0}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9;color:var(--slate);font-weight:600}
+  tr:nth-child(even) td{background:#fafbfc}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600}
+  .pill.b{background:#dbeafe;color:#1d4ed8}
+  .pill.t{background:#ccfbf1;color:#0f766e}
+  .pill.a{background:#fef3c7;color:#b45309}
+  .pill.p{background:#ede9fe;color:#6d28d9}
+  .pill.g{background:#dcfce7;color:#15803d}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:16px 0}
+  .card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fbfdff}
+  .card h4{margin:0 0 6px;font-size:15px;color:var(--blue)}
+  .card.t h4{color:var(--teal)} .card.a h4{color:var(--amber)} .card.p h4{color:var(--purple)}
+  .card.g h4{color:var(--green)}
+  .card ul{margin:6px 0 0;padding-left:18px;font-size:13.5px}
+  .phase{border:1px solid var(--line);border-radius:12px;padding:0;margin:14px 0;overflow:hidden}
+  .phase .hd{background:#f1f5f9;padding:10px 16px;font-weight:600;color:var(--slate);display:flex;justify-content:space-between}
+  .phase .hd span{color:var(--muted);font-weight:400;font-size:13px}
+  .phase .bd{padding:12px 18px}
+  pre{background:#0f172a;color:#e2e8f0;padding:16px 18px;border-radius:12px;overflow:auto;font-size:13px;line-height:1.55}
+  code{font-family:"JetBrains Mono",Consolas,Menlo,monospace}
+  .diagram{background:#fbfdff;border:1px solid var(--line);border-radius:14px;padding:14px;margin:14px 0;overflow:auto}
+  .diagram svg{width:100%;height:auto;display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--slate);margin:8px 0 0}
+  .legend i{width:14px;height:14px;border-radius:4px;display:inline-block;margin-right:5px;vertical-align:-2px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
+  .kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12.5px}
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>本地知识库构建方案</h1>
+  <p>基于 RAG + GraphRAG 的混合检索架构 · 面向中文场景的本地化、私有化、可落地实现</p>
+  <div>
+    <span class="tag">离线构建 + 在线问答</span>
+    <span class="tag">向量库 + 知识图谱双通道</span>
+    <span class="tag">本地模型 · 数据不出域</span>
+    <span class="tag">技术栈 2025–2026</span>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="toc">
+  <b>目录</b>
+  <a href="#s1">① 思路正确性分析</a>
+  <a href="#s2">② 完善后的技术架构</a>
+  <a href="#s3">③ 分阶段实现路径</a>
+  <a href="#s4">④ 系统架构图</a>
+  <a href="#s5">⑤ 业务流程图</a>
+  <a href="#s6">⑥ 技术选型清单</a>
+  <a href="#s7">⑦ 关键实现示例</a>
+</nav>
+
+<!-- ============ 1 ============ -->
+<section id="s1">
+  <h2><span class="n">1</span>原思路文件的正确性分析</h2>
+  <p class="muted">参考文件：<code>构建本地知识库流程思路.txt</code>。整体判断：思路方向<strong>正确且先进</strong>，本质上是一套「RAG + 知识图谱（GraphRAG）混合检索 + 查询改写 + 重排」的完整范式，与业界 2024–2026 的主流最佳实践高度一致。</p>
+
+  <div class="callout ok">
+    <b>总体结论：</b>核心链路（切分 → 向量化 → 图谱 → 查询改写 → 混合检索 → 重排 → 生成）设计合理、可落地。原方案已经涵盖了生产级 RAG 的绝大多数关键环节，不存在方向性错误。需要补齐的是「稀疏检索/混合检索」「最新模型选型」「评估与观测」「Agentic / 自纠错」等增强项，以及把模糊的组件具体化。
+  </div>
+
+  <h3>✅ 原思路中「做对了」的核心设计</h3>
+  <ul>
+    <li><b>按文件类型差异化解析与切分</b>：不同文档（PDF/Word/Markdown/扫描件）用不同策略，是正确的工程化思路，避免「一刀切」导致版面信息丢失。</li>
+    <li><b>用 MarkItDown / MinerU 做文档解析</b>：这是当前开源界最主流的「转 Markdown + 保留结构」方案，MinerU 对公式、表格、图表还原尤其强。</li>
+    <li><b>向量库 + 知识图谱双通道</b>：这正是 Microsoft GraphRAG / LightRAG 的核心思想——向量解决「语义相似」，图谱解决「实体关系与全局摘要」，互补能显著提升复杂问答（如「某公司近年战略演变」）的准确率。</li>
+    <li><b>查询改写(Rewrite)与扩充(Expansion)</b>：对应业界 Query Transformation，能显著改善口语化、含糊问题的召回，是性价比最高的增强手段之一。</li>
+    <li><b>图谱实体辅助扩充问题</b>：用图谱实体回填 query，是 GraphRAG 的标准做法，正确。</li>
+    <li><b>「相似度高 ≠ 相关」→ 引入 Rerank</b>：用 Cross-Encoder 重排是正确且必要的，单纯向量相似度 top-k 噪声很大。</li>
+    <li><b>Prompt 压缩</b>：上下文过长时压缩（如 LLMLingua）避免截断与高延迟，思路正确。</li>
+  </ul>
+
+  <h3>⚠️ 原思路的缺失项 / 可增强点（需要「用最新技术完善」的地方）</h3>
+  <table>
+    <thead><tr><th>原方案缺口</th><th>风险</th><th>最新技术补强</th></tr></thead>
+    <tbody>
+      <tr><td>只提「向量相似度检索」</td><td>纯稠密检索对专名、编号、关键词召回差</td><td><b>混合检索（BM25 稀疏 + 向量稠密 + 图谱）</b>，用 Reciprocal Rank Fusion 融合</td></tr>
+      <tr><td>Embedding / Reranker 模型未指定</td><td>中文效果与性能不确定</td><td><span class="pill b">BGE-M3</span> <span class="pill p">Qwen3-Embedding</span> 做嵌入；<span class="pill a">BGE-Reranker</span> <span class="pill a">Qwen3-Reranker</span> 做重排</td></tr>
+      <tr><td>图谱「大模型分析构建」太笼统</td><td>抽取质量、成本、社区摘要不可控</td><td>采用 <span class="pill t">LightRAG</span> / <span class="pill t">Microsoft GraphRAG</span> 的标准化抽取 + 社区聚类 + 全局/本地检索模式</td></tr>
+      <tr><td>查询改写只列了 Rewrite/Expansion</td><td>对复杂/多跳问题不足</td><td>补充 <b>HyDE</b>、<b>RAG-Fusion（多 Query）</b>、<b>Step-back</b>、<b>子查询分解</b></td></tr>
+      <tr><td>缺少评估环节</td><td>无法量化「变好没」、易线上翻车</td><td><span class="pill g">RAGAS</span> / DeepEval 做忠实度、相关性、上下文召回评估；建黄金测试集</td></tr>
+      <tr><td>缺少观测与缓存</td><td>排障难、成本高</td><td><span class="pill p">Langfuse</span> 观测链路、回答溯源；向量/答案缓存；限流鉴权</td></tr>
+      <tr><td>未考虑「检索不到怎么办」</td><td>幻觉或拒答体验差</td><td><b>Self-RAG / Corrective-RAG</b>：低置信度时自纠错、澄清或转其他源</td></tr>
+      <tr><td>切分策略单一</td><td>长文档上下文断裂</td><td><b>语义切分</b>、<b>层级/父子切分</b>、<b>Late Chunking</b>（保留全局上下文）</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="s2">
+  <h2><span class="n">2</span>完善后的技术架构（2025–2026 最新）</h2>
+  <p>在保留原方案「双通道 + 查询改写 + 重排」骨架基础上，补齐混合检索、最新模型、评估观测与自纠错，形成可生产的本地知识库系统。下面按分层给出具体技术与选型。</p>
+
+  <div class="grid">
+    <div class="card">
+      <h4>① 数据接入</h4>
+      <ul>
+        <li>本地目录 / NAS 监听</li>
+        <li>对象存储（S3/MinIO）</li>
+        <li>数据库导出、Web 抓取</li>
+        <li>增量同步 + 版本管理</li>
+      </ul>
+    </div>
+    <div class="card t">
+      <h4>② 文档解析</h4>
+      <ul>
+        <li><b>MarkItDown</b>：结构化文档→MD</li>
+        <li><b>MinerU</b>：PDF/公式/表格/图表</li>
+        <li><b>unstructured</b>：多格式通用</li>
+        <li><b>PaddleOCR / PP-Structure</b>：扫描件</li>
+        <li>统一输出带版面元数据的 JSON/MD</li>
+      </ul>
+    </div>
+    <div class="card a">
+      <h4>③ 智能切分</h4>
+      <ul>
+        <li><b>语义切分</b>（按 embedding 距离断点）</li>
+        <li><b>层级/父子切分</b>（Small-to-Big）</li>
+        <li><b>Late Chunking</b>：长上下文整体编码再切</li>
+        <li>按 Markdown 标题递归切分</li>
+        <li>重叠窗口，保留章节/来源元数据</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>④A 向量索引</h4>
+      <ul>
+        <li>Embedding：<b>BGE-M3</b> / <b>Qwen3-Embedding</b></li>
+        <li>稠密+稀疏+多向量一体</li>
+        <li>向量库：<b>Qdrant</b> / Chroma / LanceDB</li>
+        <li>支持元数据过滤、多租户</li>
+      </ul>
+    </div>
+    <div class="card p">
+      <h4>④B 图谱索引</h4>
+      <ul>
+        <li><b>LightRAG</b> / <b>Microsoft GraphRAG</b></li>
+        <li>LLM 抽取 实体·关系·社区</li>
+        <li>图存储：Neo4j 或复用向量库</li>
+        <li>Local + Global 双模式检索</li>
+        <li>三元组文本化参与召回</li>
+      </ul>
+    </div>
+    <div class="card g">
+      <h4>⑤ 检索增强</h4>
+      <ul>
+        <li>Query Transform：Rewrite/Expansion/HyDE/RAG-Fusion</li>
+        <li><b>混合检索</b>：BM25 + 向量 + 图谱</li>
+        <li>Rerank：<b>BGE/Qwen3-Reranker</b></li>
+        <li>压缩：<b>LLMLingua-2</b></li>
+        <li>Self-RAG 自纠错兜底</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>⑥ 生成与支撑</h4>
+      <ul>
+        <li>本地 LLM：<b>Ollama / vLLM</b></li>
+        <li>模型：Qwen3 / DeepSeek / ChatGLM</li>
+        <li>回答带<b>引用溯源</b>（原文定位）</li>
+        <li>评估 <b>RAGAS</b> · 观测 <b>Langfuse</b></li>
+        <li>API(FastAPI) + 前端(Streamlit/Gradio)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    <b>关于「本地化 / 数据不出域」：</b>所有组件均可私有化部署——解析、Embedding、Reranker、LLM 跑在本地 GPU/CPU；向量库与图谱库自托管。仅在你们确有合规要求允许时，才考虑调用云端大模型 API 作为兜底。
+  </div>
+
+  <h3>为什么是「混合检索」而不是纯向量？</h3>
+  <p>向量检索擅长语义，但对「合同编号 HT-2024-007」「错误码 0x80070005」这类专名/标识符召回很差。BM25 稀疏检索正好补强精确词面匹配；图谱补强实体关系与全局摘要；三者用 <b>Reciprocal Rank Fusion (RRF)</b> 融合后再交给 Reranker，是 2025 年公认的最优基线组合。</p>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="s3">
+  <h2><span class="n">3</span>分阶段实现路径（里程碑）</h2>
+
+  <div class="phase">
+    <div class="hd">Phase 0 · 环境与选型 <span>约 3–5 天</span></div>
+    <div class="bd">
+      <ul>
+        <li>清点语料规模、文档类型、硬件（GPU 显存 / 内存 / 磁盘）。</li>
+        <li>确定模型与存储：Embedding=BGE-M3、Reranker=BGE-Reranker-v2-m3、LLM=Qwen3（Ollama）、向量库=Qdrant、图谱=LightRAG。</li>
+        <li>用 Docker Compose 起 Qdrant / Neo4j / Langfuse；Python venv 隔离依赖。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="hd">Phase 1 · 文档接入与解析 <span>约 1–2 周</span></div>
+    <div class="bd">
+      <ul>
+        <li>实现多源连接器（本地目录监听 / MinIO / DB 导出）。</li>
+        <li>接 MarkItDown + MinerU + PaddleOCR，输出统一 <code>{text, layout_meta, source, page}</code> 结构。</li>
+        <li>格式归一、异常兜底、解析质量抽样校验。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="hd">Phase 2 · 切分与双通道索引 <span>约 2 周</span></div>
+    <div class="bd">
+      <ul>
+        <li>实现语义 / 层级 / Late Chunking，附加章节路径等元数据。</li>
+        <li>向量通道：BGE-M3 嵌入 → 写入 Qdrant，建立 BM25 倒排（或用 Qdrant 稀疏向量）。</li>
+        <li>图谱通道：LightRAG 抽取实体关系与社区摘要，构建图索引。</li>
+        <li>索引版本化，支持增量更新与删除。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="hd">Phase 3 · 检索与生成服务 <span>约 2–3 周</span></div>
+    <div class="bd">
+      <ul>
+        <li>Query Transform 模块（Rewrite / Expansion / HyDE / RAG-Fusion）。</li>
+        <li>Hybrid Retriever：BM25 + 向量 + 图谱子图，RRF 融合。</li>
+        <li>Reranker 重排 → LLMLingua 压缩 → 组装带引用的 Prompt。</li>
+        <li>接入本地 LLM（Ollama/vLLM），流式输出，返回原文引用定位。</li>
+        <li>FastAPI 封装：鉴权、限流、缓存、批处理接口。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="hd">Phase 4 · 评估、观测与上线 <span>持续</span></div>
+    <div class="bd">
+      <ul>
+        <li>构建黄金测试集，用 <b>RAGAS</b> 跑忠实度/答案相关性/上下文召回。</li>
+        <li><b>Langfuse</b> 观测每一步耗时、token、命中，定位 bad case。</li>
+        <li>前端 UI（Streamlit / Gradio / 自研）供业务试用。</li>
+        <li>监控：索引漂移、查询质量、延迟/成本；触发重索引与模型迭代。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="s4">
+  <h2><span class="n">4</span>系统架构图</h2>
+  <div class="diagram">
+  <svg viewBox="0 0 1000 820" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,Microsoft YaHei,sans-serif">
+    <defs>
+      <marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+      </marker>
+      <style>
+        .t{font-size:15px;font-weight:700;fill:#0f172a}
+        .s{font-size:12.5px;fill:#334155}
+        .lab{font-size:12px;fill:#64748b}
+      </style>
+    </defs>
+
+    <!-- Band 1 -->
+    <rect x="50" y="30" width="900" height="78" rx="14" fill="#e0ecff" stroke="#2563eb"/>
+    <text x="70" y="58" class="t">① 数据接入层（多源文档）</text>
+    <text x="70" y="82" class="s">PDF · DOCX · Markdown · HTML · PPT · XLSX · 图片/扫描件 · 数据库导出 · Web 抓取 · 增量同步</text>
+
+    <!-- arrow 1->2 -->
+    <line x1="500" y1="108" x2="500" y2="138" stroke="#475569" stroke-width="2" marker-end="url(#ar)"/>
+
+    <!-- Band 2 -->
+    <rect x="50" y="140" width="900" height="78" rx="14" fill="#d7f5ef" stroke="#0d9488"/>
+    <text x="70" y="168" class="t">② 文档解析层</text>
+    <text x="70" y="192" class="s">MarkItDown · MinerU · unstructured · PaddleOCR/PP-Structure → 统一输出 Markdown/JSON（带版面元数据）</text>
+
+    <line x1="500" y1="218" x2="500" y2="248" stroke="#475569" stroke-width="2" marker-end="url(#ar)"/>
+
+    <!-- Band 3 -->
+    <rect x="50" y="250" width="900" height="78" rx="14" fill="#fef0d6" stroke="#d97706"/>
+    <text x="70" y="278" class="t">③ 智能切分层</text>
+    <text x="70" y="302" class="s">语义切分 · 层级/父子切分 · Late Chunking · 按标题递归 · 重叠窗口 · 保留章节/来源元数据</text>
+
+    <line x1="500" y1="328" x2="500" y2="358" stroke="#475569" stroke-width="2" marker-end="url(#ar)"/>
+
+    <!-- Band 4 dual -->
+    <rect x="50" y="360" width="900" height="128" rx="14" fill="#f1e9ff" stroke="#7c3aed"/>
+    <text x="70" y="388" class="t">④ 双通道索引层</text>
+    <rect x="66" y="400" width="420" height="76" rx="10" fill="#ffffff" stroke="#2563eb"/>
+    <text x="82" y="424" class="s" font-weight="700">④A 向量索引通道</text>
+    <text x="82" y="446" class="s">BGE-M3 / Qwen3-Embedding → Qdrant</text>
+    <text x="82" y="466" class="s">稠密 + 稀疏 + 多向量（混合检索基石）</text>
+    <rect x="514" y="400" width="420" height="76" rx="10" fill="#ffffff" stroke="#7c3aed"/>
+    <text x="530" y="424" class="s" font-weight="700">④B 知识图谱通道（LightRAG / GraphRAG）</text>
+    <text x="530" y="446" class="s">LLM 抽取 实体·关系·社区 → 图存储(Neo4j)</text>
+    <text x="530" y="466" class="s">Local + Global 检索 · 三元组文本化</text>
+
+    <line x1="500" y1="488" x2="500" y2="518" stroke="#475569" stroke-width="2" marker-end="url(#ar)"/>
+
+    <!-- Band 5 retrieval -->
+    <rect x="50" y="520" width="900" height="120" rx="14" fill="#dbfce7" stroke="#16a34a"/>
+    <text x="70" y="548" class="t">⑤ 检索增强层（在线）</text>
+    <rect x="66" y="560" width="205" height="64" rx="9" fill="#fff" stroke="#16a34a"/>
+    <text x="80" y="584" class="s" font-weight="700">Query Transform</text>
+    <text x="80" y="604" class="s">Rewrite/Expansion</text>
+    <text x="80" y="620" class="s">HyDE · RAG-Fusion</text>
+    <rect x="287" y="560" width="205" height="64" rx="9" fill="#fff" stroke="#16a34a"/>
+    <text x="301" y="584" class="s" font-weight="700">Hybrid Retriever</text>
+    <text x="301" y="604" class="s">BM25 + 向量 + 图谱</text>
+    <text x="301" y="620" class="s">RRF 融合</text>
+    <rect x="508" y="560" width="205" height="64" rx="9" fill="#fff" stroke="#16a34a"/>
+    <text x="522" y="584" class="s" font-weight="700">Rerank</text>
+    <text x="522" y="604" class="s">BGE / Qwen3</text>
+    <text x="522" y="620" class="s">Reranker 重排</text>
+    <rect x="729" y="560" width="205" height="64" rx="9" fill="#fff" stroke="#16a34a"/>
+    <text x="743" y="584" class="s" font-weight="700">Compress</text>
+    <text x="743" y="604" class="s">LLMLingua-2</text>
+    <text x="743" y="620" class="s">长上下文压缩</text>
+
+    <line x1="500" y1="640" x2="500" y2="668" stroke="#475569" stroke-width="2" marker-end="url(#ar)"/>
+
+    <!-- Band 6 generation/support -->
+    <rect x="50" y="670" width="900" height="120" rx="14" fill="#e2e8f0" stroke="#475569"/>
+    <text x="70" y="698" class="t">⑥ 生成与支撑层</text>
+    <rect x="66" y="710" width="430" height="64" rx="9" fill="#fff" stroke="#dc2626"/>
+    <text x="80" y="734" class="s" font-weight="700">LLM 生成（Ollama / vLLM）</text>
+    <text x="80" y="754" class="s">Qwen3 / DeepSeek / ChatGLM · 流式输出 · 引用溯源</text>
+    <rect x="514" y="710" width="420" height="64" rx="9" fill="#fff" stroke="#7c3aed"/>
+    <text x="528" y="734" class="s" font-weight="700">评估 · 观测 · 服务</text>
+    <text x="528" y="754" class="s">RAGAS 评估 · Langfuse 观测 · FastAPI · 前端 UI</text>
+
+    <!-- side support note -->
+    <text x="70" y="812" class="lab">离线构建：①②③④　　在线问答：⑤⑥　　· 数据全程本地私有化，不出域</text>
+  </svg>
+  </div>
+  <div class="legend">
+    <span><i style="background:#2563eb"></i>接入/向量</span>
+    <span><i style="background:#0d9488"></i>解析</span>
+    <span><i style="background:#d97706"></i>切分</span>
+    <span><i style="background:#7c3aed"></i>图谱</span>
+    <span><i style="background:#16a34a"></i>检索增强</span>
+    <span><i style="background:#475569"></i>生成/支撑</span>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="s5">
+  <h2><span class="n">5</span>业务流程图</h2>
+  <div class="diagram">
+  <svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,Microsoft YaHei,sans-serif">
+    <defs>
+      <marker id="ar2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L8,3 L0,6 Z" fill="#334155"/>
+      </marker>
+      <marker id="ar3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L8,3 L0,6 Z" fill="#dc2626"/>
+      </marker>
+      <style>
+        .bt{font-size:13.5px;font-weight:700;fill:#0f172a}
+        .bs{font-size:11.5px;fill:#475569}
+        .tt{font-size:15px;font-weight:700}
+      </style>
+    </defs>
+
+    <text x="50" y="30" class="tt" fill="#2563eb">离线 · 知识库构建流程</text>
+
+    <!-- offline boxes -->
+    <g>
+      <rect x="30" y="46" width="160" height="62" rx="10" fill="#e0ecff" stroke="#2563eb"/>
+      <text x="42" y="72" class="bt">① 上传/接入</text>
+      <text x="42" y="92" class="bs">多源文档监听</text>
+
+      <rect x="230" y="46" width="160" height="62" rx="10" fill="#d7f5ef" stroke="#0d9488"/>
+      <text x="242" y="72" class="bt">② 解析</text>
+      <text x="242" y="92" class="bs">MarkItDown/MinerU</text>
+
+      <rect x="430" y="46" width="160" height="62" rx="10" fill="#fef0d6" stroke="#d97706"/>
+      <text x="442" y="72" class="bt">③ 切分</text>
+      <text x="442" y="92" class="bs">语义/层级切分</text>
+
+      <rect x="630" y="46" width="180" height="62" rx="10" fill="#f1e9ff" stroke="#7c3aed"/>
+      <text x="642" y="72" class="bt">④ 双通道索引</text>
+      <text x="642" y="92" class="bs">向量 + 图谱</text>
+
+      <rect x="850" y="46" width="120" height="62" rx="10" fill="#e2e8f0" stroke="#475569"/>
+      <text x="862" y="72" class="bt">⑤ 入库</text>
+      <text x="862" y="92" class="bs">版本化</text>
+    </g>
+    <line x1="190" y1="77" x2="228" y2="77" stroke="#334155" stroke-width="2" marker-end="url(#ar2)"/>
+    <line x1="390" y1="77" x2="428" y2="77" stroke="#334155" stroke-width="2" marker-end="url(#ar2)"/>
+    <line x1="590" y1="77" x2="628" y2="77" stroke="#334155" stroke-width="2" marker-end="url(#ar2)"/>
+    <line x1="810" y1="77" x2="848" y2="77" stroke="#334155" stroke-width="2" marker-end="url(#ar2)"/>
+
+    <!-- storage -->
+    <rect x="350" y="140" width="300" height="56" rx="12" fill="#0f172a"/>
+    <text x="372" y="166" fill="#e2e8f0" font-size="13.5" font-weight="700">知识库存储（Qdrant 向量库 + 图谱）</text>
+    <text x="372" y="186" fill="#94a3b8" font-size="11.5">支持 BM25 稀疏 · 稠密 · 图检索 · 元数据过滤</text>
+    <line x1="500" y1="108" x2="500" y2="138" stroke="#334155" stroke-width="2" marker-end="url(#ar2)"/>
+    <line x1="500" y1="196" x2="500" y2="226" stroke="#334155" stroke-width="2" marker-end="url(#ar2)"/>
+
+    <text x="50" y="244" class="tt" fill="#16a34a">在线 · 用户问答流程</text>
+
+    <!-- online boxes row -->
+    <g>
+      <rect x="30" y="258" width="118" height="70" rx="10" fill="#e0ecff" stroke="#2563eb"/>
+      <text x="42" y="284" class="bt">① 提问</text>
+      <text x="42" y="304" class="bs">自然语言</text>
+
+      <rect x="168" y="258" width="128" height="70" rx="10" fill="#dbfce7" stroke="#16a34a"/>
+      <text x="180" y="284" class="bt">② Query</text>
+      <text x="180" y="304" class="bs">Transform</text>
+      <text x="180" y="320" class="bs">改写/扩充</text>
+
+      <rect x="316" y="258" width="128" height="70" rx="10" fill="#dbfce7" stroke="#16a34a"/>
+      <text x="328" y="284" class="bt">③ 混合检索</text>
+      <text x="328" y="304" class="bs">BM25+向量</text>
+      <text x="328" y="320" class="bs">+图谱</text>
+
+      <rect x="464" y="258" width="148" height="70" rx="10" fill="#dbfce7" stroke="#16a34a"/>
+      <text x="476" y="284" class="bt">④ 合并去重</text>
+      <text x="476" y="304" class="bs">+ Rerank 重排</text>
+
+      <rect x="632" y="258" width="148" height="70" rx="10" fill="#dbfce7" stroke="#16a34a"/>
+      <text x="644" y="284" class="bt">⑤ 压缩+组装</text>
+      <text x="644" y="304" class="bs">LLMLingua</text>
+      <text x="644" y="320" class="bs">+ 引用拼接</text>
+
+      <rect x="800" y="258" width="150" height="70" rx="10" fill="#fee2e2" stroke="#dc2626"/>
+      <text x="812" y="284" class="bt">⑥ LLM 生成</text>
+      <text x="812" y="304" class="bs">Ollama/vLLM</text>
+      <text x="812" y="320" class="bs">Qwen3/DeepSeek</text>
+    </g>
+    <line x1="148" y1="293" x2="166" y2="293" stroke="#334155" stroke-width="2" marker-end="url(#ar2)"/>
+    <line x1="296" y1="293" x2="314" y2="293" stroke="#334155" stroke-width="2" marker-end="url(#ar2)"/>
+    <line x1="444" y1="293" x2="462" y2="293" stroke="#334155" stroke-width="2" marker-end="url(#ar2)"/>
+    <line x1="612" y1="293" x2="630" y2="293" stroke="#334155" stroke-width="2" marker-end="url(#ar2)"/>
+    <line x1="780" y1="293" x2="798" y2="293" stroke="#334155" stroke-width="2" marker-end="url(#ar2)"/>
+
+    <!-- answer -->
+    <rect x="800" y="358" width="150" height="60" rx="10" fill="#e2e8f0" stroke="#475569"/>
+    <text x="812" y="384" class="bt">⑦ 答案+溯源</text>
+    <text x="812" y="404" class="bs">原文定位引用</text>
+    <line x1="875" y1="328" x2="875" y2="356" stroke="#334155" stroke-width="2" marker-end="url(#ar2)"/>
+
+    <!-- eval loop -->
+    <rect x="430" y="420" width="200" height="56" rx="12" fill="#f1e9ff" stroke="#7c3aed"/>
+    <text x="442" y="446" class="bt">评估 / 观测 / 重索引</text>
+    <text x="442" y="466" class="bs">RAGAS · Langfuse · 漂移</text>
+    <path d="M800,388 C720,470 660,470 630,448" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ar3)"/>
+    <text x="690" y="500" class="bs" fill="#dc2626">持续反馈闭环：低质量 → 触发重索引/调参</text>
+    <line x1="530" y1="420" x2="520" y2="196" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ar3)"/>
+  </svg>
+  </div>
+  <div class="legend">
+    <span><i style="background:#2563eb"></i>接入/提问</span>
+    <span><i style="background:#16a34a"></i>检索增强</span>
+    <span><i style="background:#dc2626"></i>生成/反馈</span>
+    <span><i style="background:#7c3aed"></i>评估闭环</span>
+    <span><i style="background:#0f172a"></i>知识库存储</span>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="s6">
+  <h2><span class="n">6</span>技术选型清单（本地优先）</h2>
+  <table>
+    <thead><tr><th>环节</th><th>推荐（本地/开源）</th><th>备选</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>文档解析</td><td><b>MarkItDown</b> + <b>MinerU</b></td><td>unstructured, Docling</td><td>MinerU 对公式/图表强，MarkItDown 轻量</td></tr>
+      <tr><td>扫描件 OCR</td><td><b>PaddleOCR / PP-Structure</b></td><td>PaddleOCRv4, RapidOCR</td><td>中文识别领先，可本地 GPU 推理</td></tr>
+      <tr><td>切分</td><td>LlamaIndex 语义/层级切分</td><td>LangChain Recursive</td><td>配合 Late Chunking 保上下文</td></tr>
+      <tr><td>Embedding</td><td><b>BGE-M3</b> / <b>Qwen3-Embedding</b></td><td>gte-Qwen2, bge-large-zh</td><td>支持稠密+稀疏+多向量，中文优</td></tr>
+      <tr><td>向量库</td><td><b>Qdrant</b></td><td>Chroma, LanceDB, Milvus, pgvector</td><td>支持稀疏向量与过滤，易自托管</td></tr>
+      <tr><td>知识图谱</td><td><b>LightRAG</b></td><td>Microsoft GraphRAG + Neo4j</td><td>LightRAG 轻量、复用向量库、上手快</td></tr>
+      <tr><td>稀疏检索</td><td>BM25（rank_bm25 / Qdrant 稀疏）</td><td>SPLADE, Elasticsearch</td><td>补强专名/编号召回</td></tr>
+      <tr><td>Reranker</td><td><b>BGE-Reranker-v2-m3</b> / <b>Qwen3-Reranker</b></td><td>bce-reranker, jina-reranker</td><td>Cross-Encoder 重排</td></tr>
+      <tr><td>Query Transform</td><td>LLM 自研 / LlamaIndex 模块</td><td>HyDE, RAG-Fusion</td><td>改写/扩充/假设文档嵌入</td></tr>
+      <tr><td>压缩</td><td><b>LLMLingua-2</b></td><td>LongLLMLingua</td><td>不影响语义下大幅降 token</td></tr>
+      <tr><td>生成 LLM</td><td><b>Qwen3</b>（Ollama）/ <b>DeepSeek</b></td><td>ChatGLM4, InternLM3, Phi-4</td><td>本地推理，数据不出域</td></tr>
+      <tr><td>推理服务</td><td><b>Ollama</b> / <b>vLLM</b></td><td>llama.cpp, LMDeploy</td><td>vLLM 高并发，Ollama 易用</td></tr>
+      <tr><td>API 服务</td><td><b>FastAPI</b></td><td>Litestar</td><td>流式、鉴权、限流、缓存</td></tr>
+      <tr><td>评估</td><td><b>RAGAS</b> / DeepEval</td><td>TruLens</td><td>忠实度/相关性/上下文召回</td></tr>
+      <tr><td>观测</td><td><b>Langfuse</b>（自托管）</td><td>LangSmith(云)</td><td>链路追踪、bad case 定位</td></tr>
+      <tr><td>前端</td><td>Streamlit / Gradio</td><td>自研 React</td><td>快速验证与试用</td></tr>
+      <tr><td>编排框架</td><td>LlamaIndex（推荐 RAG）</td><td>LangChain, Haystack</td><td>数据连接器与索引丰富</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="s7">
+  <h2><span class="n">7</span>关键实现示例（Python 骨架）</h2>
+  <p class="muted">以下为最小可运行思路骨架，实际工程请补异常、批处理、并发与监控。</p>
+  <pre><code># 1) 解析 + 语义切分（LlamaIndex）
+from llama_index.core import SimpleDirectoryReader, SentenceSplitter
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.vector_stores.qdrant import QdrantVectorStore
+
+docs = SimpleDirectoryReader("./data", recursive=True).load_data()
+splitter = SentenceSplitter(chunk_size=512, chunk_overlap=64)
+nodes = splitter.get_nodes_from_documents(docs)
+
+# 2) 向量索引（BGE-M3 → Qdrant）
+embed = HuggingFaceEmbedding(model_name="BAAI/bge-m3")
+vs = QdrantVectorStore(client=client, collection_name="kb")
+index = VectorStoreIndex(nodes, embed_model=embed, vector_store=vs)
+
+# 3) 图谱索引（LightRAG）
+from lightrag import LightRAG, QueryParam
+import asyncio
+rag = LightRAG(working_dir="./graph_storage", embedding_func=embed, llm=local_llm)
+asyncio.run(rag.ainsert("\n".join(d.text for d in docs)))
+
+# 4) 混合检索 + Rerank + 生成
+from llama_index.core.retrievers import QueryFusionRetriever
+retriever = QueryFusionRetriever([index.as_retriever(), bm25_retriever],
+                                 mode="reciprocal_rerank", similarity_top_k=10)
+nodes = retriever.retrieve(rewrite_query(q))          # 先 Query Transform
+ranked = reranker.compress(query, nodes, top_n=5)    # BGE/Qwen3-Reranker
+prompt = build_prompt(q, ranked, compress=True)      # LLMLingua 压缩
+answer = local_llm.stream(prompt, citations=ranked)  # 带引用溯源
+
+# 5) 评估（RAGAS）
+from ragas import evaluate; from ragas.metrics import faithfulness, answer_relevancy
+score = evaluate(dataset, metrics=[faithfulness, answer_relevancy])</code></pre>
+  <div class="callout warn">
+    <b>落地建议：</b>先用小语料（几十份文档）打通「解析→索引→问答→评估」闭环，用 RAGAS 建立基线；再逐步放大语料、叠加图谱与混合检索，每加一项都用同一测试集对比指标，避免「为了高级而高级」。
+  </div>
+</section>
+
+<footer>
+  本地知识库构建方案 · RAG + GraphRAG 混合架构　|　生成于 2026-07-30　|　模型与组件版本请以官方最新 Release 为准
+</footer>
+</div>
+</body>
+</html>
