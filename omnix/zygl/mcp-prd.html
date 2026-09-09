@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCP 连接器管理后台 功能说明</title>
+<style>
+  :root {
+    --bg: #f3f5f9;
+    --card: #fff;
+    --text: #17233d;
+    --muted: #7a8499;
+    --line: #e8ecf2;
+    --blue: #1f6bff;
+    --blue-bg: #e8f0ff;
+    --red: #e5484d;
+    --shadow: 0 2px 8px rgba(24, 39, 75, .05);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+    font-size: 14px; line-height: 1.7;
+  }
+  .layout { display: flex; max-width: 1180px; margin: 0 auto; padding: 32px 24px 64px; gap: 28px; align-items: flex-start; }
+
+  /* 目录 */
+  .toc {
+    position: sticky; top: 24px; flex: 0 0 220px;
+    background: var(--card); border-radius: 12px; box-shadow: var(--shadow);
+    padding: 18px 14px; max-height: calc(100vh - 48px); overflow: auto;
+  }
+  .toc-title { font-weight: 700; font-size: 13px; color: var(--muted); padding: 0 10px 8px; }
+  .toc a {
+    display: block; padding: 7px 10px; border-radius: 8px;
+    color: #4a5568; text-decoration: none; font-size: 13px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .toc a:hover { background: #f2f7ff; color: var(--blue); }
+  .toc a.active { background: var(--blue-bg); color: var(--blue); font-weight: 600; }
+
+  /* 正文 */
+  .doc { flex: 1; min-width: 0; background: var(--card); border-radius: 12px; box-shadow: var(--shadow); padding: 40px 48px 56px; }
+  .doc > h1 { margin: 0 0 6px; font-size: 24px; }
+  .doc-meta { color: var(--muted); font-size: 13px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+  h2 {
+    margin: 40px 0 14px; font-size: 18px; padding-left: 12px;
+    border-left: 4px solid var(--blue); line-height: 1.3;
+  }
+  h3 { margin: 24px 0 10px; font-size: 15px; }
+  p { margin: 8px 0; }
+  ul, ol { margin: 8px 0; padding-left: 22px; }
+  li { margin: 4px 0; }
+  code {
+    background: #f1f4f9; border-radius: 4px; padding: 1px 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px; color: #c7254e;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th, td { text-align: left; padding: 9px 12px; border: 1px solid var(--line); vertical-align: top; }
+  th { background: #f8fafc; font-weight: 600; color: #5b6577; white-space: nowrap; }
+  tr:hover td { background: #fafbfd; }
+
+  .req { color: var(--red); font-style: normal; font-weight: 700; }
+  .tag {
+    display: inline-block; padding: 1px 8px; border-radius: 10px;
+    background: var(--blue-bg); color: var(--blue); font-size: 12px; white-space: nowrap;
+  }
+  .toast-demo {
+    display: inline-block; background: #1f2937; color: #fff; border-radius: 6px;
+    padding: 2px 10px; font-size: 12.5px; white-space: nowrap;
+  }
+  .note {
+    background: #fff8e6; border: 1px solid #ffe1a8; border-radius: 8px;
+    padding: 10px 14px; margin: 12px 0; font-size: 13px; color: #8a6d1a;
+  }
+  .note::before { content: "⚠ 待确认："; font-weight: 700; }
+
+  .btn-demo {
+    display: inline-block; border-radius: 6px; padding: 1px 10px; font-size: 12.5px;
+    border: 1px solid #e2e7ee; background: #fff; color: var(--text); white-space: nowrap;
+  }
+  .btn-demo.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .btn-demo.test { background: var(--blue-bg); border-color: var(--blue-bg); color: var(--blue); }
+  .btn-demo.danger { background: #fff; border-color: #ffd4d6; color: var(--red); }
+
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; }
+    .toc { position: static; width: 100%; flex: none; }
+    .doc { padding: 28px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <nav class="toc" id="toc">
+    <div class="toc-title">目录</div>
+    <a href="#s1">1. 页面结构</a>
+    <a href="#s2">2. 主 Tab 与筛选</a>
+    <a href="#s3">3. 卡片列表</a>
+    <a href="#s4">4. 分页</a>
+    <a href="#s5">5. 详情页 &amp; 工具调试</a>
+    <a href="#s6">6. 新增/编辑连接器弹窗</a>
+    <a href="#s7">7. 新增/编辑连接器弹窗（市场）</a>
+    <a href="#s8">8. 回收站</a>
+    <a href="#s9">9. 类别管理</a>
+  </nav>
+
+  <main class="doc">
+    <h1>MCP 连接器管理后台 功能说明</h1>
+
+    <h2 id="s1">1. 页面结构</h2>
+    <table>
+      <tr><th>区域</th><th>说明</th></tr>
+      <tr><td>列表页</td><td>主 Tab（企业连接器 / 连接器市场）+ 回收站 + 设置分类 + 添加连接器 + 筛选区 + 卡片网格 + 分页</td></tr>
+      <tr><td>详情页</td><td>整页切换（非弹窗），含工具列表与在线调试</td></tr>
+      <tr><td>弹窗</td><td>新增/编辑连接器（企业）、新增/编辑连接器（市场）、删除确认、回收站、类别管理、类别新增/编辑、类别删除确认；另有非模态的顶部提示条（用于已使用提醒）</td></tr>
+    </table>
+
+    <h2 id="s2">2. 主 Tab 与筛选</h2>
+    <ul>
+      <li><b>主 Tab</b>：企业连接器 / 连接器市场（按数据来源字段区分，分别为企业自建与市场接入）。切换后页码重置为 1。</li>
+      <li><b>搜索</b>：按名称模糊匹配（转小写后包含即命中），输入即触发，页码重置为 1。</li>
+      <li><b>分类下拉</b>：「全部分类」+ 类别管理中状态为「启用」的类别（不包含停用类别）。</li>
+      <li><b>状态下拉</b>：全部状态 / 已发布 / 未发布。</li>
+      <li><b>归属下拉</b>：全部 / 我的（创建人为当前登录用户）。<b>仅企业连接器页显示</b>；切到市场页时自动重置为「全部」。</li>
+      <li>任一筛选变化均重置页码为 1。</li>
+    </ul>
+
+    <h2 id="s3">3. 卡片列表</h2>
+    <h3>卡片元素</h3>
+    <ul>
+      <li>图标规则：优先显示上传头像；无头像时显示名称首字符（背景取该连接器主题色，无主题色时从颜色池取色）。</li>
+      <li>名称、归属（自定义→<code>@ 企业</code>，官方→<code>@ 官方</code>）、描述（2 行截断，鼠标悬停显示全文）。</li>
+      <li>底部：创建人、日期、工具数、调用数、启用开关。</li>
+      <li><b>授权状态标签</b>（仅连接器市场卡片）：名称后显示。<span class="tag" style="background:#f0fbf4;color:#16a34a">✓ 已授权</span> API Key 已配置且可用（绿底绿字描边）；<span class="tag" style="background:#f7f8fa;color:#8a94a6">⊗ 未授权</span> API Key 为空（灰底灰字描边）。保存授权后变为已授权，移除 API Key 后变为未授权，即时刷新卡片。</li>
+      <li>悬停显示「编辑」「删除」按钮（点击不触发卡片跳转）。</li>
+    </ul>
+    <h3>交互</h3>
+    <table>
+      <tr><th>操作</th><th>行为</th><th>Toast</th></tr>
+      <tr><td>点击卡片</td><td>进入详情页</td><td>—</td></tr>
+      <tr><td>编辑（企业）</td><td>打开编辑连接器弹窗（编辑态），回显全部字段</td><td>—</td></tr>
+      <tr><td>编辑（市场）</td><td>打开编辑连接器弹窗（编辑态），回显全部字段</td><td>—</td></tr>
+      <tr><td>删除</td><td>先弹确认弹窗（标题「确定删除此 MCP 服务？」，副文案「删除后可在回收站恢复」，按钮 取消/确认）；点「确认」时校验：若连接器被专家引用（引用名单非空），页面顶部滑出轻提示条（白底卡片 + 黑色 ⚠ 图标，文案「专家『{引用方名单、号分隔}』已经引用了这个资源，请调整后再操作！」，4s 自动消失，点击可手动关闭），<b>阻断删除</b>；未被引用则移入回收站（列表移除，回收站置顶）。「取消」/✕/遮罩/Esc 关闭不操作</td><td>未被引用时确认后：<span class="toast-demo">已将「{名称}」移入回收站</span></td></tr>
+      <tr><td>启用/停用开关</td><td>切换启用状态。<b>停用时校验</b>：若被专家引用（引用名单非空），顶部提示条提醒「专家『{引用方名单、号分隔}』已经引用了这个资源，请调整后再操作！」，<b>阻断停用</b>，开关保持原状态；启用不校验</td><td><span class="toast-demo">已启用「{名称}」</span> / <span class="toast-demo">已停用「{名称}」</span></td></tr>
+    </table>
+
+    <h2 id="s4">4. 分页</h2>
+    <ul>
+      <li>每页条数：10 / 20 / 50，默认 20；切换后回到第 1 页。</li>
+      <li>页码按钮 + 上一页/下一页（到边界时按钮禁用）。</li>
+      <li>左下角显示「共 N 条」；无结果显示空态「暂无匹配的 MCP 服务」。</li>
+    </ul>
+
+    <h2 id="s5">5. 详情页 &amp; 工具调试</h2>
+    <ul>
+      <li>头部：返回按钮、图标、名称、创建人、日期、描述。</li>
+      <li>统计：总调用次数、工具数。</li>
+      <li>工具列表为手风琴：点击行展开/收起参数表单；参数渲染 <code>名称 (类型) *</code>，输入框占位提示为参数描述；无参数显示「该工具无需参数」。</li>
+    </ul>
+    <h3>运行校验与状态</h3>
+    <ol>
+      <li>必填参数为空 → 自动聚焦第一个缺失项，Toast：<span class="toast-demo">请填写必填参数：{参数名}</span></li>
+      <li>通过 → <span class="btn-demo primary">运行</span> 按钮禁用，文案变「运行中…」，结果区灰底显示「正在调用工具…」。</li>
+      <li>完成（原型 800ms 模拟）→ 按钮恢复，结果区绿底输出 JSON（含工具名、状态、入参、输出）。<b>入参仅包含已填写的参数</b>，未填的非必填参数不提交。</li>
+    </ol>
+
+    <h2 id="s6">6. 新增/编辑连接器弹窗（企业）</h2>
+    <table>
+      <tr><th>字段</th><th>校验</th></tr>
+      <tr><td>头像</td><td>选填；JPG/PNG，≤ 2MB；超限 Toast <span class="toast-demo">头像大小不能超过 2MB</span> 并清空选择。头像旁市场链接（魔搭/百炼/MCPso）为原型占位，点击 Toast <span class="toast-demo">跳转到{市场名}市场（原型演示）</span></td></tr>
+      <tr><td>类别 <i class="req">*</i></td><td>多选标签，至少 1 个；未选 Toast <span class="toast-demo">请至少选择一个类别</span></td></tr>
+      <tr><td>服务器名称 <i class="req">*</i></td><td>必填，最长 40 字</td></tr>
+      <tr><td>传输协议 <i class="req">*</i></td><td>必填，下拉：SSE / Streamable HTTP</td></tr>
+      <tr><td>是否需要客户端内置 <i class="req">*</i></td><td>下拉：是 / 否，默认「否」</td></tr>
+      <tr><td>描述 <i class="req">*</i></td><td>必填，最长 240 字</td></tr>
+      <tr><td>服务地址 <i class="req">*</i></td><td>必填，需为合法 URL 格式，占位提示示例 <code>http://localhost:8080/mcp</code></td></tr>
+      <tr><td>HTTP Headers</td><td>选填，JSON 格式文本</td></tr>
+    </table>
+    <h3>按钮</h3>
+    <ul>
+      <li><span class="btn-demo test">测试</span>：服务地址为空 → Toast <span class="toast-demo">请先填写服务地址</span>；否则 Toast <span class="toast-demo">正在测试连接 {url} …</span>，900ms 后 <span class="toast-demo">连接成功 ✓（原型演示）</span>，并解析出该服务的工具列表。</li>
+      <li><span class="btn-demo primary">保存</span>：类别校验在原生必填校验之前执行；新增 Toast <span class="toast-demo">连接器已保存</span>，编辑 Toast <span class="toast-demo">连接器已更新</span>；保存后重置表单/头像/类别，关闭弹窗。新增时默认属性：归属为「自定义」、数据来源为当前 Tab、筛选主分类取所选类别第一项、创建人为当前用户、工具数/调用数为 0。</li>
+    </ul>
+
+    <h2 id="s7">7. 新增/编辑连接器弹窗（市场）</h2>
+    <p>标题随模式显示「新增连接器 / 编辑连接器」，标题下副文案：「配置凭据后，所有成员都可以在管理端和客户端使用此连接器。」</p>
+    <p>字段：头像（同 2MB 校验，旁附百炼平台提示及外链）、类别多选、服务器名称、是否内置、描述、服务地址、<b>API Key</b>（必填，密码框输入，眼睛图标切换明文/密文，附「如何获取」外链）。</p>
+    <h3>手动校验顺序（任一失败即 Toast 并中断）</h3>
+    <table>
+      <tr><th>#</th><th>条件</th><th>Toast</th></tr>
+      <tr><td>1</td><td>名称为空</td><td><span class="toast-demo">请输入服务器名称</span></td></tr>
+      <tr><td>2</td><td>描述为空</td><td><span class="toast-demo">请输入描述</span></td></tr>
+      <tr><td>3</td><td>服务地址为空</td><td><span class="toast-demo">请输入服务地址</span></td></tr>
+      <tr><td>4</td><td>API Key 为空</td><td><span class="toast-demo">请输入 API Key</span></td></tr>
+      <tr><td>5</td><td>类别未选</td><td><span class="toast-demo">请至少选择一个类别</span></td></tr>
+    </table>
+    <ul>
+      <li>保存：编辑态 Toast <span class="toast-demo">授权已保存</span>；新增态 Toast <span class="toast-demo">连接器已保存</span>。新增时默认属性：归属为「官方」、数据来源为连接器市场、筛选主分类取所选类别第一项、工具数/调用数为 0。保存后卡片授权标签更新为「已授权」。</li>
+      <li><span class="btn-demo">移除</span> 按钮：仅编辑态显示；无 API Key 时禁用。点击后清空 API Key、关闭弹窗、刷新列表（卡片授权标签变为「未授权」），Toast <span class="toast-demo">授权已移除</span>。</li>
+    </ul>
+
+    <h2 id="s8">8. 回收站</h2>
+    <ul>
+      <li>顶栏按钮带红色角标显示数量，为 0 时隐藏角标。</li>
+      <li>列表项：图标、名称、<code>日期 · 创建人</code>。</li>
+      <li>空态文案：「回收站是空的」。</li>
+    </ul>
+    <table>
+      <tr><th>操作</th><th>Toast</th></tr>
+      <tr><td><span class="btn-demo">恢复</span>（回到列表顶部）</td><td><span class="toast-demo">已恢复「{名称}」</span></td></tr>
+      <tr><td><span class="btn-demo danger">删除</span>（永久删除）</td><td><span class="toast-demo">已永久删除「{名称}」</span></td></tr>
+    </table>
+
+    <h2 id="s9">9. 类别管理</h2>
+    <p>由「类别管理」弹窗 + 「类别新增/编辑」弹窗组成。表格列：类别名称、排序、状态（<span class="tag">启用</span> 标签）、技能数、操作（编辑/删除）。</p>
+    <h3>类别表单</h3>
+    <table>
+      <tr><th>字段</th><th>校验</th></tr>
+      <tr><td>类别名称 <i class="req">*</i></td><td>必填，最长 20 字；为空 Toast <span class="toast-demo">请输入类别名称</span></td></tr>
+      <tr><td>排序</td><td>数字，默认 0</td></tr>
+      <tr><td>状态</td><td>启用 / 停用</td></tr>
+    </table>
+    <table>
+      <tr><th>操作</th><th>行为</th><th>Toast</th></tr>
+      <tr><td>新增保存</td><td>追加到类别表末尾</td><td><span class="toast-demo">类别已新增</span></td></tr>
+      <tr><td>编辑保存</td><td>更新原类别</td><td><span class="toast-demo">类别已更新</span></td></tr>
+      <tr><td>删除</td><td>弹确认弹窗（标题「确认删除类别」，正文「类别『{类别名}』下还有 N 个关联连接器，删除后这些连接器将同步删除分类。确认删除？」，N 按实际关联数计算，为 0 时显示「下暂无关联连接器」；按钮 取消 / <span class="btn-demo danger">删除</span>）。确认后级联移除所有连接器已选类别中的该类别（筛选主分类指向被删类别时改取剩余类别第一项），若当前分类筛选正是被删类别则重置为「全部分类」</td><td><span class="toast-demo">已删除类别「{名称}」</span></td></tr>
+    </table>
+
+  </main>
+</div>
+
+<script>
+// 目录高亮
+const links = document.querySelectorAll('#toc a');
+const sections = Array.from(links).map(a => document.querySelector(a.getAttribute('href')));
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => s && observer.observe(s));
+</script>
+</body>
+</html>

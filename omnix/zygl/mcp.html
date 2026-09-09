@@ -1,0 +1,1647 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLDMCP - MCP 服务</title>
+<style>
+  :root {
+    --bg: #f3f5f9;
+    --card: #fff;
+    --text: #17233d;
+    --muted: #7a8499;
+    --line: #e8ecf2;
+    --blue: #1f6bff;
+    --blue-dark: #155fd8;
+    --shadow: 0 2px 8px rgba(24, 39, 75, .05);
+    --shadow-hover: 0 8px 24px rgba(24, 39, 75, .11);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+    font-size: 14px;
+  }
+  .page { width: 100%; min-height: 100vh; margin: 0; padding: 24px 32px 48px; display: flex; flex-direction: column; }
+  [hidden] { display: none !important; }
+  .topbar { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .topbar h1 { margin: 0; font-size: 18px; }
+  .spacer { flex: 1; }
+  .btn {
+    border: 1px solid transparent;
+    border-radius: 8px;
+    height: 36px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #fff;
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+    transition: .18s ease;
+  }
+  .btn:hover { box-shadow: var(--shadow-hover); }
+  .btn.primary { background: var(--blue); color: #fff; }
+  .btn.primary:hover { background: var(--blue-dark); }
+  .btn.trash-btn { position: relative; }
+  .badge {
+    position: absolute; top: -7px; right: -7px;
+    min-width: 18px; height: 18px; padding: 0 5px;
+    border-radius: 9px; background: #ff4d4f; color: #fff;
+    font-size: 11px; line-height: 18px; text-align: center;
+  }
+  .filter-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+  .search { position: relative; width: 300px; }
+  .search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #98a2b3; }
+  .search input {
+    width: 100%; height: 36px; border: 1px solid #e2e7ee; border-radius: 8px;
+    padding: 0 12px 0 36px; outline: none; font: inherit; background: #fff;
+    transition: border-color .15s;
+  }
+  .search input:focus { border-color: var(--blue); }
+  .tabs { display: flex; gap: 8px; }
+  .tab {
+    height: 32px; padding: 0 14px; border: 0; border-radius: 16px;
+    background: transparent; color: #5b6577; font: inherit; cursor: pointer;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { background: #e8f0ff; color: var(--blue); font-weight: 600; }
+  .dropdown { position: relative; }
+  .dropdown-btn {
+    display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px;
+    border: 1px solid #e2e7ee; border-radius: 8px; background: #fff; color: var(--text);
+    font: inherit; cursor: pointer; white-space: nowrap; transition: border-color .15s;
+  }
+  .dropdown-btn:hover { border-color: #c3cede; }
+  .dropdown.open .dropdown-btn { border-color: var(--blue); }
+  .dropdown-btn svg { color: #98a2b3; transition: transform .15s; }
+  .dropdown.open .dropdown-btn svg { transform: rotate(180deg); }
+  .dropdown-menu {
+    position: absolute; top: calc(100% + 6px); left: 0; min-width: 100%;
+    background: #fff; border: 1px solid #e6eaf0; border-radius: 10px;
+    box-shadow: 0 10px 28px rgba(24,39,75,.12); padding: 6px; z-index: 40;
+    max-height: 320px; overflow: auto; display: none;
+  }
+  .dropdown.open .dropdown-menu { display: block; }
+  .dropdown-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px;
+    color: #4a5568; font-size: 14px; cursor: pointer; white-space: nowrap;
+  }
+  .dropdown-item:hover { background: #f2f7ff; }
+  .dropdown-item .check { width: 16px; color: var(--blue); flex-shrink: 0; visibility: hidden; }
+  .dropdown-item.active { color: var(--blue); }
+  .dropdown-item.active .check { visibility: visible; }
+  .main-tabs { display: flex; gap: 28px; align-items: center; }
+  .main-tab {
+    position: relative; background: none; border: 0; padding: 4px 2px;
+    font-size: 16px; color: #5b6577; cursor: pointer; font-family: inherit; transition: color .15s;
+  }
+  .main-tab:hover { color: var(--text); }
+  .main-tab.active { color: var(--blue); font-weight: 600; }
+  .main-tab.active::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -6px;
+    height: 2px; background: var(--blue); border-radius: 2px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 18px;
+  }
+  .mcp-card {
+    background: var(--card); border-radius: 10px; padding: 18px;
+    box-shadow: var(--shadow); cursor: pointer; position: relative;
+    transition: transform .18s ease, box-shadow .18s ease;
+    display: flex; flex-direction: column; min-height: 180px;
+  }
+  .mcp-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+  .card-head { display: flex; align-items: flex-start; gap: 11px; }
+  .logo {
+    width: 42px; height: 42px; border-radius: 10px; flex: 0 0 42px;
+    display: grid; place-items: center; font-size: 21px; line-height: 1;
+    color: #fff; font-weight: 700; user-select: none;
+  }
+  .name { font-size: 16px; font-weight: 700; line-height: 20px; }
+  .owner { margin-top: 5px; color: #8a94a6; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+  .desc {
+    margin-top: 14px; color: #647084; line-height: 1.55; min-height: 44px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .card-foot {
+    margin-top: auto; padding-top: 16px; color: #8a94a6; font-size: 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .metrics { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .metric { display: inline-flex; align-items: center; gap: 4px; }
+  .metric svg { color: #a6aebe; }
+  .card-switch {
+    margin-left: 12px; position: relative; width: 38px; height: 20px; flex: 0 0 38px;
+    border-radius: 999px; background: #d3d9e2; cursor: pointer; transition: background .18s ease;
+  }
+  .card-switch::after {
+    content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+    border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(16,24,40,.25);
+    transition: transform .18s ease;
+  }
+  .card-switch.on { background: var(--blue); }
+  .card-switch.on::after { transform: translateX(18px); }
+  .del-btn, .edit-btn {
+    position: absolute; top: 10px; width: 28px; height: 28px;
+    border: 0; border-radius: 6px; background: #f4f6fa; color: #7c8698;
+    cursor: pointer; display: grid; place-items: center; opacity: 0; transition: .15s;
+  }
+  .del-btn { right: 10px; }
+  .edit-btn { right: 44px; }
+  .mcp-card:hover .del-btn, .mcp-card:hover .edit-btn { opacity: 1; }
+  .del-btn:hover { background: #ffecec; color: #e5484d; }
+  .edit-btn:hover { background: #eef3ff; color: var(--blue); }
+  .empty { padding: 70px 20px; text-align: center; color: #8a94a6; }
+  .footer { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 32px; color: #647084; font-size: 13px; }
+  .pager { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .page-btn {
+    width: 32px; height: 32px; border: 1px solid #e2e7ee; background: #fff;
+    border-radius: 6px; color: #5b6577; cursor: pointer; display: grid; place-items: center;
+  }
+  .page-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .page-btn:disabled { opacity: .45; cursor: not-allowed; }
+  select {
+    height: 34px; border: 1px solid #e2e7ee; border-radius: 6px;
+    background: #fff; color: var(--text); font: inherit; padding: 0 8px; outline: none;
+  }
+  .modal-mask {
+    position: fixed; inset: 0; background: rgba(16,24,40,.42);
+    display: none; align-items: center; justify-content: center; padding: 24px; z-index: 20;
+  }
+  .modal-mask.open { display: flex; }
+  .modal {
+    width: min(720px, 100%); max-height: 82vh; overflow: auto;
+    background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 20px 60px rgba(15,23,42,.22);
+  }
+  .modal-title { font-size: 17px; font-weight: 700; }
+  .close-x {
+    position: sticky; top: 0; float: right; margin: -8px -8px 0 12px;
+    width: 28px; height: 28px; border: 0; border-radius: 6px; background: #f4f6fa;
+    color: #647084; cursor: pointer; display: grid; place-items: center;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+  .modal.narrow { width: min(520px, 100%); }
+  .add-form { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+  .add-form label { display: block; margin-bottom: 6px; color: #1f2b3e; font-size: 13px; font-weight: 500; }
+  .label-hint { margin-left: 6px; color: #98a2b3; font-size: 12px; font-weight: 400; }
+  .req { color: #e5484d; font-style: normal; }
+  .add-form input, .add-form select, .add-form textarea {
+    width: 100%; border: 1px solid #e2e7ee; border-radius: 8px; padding: 10px 12px;
+    background: #fbfcfe; font: inherit; color: var(--text); outline: none; resize: vertical;
+    transition: border-color .15s, background .15s;
+  }
+  .add-form input:focus, .add-form select:focus, .add-form textarea:focus { border-color: var(--blue); background: #fff; }
+  .add-form select { height: 40px; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2398a2b3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px;
+  }
+  .add-form select:invalid { color: #98a2b3; }
+  .add-form ::placeholder { color: #a8b1c0; }
+  .avatar-row { display: flex; align-items: center; gap: 16px; }
+  .avatar-upload {
+    width: 82px; height: 82px; border: 1px dashed #cfd7e3; border-radius: 12px;
+    display: grid; place-items: center; cursor: pointer; color: #98a2b3;
+    background: #fbfcfe; overflow: hidden; transition: border-color .15s, color .15s;
+    margin-bottom: 0;
+  }
+  .avatar-upload:hover { border-color: var(--blue); color: var(--blue); }
+  .avatar-upload img { width: 100%; height: 100%; object-fit: cover; }
+  .market-tip { color: #556173; font-size: 13px; line-height: 1.6; }
+  .market-tip a { color: var(--blue); text-decoration: none; }
+  .market-tip a:hover { text-decoration: underline; }
+  .modal-actions.center { justify-content: center; }
+  .btn.test { background: #e8f0ff; color: var(--blue); }
+  .btn.test:hover { background: #dbe7ff; }
+  .field label { display: block; margin-bottom: 6px; color: #5b6577; font-size: 12px; }
+  .field input, .field textarea {
+    width: 100%; border: 1px solid #e2e7ee; border-radius: 8px; padding: 9px 11px;
+    font: inherit; color: var(--text); outline: none; resize: vertical;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--blue); }
+  .field.full { grid-column: 1 / -1; }
+  .cat-picker { display: flex; flex-wrap: wrap; gap: 10px; }
+  .cat-chip {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    border: 1px solid #e2e7ee; border-radius: 8px; padding: 8px 14px;
+    background: #fff; color: #4a5568; font-size: 13px; user-select: none;
+    transition: border-color .15s, background .15s, color .15s;
+  }
+  .cat-chip:hover { border-color: #c3cede; }
+  .cat-chip input { width: 15px; height: 15px; margin: 0; accent-color: var(--blue); cursor: pointer; }
+  .cat-chip.checked { border-color: var(--blue); background: #f2f7ff; color: var(--blue); }
+  .modal-actions { margin-top: 22px; display: flex; justify-content: flex-end; gap: 10px; }
+  .auth-sub { text-align: center; color: var(--muted); font-size: 14px; margin: 6px 0 22px; }
+  .auth-input-wrap { position: relative; }
+  .auth-input-wrap input {
+    width: 100%; box-sizing: border-box; padding: 12px 44px 12px 14px; font-size: 14px;
+    background: #f4f6fa; border: 1px solid transparent; border-radius: 8px; color: var(--text);
+    transition: border-color .15s, background .15s;
+  }
+  .auth-input-wrap input::placeholder { color: #a4adba; }
+  .auth-input-wrap input:focus { outline: none; background: #fff; border-color: var(--blue); }
+  .auth-eye {
+    position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+    border: 0; background: transparent; color: #8a94a6; cursor: pointer;
+    display: grid; place-items: center; padding: 4px;
+  }
+  .auth-eye:hover { color: var(--blue); }
+  .auth-help {
+    display: inline-flex; align-items: center; gap: 5px; margin-top: 14px;
+    color: var(--blue); font-size: 14px; text-decoration: none;
+  }
+  .auth-help:hover { text-decoration: underline; }
+  .auth-actions-right { display: flex; gap: 10px; }
+  .detail-head { display: flex; align-items: center; gap: 14px; margin: 16px 0 18px; }
+  .detail-logo { width: 58px; height: 58px; font-size: 28px; }
+  .detail-name { font-size: 20px; font-weight: 700; }
+  .detail-desc { color: #556173; line-height: 1.7; white-space: pre-wrap; }
+  .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 22px 0; }
+  .info-item { background: #f8fafc; border-radius: 8px; padding: 14px; }
+  .info-label { font-size: 12px; color: #8a94a6; }
+  .info-value { margin-top: 5px; font-weight: 600; }
+  /* 整页详情 */
+  .detail-topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .detail-topbar h1 { margin: 0; font-size: 18px; font-weight: 700; }
+  .back-btn {
+    display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px;
+    border: 0; border-radius: 8px; background: transparent; color: var(--text); cursor: pointer;
+    transition: background .15s;
+  }
+  .back-btn:hover { background: #eef1f6; }
+  .detail-topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .detail-topbar h1 { margin: 0; font-size: 18px; font-weight: 700; }
+  .back-btn {
+    display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px;
+    border: 0; border-radius: 8px; background: transparent; color: var(--text); cursor: pointer;
+    transition: background .15s;
+  }
+  .back-btn:hover { background: #eef1f6; }
+  .detail-card { background: var(--card); border-radius: 14px; box-shadow: var(--shadow); padding: 32px 36px; }
+  .dp-head { display: flex; align-items: flex-start; gap: 18px; }
+  .dp-logo { width: 72px; height: 72px; border-radius: 16px; font-size: 34px; flex-shrink: 0; }
+  .dp-title { font-size: 24px; font-weight: 700; line-height: 1.2; }
+  .dp-meta { display: flex; align-items: center; gap: 18px; margin-top: 10px; color: var(--muted); font-size: 14px; }
+  .dp-meta span { display: inline-flex; align-items: center; gap: 6px; }
+  .dp-desc { margin: 20px 0 0; color: #556173; line-height: 1.7; }
+  .dp-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 26px 0 8px;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  }
+  .dp-stat { display: flex; align-items: center; justify-content: space-between; padding: 22px 8px; }
+  .dp-stat + .dp-stat { border-left: 1px solid var(--line); padding-left: 32px; }
+  .dp-stat-label { display: inline-flex; align-items: center; gap: 10px; color: #647084; font-size: 15px; }
+  .dp-stat-label svg { color: #98a2b3; }
+  .dp-stat-value { font-size: 22px; font-weight: 700; }
+  .dp-section-title { margin: 26px 0 6px; font-size: 16px; font-weight: 700; }
+  .tool-list { display: flex; flex-direction: column; }
+  .tool-item { border-bottom: 1px solid var(--line); }
+  .tool-item:last-child { border-bottom: 0; }
+  .tool-row {
+    display: flex; align-items: center; gap: 16px; padding: 18px 4px; cursor: pointer;
+  }
+  .tool-info { flex: 1; min-width: 0; }
+  .tool-name { font-size: 15px; font-weight: 600; color: var(--text); }
+  .tool-desc { margin-top: 5px; color: var(--muted); font-size: 13px; }
+  .tool-caret { color: #98a2b3; flex-shrink: 0; transition: transform .18s; }
+  .tool-item.open .tool-caret { transform: rotate(180deg); }
+  .tool-detail { display: none; padding: 0 4px 22px; }
+  .tool-item.open .tool-detail { display: block; }
+  .tool-form { display: flex; flex-direction: column; gap: 18px; }
+  .tool-field { display: flex; flex-direction: column; gap: 9px; }
+  .tool-field-label { font-size: 14px; font-weight: 600; color: var(--text); }
+  .tool-field-type { color: var(--muted); font-weight: 400; }
+  .tool-field-input {
+    width: 100%; box-sizing: border-box; padding: 12px 14px; font-size: 14px;
+    background: #f4f6fa; border: 1px solid transparent; border-radius: 8px;
+    color: var(--text); transition: border-color .15s, background .15s;
+  }
+  .tool-field-input::placeholder { color: #a4adba; }
+  .tool-field-input:focus { outline: none; background: #fff; border-color: var(--blue); }
+  .tool-run-row { margin-top: 2px; }
+  .tool-run-btn {
+    padding: 9px 26px; background: #c9d2df; color: #fff; border: 0;
+    font-weight: 600; border-radius: 8px; cursor: pointer; transition: background .15s;
+  }
+  .tool-run-btn:hover { background: var(--blue); }
+  .tool-run-btn.running { background: #c9d2df; cursor: default; }
+  .tool-run-btn:disabled { background: #c9d2df; cursor: default; }
+  .tool-result {
+    margin-top: 4px; padding: 14px 16px; border-radius: 8px; font-size: 13px;
+    line-height: 1.6; white-space: pre-wrap; word-break: break-all;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .tool-result.running { background: #f4f6fa; color: #647084; }
+  .tool-result.done { background: #eef7f0; color: #1f7a3d; border: 1px solid #cdebd6; }
+  .tool-empty { color: var(--muted); font-size: 13px; padding: 4px 0; }
+  .tool-result {
+    margin-top: 14px; padding: 12px 14px; background: #f8fafc; border: 1px solid var(--line);
+    border-radius: 8px; font-size: 13px; color: #556173; white-space: pre-wrap;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; line-height: 1.6;
+  }
+  .trash-item {
+    display: flex; align-items: center; gap: 12px; padding: 12px;
+    border: 1px solid var(--line); border-radius: 8px; margin-bottom: 10px;
+  }
+  .btn.ghost { background: #fff; border-color: #e2e7ee; }
+  .btn.danger { background: #fff; color: #e5484d; border-color: #ffd4d6; }
+  .cat-subtitle { margin-top: 8px; color: #647084; font-size: 13px; }
+  .cat-toolbar { display: flex; justify-content: flex-end; margin: 14px 0; }
+  .cat-table-wrap { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .cat-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .cat-table th {
+    text-align: left; padding: 11px 14px; background: #f8fafc; color: #5b6577;
+    font-weight: 600; border-bottom: 1px solid var(--line);
+  }
+  .cat-table td { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  .cat-table tbody tr:last-child td { border-bottom: 0; }
+  .cat-table tbody tr:hover { background: #fafbfd; }
+  .status-tag {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    background: #e8f0ff; color: var(--blue); font-size: 12px;
+  }
+  .auth-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 400; line-height: 18px;
+    padding: 1px 8px; border-radius: 6px; border: 1px solid;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .auth-tag.on { color: #16a34a; border-color: #9ed7ae; background: #f0fbf4; }
+  .auth-tag.off { color: #8a94a6; border-color: #d3d9e2; background: #f7f8fa; }
+  .row-act { display: inline-flex; gap: 6px; justify-content: flex-end; }
+  .icon-btn {
+    width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent;
+    color: #7c8698; cursor: pointer; display: grid; place-items: center; transition: .15s;
+  }
+  .icon-btn:hover { background: #f0f3f8; color: var(--blue); }
+  .icon-btn.del:hover { background: #ffecec; color: #e5484d; }
+  .toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+    background: #1f2937; color: #fff; border-radius: 8px; padding: 10px 16px;
+    opacity: 0; pointer-events: none; transition: .2s; z-index: 40;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .top-alert {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-12px);
+    background: #fff; color: #17233d; border-radius: 8px; padding: 12px 18px;
+    box-shadow: 0 6px 24px rgba(24, 39, 75, .14);
+    display: flex; gap: 10px; align-items: flex-start;
+    max-width: min(520px, calc(100vw - 48px));
+    font-size: 13px; line-height: 1.7;
+    opacity: 0; pointer-events: none; transition: .25s ease; z-index: 60;
+    cursor: pointer;
+  }
+  .top-alert.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+  .top-alert-icon {
+    flex: 0 0 20px; width: 20px; height: 20px; border-radius: 50%;
+    background: #17233d; color: #fff; display: grid; place-items: center;
+    font-weight: 700; font-size: 12px; margin-top: 2px;
+  }
+  @media (max-width: 640px) {
+    .page { padding: 18px 14px; }
+    .topbar { flex-wrap: wrap; }
+    .filter-row { flex-wrap: wrap; }
+    .search { width: 100%; }
+    .form-grid, .info-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<main class="page" id="listPage">
+  <header class="topbar">
+    <nav class="main-tabs" role="tablist">
+      <button class="main-tab active" data-view="enterprise" role="tab">企业连接器</button>
+      <button class="main-tab" data-view="market" role="tab">连接器市场</button>
+    </nav>
+    <div class="spacer"></div>
+    <button class="btn ghost trash-btn" id="trashBtn" title="回收站">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+      回收站
+      <span class="badge" id="trashCount" hidden>0</span>
+    </button>
+    <button class="btn ghost" id="categoryBtn" title="设置分类">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      设置分类
+    </button>
+    <button class="btn primary" id="addBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+      添加连接器
+    </button>
+  </header>
+
+  <section class="filter-row">
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="searchInput" type="search" placeholder="搜索MCP名称" autocomplete="off">
+    </div>
+    <div class="dropdown" id="catDropdown">
+      <button class="dropdown-btn" id="catDropdownBtn" type="button" aria-haspopup="true" aria-expanded="false">
+        <span id="catDropdownLabel">全部分类</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-menu" id="catDropdownMenu" role="menu"></div>
+    </div>
+    <div class="dropdown" id="statusDropdown">
+      <button class="dropdown-btn" id="statusDropdownBtn" type="button" aria-haspopup="true" aria-expanded="false">
+        <span id="statusDropdownLabel">全部状态</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-menu" id="statusDropdownMenu" role="menu"></div>
+    </div>
+    <div class="dropdown" id="ownerDropdown">
+      <button class="dropdown-btn" id="ownerDropdownBtn" type="button" aria-haspopup="true" aria-expanded="false">
+        <span id="ownerDropdownLabel">全部</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-menu" id="ownerDropdownMenu" role="menu"></div>
+    </div>
+  </section>
+
+  <section class="grid" id="cardGrid" aria-live="polite"></section>
+  <div class="empty" id="emptyState" hidden>暂无匹配的 MCP 服务</div>
+
+  <footer class="footer">
+    <span id="totalText">共 0 条</span>
+    <div class="pager">
+      <select id="pageSize" title="每页条数">
+        <option value="10">10 条/页</option>
+        <option value="20" selected>20 条/页</option>
+        <option value="50">50 条/页</option>
+      </select>
+      <button class="page-btn" id="prevPage" title="上一页" aria-label="上一页">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <span id="pageNumbers" style="display:flex;gap:6px"></span>
+      <button class="page-btn" id="nextPage" title="下一页" aria-label="下一页">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+    </div>
+  </footer>
+</main>
+
+<main class="page detail-page" id="detailPage" hidden>
+  <header class="detail-topbar">
+    <button class="back-btn" id="detailBack" type="button" aria-label="返回">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <h1>连接器详情</h1>
+  </header>
+  <div class="detail-card" id="detailBody"></div>
+</main>
+
+<div class="modal-mask" id="addModal">
+  <form class="modal narrow" id="addForm">
+    <button type="button" class="close-x" data-close="addModal" title="关闭">✕</button>
+    <div class="modal-title" style="text-align:center" id="addModalTitle">新增连接器</div>
+    <div class="add-form">
+      <div class="field">
+        <label>头像 <span class="label-hint">支持 JPG、PNG，最大 2MB</span></label>
+        <div class="avatar-row">
+          <label class="avatar-upload" id="avatarUpload" title="上传头像">
+            <input type="file" id="avatarInput" accept="image/jpeg,image/png" hidden>
+            <svg id="avatarIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg>
+            <img id="avatarPreview" alt="" hidden>
+          </label>
+          <div class="market-tip">连接器可在 <a href="javascript:;" onclick="showToast('跳转到魔搭市场（原型演示）')">魔搭</a> 、 <a href="javascript:;" onclick="showToast('跳转到百炼市场（原型演示）')">百炼</a> 、 <a href="javascript:;" onclick="showToast('跳转到MCPso市场（原型演示）')">MCPso</a> 等市场获取。</div>
+        </div>
+      </div>
+      <div class="field"><label>类别 <i class="req">*</i></label>
+        <div class="cat-picker" id="mcpCatChecks"></div>
+      </div>
+      <div class="field"><label for="mcpName">服务器名称 <i class="req">*</i></label><input id="mcpName" name="name" required maxlength="40" placeholder="请输入服务器名称"></div>
+      <div class="field"><label for="mcpProto">传输协议 <i class="req">*</i></label>
+        <select id="mcpProto" name="proto" required>
+          <option value="" disabled selected hidden>请选择传输协议</option>
+          <option value="SSE">SSE</option>
+          <option value="Streamable HTTP">Streamable HTTP</option>
+        </select>
+      </div>
+      <div class="field"><label for="mcpBuiltin">是否需要客户端内置 <i class="req">*</i></label>
+        <select id="mcpBuiltin" name="builtin">
+          <option value="否">否</option>
+          <option value="是">是</option>
+        </select>
+      </div>
+      <div class="field"><label for="mcpDesc">描述 <i class="req">*</i></label><textarea id="mcpDesc" name="desc" rows="3" required maxlength="240" placeholder="请输入MCP服务描述"></textarea></div>
+      <div class="field"><label for="mcpUrl">服务地址 <i class="req">*</i></label><input id="mcpUrl" name="url" type="url" required placeholder="请输入服务地址，如 http://localhost:8080/mcp"></div>
+      <div class="field"><label for="mcpHeaders">HTTP Headers</label><textarea id="mcpHeaders" name="headers" rows="3" placeholder='JSON 格式，如：{"Authorization":"Bearer xxx"}'></textarea></div>
+    </div>
+    <div class="modal-actions center">
+      <button type="button" class="btn test" id="testBtn">测试</button>
+      <button type="button" class="btn ghost" data-close="addModal">取消</button>
+      <button class="btn primary" type="submit">保存</button>
+    </div>
+  </form>
+</div>
+
+<div class="modal-mask" id="authModal">
+  <form class="modal narrow" id="authForm">
+    <button type="button" class="close-x" data-close="authModal" title="关闭">✕</button>
+    <div class="modal-title" style="text-align:center" id="authModalTitle">编辑连接器</div>
+    <div class="auth-sub">配置凭据后，所有成员都可以在管理端和客户端使用此连接器。</div>
+    <div class="add-form">
+      <div class="field">
+        <label>头像 <span class="label-hint">支持 JPG、PNG，最大 2MB</span></label>
+        <div class="avatar-row">
+          <label class="avatar-upload" id="authAvatarUpload" title="上传头像">
+            <input type="file" id="authAvatarInput" accept="image/jpeg,image/png" hidden>
+            <svg id="authAvatarIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg>
+            <img id="authAvatarPreview" alt="" hidden>
+          </label>
+          <div class="market-tip">连接器可在 <a href="https://bailian.console.aliyun.com/cn-beijing?tab=app#/mcp-market" target="_blank" rel="noopener">百炼</a> 平台获取，可配置 Onekey 的 MCP</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>类别 <i class="req">*</i></label>
+        <div class="cat-picker" id="authCatChecks"></div>
+      </div>
+      <div class="field"><label for="authName">服务器名称 <i class="req">*</i></label><input id="authName" name="name" required maxlength="40" placeholder="请输入服务器名称"></div>
+      <div class="field"><label for="authBuiltin">是否需要客户端内置 <i class="req">*</i></label>
+        <select id="authBuiltin" name="builtin">
+          <option value="否">否</option>
+          <option value="是">是</option>
+        </select>
+      </div>
+      <div class="field"><label for="authDesc">描述 <i class="req">*</i></label><textarea id="authDesc" name="desc" rows="3" required maxlength="240" placeholder="请输入MCP服务描述"></textarea></div>
+      <div class="field"><label for="authUrl">服务地址 <i class="req">*</i></label><input id="authUrl" name="url" type="url" required placeholder="请输入服务地址，如 http://localhost:8080/mcp"></div>
+      <div class="field">
+        <label for="authApiKey">API Key <i class="req">*</i></label>
+        <div class="auth-input-wrap">
+          <input id="authApiKey" name="apiKey" type="password" required placeholder="请输入 API Key">
+          <button type="button" class="auth-eye" id="authEye" title="显示/隐藏" aria-label="显示或隐藏">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <a class="auth-help" href="https://bailian.console.aliyun.com/cn-beijing?tab=app#/api-key" target="_blank" rel="noopener">
+          如何获取
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" id="authRemoveBtn">移除</button>
+      <div class="auth-actions-right">
+        <button type="button" class="btn ghost" data-close="authModal">取消</button>
+        <button class="btn primary" type="submit">保存</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-mask" id="confirmModal">
+  <div class="modal narrow" style="width:min(460px,100%)">
+    <button type="button" class="close-x" data-close="confirmModal" title="关闭">✕</button>
+    <div class="modal-title" style="text-align:center">确定删除此 MCP 服务？</div>
+    <p style="color:#7a8499;margin:14px 0 4px">删除后可在回收站恢复</p>
+    <div class="modal-actions center">
+      <button type="button" class="btn ghost" data-close="confirmModal">取消</button>
+      <button type="button" class="btn primary" id="confirmDeleteBtn">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="trashModal">
+  <div class="modal">
+    <button class="close-x" data-close="trashModal" title="关闭">✕</button>
+    <div class="modal-title">回收站</div>
+    <div id="trashList" style="margin-top:18px"></div>
+  </div>
+</div>
+
+<div class="modal-mask" id="categoryModal">
+  <div class="modal">
+    <button class="close-x" data-close="categoryModal" title="关闭">✕</button>
+    <div class="modal-title">类别管理</div>
+    <div class="cat-subtitle">用于维护技能筛选和导入使用的类别。</div>
+    <div class="cat-toolbar"><button class="btn primary" id="addCategoryBtn">＋ 新增类别</button></div>
+    <div class="cat-table-wrap">
+      <table class="cat-table">
+        <thead>
+          <tr><th>类别名称</th><th>排序</th><th>状态</th><th>技能数</th><th style="text-align:right">操作</th></tr>
+        </thead>
+        <tbody id="categoryList"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="catFormModal">
+  <form class="modal narrow" id="catForm" style="width:min(460px,100%)">
+    <button type="button" class="close-x" data-close="catFormModal" title="关闭">✕</button>
+    <div class="modal-title" id="catFormTitle">新增类别</div>
+    <div class="add-form">
+      <div class="field"><label for="catName">类别名称 <i class="req">*</i></label><input id="catName" name="catName" required maxlength="20" placeholder="请输入类别名称"></div>
+      <div class="field"><label for="catSort">排序</label><input id="catSort" name="catSort" type="number" value="0"></div>
+      <div class="field"><label for="catStatus">状态</label>
+        <select id="catStatus" name="catStatus">
+          <option value="启用">启用</option>
+          <option value="停用">停用</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" data-close="catFormModal">取消</button>
+      <button class="btn primary" type="submit">保存</button>
+    </div>
+  </form>
+</div>
+
+<div class="modal-mask" id="catDelModal">
+  <div class="modal narrow" style="width:min(460px,100%)">
+    <button type="button" class="close-x" data-close="catDelModal" title="关闭">✕</button>
+    <div class="modal-title">确认删除类别</div>
+    <p style="color:#4a5568;margin:16px 0 4px;line-height:1.8" id="catDelText"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" data-close="catDelModal">取消</button>
+      <button type="button" class="btn danger" id="catDelConfirmBtn">删除</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="top-alert" id="topAlert" role="alert">
+  <div class="top-alert-icon">!</div>
+  <div id="topAlertText"></div>
+</div>
+
+<script>
+const OWNER = {
+  '自定义': { text: '@ 企业', tag: 'custom' },
+  '官方': { text: '@ 启文义', tag: 'official' }
+};
+
+const LOGO_COLORS = ['#2563eb', '#0891b2', '#f59e0b', '#7c3aed', '#16a34a', '#dc2626', '#0f766e'];
+
+const services = [
+  { id: 1, name: '词云图', owner: '自定义', source: 'enterprise', cat: '办公效率', status: '已发布', desc: '支持 PDF、Word、TXT、MD 等多种格式的智能文字提取，可根据文字内容生成词云图', creator: 'OmniX', date: '2026-08-31', tools: 3, calls: 0, color: '#22c1ee', toolList: [
+    { name: 'create_wordcloud_from_file', desc: '从文档文件直接生成词云图（提取文字 + 生成词云图的组合操作）', params: [
+      { name: 'file_path', type: 'string', required: true, desc: '文档文件路径，支持 PDF、Word、TXT、MD' },
+      { name: 'max_words', type: 'number', required: false, desc: '词云图最大词数，默认 200' },
+      { name: 'background', type: 'string', required: false, desc: '背景颜色，默认 white' }
+    ] },
+    { name: 'extract_text_from_file', desc: '从文档文件中提取文字内容，支持 PDF、Word、TXT、MD 等格式', params: [
+      { name: 'file_path', type: 'string', required: true, desc: '待提取的文档文件路径' }
+    ] },
+    { name: 'generate_wordcloud', desc: '根据文字内容生成词云图', params: [
+      { name: 'text', type: 'string', required: true, desc: '用于生成词云图的文字内容' },
+      { name: 'width', type: 'number', required: false, desc: '图片宽度（像素），默认 800' },
+      { name: 'height', type: 'number', required: false, desc: '图片高度（像素），默认 600' }
+    ] }
+  ], usedBy: ['HR 入职管理专家', 'UI 设计师', '产品经理', '企业培训课程设计师', '供应商评估专家', '供应链采购策略师', '内容创作者', '制度文件撰写专家', '前端开发者', '发票管理专家', '合同审查专家', '品牌守护者', '售前工程师', '多元视觉专家', '小红书运营专家', '微信公众号运营', '微信视频号运营策略师', '快速原型师', '技术翻译专家', '抖音策略师', '提示词工程师', '测试结果分析师', '税务策略师', '绩效管理专家', '行为心理学专家', '财务分析师', '销售教练', '销售数据整合专家', '项目管理专家', '高级项目经理'] },
+  { id: 2, name: '思维导图生成', owner: '自定义', source: 'enterprise', cat: '办公效率', status: '已发布', desc: '根据文本内容自动生成思维导图；返回可访问的思维导图片段链接，支持 OmniX、CodeBuddy、Cursor、Qoder 等客户端', creator: 'OmniX', date: '2026-08-31', tools: 1, calls: 0, color: '#5ff0c8' },
+  { id: 3, name: '图片生成', owner: '自定义', source: 'enterprise', cat: '设计创意', status: '已发布', desc: '图片生成工具，提供文生图、图生图 AI 绘画能力，异步任务调度，支持多参考图输入，轮询获取绘图结果，直接渲染', creator: 'admin', date: '2026-08-19', tools: 2, calls: 577, color: '#f9a825' },
+  { id: 4, name: 'ECharts 图表可视化', owner: '官方', source: 'market', cat: '数据处理', status: '已发布', desc: '使 AI MCP 动态生成 Apache ECharts图表和图形。用于图表生成和数据分析。', creator: 'admin', date: '2026-08-04', tools: 18, calls: 98, color: '#f43f5e' },
+  { id: 5, name: '联网搜索', owner: '官方', source: 'market', cat: '通用基础', status: '已发布', desc: '这是一款面向 AI 应用的搜索引擎，提供来自数十亿网页和生态系统内内容的高质量世界知识，涵盖天气、新闻、百科等', creator: 'admin', date: '2026-08-03', tools: 2, calls: 1064, color: '#2b7fff', apiKey: 'sk-demo-websearch' },
+  { id: 6, name: '12306火车票查询工具', owner: '官方', source: 'market', cat: '通用基础', status: '已发布', desc: '提供了简单的API接口，允许大模型利用接口搜索12306购票信息。', creator: 'admin', date: '2026-07-30', tools: 8, calls: 14, color: '#ef4444' },
+  { id: 7, name: '网页抓取', owner: '官方', source: 'market', cat: '技术开发', status: '已发布', desc: '提供网页内容抓取功能，将HTML转换为Markdown以便于处理。适用于需要从网页提取和处理内容的场景。', creator: 'admin', date: '2026-07-30', tools: 1, calls: 3442, color: '#14b8a6' },
+  { id: 8, name: '高德地图', owner: '官方', source: 'market', cat: '数据处理', status: '已发布', desc: '高德地图是一个支持任何MCP协议客户端的服务器，允许用户轻松利用高德地图MCP服务器获取各种基于位置的服务。', creator: 'admin', date: '2026-07-28', tools: 12, calls: 59, color: '#22c55e', apiKey: 'sk-demo-amap' },
+  { id: 9, name: 'BrightKey 院校数据', owner: '官方', source: 'market', cat: '数据处理', status: '已发布', desc: '院校列表、学校画像、院校比较、专业回报与匹配查询。', creator: 'admin', date: '2026-07-22', tools: 8, calls: 1, color: '#0f4c81' },
+  { id: 10, name: '医学术语查询', owner: '官方', source: 'market', cat: '数据处理', status: '已发布', desc: 'ICD-11、LOINC、RxNorm、MeSH 与 ATC 医学编码和术语查询。', creator: 'admin', date: '2026-07-22', tools: 31, calls: 1, color: '#06b6d4' },
+  { id: 11, name: '旅行辅助工具箱', owner: '官方', source: 'market', cat: '客户服务', status: '未发布', desc: '租车、接送、行程活动、行李寄存与航班补偿查询。', creator: 'admin', date: '2026-07-22', tools: 6, calls: 1, color: '#f59e0b' },
+  { id: 12, name: '住宿预订服务', owner: '官方', source: 'market', cat: '客户服务', status: '未发布', desc: '酒店目的地解析、住宿检索、房型详情与可订状态查询。', creator: 'admin', date: '2026-07-22', tools: 6, calls: 8, color: '#8b5cf6' }
+];
+
+const trash = [];
+const currentUser = 'OmniX';
+let view = 'enterprise';
+let keyword = '';
+let catFilter = '';
+let statusFilter = '';
+let ownerFilter = '';
+let page = 1;
+
+const cardGrid = document.getElementById('cardGrid');
+const emptyState = document.getElementById('emptyState');
+const totalText = document.getElementById('totalText');
+const pageNumbers = document.getElementById('pageNumbers');
+const prevPage = document.getElementById('prevPage');
+const nextPage = document.getElementById('nextPage');
+const pageSize = document.getElementById('pageSize');
+const searchInput = document.getElementById('searchInput');
+const trashCount = document.getElementById('trashCount');
+
+function iconStyle(color) { return `background:${color}`; }
+function iconFor(item) {
+  if (item.avatar) return { text: `<img src="${item.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">`, style: '' };
+  return { text: item.name.trim().charAt(0).toUpperCase(), style: iconStyle(item.color || LOGO_COLORS[item.id % LOGO_COLORS.length]) };
+}
+
+function filteredServices() {
+  const kw = keyword.trim().toLowerCase();
+  return services.filter(item => {
+    const byView = item.source === view;
+    const bySearch = !kw || item.name.toLowerCase().includes(kw);
+    const byCat = !catFilter || item.cat === catFilter;
+    const byStatus = !statusFilter || item.status === statusFilter;
+    const byOwner = !ownerFilter || item.creator === currentUser;
+    return byView && bySearch && byCat && byStatus && byOwner;
+  });
+}
+
+function renderCard(item) {
+  const icon = iconFor(item);
+  const authTag = item.source === 'market'
+    ? (item.apiKey
+        ? '<span class="auth-tag on">✓ 已授权</span>'
+        : '<span class="auth-tag off">⊗ 未授权</span>')
+    : '';
+  const card = document.createElement('article');
+  card.className = 'mcp-card';
+  card.innerHTML = `
+    <button class="edit-btn" title="编辑" aria-label="编辑">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+    </button>
+    <button class="del-btn" title="移入回收站" aria-label="移入回收站">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+    </button>
+    <div class="card-head">
+      <div class="logo" style="${icon.style}">${icon.text}</div>
+      <div>
+        <div class="name" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${escapeHtml(item.name)}${authTag}</div>
+        <div class="owner">@ ${item.owner === '自定义' ? '企业' : item.owner}</div>
+      </div>
+    </div>
+    <p class="desc" title="${escapeHtml(item.desc)}">${escapeHtml(item.desc)}</p>
+    <div class="card-foot">
+      <span>${escapeHtml(item.creator)}</span>
+      <span>${item.date}</span>
+      <div class="metrics">
+        <span class="metric" title="工具数量">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          ${item.tools}
+        </span>
+        <span class="metric" title="调用次数">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          ${item.calls}
+        </span>
+      </div>
+      <div class="card-switch ${item.enabled === false ? '' : 'on'}" role="switch" aria-checked="${item.enabled === false ? 'false' : 'true'}" title="启用/停用"></div>
+    </div>`;
+  card.addEventListener('click', () => openDetail(item));
+  card.querySelector('.edit-btn').addEventListener('click', event => {
+    event.stopPropagation();
+    if (item.source === 'market') openAuthModal(item);
+    else openEditModal(item);
+  });
+  card.querySelector('.del-btn').addEventListener('click', event => {
+    event.stopPropagation();
+    pendingDeleteId = item.id;
+    openModal('confirmModal');
+  });
+  const cardSwitch = card.querySelector('.card-switch');
+  cardSwitch.addEventListener('click', event => {
+    event.stopPropagation();
+    const turningOff = item.enabled !== false;
+    if (turningOff && Array.isArray(item.usedBy) && item.usedBy.length) {
+      showTopAlert(`专家「${item.usedBy.join('、')}」已经引用了这个资源，请调整后再操作！`);
+      return;
+    }
+    item.enabled = item.enabled === false;
+    const on = item.enabled !== false;
+    cardSwitch.classList.toggle('on', on);
+    cardSwitch.setAttribute('aria-checked', on ? 'true' : 'false');
+    showToast(`${on ? '已启用' : '已停用'}「${item.name}」`);
+  });
+  return card;
+}
+
+function render() {
+  // “全部/我的”仅在企业连接器页显示
+  if (view === 'market' && ownerFilter) { ownerFilter = ''; renderOwnerDropdown(); }
+  ownerDropdown.style.display = view === 'enterprise' ? '' : 'none';
+  const rows = filteredServices();
+  const size = Number(pageSize.value);
+  const pages = Math.max(1, Math.ceil(rows.length / size));
+  page = Math.min(page, pages);
+  const start = (page - 1) * size;
+  const visible = rows.slice(start, start + size);
+
+  cardGrid.replaceChildren(...visible.map(renderCard));
+  emptyState.hidden = rows.length > 0;
+  cardGrid.style.display = rows.length ? '' : 'none';
+  totalText.textContent = `共 ${rows.length} 条`;
+
+  let nums = '';
+  for (let i = 1; i <= pages; i++) {
+    nums += `<button class="page-btn ${i === page ? 'active' : ''}" data-page="${i}" ${i === page ? 'aria-current="page"' : ''}>${i}</button>`;
+  }
+  pageNumbers.innerHTML = nums;
+  pageNumbers.querySelectorAll('[data-page]').forEach(btn => {
+    btn.addEventListener('click', () => { page = Number(btn.dataset.page); render(); });
+  });
+  prevPage.disabled = page <= 1;
+  nextPage.disabled = page >= pages;
+}
+
+function showTopAlert(message) {
+  const el = document.getElementById('topAlert');
+  document.getElementById('topAlertText').textContent = message;
+  el.classList.add('show');
+  clearTimeout(showTopAlert._timer);
+  showTopAlert._timer = setTimeout(() => el.classList.remove('show'), 4000);
+}
+document.getElementById('topAlert').addEventListener('click', () => {
+  document.getElementById('topAlert').classList.remove('show');
+});
+
+let pendingDeleteId = null;
+document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+  if (pendingDeleteId == null) return;
+  const target = services.find(item => item.id === pendingDeleteId);
+  pendingDeleteId = null;
+  closeModal('confirmModal');
+  if (!target) return;
+  if (Array.isArray(target.usedBy) && target.usedBy.length) {
+    showTopAlert(`专家「${target.usedBy.join('、')}」已经引用了这个资源，请调整后再操作！`);
+    return;
+  }
+  moveToTrash(target.id);
+});
+
+function moveToTrash(id) {
+  const idx = services.findIndex(item => item.id === id);
+  if (idx < 0) return;
+  const [item] = services.splice(idx, 1);
+  trash.unshift(item);
+  render();
+  updateTrash();
+  showToast(`已将「${item.name}」移入回收站`);
+}
+
+function restoreFromTrash(id) {
+  const idx = trash.findIndex(item => item.id === id);
+  if (idx < 0) return;
+  const [item] = trash.splice(idx, 1);
+  services.unshift(item);
+  render();
+  updateTrash();
+  showToast(`已恢复「${item.name}」`);
+}
+
+function permanentlyDelete(id) {
+  const idx = trash.findIndex(item => item.id === id);
+  if (idx < 0) return;
+  const [item] = trash.splice(idx, 1);
+  updateTrash();
+  showToast(`已永久删除「${item.name}」`);
+}
+
+function updateTrash() {
+  trashCount.textContent = trash.length;
+  trashCount.hidden = trash.length === 0;
+  const list = document.getElementById('trashList');
+  if (!trash.length) {
+    list.innerHTML = '<div class="empty">回收站是空的</div>';
+    return;
+  }
+  list.innerHTML = trash.map(item => {
+    const icon = iconFor(item);
+    return `
+      <div class="trash-item">
+        <div class="logo" style="${icon.style}; width:36px;height:36px;font-size:16px">${icon.text}</div>
+        <div style="min-width:0">
+          <div style="font-weight:600">${escapeHtml(item.name)}</div>
+          <div style="color:#8a94a6;font-size:12px;margin-top:4px">${item.date} · ${escapeHtml(item.creator)}</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn ghost" data-restore="${item.id}">恢复</button>
+          <button class="btn danger" data-delete="${item.id}">删除</button>
+        </div>
+      </div>`;
+  }).join('');
+  list.querySelectorAll('[data-restore]').forEach(btn => btn.addEventListener('click', () => restoreFromTrash(Number(btn.dataset.restore))));
+  list.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', () => permanentlyDelete(Number(btn.dataset.delete))));
+}
+
+function toolsFor(item) {
+  if (Array.isArray(item.toolList) && item.toolList.length) return item.toolList;
+  return Array.from({ length: item.tools }, (_, i) => ({
+    name: `tool_${i + 1}`,
+    desc: '',
+    params: []
+  }));
+}
+
+function renderToolItem(tool, index) {
+  const params = Array.isArray(tool.params) ? tool.params : [];
+  const fieldsHtml = params.map(p => `
+    <div class="tool-field">
+      <label class="tool-field-label">
+        ${escapeHtml(p.name)} <span class="tool-field-type">(${escapeHtml(p.type || 'string')})</span>${p.required ? ' <i class="req">*</i>' : ''}
+      </label>
+      <input class="tool-field-input" type="text" data-param="${escapeHtml(p.name)}"${p.required ? ' data-required="1"' : ''} placeholder="${escapeHtml(p.desc || '请输入' + p.name)}">
+    </div>`).join('');
+  return `
+    <div class="tool-item" data-tool="${index}">
+      <div class="tool-row">
+        <div class="tool-info">
+          <div class="tool-name">${escapeHtml(tool.name)}</div>
+          ${tool.desc ? `<div class="tool-desc">${escapeHtml(tool.desc)}</div>` : ''}
+        </div>
+        <svg class="tool-caret" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
+      <div class="tool-detail">
+        <form class="tool-form" data-tool-name="${escapeHtml(tool.name)}">
+          ${fieldsHtml || '<div class="tool-empty">该工具无需参数</div>'}
+          <div class="tool-run-row">
+            <button type="submit" class="btn tool-run-btn">运行</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+}
+
+function openDetail(item) {
+  const icon = iconFor(item);
+  const tools = toolsFor(item);
+  document.getElementById('detailBody').innerHTML = `
+    <div class="dp-head">
+      <div class="logo dp-logo" style="${icon.style}">${icon.text}</div>
+      <div>
+        <div class="dp-title">${escapeHtml(item.name)}</div>
+        <div class="dp-meta">
+          <span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            ${escapeHtml(item.creator)}
+          </span>
+          <span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 2v4"/><path d="M16 2v4"/></svg>
+            ${item.date}
+          </span>
+        </div>
+      </div>
+    </div>
+    <p class="dp-desc">${escapeHtml(item.desc)}</p>
+    <div class="dp-stats">
+      <div class="dp-stat">
+        <span class="dp-stat-label">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect width="4" height="7" x="7" y="10"/><rect width="4" height="12" x="15" y="5"/></svg>
+          总调用次数
+        </span>
+        <span class="dp-stat-value">${item.calls}</span>
+      </div>
+      <div class="dp-stat">
+        <span class="dp-stat-label">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+          工具 (个)
+        </span>
+        <span class="dp-stat-value">${item.tools}</span>
+      </div>
+    </div>
+    <div class="dp-section-title">工具列表</div>
+    <div class="tool-list" id="toolList">
+      ${tools.map((tool, i) => renderToolItem(tool, i)).join('')}
+    </div>`;
+
+  const toolList = document.getElementById('toolList');
+  toolList.querySelectorAll('.tool-row').forEach(row => {
+    row.addEventListener('click', () => row.parentElement.classList.toggle('open'));
+  });
+  toolList.querySelectorAll('.tool-form').forEach(form => {
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      runTool(form);
+    });
+  });
+
+  document.getElementById('listPage').hidden = true;
+  document.getElementById('detailPage').hidden = false;
+  window.scrollTo(0, 0);
+}
+
+function closeDetail() {
+  document.getElementById('detailPage').hidden = true;
+  document.getElementById('listPage').hidden = false;
+}
+
+function runTool(form) {
+  const inputs = Array.from(form.querySelectorAll('.tool-field-input'));
+  const missing = inputs.filter(el => el.dataset.required && !el.value.trim());
+  if (missing.length) {
+    missing[0].focus();
+    showToast(`请填写必填参数：${missing[0].dataset.param}`);
+    return;
+  }
+  const args = {};
+  inputs.forEach(el => { if (el.value.trim()) args[el.dataset.param] = el.value.trim(); });
+
+  const runBtn = form.querySelector('.tool-run-btn');
+  let resultBox = form.querySelector('.tool-result');
+  if (!resultBox) {
+    resultBox = document.createElement('div');
+    resultBox.className = 'tool-result';
+    form.appendChild(resultBox);
+  }
+  runBtn.disabled = true;
+  runBtn.textContent = '运行中…';
+  resultBox.className = 'tool-result running';
+  resultBox.textContent = '正在调用工具…';
+
+  setTimeout(() => {
+    runBtn.disabled = false;
+    runBtn.textContent = '运行';
+    resultBox.className = 'tool-result done';
+    resultBox.textContent = JSON.stringify({
+      tool: form.dataset.toolName,
+      status: 'success',
+      arguments: args,
+      output: '（原型演示）工具调用成功，此处返回运行结果。'
+    }, null, 2);
+  }, 800);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+}
+
+document.getElementById('detailBack').addEventListener('click', closeDetail);
+document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', () => closeModal(btn.dataset.close)));
+document.querySelectorAll('.modal-mask').forEach(mask => {
+  mask.addEventListener('click', event => { if (event.target === mask) mask.classList.remove('open'); });
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') document.querySelectorAll('.modal-mask.open').forEach(mask => mask.classList.remove('open'));
+});
+
+document.getElementById('trashBtn').addEventListener('click', () => { updateTrash(); openModal('trashModal'); });
+
+// ===== 类别管理 =====
+const categories = [
+  { name: '通用基础', sort: 0, status: '启用', count: 0 },
+  { name: '办公效率', sort: 0, status: '启用', count: 12 },
+  { name: '数据处理', sort: 0, status: '启用', count: 6 },
+  { name: '营销运营', sort: 0, status: '启用', count: 4 },
+  { name: '客户服务', sort: 0, status: '启用', count: 3 },
+  { name: '技术开发', sort: 0, status: '启用', count: 5 },
+  { name: '风控合规', sort: 0, status: '启用', count: 7 },
+  { name: '设计创意', sort: 0, status: '启用', count: 4 },
+  { name: 'SkillHub 市场', sort: 100, status: '启用', count: 4 }
+];
+
+function renderCategories() {
+  const list = document.getElementById('categoryList');
+  if (!categories.length) {
+    list.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#8a94a6;padding:30px">暂无类别</td></tr>';
+    return;
+  }
+  list.innerHTML = categories.map((cat, idx) => `
+    <tr>
+      <td>${escapeHtml(cat.name)}</td>
+      <td>${cat.sort}</td>
+      <td><span class="status-tag">${cat.status}</span></td>
+      <td>${cat.count}</td>
+      <td>
+        <div class="row-act">
+          <button class="icon-btn" data-cat-edit="${idx}" title="编辑">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+          </button>
+          <button class="icon-btn del" data-cat-del="${idx}" title="删除">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4h8v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`).join('');
+  list.querySelectorAll('[data-cat-edit]').forEach(btn => btn.addEventListener('click', () => {
+    openCatForm(Number(btn.dataset.catEdit));
+  }));
+  list.querySelectorAll('[data-cat-del]').forEach(btn => btn.addEventListener('click', () => {
+    openCatDelConfirm(Number(btn.dataset.catDel));
+  }));
+}
+
+// 类别删除确认
+let pendingCatDelIdx = null;
+function openCatDelConfirm(idx) {
+  pendingCatDelIdx = idx;
+  const cat = categories[idx];
+  const count = services.filter(item => (Array.isArray(item.cats) ? item.cats : [item.cat]).includes(cat.name)).length;
+  document.getElementById('catDelText').textContent = count
+    ? `类别「${cat.name}」下还有 ${count} 个关联连接器，删除后这些连接器将同步删除分类。确认删除？`
+    : `类别「${cat.name}」下暂无关联连接器。确认删除？`;
+  openModal('catDelModal');
+}
+document.getElementById('catDelConfirmBtn').addEventListener('click', () => {
+  if (pendingCatDelIdx == null) return;
+  const cat = categories[pendingCatDelIdx];
+  categories.splice(pendingCatDelIdx, 1);
+  pendingCatDelIdx = null;
+  // 同步移除连接器上的该分类
+  services.forEach(item => {
+    if (Array.isArray(item.cats)) item.cats = item.cats.filter(name => name !== cat.name);
+    if (item.cat === cat.name) item.cat = (item.cats && item.cats[0]) || '';
+  });
+  closeModal('catDelModal');
+  if (catFilter === cat.name) catFilter = '';
+  renderCategories();
+  renderCatDropdown();
+  render();
+  showToast(`已删除类别「${cat.name}」`);
+});
+
+document.getElementById('categoryBtn').addEventListener('click', () => { renderCategories(); openModal('categoryModal'); });
+document.getElementById('addCategoryBtn').addEventListener('click', () => openCatForm(null));
+
+// 类别新增/编辑弹窗
+let editingCatIdx = null;
+const catForm = document.getElementById('catForm');
+const catFormTitle = document.getElementById('catFormTitle');
+const catNameInput = document.getElementById('catName');
+const catSortInput = document.getElementById('catSort');
+const catStatusInput = document.getElementById('catStatus');
+
+function openCatForm(idx) {
+  editingCatIdx = idx;
+  if (idx === null) {
+    catFormTitle.textContent = '新增类别';
+    catNameInput.value = '';
+    catSortInput.value = '0';
+    catStatusInput.value = '启用';
+  } else {
+    const cat = categories[idx];
+    catFormTitle.textContent = '编辑类别';
+    catNameInput.value = cat.name;
+    catSortInput.value = cat.sort;
+    catStatusInput.value = cat.status;
+  }
+  openModal('catFormModal');
+  setTimeout(() => catNameInput.focus(), 50);
+}
+
+catForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const name = catNameInput.value.trim();
+  if (!name) { showToast('请输入类别名称'); return; }
+  const sort = Number(catSortInput.value) || 0;
+  const status = catStatusInput.value;
+  if (editingCatIdx === null) {
+    categories.push({ name, sort, status, count: 0 });
+    showToast('类别已新增');
+  } else {
+    Object.assign(categories[editingCatIdx], { name, sort, status });
+    showToast('类别已更新');
+  }
+  closeModal('catFormModal');
+  renderCategories();
+});
+searchInput.addEventListener('input', () => { keyword = searchInput.value; page = 1; render(); });
+document.querySelectorAll('.main-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.main-tab').forEach(item => item.classList.remove('active'));
+    tab.classList.add('active');
+    view = tab.dataset.view;
+    page = 1;
+    render();
+  });
+});
+
+// 归属（全部/我的） / 分类 / 状态下拉筛选
+const OWNER_OPTIONS = ['全部', '我的'];
+const ownerDropdown = document.getElementById('ownerDropdown');
+const ownerDropdownBtn = document.getElementById('ownerDropdownBtn');
+const ownerDropdownLabel = document.getElementById('ownerDropdownLabel');
+const ownerDropdownMenu = document.getElementById('ownerDropdownMenu');
+const STATUS_OPTIONS = ['全部状态', '已发布', '未发布'];
+const catDropdown = document.getElementById('catDropdown');
+const catDropdownBtn = document.getElementById('catDropdownBtn');
+const catDropdownLabel = document.getElementById('catDropdownLabel');
+const catDropdownMenu = document.getElementById('catDropdownMenu');
+const statusDropdown = document.getElementById('statusDropdown');
+const statusDropdownBtn = document.getElementById('statusDropdownBtn');
+const statusDropdownLabel = document.getElementById('statusDropdownLabel');
+const statusDropdownMenu = document.getElementById('statusDropdownMenu');
+
+function dropdownItem(label, value, current) {
+  const active = value === current;
+  return `
+    <div class="dropdown-item ${active ? 'active' : ''}" role="menuitem" data-value="${escapeHtml(value)}">
+      <svg class="check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      <span>${escapeHtml(label)}</span>
+    </div>`;
+}
+
+function renderCatDropdown() {
+  const items = ['<全部分类>'].concat(categories.filter(cat => cat.status === '启用').map(cat => cat.name));
+  catDropdownMenu.innerHTML = items.map(name => {
+    const value = name === '<全部分类>' ? '' : name;
+    const label = name === '<全部分类>' ? '全部分类' : name;
+    return dropdownItem(label, value, catFilter);
+  }).join('');
+  catDropdownLabel.textContent = catFilter || '全部分类';
+  catDropdownMenu.querySelectorAll('.dropdown-item').forEach(el => {
+    el.addEventListener('click', () => {
+      catFilter = el.dataset.value;
+      page = 1;
+      closeDropdowns();
+      renderCatDropdown();
+      render();
+    });
+  });
+}
+
+function renderStatusDropdown() {
+  statusDropdownMenu.innerHTML = STATUS_OPTIONS.map(name => {
+    const value = name === '全部状态' ? '' : name;
+    return dropdownItem(name, value, statusFilter);
+  }).join('');
+  statusDropdownLabel.textContent = statusFilter || '全部状态';
+  statusDropdownMenu.querySelectorAll('.dropdown-item').forEach(el => {
+    el.addEventListener('click', () => {
+      statusFilter = el.dataset.value;
+      page = 1;
+      closeDropdowns();
+      renderStatusDropdown();
+      render();
+    });
+  });
+}
+
+function renderOwnerDropdown() {
+  ownerDropdownMenu.innerHTML = OWNER_OPTIONS.map(name => {
+    const value = name === '全部' ? '' : name;
+    return dropdownItem(name, value, ownerFilter);
+  }).join('');
+  ownerDropdownLabel.textContent = ownerFilter || '全部';
+  ownerDropdownMenu.querySelectorAll('.dropdown-item').forEach(el => {
+    el.addEventListener('click', () => {
+      ownerFilter = el.dataset.value;
+      page = 1;
+      closeDropdowns();
+      renderOwnerDropdown();
+      render();
+    });
+  });
+}
+
+function closeDropdowns() {
+  ownerDropdown.classList.remove('open');
+  catDropdown.classList.remove('open');
+  statusDropdown.classList.remove('open');
+  ownerDropdownBtn.setAttribute('aria-expanded', 'false');
+  catDropdownBtn.setAttribute('aria-expanded', 'false');
+  statusDropdownBtn.setAttribute('aria-expanded', 'false');
+}
+
+ownerDropdownBtn.addEventListener('click', event => {
+  event.stopPropagation();
+  const open = ownerDropdown.classList.contains('open');
+  closeDropdowns();
+  if (!open) { ownerDropdown.classList.add('open'); ownerDropdownBtn.setAttribute('aria-expanded', 'true'); }
+});
+
+catDropdownBtn.addEventListener('click', event => {
+  event.stopPropagation();
+  const open = catDropdown.classList.contains('open');
+  closeDropdowns();
+  if (!open) { catDropdown.classList.add('open'); catDropdownBtn.setAttribute('aria-expanded', 'true'); }
+});
+statusDropdownBtn.addEventListener('click', event => {
+  event.stopPropagation();
+  const open = statusDropdown.classList.contains('open');
+  closeDropdowns();
+  if (!open) { statusDropdown.classList.add('open'); statusDropdownBtn.setAttribute('aria-expanded', 'true'); }
+});
+document.addEventListener('click', () => closeDropdowns());
+
+renderOwnerDropdown();
+renderCatDropdown();
+renderStatusDropdown();
+
+prevPage.addEventListener('click', () => { page--; render(); });
+nextPage.addEventListener('click', () => { page++; render(); });
+pageSize.addEventListener('change', () => { page = 1; render(); });
+
+// 类别多选（新增MCP弹窗）
+const mcpCatChecks = document.getElementById('mcpCatChecks');
+let selectedCats = [];
+
+function renderMcpCatChecks() {
+  selectedCats = selectedCats.filter(name => categories.some(cat => cat.name === name));
+  mcpCatChecks.innerHTML = categories.map(cat => {
+    const checked = selectedCats.includes(cat.name);
+    return `
+      <label class="cat-chip ${checked ? 'checked' : ''}">
+        <input type="checkbox" value="${escapeHtml(cat.name)}" ${checked ? 'checked' : ''}>
+        <span>${escapeHtml(cat.name)}</span>
+      </label>`;
+  }).join('');
+  mcpCatChecks.querySelectorAll('input[type="checkbox"]').forEach(box => {
+    box.addEventListener('change', () => {
+      const name = box.value;
+      if (box.checked) { if (!selectedCats.includes(name)) selectedCats.push(name); }
+      else { selectedCats = selectedCats.filter(item => item !== name); }
+      box.closest('.cat-chip').classList.toggle('checked', box.checked);
+    });
+  });
+}
+
+let editingId = null;
+
+function resetAvatar() {
+  avatarData = null;
+  avatarPreview.hidden = true;
+  avatarPreview.src = '';
+  avatarIcon.style.display = '';
+}
+
+document.getElementById('addBtn').addEventListener('click', () => {
+  // 连接器市场：打开新增模式的市场表单
+  if (view === 'market') { openAuthModal(null); return; }
+  editingId = null;
+  document.getElementById('addModalTitle').textContent = '新增连接器';
+  document.getElementById('addForm').reset();
+  resetAvatar();
+  selectedCats = [];
+  renderMcpCatChecks();
+  openModal('addModal');
+});
+
+function openEditModal(item) {
+  // 连接器市场：打开设置授权弹窗
+  if (item.source === 'market') {
+    openAuthModal(item);
+    return;
+  }
+  // 企业连接器：编辑表单
+  editingId = item.id;
+  document.getElementById('addModalTitle').textContent = '编辑连接器';
+  const form = document.getElementById('addForm');
+  form.reset();
+  form.name.value = item.name || '';
+  form.desc.value = item.desc || '';
+  form.proto.value = item.proto || '';
+  form.builtin.value = item.builtin || '否';
+  form.url.value = item.url || '';
+  form.headers.value = item.headers || '';
+  // 类别回显：兼容 cats 数组与 cat 单值
+  selectedCats = Array.isArray(item.cats) ? [...item.cats] : (item.cat ? [item.cat] : []);
+  renderMcpCatChecks();
+  // 头像回显
+  resetAvatar();
+  if (item.avatar) {
+    avatarData = item.avatar;
+    avatarPreview.src = item.avatar;
+    avatarPreview.hidden = false;
+    avatarIcon.style.display = 'none';
+  }
+  openModal('addModal');
+}
+
+// 连接器市场：设置授权弹窗
+let authTarget = null;
+let authSelectedCats = [];
+const authCatChecks = document.getElementById('authCatChecks');
+
+function renderAuthCatChecks() {
+  authSelectedCats = authSelectedCats.filter(name => categories.some(cat => cat.name === name));
+  authCatChecks.innerHTML = categories.map(cat => {
+    const checked = authSelectedCats.includes(cat.name);
+    return `
+      <label class="cat-chip ${checked ? 'checked' : ''}">
+        <input type="checkbox" value="${escapeHtml(cat.name)}" ${checked ? 'checked' : ''}>
+        <span>${escapeHtml(cat.name)}</span>
+      </label>`;
+  }).join('');
+  authCatChecks.querySelectorAll('input[type="checkbox"]').forEach(box => {
+    box.addEventListener('change', () => {
+      const name = box.value;
+      if (box.checked) { if (!authSelectedCats.includes(name)) authSelectedCats.push(name); }
+      else { authSelectedCats = authSelectedCats.filter(item => item !== name); }
+      box.closest('.cat-chip').classList.toggle('checked', box.checked);
+    });
+  });
+}
+
+function openAuthModal(item) {
+  authTarget = item;
+  const isEdit = !!item;
+  document.getElementById('authModalTitle').textContent = isEdit ? '编辑连接器' : '新增连接器';
+  const form = document.getElementById('authForm');
+  form.reset();
+  authSelectedCats = isEdit ? (Array.isArray(item.cats) ? [...item.cats] : (item.cat ? [item.cat] : [])) : [];
+  renderAuthCatChecks();
+  document.getElementById('authName').value = isEdit ? (item.name || '') : '';
+  document.getElementById('authBuiltin').value = (isEdit && item.builtin) || '否';
+  document.getElementById('authDesc').value = isEdit ? (item.desc || '') : '';
+  document.getElementById('authUrl').value = (isEdit && item.url) || 'https://dashscope.aliyuncs.com/api/v1/mcps/WebFetch/mcp';
+  const input = document.getElementById('authApiKey');
+  input.type = 'password';
+  input.value = (isEdit && item.apiKey) || '';
+  // 头像回显
+  authAvatarData = null;
+  if (isEdit && item.avatar) {
+    authAvatarPreview.src = item.avatar;
+    authAvatarPreview.hidden = false;
+    authAvatarIcon.style.display = 'none';
+  } else {
+    authAvatarPreview.hidden = true;
+    authAvatarPreview.src = '';
+    authAvatarIcon.style.display = '';
+  }
+  const removeBtn = document.getElementById('authRemoveBtn');
+  removeBtn.style.display = isEdit ? '' : 'none';
+  removeBtn.disabled = !(isEdit && item.apiKey);
+  openModal('authModal');
+}
+
+// 编辑连接器弹窗：头像上传预览
+const authAvatarInput = document.getElementById('authAvatarInput');
+const authAvatarPreview = document.getElementById('authAvatarPreview');
+const authAvatarIcon = document.getElementById('authAvatarIcon');
+let authAvatarData = null;
+authAvatarInput.addEventListener('change', () => {
+  const file = authAvatarInput.files && authAvatarInput.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    showToast('头像大小不能超过 2MB');
+    authAvatarInput.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    authAvatarData = reader.result;
+    authAvatarPreview.src = authAvatarData;
+    authAvatarPreview.hidden = false;
+    authAvatarIcon.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('authEye').addEventListener('click', () => {
+  const input = document.getElementById('authApiKey');
+  input.type = input.type === 'password' ? 'text' : 'password';
+});
+
+document.getElementById('authForm').addEventListener('submit', event => {
+  event.preventDefault();
+  const name = document.getElementById('authName').value.trim();
+  const desc = document.getElementById('authDesc').value.trim();
+  const url = document.getElementById('authUrl').value.trim();
+  const builtin = document.getElementById('authBuiltin').value;
+  const key = document.getElementById('authApiKey').value.trim();
+  if (!name) { showToast('请输入服务器名称'); return; }
+  if (!desc) { showToast('请输入描述'); return; }
+  if (!url) { showToast('请输入服务地址'); return; }
+  if (!key) { showToast('请输入 API Key'); return; }
+  if (!authSelectedCats.length) { showToast('请至少选择一个类别'); return; }
+  if (authTarget) {
+    authTarget.name = name;
+    authTarget.desc = desc;
+    authTarget.url = url;
+    authTarget.builtin = builtin;
+    authTarget.apiKey = key;
+    authTarget.cats = [...authSelectedCats];
+    authTarget.cat = authSelectedCats[0];
+    if (authAvatarData) { authTarget.avatar = authAvatarData; }
+    showToast('授权已保存');
+  } else {
+    const today = new Date();
+    const date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    services.unshift({
+      id: Date.now(),
+      name, desc, builtin, url,
+      apiKey: key,
+      owner: '官方',
+      source: 'market',
+      cats: [...authSelectedCats],
+      cat: authSelectedCats[0],
+      tools: 0,
+      calls: 0,
+      creator: currentUser,
+      date,
+      avatar: authAvatarData,
+      color: LOGO_COLORS[Math.floor(Math.random() * LOGO_COLORS.length)]
+    });
+    page = 1;
+    showToast('连接器已保存');
+  }
+  closeModal('authModal');
+  render();
+});
+
+document.getElementById('authRemoveBtn').addEventListener('click', () => {
+  if (authTarget) authTarget.apiKey = '';
+  document.getElementById('authApiKey').value = '';
+  document.getElementById('authRemoveBtn').disabled = true;
+  closeModal('authModal');
+  render();
+  showToast('授权已移除');
+});
+
+// 头像上传预览
+const avatarInput = document.getElementById('avatarInput');
+const avatarPreview = document.getElementById('avatarPreview');
+const avatarIcon = document.getElementById('avatarIcon');
+let avatarData = null;
+avatarInput.addEventListener('change', () => {
+  const file = avatarInput.files && avatarInput.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    showToast('头像大小不能超过 2MB');
+    avatarInput.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    avatarData = reader.result;
+    avatarPreview.src = avatarData;
+    avatarPreview.hidden = false;
+    avatarIcon.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+
+// 测试连接
+document.getElementById('testBtn').addEventListener('click', () => {
+  const url = document.getElementById('mcpUrl').value.trim();
+  if (!url) {
+    showToast('请先填写服务地址');
+    return;
+  }
+  showToast(`正在测试连接 ${url} …`);
+  setTimeout(() => showToast('连接成功 ✓，已解析出工具列表（原型演示）'), 900);
+});
+
+document.getElementById('addForm').addEventListener('submit', event => {
+  event.preventDefault();
+  const form = event.target;
+  const name = form.name.value.trim();
+  const desc = form.desc.value.trim();
+  const proto = form.proto.value;
+  const builtin = form.builtin.value;
+  const url = form.url.value.trim();
+  const headers = form.headers.value.trim();
+  if (!selectedCats.length) { showToast('请至少选择一个类别'); return; }
+  const today = new Date();
+  const date = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+  if (editingId != null) {
+    const target = services.find(item => item.id === editingId);
+    if (target) {
+      target.name = name;
+      target.desc = desc;
+      target.proto = proto;
+      target.builtin = builtin;
+      target.url = url;
+      target.headers = headers;
+      target.cats = [...selectedCats];
+      target.cat = selectedCats[0];
+      if (avatarData) { target.avatar = avatarData; }
+    }
+    showToast('连接器已更新');
+  } else {
+    services.unshift({
+      id: Date.now(),
+      name, desc, proto, builtin, url, headers,
+      owner: '自定义',
+      source: view,
+      cats: [...selectedCats],
+      cat: selectedCats[0],
+      tools: 0,
+      calls: 0,
+      creator: currentUser,
+      date,
+      avatar: avatarData,
+      color: LOGO_COLORS[Math.floor(Math.random() * LOGO_COLORS.length)]
+    });
+    page = 1;
+    showToast('连接器已保存');
+  }
+
+  form.reset();
+  avatarData = null;
+  selectedCats = [];
+  editingId = null;
+  avatarPreview.hidden = true;
+  avatarPreview.src = '';
+  avatarIcon.style.display = '';
+  closeModal('addModal');
+  render();
+});
+
+render();
+updateTrash();
+</script>
+
+
+<style> .prd-fab-wrapper { position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; align-items: center; justify-content: center; }  .prd-fab-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #ffffff; box-shadow: 0 8px 28px rgba(79, 70, 229, 0.45); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; text-decoration: none; cursor: pointer; border: none; outline: none; position: relative; } .prd-fab-btn:hover { transform: scale(1.10); box-shadow: 0 12px 40px rgba(79, 70, 229, 0.60); } .prd-fab-btn:active { transform: scale(0.92); } .prd-fab-btn svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08)); } .prd-fab-tooltip { position: absolute; right: 50px; background: #1e293b; color: #f1f5f9; padding: 6px 16px; border-radius: 8px; font-family: -apple-system, 'Inter', 'Microsoft YaHei', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.3px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateX(4px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); } .prd-fab-tooltip::after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); border-left: 6px solid #1e293b; border-top: 6px solid transparent; border-bottom: 6px solid transparent; } .prd-fab-btn:hover .prd-fab-tooltip { opacity: 1; transform: translateX(0); }  @media (max-width: 640px) { .prd-fab-wrapper { bottom: 20px; right: 20px; } .prd-fab-btn { width: 48px; height: 48px; } .prd-fab-btn svg { width: 22px; height: 22px; } .prd-fab-tooltip { right: 60px; font-size: 12px; padding: 4px 12px; } .prd-fab-tooltip::after { right: -5px; border-width: 5px; } }  @media (prefers-color-scheme: dark) { .prd-fab-tooltip { background: #0f172a; color: #e2e8f0; } .prd-fab-tooltip::after { border-left-color: #0f172a; } }</style>
+<div class="prd-fab-wrapper"> <a class="prd-fab-btn" href="./mcp-prd.html" target="_blank" rel="noopener noreferrer" aria-label="查看 PRD 文档">  <svg viewBox="0 0 24 24"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /> <polyline points="14 2 14 8 20 8" /> <line x1="8" y1="13" x2="16" y2="13" /> <line x1="8" y1="17" x2="16" y2="17" /> </svg> <span class="prd-fab-tooltip">PRD 文档</span></a></div>
+
+</body>
+</html>
