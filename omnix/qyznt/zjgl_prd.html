@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>专家管理 - 产品需求文档 PRD v1.0</title>
+<style>
+  :root {
+    --primary: #4F46E5;
+    --primary-light: #EEF2FF;
+    --text: #1F2937;
+    --text-secondary: #6B7280;
+    --bg: #F9FAFB;
+    --card-bg: #FFFFFF;
+    --border: #E5E7EB;
+    --success: #059669;
+    --warning: #D97706;
+    --danger: #DC2626;
+    --sidebar-width: 260px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  /* ========== Sidebar Navigation ========== */
+  .sidebar {
+    position: fixed; top: 0; left: 0;
+    width: var(--sidebar-width); height: 100vh;
+    background: #FFFFFF; border-right: 1px solid var(--border);
+    overflow-y: auto; z-index: 100; padding: 24px 0;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+  }
+  .sidebar-title {
+    font-size: 14px; font-weight: 700; color: var(--primary);
+    padding: 0 20px 16px; border-bottom: 1px solid var(--border);
+    margin-bottom: 12px; letter-spacing: 0.5px;
+  }
+  .nav-list { list-style: none; padding: 0; }
+  .nav-list > li { margin-bottom: 2px; }
+  .nav-list > li > a {
+    display: block; padding: 9px 20px;
+    font-size: 13.5px; font-weight: 600; color: var(--text);
+    text-decoration: none; border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+  }
+  .nav-list > li > a:hover { background: var(--primary-light); color: var(--primary); }
+  .nav-list > li > a.active { border-left-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+  .nav-sub { list-style: none; padding: 0; }
+  .nav-sub li a {
+    display: block; padding: 6px 20px 6px 36px;
+    font-size: 12.5px; color: var(--text-secondary);
+    text-decoration: none; border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+  }
+  .nav-sub li a:hover { background: #F3F4F6; color: var(--primary); }
+  .nav-sub li a.active { border-left-color: var(--primary); color: var(--primary); font-weight: 600; background: var(--primary-light); }
+
+  .main-content { margin-left: var(--sidebar-width); padding: 40px; }
+  .container { max-width: 100%; margin: 0 auto; }
+
+  .hero {
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    color: white; text-align: center;
+    padding: 60px 40px; border-radius: 16px; margin-bottom: 40px;
+  }
+  .hero h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
+  .hero p { font-size: 16px; opacity: 0.85; }
+
+  .meta-bar {
+    display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 32px; margin-bottom: 32px;
+  }
+
+  .section {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 36px; margin-bottom: 24px;
+    scroll-margin-top: 24px;
+  }
+  .section h2 {
+    font-size: 22px; color: var(--primary); margin-bottom: 20px;
+    padding-bottom: 12px; border-bottom: 2px solid var(--primary-light);
+    scroll-margin-top: 24px;
+  }
+  .section h3 {
+    font-size: 17px; color: var(--text); margin: 28px 0 12px;
+    scroll-margin-top: 24px;
+  }
+  .section h3:first-of-type { margin-top: 0; }
+  .section h4 { font-size: 15px; color: var(--primary); margin: 22px 0 10px; }
+  .section p { margin-bottom: 12px; color: var(--text-secondary); }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 14px; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  th { background: var(--primary-light); color: var(--primary); font-weight: 600; font-size: 13px; }
+  tr:hover td { background: #FAFAFA; }
+
+  .tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .tag-p0 { background: #FEE2E2; color: var(--danger); }
+  .tag-p1 { background: #FEF3C7; color: var(--warning); }
+  .tag-p2 { background: #D1FAE5; color: var(--success); }
+
+  .story {
+    background: #FFFBEB; border-left: 4px solid var(--warning);
+    padding: 16px 20px; margin: 12px 0; border-radius: 0 8px 8px 0; font-size: 14px;
+  }
+  .story .actor { color: var(--warning); font-weight: 700; }
+  .story .want { color: var(--text); }
+  .story .goal { color: var(--text-secondary); }
+
+  .note {
+    background: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid #3B82F6;
+    padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 14px; color: #1E40AF;
+  }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main-content { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== Sidebar ========== -->
+<nav class="sidebar">
+  <div class="sidebar-title">📋 目录导航</div>
+  <ul class="nav-list">
+    <li>
+      <a href="#sec1" class="">一、概述</a>
+      <ul class="nav-sub">
+        <li><a href="#sec1-1" class="">1.1 背景与问题</a></li>
+        <li><a href="#sec1-2" class="">1.2 目标用户与典型场景</a></li>
+        <li><a href="#sec1-3" class="">1.3 核心概念</a></li>
+        <li><a href="#sec1-4" class="">1.4 用户故事</a></li>
+        <li><a href="#sec1-5" class="">1.5 非目标</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#sec2" class="">二、功能架构与流程图</a>
+      <ul class="nav-sub">
+        <li><a href="#sec2-1" class="">2.1 系统架构图</a></li>
+        <li><a href="#sec2-2" class="">2.2 业务流程图</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#sec3" class="">三、详细设计</a>
+      <ul class="nav-sub">
+        <li><a href="#sec3-1" class="">3.1 专家管理列表页</a></li>
+        <li><a href="#sec3-2" class="">3.2 新建专家弹窗</a></li>
+        <li><a href="#sec3-3" class="">3.3 编辑专家弹窗</a></li>
+        <li><a href="#sec3-4" class="">3.4 专家详情页</a></li>
+        <li><a href="#sec3-5" class="">3.5 专家配置页</a></li>
+        <li><a href="#sec3-6" class="">3.6 专家配置查看页</a></li>
+        <li><a href="#sec3-7" class="">3.7 预览调试对话页</a></li>
+        <li><a href="#sec3-8" class="">3.8 回收站</a></li>
+        <li><a href="#sec3-9" class="">3.9 类别管理弹窗</a></li>
+        <li><a href="#sec3-10" class="">3.10 发布管理弹窗</a></li>
+        <li><a href="#sec3-11" class="">3.11 专家词库弹窗</a></li>
+        <li><a href="#sec3-12" class="">3.12 MCP选择弹窗</a></li>
+        <li><a href="#sec3-13" class="">3.13 技能选择弹窗</a></li>
+        <li><a href="#sec3-14" class="">3.14 确认弹窗</a></li>
+        <li><a href="#sec3-15" class="active">3.15 AI智能创建专家弹窗</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<!-- ========== Main Content ========== -->
+<div class="main-content">
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>专家管理</h1>
+    <p>专家全生命周期管理 · 配置调试 · 发布运维 —— 产品需求文档 v1.0</p>
+  </div>
+
+  <!-- Meta -->
+  <div class="meta-bar" style="display:block;">
+    <table style="margin:0;">
+      <tbody>
+        <tr><th style="width:15%">文档版本</th><th style="width:15%">修改日期</th><th style="width:15%">修改人</th><th>修改说明</th></tr>
+        <tr>
+          <td>v1.0</td>
+          <td>2026-08-03</td>
+          <td>产品团队</td>
+          <td>初稿，覆盖专家管理列表、新建/编辑/删除、专家详情配置与调试、预览对话、回收站、类别管理、发布管理、专家词库、MCP/技能绑定等全部功能模块</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 1. 概述 -->
+  <div class="section" id="sec1">
+    <h2>一、概述</h2>
+
+    <h3 id="sec1-1">1.1 背景与问题</h3>
+    <p>在企业级 AI 应用落地过程中，"专家"（即预配置的 AI 角色）是连接大模型能力与业务场景的核心载体。当前团队在专家管理方面面临以下问题：</p>
+    <ul style="margin-left:20px;margin-bottom:12px;color:var(--text-secondary);">
+      <li><strong>创建效率低</strong>：新建一个专家需要在多处填写配置，缺乏统一的创建入口和表单引导，新用户上手成本高。</li>
+      <li><strong>配置与调试割裂</strong>：专家的系统提示词、模型、工具等配置与实际对话调试分散在不同界面，修改配置后无法即时验证效果，需要反复切换页面。</li>
+      <li><strong>版本管理缺失</strong>：专家发布后缺乏版本记录与回溯能力，修改后无法回到历史版本，协作场景下难以追踪变更。</li>
+      <li><strong>生命周期管控弱</strong>：删除即永久消失，无回收站机制；上下架状态管理不直观，无法快速控制专家的可用性。</li>
+      <li><strong>能力扩展不便</strong>：为专家绑定 MCP 服务和技能的操作路径较深，缺乏统一的扩展能力管理入口。</li>
+    </ul>
+    <p>本产品旨在提供一个<strong>覆盖专家全生命周期</strong>的管理平台，从创建、配置、调试、发布到下架、删除、恢复，形成完整闭环，并通过"配置-调试一体化"的三栏布局，显著提升专家的配置效率和质量。</p>
+
+    <h3 id="sec1-2">1.2 目标用户与典型场景</h3>
+    <table>
+      <tbody>
+        <tr><th style="width:18%">用户角色</th><th style="width:32%">典型场景</th><th>核心诉求</th></tr>
+        <tr>
+          <td>平台管理员</td>
+          <td>统一管理企业内所有专家的创建、配置、发布与下架，控制专家可用范围</td>
+          <td>集中管控、批量操作、权限分明</td>
+        </tr>
+        <tr>
+          <td>AI 应用配置工程师</td>
+          <td>编写系统提示词、选择模型、绑定 MCP 与技能，并通过实时对话调试专家效果</td>
+          <td>配置调试一体化、即时验证、版本可回溯</td>
+        </tr>
+        <tr>
+          <td>业务领域专家</td>
+          <td>通过 AI 智能创建快速生成领域专家，或从专家词库中选择预置角色直接应用</td>
+          <td>低门槛创建、开箱即用、专业提示词</td>
+        </tr>
+        <tr>
+          <td>运维人员</td>
+          <td>管理专家类别、清理无效专家、恢复误删专家、追踪发布历史</td>
+          <td>分类清晰、回收可恢复、变更可追溯</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 id="sec1-3">1.3 核心概念</h3>
+    <table>
+      <tbody>
+        <tr><th style="width:16%">概念</th><th>定义</th></tr>
+        <tr><td>专家</td><td>预配置的 AI 角色，包含模型选择、系统提示词、扩展能力（MCP/技能）等配置，是用户与 AI 交互的执行主体。</td></tr>
+        <tr><td>系统提示词</td><td>定义专家角色定位、能力范围和行为准则的自然语言指令，决定专家的回答风格与能力边界。</td></tr>
+        <tr><td>MCP</td><td>Model Context Protocol 服务，为专家提供外部工具调用能力（如数据库查询、HTTP 请求、文件系统操作），可整体或按子功能绑定。</td></tr>
+        <tr><td>技能</td><td>可复用的能力模块（如多语言翻译、图表生成、智能摘要），绑定后扩展专家的特定处理能力。</td></tr>
+        <tr><td>专家词库</td><td>预置的专业角色提示词模板库，覆盖采购、法务、供应链、财务、质量、招标等领域，可一键应用。</td></tr>
+        <tr><td>发布</td><td>将专家配置固化为一个版本并上线可用的操作，需填写发布描述，发布后记录在版本历史中。</td></tr>
+        <tr><td>发布记录</td><td>专家历次发布与保存的历史版本列表，支持查看版本详情并还原至指定历史版本。</td></tr>
+        <tr><td>回收站</td><td>已删除专家的暂存区，支持搜索、批量恢复和彻底删除，避免误删导致永久丢失。</td></tr>
+        <tr><td>三栏布局</td><td>专家详情页的核心交互布局：左栏为配置区、中栏为预览调试区、右栏为产物/调优区，栏宽可拖拽调整。</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="sec1-4">1.4 用户故事</h3>
+    <div class="story">
+      <span class="actor">作为平台管理员，</span><span class="want">我希望在列表页通过类别和状态筛选快速定位专家，并通过开关一键控制专家的上下架状态，</span><span class="goal">以便高效管理大量专家的可用性。</span>
+    </div>
+    <div class="story">
+      <span class="actor">作为AI应用配置工程师，</span><span class="want">我希望在专家详情页左侧修改系统提示词和模型配置后，能立即在右侧对话区测试效果，</span><span class="goal">以便快速迭代优化专家表现，减少配置与调试之间的切换成本。</span>
+    </div>
+    <div class="story">
+      <span class="actor">作为业务领域专家，</span><span class="want">我希望通过自然语言描述需求就能让 AI 自动生成专家配置，或从专家词库中选择预置角色一键应用，</span><span class="goal">以便在不懂提示词工程的情况下也能快速创建专业级专家。</span>
+    </div>
+    <div class="story">
+      <span class="actor">作为运维人员，</span><span class="want">我希望删除的专家先进入回收站而非永久消失，并支持批量恢复和搜索，</span><span class="goal">以便在误删时快速找回，降低运维风险。</span>
+    </div>
+    <div class="story">
+      <span class="actor">作为AI应用配置工程师，</span><span class="want">我希望每次发布专家时都要填写发布描述，并能查看和还原历史版本，</span><span class="goal">以便追踪专家的演进过程，在配置出错时快速回滚。</span>
+    </div>
+    <div class="story">
+      <span class="actor">作为平台管理员，</span><span class="want">我希望在配置页通过弹窗统一管理专家绑定的 MCP 和技能，支持搜索和批量选择，</span><span class="goal">以便高效扩展专家能力，无需在多个页面间来回操作。</span>
+    </div>
+
+    <h3 id="sec1-5">1.5 非目标</h3>
+    <ul style="margin-left:20px;color:var(--text-secondary);">
+      <li>不包含专家的权限分配与多人协作编辑功能（后续版本规划）。</li>
+      <li>不包含专家使用数据的深度分析与统计报表（后续版本规划）。</li>
+      <li>不包含专家的导入功能（通过 JSON 配置文件导入，本期暂不开放）。</li>
+      <li>不包含专家配置的 AI 智能调优面板和运行日志面板（UI 已预留，功能后续版本实现）。</li>
+      <li>不包含专家对话的产物文件管理面板（UI 已预留，功能后续版本实现）。</li>
+      <li>不包含开场白问题配置功能（UI 已预留，功能暂未开放）。</li>
+    </ul>
+  </div>
+
+  <!-- 2. 功能架构与流程图 -->
+  <div class="section" id="sec2">
+    <h2>二、功能架构与流程图</h2>
+
+    <p>专家管理产品由<strong>列表管理层</strong>、<strong>专家配置层</strong>、<strong>调试预览层</strong>与<strong>运维管理层</strong>四层构成。列表管理层负责专家的增删改查与状态管控；配置层承载模型选择、提示词编写与能力扩展；调试层提供实时对话验证；运维管理层覆盖发布管理、回收站与类别管理。四层通过统一的详情页三栏布局紧密衔接。</p>
+
+    <h3 id="sec2-1">2.1 系统架构图</h3>
+    <div style="text-align:center; margin: 20px 0;">
+      <svg width="100%" height="520" viewBox="0 0 940 520" xmlns="http://www.w3.org/2000/svg">
+        <!-- Top box -->
+        <rect x="300" y="10" width="340" height="52" rx="10" fill="#4F46E5"></rect>
+        <text x="470" y="42" text-anchor="middle" fill="white" font-size="17" font-weight="700">专家管理平台</text>
+
+        <!-- Lines to 4 layers -->
+        <line x1="370" y1="62" x2="130" y2="120" stroke="#4F46E5" stroke-width="2"></line>
+        <line x1="450" y1="62" x2="370" y2="120" stroke="#4F46E5" stroke-width="2"></line>
+        <line x1="500" y1="62" x2="600" y2="120" stroke="#4F46E5" stroke-width="2"></line>
+        <line x1="570" y1="62" x2="820" y2="120" stroke="#4F46E5" stroke-width="2"></line>
+
+        <!-- Layer 1: 列表管理层 -->
+        <rect x="20" y="120" width="220" height="56" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="130" y="146" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">列表管理层</text>
+        <text x="130" y="164" text-anchor="middle" fill="#6B7280" font-size="11">搜索 · 筛选 · 卡片 · 分页</text>
+
+        <!-- Layer 2: 专家配置层 -->
+        <rect x="260" y="120" width="220" height="56" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="370" y="146" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">专家配置层</text>
+        <text x="370" y="164" text-anchor="middle" fill="#6B7280" font-size="11">模型 · 提示词 · MCP · 技能</text>
+
+        <!-- Layer 3: 调试预览层 -->
+        <rect x="500" y="120" width="220" height="56" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="600" y="146" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">调试预览层</text>
+        <text x="600" y="164" text-anchor="middle" fill="#6B7280" font-size="11">欢迎页 · 对话 · 深度思考</text>
+
+        <!-- Layer 4: 运维管理层 -->
+        <rect x="740" y="120" width="180" height="56" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="820" y="146" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">运维管理层</text>
+        <text x="820" y="164" text-anchor="middle" fill="#6B7280" font-size="11">发布 · 回收站 · 类别</text>
+
+        <!-- Sub boxes for Layer 1 -->
+        <line x1="130" y1="176" x2="55" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="130" y1="176" x2="130" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="130" y1="176" x2="205" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <rect x="25" y="210" width="60" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="55" y="235" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">新建专家</text>
+        <rect x="100" y="210" width="60" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="130" y="235" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">编辑/删除</text>
+        <rect x="175" y="210" width="60" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="205" y="235" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">上下架</text>
+
+        <!-- Sub boxes for Layer 2 -->
+        <line x1="370" y1="176" x2="295" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="370" y1="176" x2="370" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="370" y1="176" x2="445" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <rect x="265" y="210" width="60" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="295" y="235" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">模型选择</text>
+        <rect x="340" y="210" width="60" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="370" y="235" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">提示词编辑</text>
+        <rect x="415" y="210" width="60" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="445" y="235" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">能力扩展</text>
+
+        <!-- Sub boxes for Layer 3 -->
+        <line x1="600" y1="176" x2="525" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="600" y1="176" x2="600" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="600" y1="176" x2="675" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <rect x="495" y="210" width="60" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="525" y="235" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">示例引导</text>
+        <rect x="570" y="210" width="60" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="600" y="235" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">对话交互</text>
+        <rect x="645" y="210" width="60" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="675" y="235" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">文件产物</text>
+
+        <!-- Sub boxes for Layer 4 -->
+        <line x1="820" y1="176" x2="760" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="820" y1="176" x2="820" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="820" y1="176" x2="880" y2="210" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <rect x="735" y="210" width="50" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="760" y="235" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">发布/还原</text>
+        <rect x="795" y="210" width="50" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="820" y="235" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">回收站</text>
+        <rect x="855" y="210" width="50" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="880" y="235" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">类别管理</text>
+
+        <!-- Detail page callout -->
+        <rect x="200" y="290" width="540" height="56" rx="10" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5"></rect>
+        <text x="470" y="316" text-anchor="middle" fill="#92400E" font-size="14" font-weight="700">专家详情页 · 三栏可拖拽布局</text>
+        <text x="470" y="335" text-anchor="middle" fill="#B45309" font-size="11">左栏：专家配置 ｜ 中栏：预览调试 ｜ 右栏：产物/调优/日志（预留）</text>
+
+        <line x1="130" y1="250" x2="300" y2="290" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="370" y1="250" x2="400" y2="290" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="600" y1="250" x2="540" y2="290" stroke="#D97706" stroke-width="1.5" stroke-dasharray="4"></line>
+
+        <!-- Bottom flow -->
+        <rect x="10" y="380" width="920" height="120" rx="10" fill="#F0FDF4" stroke="#059669" stroke-width="1.5"></rect>
+        <text x="470" y="408" text-anchor="middle" fill="#065F46" font-size="14" font-weight="700">专家全生命周期管理流程</text>
+        <text x="70" y="440" text-anchor="middle" fill="#059669" font-size="12">创建</text>
+        <text x="135" y="440" text-anchor="middle" fill="#6B7280" font-size="14">→</text>
+        <text x="200" y="440" text-anchor="middle" fill="#059669" font-size="12">配置</text>
+        <text x="265" y="440" text-anchor="middle" fill="#6B7280" font-size="14">→</text>
+        <text x="335" y="440" text-anchor="middle" fill="#059669" font-size="12">调试</text>
+        <text x="400" y="440" text-anchor="middle" fill="#6B7280" font-size="14">→</text>
+        <text x="470" y="440" text-anchor="middle" fill="#059669" font-size="12">保存</text>
+        <text x="535" y="440" text-anchor="middle" fill="#6B7280" font-size="14">→</text>
+        <text x="605" y="440" text-anchor="middle" fill="#059669" font-size="12">发布</text>
+        <text x="670" y="440" text-anchor="middle" fill="#6B7280" font-size="14">→</text>
+        <text x="740" y="440" text-anchor="middle" fill="#059669" font-size="12">下架</text>
+        <text x="805" y="440" text-anchor="middle" fill="#6B7280" font-size="14">→</text>
+        <text x="875" y="440" text-anchor="middle" fill="#059669" font-size="12">删除/恢复</text>
+        <text x="470" y="470" text-anchor="middle" fill="#047857" font-size="11">从创建到删除恢复：专家的完整生命周期，每一步均可追溯、可回滚</text>
+      </svg>
+    </div>
+
+    <div class="note">💡 架构原则：<strong>配置与调试一体化</strong>。详情页采用三栏布局，左栏修改配置后可在中栏即时对话验证，避免配置与调试的割裂。所有运维操作（发布、删除、类别管理）从列表页和详情页均可触达。</div>
+
+    <h3 id="sec2-2">2.2 业务流程图</h3>
+    <div style="text-align:center; margin: 20px 0;">
+      <svg width="100%" height="640" viewBox="0 0 940 660" xmlns="http://www.w3.org/2000/svg">
+        <!-- Start -->
+        <ellipse cx="470" cy="30" rx="80" ry="24" fill="#4F46E5"></ellipse>
+        <text x="470" y="36" text-anchor="middle" fill="white" font-size="14" font-weight="700">开始</text>
+        <line x1="470" y1="54" x2="470" y2="80" stroke="#4F46E5" stroke-width="2"></line>
+
+        <!-- 进入列表页 -->
+        <rect x="370" y="80" width="200" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="470" y="108" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">进入专家管理列表页</text>
+        <line x1="470" y1="124" x2="470" y2="150" stroke="#4F46E5" stroke-width="2"></line>
+
+        <!-- Decision: 新建 or 查看 -->
+        <polygon points="470,150 580,195 470,240 360,195" fill="#FEF3C7" stroke="#D97706" stroke-width="2"></polygon>
+        <text x="470" y="200" text-anchor="middle" fill="#92400E" font-size="13" font-weight="600">操作选择</text>
+        <line x1="360" y1="195" x2="200" y2="195" stroke="#D97706" stroke-width="2"></line>
+        <line x1="200" y1="195" x2="200" y2="250" stroke="#D97706" stroke-width="2"></line>
+        <text x="280" y="188" text-anchor="middle" fill="#D97706" font-size="11">新建专家</text>
+        <line x1="580" y1="195" x2="760" y2="195" stroke="#D97706" stroke-width="2"></line>
+        <text x="660" y="188" text-anchor="middle" fill="#D97706" font-size="11">查看/编辑</text>
+
+        <!-- 新建分支 -->
+        <polygon points="200,250 280,280 200,310 120,280" fill="#FEF3C7" stroke="#D97706" stroke-width="2"></polygon>
+        <text x="200" y="285" text-anchor="middle" fill="#92400E" font-size="11">创建方式</text>
+        <line x1="120" y1="280" x2="80" y2="280" stroke="#D97706" stroke-width="2"></line>
+        <text x="100" y="272" text-anchor="middle" fill="#D97706" font-size="10">手动</text>
+        <line x1="280" y1="280" x2="340" y2="280" stroke="#D97706" stroke-width="2"></line>
+        <text x="300" y="272" text-anchor="middle" fill="#D97706" font-size="10">AI</text>
+
+        <rect x="20" y="320" width="120" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="80" y="345" text-anchor="middle" fill="#6D28D9" font-size="12">填写表单</text>
+        <line x1="80" y1="280" x2="80" y2="320" stroke="#A5B4FC" stroke-width="1.5"></line>
+
+        <rect x="280" y="320" width="120" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="340" y="345" text-anchor="middle" fill="#6D28D9" font-size="12">AI生成配置</text>
+        <line x1="340" y1="280" x2="340" y2="320" stroke="#A5B4FC" stroke-width="1.5"></line>
+
+        <!-- 合并到详情页 -->
+        <line x1="80" y1="360" x2="80" y2="385" stroke="#A5B4FC" stroke-width="1.5"></line>
+        <line x1="340" y1="360" x2="340" y2="385" stroke="#A5B4FC" stroke-width="1.5"></line>
+        <line x1="80" y1="385" x2="470" y2="385" stroke="#A5B4FC" stroke-width="1.5"></line>
+
+        <!-- 查看分支 -->
+        <rect x="680" y="250" width="160" height="40" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="760" y="275" text-anchor="middle" fill="#6D28D9" font-size="12">点击专家卡片</text>
+        <line x1="760" y1="195" x2="760" y2="250" stroke="#A5B4FC" stroke-width="1.5"></line>
+        <line x1="760" y1="290" x2="760" y2="385" stroke="#A5B4FC" stroke-width="1.5"></line>
+        <line x1="760" y1="385" x2="470" y2="385" stroke="#A5B4FC" stroke-width="1.5"></line>
+        <line x1="470" y1="385" x2="470" y2="390" stroke="#A5B4FC" stroke-width="1.5"></line>
+
+        <!-- 详情页 -->
+        <rect x="330" y="390" width="280" height="50" rx="10" fill="#FFFBEB" stroke="#D97706" stroke-width="2"></rect>
+        <text x="470" y="412" text-anchor="middle" fill="#92400E" font-size="14" font-weight="700">专家详情页（三栏布局）</text>
+        <text x="470" y="430" text-anchor="middle" fill="#B45309" font-size="11">左：配置 ｜ 中：调试 ｜ 右：产物（预留）</text>
+        <line x1="470" y1="440" x2="470" y2="465" stroke="#D97706" stroke-width="2"></line>
+
+        <!-- Decision: 保存或发布 -->
+        <polygon points="470,465 580,505 470,545 360,505" fill="#FEF3C7" stroke="#D97706" stroke-width="2"></polygon>
+        <text x="470" y="510" text-anchor="middle" fill="#92400E" font-size="12" font-weight="600">保存/发布</text>
+        <line x1="360" y1="505" x2="240" y2="505" stroke="#D97706" stroke-width="2"></line>
+        <text x="300" y="498" text-anchor="middle" fill="#D97706" font-size="11">仅保存</text>
+        <line x1="580" y1="505" x2="700" y2="505" stroke="#D97706" stroke-width="2"></line>
+        <text x="640" y="498" text-anchor="middle" fill="#D97706" font-size="11">发布上线</text>
+
+        <rect x="160" y="540" width="160" height="40" rx="8" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"></rect>
+        <text x="240" y="565" text-anchor="middle" fill="#065F46" font-size="12">保存</text>
+        <line x1="240" y1="505" x2="240" y2="540" stroke="#059669" stroke-width="1.5"></line>
+
+        <rect x="620" y="540" width="160" height="40" rx="8" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"></rect>
+        <text x="700" y="565" text-anchor="middle" fill="#065F46" font-size="12">填写描述→发布</text>
+        <line x1="700" y1="505" x2="700" y2="540" stroke="#059669" stroke-width="1.5"></line>
+
+        <!-- End -->
+        <line x1="240" y1="580" x2="240" y2="605" stroke="#059669" stroke-width="2"></line>
+        <line x1="700" y1="580" x2="700" y2="605" stroke="#059669" stroke-width="2"></line>
+        <line x1="240" y1="605" x2="700" y2="605" stroke="#059669" stroke-width="2"></line>
+        <line x1="470" y1="605" x2="470" y2="616" stroke="#059669" stroke-width="2"></line>
+        <ellipse cx="470" cy="630" rx="80" ry="14" fill="#059669"></ellipse>
+        <text x="470" y="635" text-anchor="middle" fill="white" font-size="12" font-weight="700">完成</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 3. 详细设计 -->
+  <div class="section" id="sec3">
+    <h2>三、详细设计</h2>
+
+    <!-- 3.1 专家管理列表页 -->
+    <h3 id="sec3-1">3.1 专家管理列表页</h3>
+
+    <h4>功能描述</h4>
+    <p>专家管理列表页是专家管理模块的首页，以卡片网格形式展示所有专家。用户可在此页面搜索、筛选、新建、编辑、删除专家，并通过开关快速控制专家的上下架状态。页面顶部显示面包屑导航"资源管理 &gt; 专家管理"，右上角提供回收站入口和新建专家按钮。</p>
+
+    <h4>显示字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>面包屑导航</td><td>文本</td><td>固定显示"资源管理 &gt; 专家管理"；进入详情页后追加专家名称；进入回收站后追加"回收站"</td></tr>
+        <tr><td>搜索框</td><td>输入框</td><td>支持按专家名称、描述、创建人模糊搜索；实时过滤；placeholder："搜索专家名称、描述、创建人"</td></tr>
+        <tr><td>类别筛选</td><td>下拉单选</td><td>选项：全部类别、代码生成、数据分析、文档处理、自动化流程、知识检索、创意写作；选中后即时过滤；默认"全部类别"<br>数据来源类别管理，可配置；</td></tr>
+        <tr><td>状态筛选</td><td>下拉单选</td><td>选项：全部状态、发布、下架；默认"全部状态"</td></tr>
+        <tr><td>类别管理按钮</td><td>图标按钮</td><td>点击打开类别管理弹窗</td></tr>
+        <tr><td>回收站按钮</td><td>按钮</td><td>点击切换至回收站视图；有已删除专家时显示红色数量徽标；<br>数量超过99显示99+，没有数据不显示红色数量徽标；</td></tr>
+        <tr><td>新建专家按钮</td><td>下拉按钮</td><td>点击展开下拉菜单，含"手动创建"和"AI 智能创建"两个选项</td></tr>
+        <tr><td>专家图标</td><td>图标/图片</td><td>显示专家设置的 emoji 或上传图片；</td></tr>
+        <tr><td>专家名称</td><td>文本</td><td>显示专家名称；超长截断</td></tr>
+        <tr><td>类别标签</td><td>标签</td><td>显示专家所属类别，紫色底色</td></tr>
+        <tr><td>来源标签</td><td>标签</td><td>显示来源："@ 管理端"（黄色）或"@ 客户端"（蓝色）</td></tr>
+        <tr><td>专家描述</td><td>文本</td><td>显示专家描述，最多2行，超出截断</td></tr>
+        <tr><td>创建人</td><td>文本</td><td>显示创建人姓名</td></tr>
+        <tr><td>更新时间</td><td>文本</td><td>显示最近更新日期（YYYY-MM-DD）</td></tr>
+        <tr><td>调用次数</td><td>文本</td><td>显示专家被调用的总次数（被使用客户端调用一次对话算一次）</td></tr>
+        <tr><td>上下架开关</td><td>开关</td><td>开启=发布状态，关闭=下架状态；</td></tr>
+        <tr><td>编辑按钮</td><td>图标按钮</td><td>鼠标悬浮卡片时显示；客户端来源专家禁用编辑</td></tr>
+        <tr><td>删除按钮</td><td>图标按钮</td><td>鼠标悬浮卡片时显示；点击弹出删除确认弹窗</td></tr>
+        <tr><td>分页栏</td><td>分页组件</td><td>底部固定显示；支持切换页码、每页条数；显示总条数</td></tr>
+        <tr><td>空状态</td><td>占位图</td><td>无专家时显示空状态图标、"暂无专家"文案</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.2 新建专家弹窗 -->
+    <h3 id="sec3-2">3.2 新建专家弹窗（手动）</h3>
+
+    <h4>功能描述</h4>
+    <p>新建专家弹窗提供手动创建方式，用户通过填写名称、类别、图标和描述等基础信息创建专家。创建后自动进入专家详情页进行深度配置。弹窗通过列表页"新建专家"下拉菜单中的"手动创建"选项触发。</p>
+
+    <h4>表单字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段</th><th style="width:10%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr><td>名称</td><td>文本输入</td><td>是</td><td>最大50字符；不可重名；placeholder："请输入专家名称"</td></tr>
+        <tr><td>类别</td><td>复选框组</td><td>否</td><td>选项：来源类别管理，可多选</td></tr>
+        <tr><td>图标</td><td>图片上传</td><td>否</td><td>支持 JPG、PNG、GIF、格式；大小不超过1MB；建议尺寸128×128px；默认显示🤖；支持清除操作</td></tr>
+        <tr><td>描述</td><td>文本域</td><td>是</td><td>最大200字符；3行高度；placeholder："请描述专家的功能和用途..."；实时字数统计</td></tr>
+        <tr><td>取消按钮</td><td>按钮</td><td>—</td><td>关闭弹窗，不保存数据</td></tr>
+        <tr><td>创建按钮</td><td>主按钮</td><td>—</td><td>提交表单创建专家，成功后关闭弹窗并进入专家详情页</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.3 编辑专家弹窗 -->
+    <h3 id="sec3-3">3.3 编辑专家弹窗（详情页编辑图标）</h3>
+
+    <h4>功能描述</h4>
+    <p>编辑专家弹窗用于修改专家的基础信息（名称、类别、图标、描述），字段与新建弹窗一致。可通过详情页头部的编辑按钮触发。</p>
+
+    <h4>表单字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段</th><th style="width:10%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr><td>名称</td><td>文本输入</td><td>是</td><td>预填当前名称；最大50字符；不可重名</td></tr>
+        <tr><td>类别</td><td>复选框组</td><td>否</td><td>预填当前类别；可多选；选项同新建弹窗</td></tr>
+        <tr><td>图标</td><td>图片上传</td><td>否</td><td>预填当前图标；支持重新上传和清除</td></tr>
+        <tr><td>描述</td><td>文本域</td><td>是</td><td>预填当前描述；最大200字符；实时字数统计</td></tr>
+        <tr><td>取消按钮</td><td>按钮</td><td>—</td><td>关闭弹窗，不保存修改</td></tr>
+        <tr><td>保存按钮</td><td>主按钮</td><td>—</td><td>提交修改，成功后关闭弹窗并自动保存</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.4 专家详情页 -->
+    <h3 id="sec3-4">3.4 专家详情页</h3>
+
+    <h4>功能描述</h4>
+    <p>专家详情页是专家配置与调试的核心页面，采用三栏可拖拽布局：左栏为专家配置区（嵌入配置页 iframe），中栏为预览调试区（嵌入对话页 iframe），右栏为产物/调优/日志区（预留，默认隐藏）。页面顶部显示专家基本信息卡片（图标、名称、状态、来源、描述、类别、创建人、调用次数、更新时间），并提供编辑、发布记录、保存、发布等操作按钮。用户可通过拖拽分割线调整栏宽。</p>
+
+    <h4>显示字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>专家图标</td><td>图标/图片</td><td>显示专家设置的图标，渐变背景圆角方形</td></tr>
+        <tr><td>专家名称</td><td>文本</td><td>显示专家名称</td></tr>
+        <tr><td>编辑按钮</td><td>图标按钮</td><td>点击打开编辑专家弹窗</td></tr>
+        <tr><td>状态标签</td><td>标签</td><td>显示"已发布"（绿色）或"已下架"（灰色）</td></tr>
+        <tr><td>来源标签</td><td>标签</td><td>显示来源："@ 管理端"或"@ 客户端"</td></tr>
+        <tr><td>专家描述</td><td>文本</td><td>显示专家描述</td></tr>
+        <tr><td>类别</td><td>文本</td><td>显示专家所属类别</td></tr>
+        <tr><td>创建人</td><td>文本</td><td>显示创建人姓名</td></tr>
+        <tr><td>调用次数</td><td>文本</td><td>显示专家被调用的总次数</td></tr>
+        <tr><td>更新时间</td><td>文本</td><td>显示最近更新时间（YYYY-MM-DD HH:MM）</td></tr>
+        <tr><td>自动保存时间</td><td>文本</td><td>有自动保存记录时显示"自动保存于 + 时间"，默认隐藏</td></tr>
+        <tr><td>未发布提示</td><td>标签</td><td>有未发布的修改时显示橙色"有未发布的内容"标签</td></tr>
+        <tr><td>返回按钮</td><td>按钮</td><td>点击返回列表页</td></tr>
+        <tr><td>发布记录按钮</td><td>按钮</td><td>点击展开发布记录下拉弹窗</td></tr>
+        <tr><td>保存按钮</td><td>按钮</td><td>保存当前配置为草稿，不发布</td></tr>
+        <tr><td>发布按钮</td><td>主按钮</td><td>绿色按钮，点击打开发布描述弹窗</td></tr>
+        <tr><td>左栏（专家配置）</td><td>iframe容器</td><td>默认占30%宽度；加载专家配置页；可拖拽右边缘调整宽度</td></tr>
+        <tr><td>中栏（预览调试）</td><td>iframe容器</td><td>默认占70%宽度；加载AI对话页；标题"预览调试"</td></tr>
+        <tr><td>右栏（产物/调优/日志）</td><td>iframe容器</td><td>默认隐藏（flex:0）；预留产物、AI智能调优、运行日志三个面板</td></tr>
+        <tr><td>拖拽分割线</td><td>交互元素</td><td>左右栏之间的分割线可拖拽；悬浮变紫色；拖拽时调整两侧栏宽</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.5 专家配置页 -->
+    <h3 id="sec3-5">3.5 专家配置页</h3>
+
+    <h4>功能描述</h4>
+    <p>专家配置页是详情页左栏的核心内容，用于配置专家的基础能力和扩展能力。页面分为两大区块："核心配置"区块包含模型选择和系统提示词编辑；"扩展能力"区块包含 MCP 绑定和技能绑定。系统提示词编辑器提供专家词库、AI 优化和全屏编辑三个辅助功能。MCP 和技能通过弹窗进行选择管理。</p>
+
+    <h4>显示字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>区块标题-核心配置</td><td>文本</td><td>显示"核心配置"标题和描述"配置专家的基础能力，包括模型选择、系统提示词"</td></tr>
+        <tr><td>模型选择器</td><td>下拉选择</td><td>必填；点击展开下拉面板，数据来源模型管理；每个模型显示名称、能力标签和描述；选中后触发器回显模型名称</td></tr>
+        <tr><td>系统提示词编辑器</td><td>文本域</td><td>必填；placeholder："请输入专家的系统提示词，定义专家的角色、能力范围和行为准则..."；最大20000字符；实时字符计数</td></tr>
+        <tr><td>专家词库按钮</td><td>工具按钮</td><td>点击打开专家词库弹窗</td></tr>
+        <tr><td>AI优化按钮</td><td>工具按钮</td><td>点击使用系统默认模型对当前提示词进行智能优化</td></tr>
+        <tr><td>全屏按钮</td><td>工具按钮</td><td>点击进入全屏编辑模式，全屏内可编辑提示词并退出回填</td></tr>
+        <tr><td>字符计数</td><td>文本</td><td>显示"当前字符数 / 20000"</td></tr>
+        <tr><td>提示词说明</td><td>提示文本</td><td>显示"系统提示词用于定义专家的角色定位、回答风格和能力边界"</td></tr>
+        <tr><td>区块标题-扩展能力</td><td>文本</td><td>显示"扩展能力"标题和描述"为专家绑定工具、MCP 和技能，扩展其能力边界"</td></tr>
+        <tr><td>MCP管理入口</td><td>选择触发器</td><td>显示"管理 MCP"文案和已选数量；点击打开 MCP 选择弹窗；已选 MCP 以标签形式展示在下方，每个标签可单独移除</td></tr>
+        <tr><td>技能管理入口</td><td>选择触发器</td><td>显示"管理技能"文案和已选数量；点击打开技能选择弹窗；已选技能以标签形式展示在下方，每个标签可单独移除</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.6 专家配置查看页 -->
+    <h3 id="sec3-6">3.6 专家配置查看页</h3>
+
+    <h4>功能描述</h4>
+    <p>专家配置查看页是配置页的只读模式，用于以非编辑方式查看专家的完整配置。页面布局与编辑模式一致，但所有表单元素、按钮和交互元素均被禁用，输入框显示为灰色只读状态。页面顶部显示蓝色提示条"查看模式"，系统提示词文本域保留滚动浏览能力。查看模式下不显示模型下拉面板，所有弹窗触发器均不可点击。</p>
+
+    <h4>显示字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>模型显示</td><td>只读文本</td><td>显示当前选中的模型名称，不可展开下拉</td></tr>
+        <tr><td>系统提示词</td><td>只读文本域</td><td>灰底只读，不可编辑；保留滚动浏览能力；显示完整提示词内容和字符计数</td></tr>
+        <tr><td>MCP管理入口</td><td>禁用触发器</td><td>灰显，显示已选数量和已选标签，不可点击打开弹窗</td></tr>
+        <tr><td>技能管理入口</td><td>禁用触发器</td><td>灰显，显示已选数量和已选标签，不可点击打开弹窗</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.7 预览调试对话页 -->
+    <h3 id="sec3-7">3.7 预览调试对话页</h3>
+
+    <h4>功能描述</h4>
+    <p>预览调试对话页是详情页中栏的内容，用于实时验证专家配置效果。页面包含欢迎界面和对话交互两个状态。欢迎界面展示专家头像、名称、引导文案和3个示例问题；用户点击示例问题或直接输入后进入对话状态。对话状态展示用户消息、AI深度思考过程（可折叠）、工具调用信息、知识库提示、加载动画和最终回复。回复内容支持结构化展示、文件卡片预览和复制操作。页面底部为输入区，支持清空会话、上传文件和文本输入。</p>
+
+    <h4>显示字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td><br></td><td></td><td><br></td></tr>
+        <tr><td>专家头像</td><td>图标</td><td>渐变圆形头像，欢迎界面居中显示</td></tr>
+        <tr><td>专家名称</td><td>文本</td><td>欢迎界面大号标题显示专家名称</td></tr>
+        <tr><td>引导文案</td><td>文本</td><td>显示"您可以点击下面的示例问题快速开始。"</td></tr>
+        <tr><td>示例问题</td><td>可点击列表</td><td>3个预设示例问题，点击后以动画方式播放对应对话流程；悬浮高亮<br>问题数据来源：根据系统提示词自动AI生成，修改提示词后，动态自动更新；无提示词时不显示；</td></tr>
+        <tr><td>用户消息气泡</td><td>消息气泡</td><td>右对齐，浅蓝背景，显示用户输入文本</td></tr>
+        <tr><td>深度思考区</td><td>可折叠区块</td><td>显示"深度思考"标题和折叠箭头；展开时显示思考文本、工具调用信息和知识库提示</td></tr>
+        <tr><td>工具调用信息</td><td>文本</td><td>显示"调用了N次工具"</td></tr>
+        <tr><td>知识库提示</td><td>文本</td><td>显示"知识库中暂未收录相关"等提示信息</td></tr>
+        <tr><td>加载动画</td><td>动画</td><td>显示旋转加载图标和"正在输出中.."文案</td></tr>
+        <tr><td>AI回复内容</td><td>结构化内容</td><td>支持分区标题、列表、高亮文本、结束语；最大宽度85%</td></tr>
+        <tr><td>文件卡片</td><td>可点击卡片</td><td>显示文件图标、文件名和"点击在浏览器预览"提示；点击在新标签页打开</td></tr>
+        <tr><td>回复元信息</td><td>文本+按钮</td><td>显示时间戳和"复制"按钮；复制成功后按钮文案变为"已复制"（2秒后恢复）</td></tr>
+        <tr><td>清空会话按钮</td><td>图标按钮</td><td>点击刷新页面，清空当前对话记录</td></tr>
+        <tr><td>上传按钮</td><td>图标按钮</td><td>加号图标，支持上传图片和文件</td></tr>
+        <tr><td>文本输入框</td><td>输入框</td><td>placeholder："请输入你的问题，支持上传图片或文件。"；支持回车发送</td></tr>
+        <tr><td>文件上传</td><td>事件监控</td><td>文件拖动至预览调试框内区域，提示：释放后上传文件。</td></tr><tr><td>发送按钮</td><td><span style="background-color: rgb(250, 250, 250);">按钮</span></td><td>输入框有内容时可点击；点击发送消息</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.8 回收站 -->
+    <h3 id="sec3-8">3.8 回收站</h3>
+
+    <h4>功能描述</h4>
+    <p>回收站暂存已删除的专家，支持搜索、批量选择、恢复和彻底删除。页面顶部显示搜索框和统计信息（已删除专家总数、全选复选框、已选数量），下方以卡片网格形式展示已删除专家。每张卡片悬浮时显示"恢复"和"彻底删除"操作按钮。页面顶部操作栏提供"返回列表"、"恢复选中"和"彻底删除"批量操作按钮。</p>
+
+    <h4>显示字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>搜索框</td><td>输入框</td><td>placeholder："搜索已删除专家..."；实时过滤</td></tr>
+        <tr><td>统计信息</td><td>文本</td><td>显示"共 N 个已删除专家"</td></tr>
+        <tr><td>全选复选框</td><td>复选框</td><td>勾选/取消所有当前可见的已删除专家；显示已选数量</td></tr>
+        <tr><td>返回列表按钮</td><td>按钮</td><td>点击返回专家管理列表页</td></tr>
+        <tr><td>恢复选中按钮</td><td>按钮</td><td>批量恢复选中的专家；至少选中1个时可点击</td></tr>
+        <tr><td>彻底删除按钮</td><td>危险按钮</td><td>红色按钮，批量永久删除选中的专家；点击弹出彻底删除确认弹窗</td></tr>
+        <tr><td>已删除专家卡片</td><td>卡片</td><td>显示图标、名称、类别标签、来源标签、描述、删除人、删除时间、引用次数</td></tr>
+        <tr><td>恢复按钮（卡片）</td><td>按钮</td><td>卡片悬浮时显示；点击恢复单个专家</td></tr>
+        <tr><td>彻底删除按钮（卡片）</td><td>危险按钮</td><td>卡片悬浮时显示；点击弹出彻底删除确认弹窗</td></tr>
+        <tr><td>选择复选框（卡片）</td><td>复选框</td><td>每张卡片左上角显示复选框，可单独勾选</td></tr>
+        <tr><td>分页栏</td><td>分页组件</td><td>底部固定显示；支持切换页码、每页条数</td></tr>
+        <tr><td>空状态</td><td>占位图</td><td>无已删除专家时显示"回收站为空"占位</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.9 类别管理弹窗 -->
+    <h3 id="sec3-9">3.9 类别管理弹窗</h3>
+
+    <h4>功能描述</h4>
+    <p>类别管理弹窗以表格形式展示所有专家类别，支持新增、编辑、删除类别。每行显示类别名称、排序号、状态和关联专家数。点击"新增类别"打开类别表单弹窗，填写类别名称、排序号和状态后保存。</p>
+
+    <h4>显示字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>类别名称列</td><td>文本</td><td>显示类别名称</td></tr>
+        <tr><td>排序号</td><td>文本</td><td>显示排序数字，数字越小越靠前</td></tr>
+        <tr><td>状态列</td><td>标签</td><td>显示"启用"或"禁用"</td></tr>
+        <tr><td>关联专家数列</td><td>文本</td><td>显示该类别下关联的专家数量</td></tr>
+        <tr><td>操作列</td><td>按钮</td><td>提供编辑和删除操作</td></tr>
+        <tr><td>新增类别按钮</td><td>按钮</td><td>点击打开新增类别表单弹窗</td></tr>
+        <tr><td>关闭按钮</td><td>按钮</td><td>关闭类别管理弹窗</td></tr>
+      </tbody>
+    </table>
+
+    <h4>表单字段说明（新增/编辑类别）</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段</th><th style="width:10%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr><td>类别名称</td><td>文本输入</td><td>是</td><td>最大20字符；placeholder："请输入类别名称"</td></tr>
+        <tr><td>排序号</td><td>数字输入</td><td>否</td><td>1-999；placeholder："数字越小越靠前"</td></tr>
+        <tr><td>状态</td><td>单选</td><td>是</td><td>启用（默认）/ 禁用</td></tr>
+        <tr><td>取消按钮</td><td>按钮</td><td>—</td><td>关闭表单弹窗</td></tr>
+        <tr><td>保存按钮</td><td>主按钮</td><td>—</td><td>保存类别信息并刷新列表</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.10 发布管理弹窗 -->
+    <h3 id="sec3-10">3.10 发布管理弹窗</h3>
+
+    <h4>功能描述</h4>
+    <p>发布管理包含发布弹窗和发布记录下拉两个部分。发布弹窗用于提交专家发布，需填写发布描述；发布记录下拉以列表形式展示专家的历史发布版本和保存记录，支持点击还原至指定历史版本。</p>
+
+    <h4>显示字段说明 — 发布弹窗</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>弹窗标题</td><td>文本</td><td>显示"发布专家"</td></tr>
+        <tr><td>发布描述</td><td>文本域</td><td>必填；5行高度；最大500字符；placeholder："请输入本次发布的描述..."；实时字数统计</td></tr>
+        <tr><td>发布说明</td><td>提示框</td><td>绿色提示框，显示"发布后专家将上线可用，发布描述将记录在版本历史中，便于后续追溯。"</td></tr>
+        <tr><td>取消按钮</td><td>按钮</td><td>关闭弹窗</td></tr>
+        <tr><td>确认发布按钮</td><td>主按钮</td><td>绿色按钮，提交发布；发布描述为空时禁用（发布后，自动生成版本号，v1、v2、v3...依次递增）</td></tr>
+      </tbody>
+    </table>
+
+    <h4>显示字段说明 — 发布记录下拉</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>下拉标题</td><td>文本</td><td>显示"发布记录"</td></tr>
+        <tr><td>关闭按钮</td><td>图标按钮</td><td>关闭发布记录下拉</td></tr>
+        <tr><td>版本记录项</td><td>列表项</td><td>每项显示版本号/名称、发布描述、操作人、时间；悬浮高亮并显示"还原"提示；点击弹出还原确认弹窗</td></tr>
+        <tr><td>当前版本标记</td><td>圆点</td><td>当前版本项显示蓝色圆点和加粗标题</td></tr>
+        <tr><td>还原确认弹窗</td><td>确认弹窗</td><td>显示"还原至历史版本"标题和确认文案；提供取消和确认还原按钮</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.11 专家词库弹窗 -->
+    <h3 id="sec3-11">3.11 专家词库弹窗</h3>
+
+    <h4>功能描述</h4>
+    <p>专家词库弹窗展示预置的专业角色提示词模板，用户可浏览、搜索、查看详情并一键应用。每个专家词库条目包含名称、类别标签、更新时间、描述和完整提示词。点击"查看提示词"打开详情弹窗显示完整内容，点击"应用专家"将提示词填入配置页的系统提示词编辑器。</p>
+
+    <h4>显示字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>弹窗标题</td><td>文本</td><td>显示"专家词库"</td></tr>
+        <tr><td>搜索框</td><td>输入框</td><td>placeholder："搜索专家名称或描述..."；实时过滤；底部显示"显示 N / 总数 个专家"</td></tr>
+        <tr><td>专家条目</td><td>列表项</td><td>显示头像、名称、类别标签、更新时间、描述；悬浮时右侧显示操作按钮<br>数据来源：专家词库的数据（已启用，排序和专家词库一致）</td></tr>
+        <tr><td>查看提示词</td><td>按钮</td><td>点击打开专家详情弹窗，显示描述和完整系统提示词</td></tr>
+        <tr><td>应用专家</td><td>主按钮</td><td>蓝色按钮，点击将提示词填入配置页编辑器并关闭弹窗</td></tr>
+        <tr><td>关闭按钮</td><td>按钮</td><td>关闭专家词库弹窗</td></tr>
+        <tr><td>总数统计</td><td>文本</td><td>底部显示"共 N 个专家词库"</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.12 MCP选择弹窗 -->
+    <h3 id="sec3-12">3.12 MCP选择弹窗</h3>
+
+    <h4>功能描述</h4>
+    <p>MCP选择弹窗以可展开列表形式展示所有可用的 MCP 服务，支持搜索、多选、整体添加和单独添加子功能。每个 MCP 条目显示头像、名称、创建人、更新时间、描述，展开后显示其包含的子功能列表。用户可勾选整个 MCP，也可单独添加某个子功能。</p>
+
+    <h4>显示字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>弹窗标题</td><td>文本</td><td>显示"选择 MCP"</td></tr>
+        <tr><td>搜索框</td><td>输入框</td><td>placeholder："搜索 MCP 名称或描述..."；实时过滤</td></tr>
+        <tr><td>MCP条目</td><td>可展开列表项</td><td>显示勾选框、头像、名称、创建人、描述、展开箭头；点击展开显示子功能<br>数据来源：MCP服务（所有数据、排序一致）</td></tr>
+        <tr><td>子功能项</td><td>列表项</td><td>显示子功能名称和描述；右侧"单独添加"按钮可单独绑定该子功能<br>数据来源：当前MCP的工具列表；</td></tr>
+        <tr><td>整体添加MCP按钮</td><td>按钮</td><td>一键绑定整个MCP及其全部子功能</td></tr>
+        <tr><td>已选数量</td><td>文本</td><td>底部显示"已选 N 个"（以MCP条目数进行统计）</td></tr>
+        <tr><td>取消按钮</td><td>按钮</td><td>关闭弹窗，不保存选择</td></tr>
+        <tr><td>确认按钮</td><td>主按钮</td><td>确认选择，更新配置页的MCP标签</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.13 技能选择弹窗 -->
+    <h3 id="sec3-13">3.13 技能选择弹窗</h3>
+
+    <h4>功能描述</h4>
+    <p>技能选择弹窗以列表形式展示所有可用技能，支持搜索和多选。每个技能条目显示头像、名称、来源、描述和标签。用户可勾选/取消勾选技能，确认后更新配置页的技能标签。</p>
+
+    <h4>显示字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>弹窗标题</td><td>文本</td><td>显示"选择技能"</td></tr>
+        <tr><td>搜索框</td><td>输入框</td><td>placeholder："搜索技能名称或描述..."；实时过滤</td></tr>
+        <tr><td>技能条目</td><td>列表项</td><td>显示勾选框、头像、名称、来源标签、描述、功能标签；点击切换选中状态<br>数据来源：技能管理（已发布，排序一致）</td></tr>
+        <tr><td>已选数量</td><td>文本</td><td>底部显示"已选 N 个"</td></tr>
+        <tr><td>取消按钮</td><td>按钮</td><td>关闭弹窗，不保存选择</td></tr>
+        <tr><td>确认按钮</td><td>主按钮</td><td>确认选择，更新配置页的技能标签</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.14 删除确认弹窗 -->
+    <h3 id="sec3-14">3.14 确认弹窗</h3>
+
+    <h4>功能描述</h4>
+    <p>确认弹窗包含三种确认场景：删除专家确认、彻底删除确认和还原版本确认。删除专家时专家进入回收站，可后续恢复；彻底删除为永久操作不可恢复；还原版本用于将专家配置回滚至指定历史版本。</p>
+
+    <h4>显示字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>删除确认-标题</td><td>文本</td><td>显示"确认删除"</td></tr>
+        <tr><td>删除确认-文案</td><td>文本</td><td>显示"确认删除专家「名称」？删除后可在回收站恢复。"</td></tr>
+        <tr><td>删除确认-取消</td><td>按钮</td><td>关闭弹窗</td></tr>
+        <tr><td>删除确认-确认</td><td>危险按钮</td><td>红色按钮，确认删除，专家进入回收站</td></tr>
+        <tr><td>彻底删除-标题</td><td>文本</td><td>显示"⚠️ 彻底删除"</td></tr>
+        <tr><td>彻底删除-文案</td><td>文本</td><td>显示"此操作不可恢复，专家及其所有文件将被永久删除。"</td></tr>
+        <tr><td>彻底删除-确认</td><td>危险按钮</td><td>红色按钮，永久删除专家</td></tr>
+        <tr><td>还原版本-标题</td><td>文本</td><td>显示"还原至历史版本"</td></tr>
+        <tr><td>还原版本-文案</td><td>文本</td><td>显示"请确认是否还原至该版本？"</td></tr>
+        <tr><td>还原版本-确认</td><td>主按钮</td><td>确认还原，将配置回滚至选定版本</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- 3.15 AI智能创建专家弹窗 -->
+    <h3 id="sec3-15">3.15 AI智能创建专家弹窗</h3>
+
+    <h4>功能描述</h4>
+    <p>AI智能创建弹窗通过自然语言描述自动生成专家配置。弹窗分为输入阶段和生成动画阶段。输入阶段提供需求描述文本域和创建提示；点击"生成专家"后进入生成动画阶段，展示AI引擎初始化、进度条和分步生成动画，完成后自动创建专家并进入详情页。</p>
+
+    <h4>表单字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段</th><th style="width:10%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr><td>需求描述</td><td>文本域</td><td>是</td><td>5行高度；placeholder："例如：我需要一个擅长采购成本分析的专家，能够对比供应商报价、分析历史价格趋势..."；建议包含专业领域、核心能力、应用场景、行业背景</td></tr>
+        <tr><td>创建提示</td><td>提示框</td><td>—</td><td>蓝色提示框，显示"描述越详细，AI 生成的专家越精准"和"系统会使用默认模型自动生成专家"</td></tr>
+        <tr><td>取消按钮</td><td>按钮</td><td>—</td><td>关闭弹窗</td></tr>
+        <tr><td>生成专家按钮</td><td>主按钮</td><td>—</td><td>点击进入生成动画阶段</td></tr>
+      </tbody>
+    </table>
+
+    <h4>生成动画阶段显示字段</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
+        <tr><td>中心动画图标</td><td>动画</td><td>脉冲背景圆 + 旋转边框 + 大脑图标；脉冲和弹跳动画</td></tr>
+        <tr><td>状态文案</td><td>文本</td><td>显示当前生成步骤状态文案，如"正在初始化 AI 引擎..."</td></tr>
+        <tr><td>状态副文案</td><td>文本</td><td>显示"请稍候，AI 正在为您打造专属专家"</td></tr>
+        <tr><td>进度条</td><td>进度条</td><td>渐变色进度条（蓝→紫），从0%到100%；显示百分比和预计时间</td></tr>
+        <tr><td>步骤列表</td><td>列表</td><td>逐步显示生成步骤，每步完成后标记绿色对勾</td></tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <div style="text-align:center; padding:40px 0; color: var(--text-secondary); font-size:13px;">
+    — 文档结束 · 欢迎评审讨论 —
+  </div>
+
+</div>
+</div>
+
+<!-- ========== Scroll Spy & Smooth Scroll ========== -->
+<script>
+(function() {
+  document.querySelectorAll('.sidebar a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var targetId = this.getAttribute('href').substring(1);
+      var target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  var sections = [];
+  document.querySelectorAll('[id^="sec"]').forEach(function(el) {
+    sections.push({ id: el.id, el: el });
+  });
+
+  var navLinks = {};
+  document.querySelectorAll('.sidebar a[data-target], .sidebar a[href^="#"]').forEach(function(link) {
+    var id = link.getAttribute('data-target') || link.getAttribute('href').substring(1);
+    navLinks[id] = link;
+  });
+
+  function onScroll() {
+    var scrollTop = window.scrollY + 60;
+    var current = '';
+    for (var i = sections.length - 1; i >= 0; i--) {
+      var offsetTop = sections[i].el.offsetTop;
+      if (scrollTop >= offsetTop) {
+        current = sections[i].id;
+        break;
+      }
+    }
+    Object.values(navLinks).forEach(function(link) {
+      link.classList.remove('active');
+    });
+    if (current && navLinks[current]) {
+      navLinks[current].classList.add('active');
+    }
+  }
+
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+})();
+</script>
+
+
+
+</body></html>

@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="z7x5KmP2rOxVvl5a0MA3q2"><head data-page-node-id="jOn1DRbBDePn2TooUojMfd">
+<meta charset="UTF-8" data-page-node-id="sIdFhEosWin7iCjbeeBIrb">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="Q9iArH3juARESNGpQgEhOJ">
+<title>角色管理 - 产品需求文档</title>
+<style>
+  :root {
+    --primary: #4F46E5;
+    --primary-light: #EEF2FF;
+    --text: #1F2937;
+    --text-secondary: #6B7280;
+    --bg: #F9FAFB;
+    --card-bg: #FFFFFF;
+    --border: #E5E7EB;
+    --success: #059669;
+    --warning: #D97706;
+    --danger: #DC2626;
+    --sidebar-width: 260px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .sidebar {
+    position: fixed; top: 0; left: 0;
+    width: var(--sidebar-width); height: 100vh;
+    background: #FFFFFF; border-right: 1px solid var(--border);
+    overflow-y: auto; z-index: 100; padding: 24px 0;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+  }
+  .sidebar-title {
+    font-size: 14px; font-weight: 700; color: var(--primary);
+    padding: 0 20px 16px; border-bottom: 1px solid var(--border);
+    margin-bottom: 12px; letter-spacing: 0.5px;
+  }
+  .nav-list { list-style: none; padding: 0; }
+  .nav-list > li { margin-bottom: 2px; }
+  .nav-list > li > a {
+    display: block; padding: 9px 20px; font-size: 13.5px; font-weight: 600;
+    color: var(--text); text-decoration: none;
+    border-left: 3px solid transparent; transition: all 0.2s ease;
+  }
+  .nav-list > li > a:hover { background: var(--primary-light); color: var(--primary); }
+  .nav-list > li > a.active { border-left-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+  .nav-sub { list-style: none; padding: 0; }
+  .nav-sub li a {
+    display: block; padding: 6px 20px 6px 36px; font-size: 12.5px;
+    color: var(--text-secondary); text-decoration: none;
+    border-left: 3px solid transparent; transition: all 0.2s ease;
+  }
+  .nav-sub li a:hover { background: #F3F4F6; color: var(--primary); }
+  .nav-sub li a.active { border-left-color: var(--primary); color: var(--primary); font-weight: 600; background: var(--primary-light); }
+  .main-content { margin-left: var(--sidebar-width); padding: 40px; }
+  .container { max-width: 100%; margin: 0 auto; }
+  .hero {
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    color: white; text-align: center; padding: 60px 40px;
+    border-radius: 16px; margin-bottom: 40px;
+  }
+  .hero h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
+  .hero p { font-size: 16px; opacity: 0.85; }
+  .meta-bar {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 32px; margin-bottom: 32px;
+  }
+  .section {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 36px; margin-bottom: 24px;
+    scroll-margin-top: 24px;
+  }
+  .section h2 {
+    font-size: 22px; color: var(--primary); margin-bottom: 20px;
+    padding-bottom: 12px; border-bottom: 2px solid var(--primary-light);
+    scroll-margin-top: 24px;
+  }
+  .section h3 { font-size: 17px; color: var(--text); margin: 28px 0 12px; scroll-margin-top: 24px; }
+  .section h3:first-of-type { margin-top: 0; }
+  .section h4 { font-size: 15px; color: var(--text); margin: 22px 0 8px; }
+  .section p { margin-bottom: 12px; color: var(--text-secondary); }
+  .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 20px 0; }
+  .card { background: var(--primary-light); border: 1px solid var(--border); border-radius: 10px; padding: 24px; }
+  .card h4 { font-size: 15px; color: var(--primary); margin: 0 0 8px; }
+  .card p { font-size: 14px; color: var(--text-secondary); margin: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 14px; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--primary-light); color: var(--primary); font-weight: 600; font-size: 13px; letter-spacing: 0.3px; }
+  tr:hover td { background: #FAFAFA; }
+  .story {
+    background: #FFFBEB; border-left: 4px solid var(--warning);
+    padding: 16px 20px; margin: 12px 0; border-radius: 0 8px 8px 0; font-size: 14px;
+  }
+  .story .actor { color: var(--warning); font-weight: 700; }
+  .story .want { color: var(--text); }
+  .story .goal { color: var(--text-secondary); }
+  .note {
+    background: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid #3B82F6;
+    padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0;
+    font-size: 14px; color: #1E40AF;
+  }
+  .warn {
+    background: #FEF2F2; border: 1px solid #FECACA; border-left: 4px solid #EF4444;
+    padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0;
+    font-size: 14px; color: #991B1B;
+  }
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+  .diagram-wrap { text-align: center; margin: 20px 0; background: #FCFCFD; border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main-content { margin-left: 0; }
+    .card-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body data-page-node-id="InJAKEvXGLrnPnfB9MSpnO">
+<!-- ========== 侧边导航 ========== -->
+<nav class="sidebar" data-page-node-id="M9WV0Ommy44IpL5VToq3Zi">
+  <div class="sidebar-title" data-page-node-id="DgIxxcbJpM8SFJxrA79xkq">目录导航</div>
+  <ul class="nav-list" data-page-node-id="0qkogac3tiTPeRxgqZIZqV">
+    <li data-page-node-id="JfSdeE5SFZXmSPqAuBXhGO">
+      <a href="#sec1" data-target="sec1" data-page-node-id="XPAE6QiQpPsGSc0S20xwFk">一、概述</a>
+      <ul class="nav-sub" data-page-node-id="mo1YutkuFK4D3aTqJGlbpU">
+        <li data-page-node-id="e4ooT9Zopv68tcHGRWaiTl"><a href="#sec1-1" data-target="sec1-1" data-page-node-id="DcGXppEADIttrnZvhaTbF5">1.1 背景与问题</a></li>
+        <li data-page-node-id="ohnsyAP1AZcVK5VW6B2QCd"><a href="#sec1-2" data-target="sec1-2" data-page-node-id="6Cvw4eEcGMXAU4BZgDo96I">1.2 目标用户与典型场景</a></li>
+        <li data-page-node-id="2A3O65lDIeOerXB3S7qmCo"><a href="#sec1-3" data-target="sec1-3" data-page-node-id="MRxBo0HMqWE3Mjdp6ja95D">1.3 核心概念</a></li>
+        <li data-page-node-id="9oflOSsx2o34lvBOXLLyUz"><a href="#sec1-4" data-target="sec1-4" data-page-node-id="Me4jAjKU69iR5eTVF1vAlK">1.4 用户故事</a></li>
+        <li data-page-node-id="htiRXxmXr8DOH3DxymnDYZ"><a href="#sec1-5" data-target="sec1-5" data-page-node-id="jMQDOSyEsGzdPbMtv5GRSN">1.5 非目标</a></li>
+      </ul>
+    </li>
+    <li data-page-node-id="hltfAIIUSyUi1K0gd1e8MW">
+      <a href="#sec2" data-target="sec2" data-page-node-id="kQDqJNTrGLvNJmIUiTIt1B">二、功能架构与流程图</a>
+      <ul class="nav-sub" data-page-node-id="1OzB15FC8bLdQO9cABbnOm">
+        <li data-page-node-id="3f08TEP3Yyqt6MbNjXypsT"><a href="#sec2-1" data-target="sec2-1" data-page-node-id="LKHTciVuJ1onyjGdIkvcn9">2.1 系统架构图</a></li>
+        <li data-page-node-id="2EIwWZq6ZQ4In5JRjjPtU9"><a href="#sec2-2" data-target="sec2-2" data-page-node-id="yjTpEW0VhDWQIWRvdUsYMR">2.2 业务流程图</a></li>
+      </ul>
+    </li>
+    <li data-page-node-id="QZDRc2mpJnqApCkjG5MIXa">
+      <a href="#sec3" data-target="sec3" data-page-node-id="aqw5CFQPRe66W2hEySZo2E">三、详细设计</a>
+      <ul class="nav-sub" data-page-node-id="LiJ9nDNNRWoCSzOlAHlLa8">
+        <li data-page-node-id="c4B4oLCtUq8WYyV0zfavYk"><a href="#sec3-1" data-target="sec3-1" data-page-node-id="w7WuNl5zTOXmUedgCtW9jF">3.1 角色列表页</a></li>
+        <li data-page-node-id="m4MCIxmroGJhFtFuV57O2z"><a href="#sec3-2" data-target="sec3-2" data-page-node-id="wsXIJAkpOCMT5NIxOOL8oI">3.2 新增/编辑角色弹窗</a></li>
+        <li data-page-node-id="YfCQxLkAtmMvwGVsouYCyQ"><a href="#sec3-3" data-target="sec3-3" data-page-node-id="ELkZDN2owgJ7yV7NE3A15j">3.3 查看角色弹窗</a></li>
+        <li data-page-node-id="bDPVZjIs4ylIaBkAYGvBmu"><a href="#sec3-4" data-target="sec3-4" data-page-node-id="w3LjNgJXAVNXiovbfO2CY8">3.4 删除确认弹窗</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<!-- ========== 主内容 ========== -->
+<div class="main-content" data-page-node-id="ckMTmvx7dFbA0YC6QwwK3b">
+<div class="container" data-page-node-id="mhgGHzwAjy1AEJxxhfCdEn">
+
+  <div class="hero" data-page-node-id="qRMmNJMlNRKwkmEBxwuYKS">
+    <h1 data-page-node-id="iMppsORKl8jSBWAA5jmobA">角色管理</h1>
+    <p data-page-node-id="Hxuw1tyM2b0VddAqQWV0kl">角色定义 · 系统准入 · 菜单/按钮级授权 · 权限预览 · 删除保护 —— 产品需求文档 v1.0</p>
+  </div>
+
+  <div class="meta-bar" data-page-node-id="0c5QmiCNa8Kks9Tq902Lq9">
+    <table style="margin:0;" data-page-node-id="EPqkTEPpFyYSLbhoyBzQrA">
+      <tbody data-page-node-id="rFudaG4koIeRWAAzCoIPyc">
+        <tr data-page-node-id="C0A4ZVj3oYaMyEzLbKBHx1"><th style="width:15%" data-page-node-id="unqlILgHtJOfTNcZfYfilF">文档版本</th><th style="width:15%" data-page-node-id="Hn2cSzZpWgDK9ML6I5RpPm">修改日期</th><th style="width:15%" data-page-node-id="HT0L4NewhQ5Ov1PubzxCdR">编写人</th><th data-page-node-id="NGpHIFnuBRpp6leYixWJww">修改说明</th></tr>
+        <tr data-page-node-id="jKsR927xvaipnJpcfMyvN6">
+          <td data-page-node-id="G5s1CmOTig6UgaPZC8Kkxf">v1.0</td>
+          <td data-page-node-id="KMtQ9L2lnW2PGB4fGBdLfG">2026-09-09</td>
+          <td data-page-node-id="ClFn44DsVX9n8HkGi0j8cU">产品经理</td>
+          <td data-page-node-id="en0PrRnliskS6rrRfA05WJ">按标准 PRD 结构编写：概述（背景、用户、概念、故事、非目标）、功能架构与流程图、四个页面/弹窗（角色列表页、新增/编辑角色弹窗、查看角色弹窗、删除确认弹窗）的详细设计（功能描述、显示字段说明、表单字段说明）</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 一、概述 -->
+  <div class="section" id="sec1" data-page-node-id="n4JZbPSuTt4C7iv2Qve5DN">
+    <h2 data-page-node-id="5GhilSxdrRTjMlSD1yqIwJ">一、概述</h2>
+
+    <h3 id="sec1-1" data-page-node-id="s4hI4jKe07UaqRuGDabxgz">1.1 背景与问题</h3>
+    <p data-page-node-id="GYsDsn6GYMOBUmy3Y5Tocg">企业智能体平台的功能分布在<strong data-page-node-id="p23Oof6UQrrG88swgP5Xts">管理端</strong>与<strong data-page-node-id="Sy1QatCpnPlnhO74ECGMmO">客户端</strong>两个端。其中管理端覆盖三大业务域、十个功能菜单：企业智能体（专家管理、专家团管理）、资源管理（模型管理、MCP 服务、技能管理、专家词库）、企业管理（部门管理、成员管理、角色管理、菜单管理），每个菜单下又包含新建、编辑、删除、启禁用、发布等大量操作点。企业中不同岗位的成员需要不同的功能范围与操作深度：有人只使用客户端对话，有人需要在管理端维护模型与技能资源，但不应触碰组织与权限配置。角色（Role）正是连接"人"与"权限"的核心载体——先定义角色并为其授权，再将角色分配给成员，即可完成企业内的权限治理。</p>
+    <p data-page-node-id="adWmn4IF9CWHISwZ2nishY">在缺乏统一角色管理模块之前，企业面临以下问题：</p>
+    <ul style="margin-left:20px; margin-bottom:12px; color: var(--text-secondary); font-size: 14px;" data-page-node-id="EjNsnK1MK5HSJxHQ7iQWHq">
+      <li data-page-node-id="DVzKQ2IFdKDKDsQNLahJkT"><strong data-page-node-id="QgRgEDeGx8pjm919d7XKB2">权限粒度粗</strong>：只能按端控制访问，无法精确到具体菜单和按钮（如"删除专家""发布专家"），要么不给、要么全给，容易权限过大；</li>
+      <li data-page-node-id="KmY3CRDOCqAoDSHl5wqWwi"><strong data-page-node-id="jeslrPOFvx4cW0tfpxvPke">角色无法自定义</strong>：系统仅有"所有者""普通用户"两个预置角色，无法按企业岗位（如运营、内容管理员、审计员）灵活建角色；</li>
+      <li data-page-node-id="Y3nlln4IOq7WgAOgXs5dbR"><strong data-page-node-id="ZVy7RdhSy3TENNjcNdRws7">授权不透明</strong>：一个角色到底拥有哪些权限缺少直观的查看方式，权限变更、审计核对困难；</li>
+      <li data-page-node-id="mblUG7UYG4zl2Vp1Ds3LCZ"><strong data-page-node-id="y0VXIdlBRKI1FpZWd0KqaZ">误操作风险高</strong>：删除等高危操作缺少二次确认，预置角色若被误改误删，可能导致整个权限体系失效。</li>
+    </ul>
+    <p data-page-node-id="pzdlYb2XeNu7PGvt2VDOXj">因此，在系统管理下建设<strong data-page-node-id="p1nKH8B1GNF1QVQXQb5VX6">角色管理</strong>模块：提供角色列表浏览与搜索、新增/编辑角色、按"权限组 → 菜单 → 按钮"三级权限树的管理端细粒度授权、系统默认角色的只读权限预览，以及单条/批量删除的确认保护，形成"定义角色 → 精细授权 → 透明查看 → 安全下线"的完整管理闭环。</p>
+
+    <h3 id="sec1-2" data-page-node-id="KgbB7we0FFsNPNF43jbABE">1.2 目标用户与典型场景</h3>
+    <div class="card-grid" data-page-node-id="r0vuVzgupf5dYc9o45yw4r">
+      <div class="card" data-page-node-id="uRJdYTR0BbJrqS9dl1UEbd">
+        <h4 data-page-node-id="TABrstRs766H6zAvshyP7D">系统所有者</h4>
+        <p data-page-node-id="bZY0UVeUxDxN6Q8LtNJLyX">企业最高权限者，拥有管理端与客户端的全部权限。负责规划企业角色体系、创建各类管理员角色并分配给对应负责人。关注权限体系的完整性与安全性。</p>
+      </div>
+      <div class="card" data-page-node-id="m3XlRmF4VygvaiGJzqlU8x">
+        <h4 data-page-node-id="z5853EVg7rO42urtJVaLJ0">企业管理员</h4>
+        <p data-page-node-id="u6qtHLfnEAqn5DesMtYUEg">日常维护角色的操作者：按岗位新建角色、勾选菜单与按钮权限、调整既有角色授权、下线废弃角色。关注授权效率（整组批量勾选）与操作确认保护（防误删）。</p>
+      </div>
+      <div class="card" data-page-node-id="cKjjuXQQk7GII61EAVjkeX">
+        <h4 data-page-node-id="2GCpfevUo7aV2GRrE8hf25">审计 / 合规人员</h4>
+        <p data-page-node-id="qr57xgv93HDvtjlVOd49iV">定期核对各角色的权限范围，确认权限与岗位职责匹配。通过只读的权限预览查看角色完整授权清单，关注权限信息的透明性与不可篡改性。</p>
+      </div>
+    </div>
+    <h4 data-page-node-id="6z4eUuLA8zUqDpVGFqHefr">典型场景</h4>
+    <table data-page-node-id="WycJZCRqA82hJGOPKUCzg2">
+      <tbody data-page-node-id="bOf7VRJKK08Km7mSuHpXMO">
+        <tr data-page-node-id="OFi2bSfeRkHqEtZf0K5yWC"><th style="width:8%" data-page-node-id="TNQmNaTM4oqXMkFDqUIGay">序号</th><th style="width:22%" data-page-node-id="0jOMEhJp17La0FSricUGja">场景</th><th data-page-node-id="vJ3oUaCE7S4lB77lM25Zgo">描述</th></tr>
+        <tr data-page-node-id="iejzFVkRco0xTi3gVgoixb"><td data-page-node-id="srQW5sQdlhwrSHgZfPgJKM">1</td><td data-page-node-id="DzfWOg1masgdlOmeZwkfHQ">创建岗位角色</td><td data-page-node-id="umzcDmQYxm80GOHLKQPEvu">管理员点击"新增角色"，输入名称"运营"与角色标识，勾选可访问系统"管理端"，在权限树中整组勾选"资源管理"下的模型、MCP、技能、词库权限，确认后保存。</td></tr>
+        <tr data-page-node-id="LRjgCvR33zDCwY85dJOolH"><td data-page-node-id="rkQI6VY36iQa7I2l8qXggB">2</td><td data-page-node-id="b6XaKI2h7D8eAw1HPJHmIP">精确到按钮的授权</td><td data-page-node-id="NbPOTuoCL6rSPoLR3wcQLk">创建"内容管理员"角色时，在"专家管理"菜单下仅勾选"列表查看、编辑专家、专家发布"等操作，不放开"删除专家"等高危按钮。</td></tr>
+        <tr data-page-node-id="ZbfLXJJh2wUmsa2myDB896"><td data-page-node-id="MYeqnOGWDL5Ok1cmgq1Phf">3</td><td data-page-node-id="3UNT8n5ybZbepHfIXlJ2GZ">调整既有角色权限</td><td data-page-node-id="5ME6vQxAOCI2yzcBM5DOAZ">运营职责扩大后，管理员点击该角色行的"编辑"，弹窗回显原有配置，追加勾选"企业管理"域的相关菜单权限后保存。</td></tr>
+        <tr data-page-node-id="Fdb3Fbm33oxZ7B7WqfjaEd"><td data-page-node-id="erOxt2zJKBBXm8CUbYdtJq">4</td><td data-page-node-id="XJZv7qA2ZLa6mTNYdCTJEi">查看预置角色权限</td><td data-page-node-id="meT3G6qsjMk8psVdq7Hhfe">审计人员点击"所有者"行的"查看"，在只读弹窗中确认其拥有管理端权限树的全部节点，计数显示为总数/总数。</td></tr>
+        <tr data-page-node-id="pPBYa7vrQZ9PK3oSCCrAM3"><td data-page-node-id="bTUHYgDHSAJFVS2jdgAlMm">5</td><td data-page-node-id="xLq09TyblziGnCj3wrL3IQ">下线废弃角色</td><td data-page-node-id="gMELkuwCXcQCi0a2EJXLUE">岗位调整后，管理员对单个废弃角色点击"删除"，或勾选多个角色后通过顶部"删除"按钮一次性批量删除，均需二次确认。</td></tr>
+        <tr data-page-node-id="TjQkEUWNM5uJYBJCrVkdu8"><td data-page-node-id="Cw9WIw6iAa5Y9h8tZknBBg">6</td><td data-page-node-id="Ss2Mp0iqhDNwmS3sBMYgJf">快速定位角色</td><td data-page-node-id="WiM0JDvbpNkCTEFmNBBPOA">角色数量较多时，在搜索框输入关键词，列表按角色名称实时过滤。</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="sec1-3" data-page-node-id="8ObMCJ7ClFCWPOeErRSUhr">1.3 核心概念</h3>
+    <table data-page-node-id="20DtkBS7B8o6XyxNAq5Kcx">
+      <tbody data-page-node-id="i1tLQ6QvESbIJXz0yJUcL7">
+        <tr data-page-node-id="epXVqiA9Erwv5wvy5TdgOh"><th style="width:18%" data-page-node-id="zMpUljT9ytRMvEBkea2Uh4">概念</th><th data-page-node-id="Z9L7UbCeIfdMuvoKWq8b8M">定义</th></tr>
+        <tr data-page-node-id="hCjmkBjU0rOCS74GNSYx3F"><td data-page-node-id="zUPYtBuU8L9P7tPIIPxr8u">角色</td><td data-page-node-id="uCeNenJ4K8f45FeCOHZnHM">权限的集合与准入范围的载体，由名称、角色标识、可访问系统、备注及权限集合构成。角色创建后可分配给成员，成员据此获得对应端与功能的访问能力。</td></tr>
+        <tr data-page-node-id="0ctS4y6G6o4PBUdlDPQFPg"><td data-page-node-id="wA8fNofjmC2fPouZc9BG8v">系统默认角色</td><td data-page-node-id="XV0m2qY4qbq0eSSZPqhwRR">系统初始化预置的"所有者"与"普通用户"两个角色。所有者拥有管理端与客户端的所有权限；普通用户拥有客户端使用权限，是新用户注册的默认角色。系统默认角色仅可查看，不可编辑、不可删除，名称旁展示"系统默认"标签。</td></tr>
+        <tr data-page-node-id="R5vaWfJOYEivf5mBcCGICA"><td data-page-node-id="5WxVgad8R3GzIVF7yFPYQS">角色标识</td><td data-page-node-id="6iwFCkkNVxFUvjoeDcVpum">角色的唯一编码（如 ROLE_ADMIN），供系统内部进行权限判定使用，创建角色时由用户录入。</td></tr>
+        <tr data-page-node-id="GXhdaV4Yc87vy8WbZBtrA7"><td data-page-node-id="Yi2GBBL2cWGELBwKJH7ASm">可访问系统</td><td data-page-node-id="nfHQFOy1BB3TAxtCsm1dg2">角色可登录使用的端，包含"管理端"与"客户端"两项，支持多选，至少选择一项。决定角色的端级准入范围。</td></tr>
+        <tr data-page-node-id="biXrNsYAfQEqk2CdLyYQCr"><td data-page-node-id="m5Vl1Z7BvKBzCVq7eRm0PI">权限组</td><td data-page-node-id="Uaf1869YBOgHZmrQNl391I">按业务域对菜单的归类，是权限树的一级节点。共三组：企业智能体、资源管理、企业管理。支持整组批量勾选/取消。</td></tr>
+        <tr data-page-node-id="nIAYxQ9dDpjPlpCmvLFd9g"><td data-page-node-id="j7Yy5rYh3GxEC9RArlObnQ">菜单权限</td><td data-page-node-id="bIk38MjkJcL7zsMeWrmEXs">管理端某功能页面的访问权限（如"专家管理""模型管理"），是权限树的二级节点。勾选菜单表示该角色可进入对应功能页面。</td></tr>
+        <tr data-page-node-id="WfHTlBL9HAcbGKMxcoCMXC"><td data-page-node-id="66GNvrTFpN75fvErxalOvt">按钮权限</td><td data-page-node-id="l0K3dQhU1FNXXAe3i5moEQ">菜单页面内具体操作（如"新建专家""删除专家""专家发布"）的操作权限，是权限树的三级节点。勾选某按钮权限时，系统自动补选其所属菜单权限，避免"有按钮无页面"的无效配置。</td></tr>
+        <tr data-page-node-id="YGLLipZ4KodEPLnswP7ZM8"><td data-page-node-id="BlctGvcDbrDVi7D79UoHbQ">管理端授权</td><td data-page-node-id="7f2aYTE64jT2VAMCMataKa">角色表单中当勾选"管理端"后展示的权限树配置区，承载权限组 → 菜单 → 按钮三级勾选，并提供全选与各级计数。</td></tr>
+        <tr data-page-node-id="fuATSQiMgloElolQ419JdG"><td data-page-node-id="nQqZ4SkHaFonbXcPsOOwCV">全部权限</td><td data-page-node-id="hoe0qVAaS7GRXUNJjwh4fi">所有者角色持有的特殊权限标记，语义为权限树全部节点选中。预览时所有节点呈选中态，计数显示为总数/总数。</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="sec1-4" data-page-node-id="35zbj2xNQjkW5rTaWZZX9H">1.4 用户故事</h3>
+    <div class="story" data-page-node-id="MrzGPQSKuR2w8F6BqF9dZv">
+      <span class="actor" data-page-node-id="Ufry3dXY93W7lkN5VcBGtT">作为</span> 系统所有者，<span class="want" data-page-node-id="nhmOXmSfPEgwEFEuKE9YbV">我希望创建自定义角色并按菜单、按钮两级配置权限</span>，<span class="goal" data-page-node-id="HXyAGhI2SP1QcfrCbPB2j3">以便每个岗位只获得完成工作所需的最小权限。</span>
+    </div>
+    <div class="story" data-page-node-id="TRawxExlydkyqIhHPOh0vC">
+      <span class="actor" data-page-node-id="YaIBFy1luvhvL3FWEMxYZO">作为</span> 企业管理员，<span class="want" data-page-node-id="C0wmECUg6hgR9r5JxGPCGh">我希望在权限树中按权限组一键勾选整组权限，并通过全选、计数快速掌握勾选进度</span>，<span class="goal" data-page-node-id="y74QLasU1VdftD0pvb0AYe">以便配置角色时不必逐项点选近百个权限点。</span>
+    </div>
+    <div class="story" data-page-node-id="BC09rhv8A8Cwarg68GXmE4">
+      <span class="actor" data-page-node-id="SPz8s2nJC7IBIGCzgDQT7t">作为</span> 企业管理员，<span class="want" data-page-node-id="xlFgTX5QlrAUaZylPh7Cw1">我希望勾选按钮权限时系统自动补选其所属菜单</span>，<span class="goal" data-page-node-id="cIieTXoW5IG5eeJHB8cHzO">以便不出现"有操作权限却进不了页面"的无效配置。</span>
+    </div>
+    <div class="story" data-page-node-id="LbhmDBOGFABXs65C1SfkKZ">
+      <span class="actor" data-page-node-id="ZArwyNi5cNgWOsA3LqvvvZ">作为</span> 审计人员，<span class="want" data-page-node-id="6Ct1EwG0aNOfwnq3sNsZIk">我希望以只读方式查看任一角色的完整权限清单</span>，<span class="goal" data-page-node-id="JnItLQjuSSHvrMehETvN7j">以便安全地核对权限与岗位职责的匹配性，不会误改配置。</span>
+    </div>
+    <div class="story" data-page-node-id="Xia9qZQJEpc9Ad4OAeBmiv">
+      <span class="actor" data-page-node-id="4c2FuO5PogvMhahSaySOZQ">作为</span> 企业管理员，<span class="want" data-page-node-id="rZjxIuJHfzbiPYsFGOloh1">我希望删除角色前系统给出包含角色名称或数量的二次确认</span>，<span class="goal" data-page-node-id="QZQk8Ub39bjLkpB2525MZi">以便避免误删导致成员权限失效。</span>
+    </div>
+    <div class="story" data-page-node-id="SpUQssBL4Td82dLtElnpHq">
+      <span class="actor" data-page-node-id="RjX0pkWHgxi4iVHSjt5qr9">作为</span> 企业管理员，<span class="want" data-page-node-id="rHlCZwKMqEydrSS1wwC68C">我希望按名称搜索角色</span>，<span class="goal" data-page-node-id="bdIvqQsSgaaIF3VUPbyur0">以便在角色较多时快速定位目标角色。</span>
+    </div>
+
+    <h3 id="sec1-5" data-page-node-id="7N25tZnkNUNIME7rixWg6C">1.5 非目标</h3>
+    <div class="warn" data-page-node-id="UxJpcGFPEkkaKbzTWKeqzG">
+      <strong data-page-node-id="jwgsDvZhFVWOGWrCzeVcgn">本期不做以下内容：</strong>
+      <ul style="margin: 8px 0 0 20px;" data-page-node-id="z7lKrUYZkXN5GwJcNSnyZV">
+        <li data-page-node-id="tqa0EfYDNq8oZf4uJfYAoq">不提供角色与成员的分配绑定功能（将角色授予具体成员在"成员管理"模块完成，本模块仅管理角色本身）；</li>
+        <li data-page-node-id="V8KBcItNeyG2EbmaVYDObh">不提供客户端的细粒度授权配置（客户端仅通过"可访问系统"控制端级准入，无权限树）；</li>
+        <li data-page-node-id="Y4EhUfMBLcF44aVn9ut7yc">不支持权限树节点的自定义增删改（权限组、菜单、按钮均为系统预置权限资源，菜单维护由"菜单管理"模块承担）；</li>
+        <li data-page-node-id="sDPxWoAAbAnYlz6SNepEBj">不提供数据级、字段级权限（权限粒度到菜单与按钮为止，不区分数据行范围）；</li>
+        <li data-page-node-id="wkEUFTeBPvVoIeBZdb8nkX">不提供角色复制、导入导出与权限变更历史（版本追溯）；</li>
+        <li data-page-node-id="AooM5XFgcg98CmHKCpOl6B">不支持对系统默认角色（所有者、普通用户）的编辑与删除。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 二、功能架构与流程图 -->
+  <div class="section" id="sec2" data-page-node-id="jKfK7djRHwuCQqy4ABXJnQ">
+    <h2 data-page-node-id="3OEndFRz2zPpuKMxs3eNCy">二、功能架构与流程图</h2>
+
+    <h3 id="sec2-1" data-page-node-id="qxRjRNsqChLb64sSccpXAx">2.1 系统架构图</h3>
+    <p data-page-node-id="m4mLoP4Um974vhgdT3LHUX">模块由一个主页面与三个弹窗构成：<strong data-page-node-id="PCZ42ogOvUVJxZk2bnjewu">角色列表页</strong>是统一入口，承载搜索、表格展示、勾选、以及"查看 / 编辑 / 删除 / 新增 / 批量删除"全部操作入口；<strong data-page-node-id="sJKX9naRQzvnTamiZlFDpX">新增/编辑角色弹窗</strong>承载基本信息表单、可访问系统选择与管理端权限树授权；<strong data-page-node-id="PoMk38QFzaeTAecahSbjBB">查看角色弹窗</strong>面向系统默认角色提供只读权限预览；<strong data-page-node-id="IKbm9lFkW81MpzrPjBzC7a">删除确认弹窗</strong>为单条删除与批量删除提供统一的二次确认。权限树的资源（权限组 → 菜单 → 按钮权限，共 95 个权限节点）由系统预置，与菜单管理模块联动；角色保存后供成员管理模块分配使用。</p>
+    <div class="diagram-wrap" data-page-node-id="5Qqj1flMw0pIWt7GLAMLSA">
+      <svg width="100%" height="500" viewBox="0 0 940 500" xmlns="http://www.w3.org/2000/svg" data-page-node-id="UQ1uYTZ66DPhBWOLRLlNQy">
+        <defs data-page-node-id="Wgl2m0x6Z6PA9gjAqlGcGo">
+          <marker id="arrowblue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" data-page-node-id="ldais4IJAM3ExkuVhAmlpq">
+            <path d="M0,0 L8,4 L0,8 z" fill="#4F46E5" data-page-node-id="VUIiHHbPp2rFLqOBHtsofc"></path>
+          </marker>
+          <marker id="arrowgray" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" data-page-node-id="E4sNxxvyAHDfPnGh03F3m0">
+            <path d="M0,0 L8,4 L0,8 z" fill="#9CA3AF" data-page-node-id="YaBO5eQZVhsdlWmGJ80FMc"></path>
+          </marker>
+        </defs>
+
+        <rect x="320" y="10" width="300" height="50" rx="10" fill="#4F46E5" data-page-node-id="8N1BUxA9c6INx039vkdhVU"></rect>
+        <text x="470" y="42" text-anchor="middle" fill="white" font-size="17" font-weight="700" data-page-node-id="2Qqnx50vZyihpuz46hIRU7">角色管理（系统管理）</text>
+
+        <line x1="400" y1="60" x2="127" y2="100" stroke="#4F46E5" stroke-width="2" data-page-node-id="aS4ufHMrurWbKjuMh43160"></line>
+        <line x1="445" y1="60" x2="357" y2="100" stroke="#4F46E5" stroke-width="2" data-page-node-id="aDWRBCC6NJESc7tqFGFtU4"></line>
+        <line x1="495" y1="60" x2="582" y2="100" stroke="#4F46E5" stroke-width="2" data-page-node-id="kzejsFffCXw0ys5vFc5Jz0"></line>
+        <line x1="540" y1="60" x2="807" y2="100" stroke="#4F46E5" stroke-width="2" data-page-node-id="kBKf19fZBMkHJaqa9SmAP2"></line>
+
+        <!-- 角色列表页 -->
+        <rect x="25" y="100" width="205" height="52" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2" data-page-node-id="it1cK6bpevDR8ruK9DsKMx"></rect>
+        <text x="127" y="122" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700" data-page-node-id="EG5BGfFpH8QcHirhbxj6mj">角色列表页</text>
+        <text x="127" y="140" text-anchor="middle" fill="#6B7280" font-size="10.5" data-page-node-id="Z0Oti9Dg7690k42IeDMXQ6">搜索 · 勾选 · 全部操作入口</text>
+        <rect x="25" y="172" width="205" height="112" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5" data-page-node-id="zuhCPuzBMF5eDv3c2BVC4k"></rect>
+        <text x="40" y="196" fill="#6D28D9" font-size="11.5" data-page-node-id="hcCMtEJAQvr0HCO82oGlbL">· 面包屑 / 顶部操作按钮</text>
+        <text x="40" y="218" fill="#6D28D9" font-size="11.5" data-page-node-id="m0v4VNCJVK3LSX1ra0z6ff">· 搜索框（按名称实时过滤）</text>
+        <text x="40" y="240" fill="#6D28D9" font-size="11.5" data-page-node-id="VGBNk9k35uA03cik3w327D">· 角色表格（全选 / 行勾选）</text>
+        <text x="40" y="262" fill="#6D28D9" font-size="11.5" data-page-node-id="aXgRojDmyKh5PxDybQqvvO">· 操作列：查看 / 编辑 / 删除</text>
+
+        <!-- 新增/编辑弹窗 -->
+        <rect x="255" y="100" width="205" height="52" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2" data-page-node-id="xCBw5ng9UjDAuAMeyHAg4S"></rect>
+        <text x="357" y="122" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700" data-page-node-id="e2ckmHmDjbGcw8VTOmnhuP">新增 / 编辑角色弹窗</text>
+        <text x="357" y="140" text-anchor="middle" fill="#6B7280" font-size="10.5" data-page-node-id="lGi2dMJ8lIxE8jxBC8c73I">表单 · 系统选择 · 权限授权</text>
+        <rect x="255" y="172" width="205" height="112" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5" data-page-node-id="DgTp9MyCVDxks6RCrfUXAi"></rect>
+        <text x="270" y="196" fill="#6D28D9" font-size="11.5" data-page-node-id="pjqk6SZD6eiTeUpUXwWftc">· 基本信息表单（4 项）</text>
+        <text x="270" y="218" fill="#6D28D9" font-size="11.5" data-page-node-id="Hxk6XJ2E4khOI9KPdYsIaI">· 可访问系统多选卡片</text>
+        <text x="270" y="240" fill="#6D28D9" font-size="11.5" data-page-node-id="xSFqFOM0RLZWdHS2H6lpRg">· 管理端权限树（三级）</text>
+        <text x="270" y="262" fill="#6D28D9" font-size="11.5" data-page-node-id="jEk0FkeUbBsBSUIwwlRlAI">· 必填校验与保存</text>
+
+        <!-- 查看弹窗 -->
+        <rect x="485" y="100" width="195" height="52" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2" data-page-node-id="N6SNJXj7DRJtYLv7E8xB1D"></rect>
+        <text x="582" y="122" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700" data-page-node-id="1Dt6eDBFBn6efNDNfpayay">查看角色弹窗</text>
+        <text x="582" y="140" text-anchor="middle" fill="#6B7280" font-size="10.5" data-page-node-id="zyV1teJbGgaxV5eEQlisTR">系统默认角色 · 只读</text>
+        <rect x="485" y="172" width="195" height="112" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5" data-page-node-id="rdOoqRoy52sQ3QGdD8lOkP"></rect>
+        <text x="500" y="196" fill="#6D28D9" font-size="11.5" data-page-node-id="FWtcnmDJNjCPIE0dsC0Qww">· 只读基本信息</text>
+        <text x="500" y="218" fill="#6D28D9" font-size="11.5" data-page-node-id="SHwcr8Tc1iY7cGfUCgqLf3">· 只读权限树（全展开）</text>
+        <text x="500" y="240" fill="#6D28D9" font-size="11.5" data-page-node-id="dRz12YH8ndCcjXT4XCvdvL">· 全部权限计数展示</text>
+        <text x="500" y="262" fill="#6D28D9" font-size="11.5" data-page-node-id="VlaWGy0HRNcowCxEIHqq6W">· 仅"关闭"操作</text>
+
+        <!-- 删除确认弹窗 -->
+        <rect x="705" y="100" width="205" height="52" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2" data-page-node-id="ivodPPiMvqU6kQtMzPmFpp"></rect>
+        <text x="807" y="122" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700" data-page-node-id="I8H3OBVb6KPxW3y5mhDEnY">删除确认弹窗</text>
+        <text x="807" y="140" text-anchor="middle" fill="#6B7280" font-size="10.5" data-page-node-id="2Ab9QU6GmzM1lF9OZhrA4N">高危操作 · 二次确认</text>
+        <rect x="705" y="172" width="205" height="112" rx="8" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.5" data-page-node-id="PMpp9Wxk1GZlM70UMbe786"></rect>
+        <text x="720" y="196" fill="#DC2626" font-size="11.5" data-page-node-id="7oj1Ds3zvgOVNF549nM0t6">· 单条删除确认（含角色名）</text>
+        <text x="720" y="218" fill="#DC2626" font-size="11.5" data-page-node-id="2JYeKThnHRCrV3GmFTjRD4">· 批量删除确认（含数量）</text>
+        <text x="720" y="240" fill="#DC2626" font-size="11.5" data-page-node-id="8xvtoy3JtL553jBnlzkcb9">· 取消 / 确认删除</text>
+        <text x="720" y="262" fill="#DC2626" font-size="11.5" data-page-node-id="OSFXyyVJ5bXEg77EHkIv6R">· 删除不可撤销</text>
+
+        <!-- 权限树三级结构 -->
+        <text x="470" y="326" text-anchor="middle" fill="#374151" font-size="13" font-weight="700" data-page-node-id="iiHQeZmjUuon3A7H4GSIzr">管理端权限树三级结构（共 95 个权限节点 = 10 个菜单 + 85 个按钮权限）</text>
+        <rect x="90" y="342" width="230" height="48" rx="8" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5" data-page-node-id="ibVjy9OqzPLf1TT5UtSAcO"></rect>
+        <text x="205" y="362" text-anchor="middle" fill="#059669" font-size="12" font-weight="600" data-page-node-id="A4heqh6KkiheHpPouNDF78">权限组（3 组）</text>
+        <text x="205" y="380" text-anchor="middle" fill="#6B7280" font-size="10" data-page-node-id="eDGWLJkvgGXjii4DaqwNF3">企业智能体 · 资源管理 · 企业管理</text>
+        <line x1="320" y1="366" x2="368" y2="366" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#arrowgray)" data-page-node-id="DYBOejUdoZlKVSCJEt9mRw"></line>
+        <rect x="372" y="342" width="190" height="48" rx="8" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5" data-page-node-id="YwcNgEbCBJfdwMwaAHLUoc"></rect>
+        <text x="467" y="362" text-anchor="middle" fill="#059669" font-size="12" font-weight="600" data-page-node-id="mvv7BICKXQO3CEHDbTs30l">菜单权限（10 个）</text>
+        <text x="467" y="380" text-anchor="middle" fill="#6B7280" font-size="10" data-page-node-id="rCI3JnYEPr08AiO13UZ0m6">专家管理 · 模型管理 · 成员管理…</text>
+        <line x1="562" y1="366" x2="610" y2="366" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#arrowgray)" data-page-node-id="gByqFKQhsSBQLjTG6FRcdI"></line>
+        <rect x="614" y="342" width="230" height="48" rx="8" fill="#ECFDF5" stroke="#10B981" stroke-width="1.5" data-page-node-id="D44OGGwO9MPiVsqTNrAEjI"></rect>
+        <text x="729" y="362" text-anchor="middle" fill="#059669" font-size="12" font-weight="600" data-page-node-id="7rz8Dpz5fTKA2I6kQyQKBX">按钮权限（85 个）</text>
+        <text x="729" y="380" text-anchor="middle" fill="#6B7280" font-size="10" data-page-node-id="HOZ7tz1byCpWyuJot0puam">列表查看 · 新建 · 编辑 · 删除 · 发布…</text>
+
+        <!-- 关联模块 -->
+        <rect x="90" y="428" width="330" height="44" rx="8" fill="#FFFFFF" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="5" data-page-node-id="gbaMd4RwEYhRxfpxIPMRSw"></rect>
+        <text x="255" y="448" text-anchor="middle" fill="#4F46E5" font-size="11.5" font-weight="600" data-page-node-id="5GL2wC6DTz2k0T8GM06Zvr">菜单管理</text>
+        <text x="255" y="464" text-anchor="middle" fill="#6B7280" font-size="10" data-page-node-id="ZhheCDhVUVr2MkcYEjNj9n">权限树资源的维护来源（系统预置）</text>
+        <rect x="510" y="428" width="334" height="44" rx="8" fill="#FFFFFF" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="5" data-page-node-id="jc2oRPfkT8vxfJUlS44qbp"></rect>
+        <text x="677" y="448" text-anchor="middle" fill="#4F46E5" font-size="11.5" font-weight="600" data-page-node-id="c0yvfBIMmRbWeUOgEJqUVX">成员管理</text>
+        <text x="677" y="464" text-anchor="middle" fill="#6B7280" font-size="10" data-page-node-id="S3NnrSCiGo3XWm2TDIu3Lc">角色保存后用于给成员分配授权</text>
+      </svg>
+    </div>
+
+    <h3 id="sec2-2" data-page-node-id="aOIXiMvrRhaWNnIyy2N9DR">2.2 业务流程图</h3>
+    <p data-page-node-id="xdWu2tBB4l4ZEnpNZ9T3p9">五条核心业务流程：角色的新增/编辑（含必填校验分支）、权限树勾选联动、系统默认角色的查看、角色删除（单条/批量）、搜索与全选。</p>
+    <div class="diagram-wrap" data-page-node-id="EapwY2tRxyQ9wLqDzQK1qP">
+      <svg width="100%" height="820" viewBox="0 0 940 820" xmlns="http://www.w3.org/2000/svg" data-page-node-id="uJx4hKDCAK8E57LWRCXKUW">
+        <defs data-page-node-id="qlIcEtvIedzptNDiw5p1qB">
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto" data-page-node-id="c5ofHqsgQ5gi07CCJlN2UJ">
+            <path d="M0,0 L8,4 L0,8 z" fill="#6B7280" data-page-node-id="ltsX2Jvr21Gh9PDHQszyO2"></path>
+          </marker>
+        </defs>
+
+        <!-- 流程一 -->
+        <text x="20" y="30" fill="#4F46E5" font-size="14" font-weight="700" data-page-node-id="H5ScdujwI3GJsrIkuLmVhz">流程一：新增 / 编辑角色</text>
+        <rect x="20" y="50" width="130" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" data-page-node-id="Mt1pzG6uDrCVTkBL76kSt0"></rect>
+        <text x="85" y="70" text-anchor="middle" fill="#4F46E5" font-size="12" data-page-node-id="NQY6bkvuUGMkQ6sYqZYTSe">点击新增 / 编辑</text>
+        <text x="85" y="86" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="2eD4VfoQkAdZ8prSOneWlh">编辑时回显原数据</text>
+        <line x1="150" y1="72" x2="188" y2="72" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="HZYwnzwAmyQ9bHHKcTYJ9O"></line>
+        <rect x="190" y="50" width="160" height="44" rx="8" fill="#FFFFFF" stroke="#A5B4FC" data-page-node-id="BpmHtQDC5C15kPpTuGf2Ru"></rect>
+        <text x="270" y="70" text-anchor="middle" fill="#374151" font-size="12" data-page-node-id="LbYSmWh73TWZQQu4Mfe3WD">填写名称 / 标识 / 备注</text>
+        <text x="270" y="86" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="qrstBpLnimBqWW6QibjngR">名称、标识为必填项</text>
+        <line x1="350" y1="72" x2="388" y2="72" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="4vLTaSwa334CsCPmkR1r1Z"></line>
+        <rect x="390" y="50" width="130" height="44" rx="8" fill="#FFFFFF" stroke="#A5B4FC" data-page-node-id="lnMYcyPhS0a8UMLvX4eeqC"></rect>
+        <text x="455" y="70" text-anchor="middle" fill="#374151" font-size="12" data-page-node-id="G4TGdXN3k4WKdrRFq1tSbB">选择可访问系统</text>
+        <text x="455" y="86" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="hYd9BKyG6USBMffQUHIp18">管理端 / 客户端多选</text>
+        <line x1="520" y1="72" x2="558" y2="72" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="YVk11LeFaPYcmkEPyT6jNt"></line>
+        <polygon points="620,44 682,72 620,100 558,72" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5" data-page-node-id="ehXhE1Vik2Ko0rTCMTFjp0"></polygon>
+        <text x="620" y="76" text-anchor="middle" fill="#92400E" font-size="11.5" data-page-node-id="o3qx21TVhL99RxCgDyW5Xx">勾选管理端？</text>
+        <line x1="682" y1="72" x2="718" y2="72" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="49s6d478kqNUdhlxlVB9qX"></line>
+        <text x="700" y="64" text-anchor="middle" fill="#059669" font-size="10.5" data-page-node-id="4vZarc6bHzIJohtZm5HQEt">是</text>
+        <rect x="720" y="50" width="190" height="44" rx="8" fill="#ECFDF5" stroke="#10B981" data-page-node-id="WY1MixME8djN74CEd77mR6"></rect>
+        <text x="815" y="70" text-anchor="middle" fill="#059669" font-size="12" data-page-node-id="vd7S6KY5NDtKU6R0d7KmG3">勾选权限树（组/菜单/按钮）</text>
+        <text x="815" y="86" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="G81LZ0nqFLu6GxpxouhNYY">展示"管理端授权"区域</text>
+        <path d="M 620 100 L 620 122 L 815 122 L 815 148" fill="none" stroke="#6B7280" stroke-width="1.5" data-page-node-id="Ze38I5mhAa2PpTZaXwnB1N"></path>
+        <text x="640" y="116" fill="#DC2626" font-size="10.5" data-page-node-id="TQAUM3yufznyrLAfQWh5zR">否（隐藏授权区，直接保存）</text>
+        <line x1="815" y1="94" x2="815" y2="148" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="v3F7cujGjqAo1gcgeBDtVC"></line>
+        <rect x="720" y="150" width="190" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" data-page-node-id="1ys6cVxKLznzkzwX68gkWU"></rect>
+        <text x="815" y="170" text-anchor="middle" fill="#4F46E5" font-size="12" data-page-node-id="IgvQklAC7YT2khnY6g1i6n">点击"确认"提交</text>
+        <text x="815" y="186" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="sQK5FFuWdoy9aBuoFfUzUi">触发必填校验</text>
+        <line x1="720" y1="172" x2="640" y2="172" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="z94VQnqkpdHLDe9lKTN1B9"></line>
+        <polygon points="580,146 640,172 580,198 520,172" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5" data-page-node-id="GqUgRttno2JkJEUeMYCYGE"></polygon>
+        <text x="580" y="176" text-anchor="middle" fill="#92400E" font-size="11.5" data-page-node-id="7YkpRkjk1Tg1YDFf609b8K">校验通过？</text>
+        <line x1="580" y1="146" x2="580" y2="112" stroke="#6B7280" stroke-width="1.5" data-page-node-id="EnNabSDHYmJ14ieMQlrQvt"></line>
+        <path d="M 580 112 L 580 108" fill="none" stroke="#6B7280" stroke-width="1.5" data-page-node-id="GumuBAtKA0G8cjiW1jpXcu"></path>
+        <rect x="470" y="216" width="220" height="42" rx="8" fill="#FEF2F2" stroke="#EF4444" data-page-node-id="MrHsMPGNT5e6YlJRKC4uPw"></rect>
+        <text x="580" y="234" text-anchor="middle" fill="#DC2626" font-size="11.5" data-page-node-id="xMOYDnLB5dUNWqPoGSHPmG">否：提示缺失项，停留弹窗</text>
+        <text x="580" y="250" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="XV8BDhBGQdvbUovXcIjMH5">名称 / 标识 / 可访问系统逐项校验</text>
+        <line x1="580" y1="198" x2="580" y2="214" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="38dvoFaJEQWC1XEWOfHWCj"></line>
+        <rect x="130" y="150" width="240" height="44" rx="8" fill="#ECFDF5" stroke="#10B981" data-page-node-id="V1eZFwzpJN5kEkmfnyN6E5"></rect>
+        <text x="250" y="170" text-anchor="middle" fill="#059669" font-size="12" data-page-node-id="yABNnxYPCSRifJjsJQTaBQ">是：保存成功，关闭弹窗</text>
+        <text x="250" y="186" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="rpBQUATQB6xEEo5g7P4dx1">刷新列表 · 写入创建/更新人与日期</text>
+        <line x1="520" y1="172" x2="372" y2="172" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="s5IjCCtuCUqJtS0qmbPjjE"></line>
+
+        <!-- 流程二 -->
+        <text x="20" y="310" fill="#4F46E5" font-size="14" font-weight="700" data-page-node-id="v992OwtAsJ8Id7dGEmlx4O">流程二：权限树勾选联动（三级联动 + 计数刷新）</text>
+        <rect x="20" y="330" width="160" height="42" rx="8" fill="#EEF2FF" stroke="#4F46E5" data-page-node-id="mhYeXGhE4CD4x82EFcCw38"></rect>
+        <text x="100" y="356" text-anchor="middle" fill="#4F46E5" font-size="12" data-page-node-id="uSAW91FNeSWTiqTRxs29tv">点击按钮权限项</text>
+        <line x1="180" y1="351" x2="218" y2="351" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="vU6gm4hiDZrPULR8tNz44M"></line>
+        <rect x="220" y="330" width="250" height="42" rx="8" fill="#FFFFFF" stroke="#A5B4FC" data-page-node-id="tpGwoUJ6dMKR6QgdZ4A2iF"></rect>
+        <text x="345" y="349" text-anchor="middle" fill="#374151" font-size="11.5" data-page-node-id="cu9kSThi9xsYr1HElI2ZY7">选中 / 取消该按钮</text>
+        <text x="345" y="365" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="OcalLa5Hdx3CsyYYXvdWAH">选中时自动补选所属菜单；取消不联动菜单</text>
+        <rect x="500" y="330" width="130" height="42" rx="8" fill="#EEF2FF" stroke="#4F46E5" data-page-node-id="9jCNvO52yBb9c4s4ulh36I"></rect>
+        <text x="565" y="356" text-anchor="middle" fill="#4F46E5" font-size="12" data-page-node-id="qnwVCFCH3vFd6Qd6I1Cu48">点击菜单行</text>
+        <line x1="630" y1="351" x2="668" y2="351" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="B2Sy981JqOlrwTehToGJ02"></line>
+        <rect x="670" y="330" width="240" height="42" rx="8" fill="#FFFFFF" stroke="#A5B4FC" data-page-node-id="exOrX0VWAHm7rZCGJc7EwB"></rect>
+        <text x="790" y="349" text-anchor="middle" fill="#374151" font-size="11.5" data-page-node-id="oDowAJTVmbT9xYmniwetUE">选中 / 取消该菜单及其全部按钮</text>
+        <text x="790" y="365" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="6Zpzutlr1dY2byuWawVb3D">菜单与按钮均为独立权限节点</text>
+        <rect x="20" y="392" width="160" height="42" rx="8" fill="#EEF2FF" stroke="#4F46E5" data-page-node-id="fCJrhqoO9SYymtPMzz3wV0"></rect>
+        <text x="100" y="418" text-anchor="middle" fill="#4F46E5" font-size="12" data-page-node-id="ES0cIbTFKbkxttTUjaUpDr">点击权限组复选框</text>
+        <line x1="180" y1="413" x2="218" y2="413" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="lgxvZUh9bQW9UoyQ6Zq1Cb"></line>
+        <rect x="220" y="392" width="250" height="42" rx="8" fill="#FFFFFF" stroke="#A5B4FC" data-page-node-id="Pp4DbbKFj6DIRRgzpwUslT"></rect>
+        <text x="345" y="411" text-anchor="middle" fill="#374151" font-size="11.5" data-page-node-id="8eOuosqWO8mX4M1yTmFrhy">整组选中 / 取消全部菜单与按钮</text>
+        <text x="345" y="427" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="6D31GxekbpzsAHUOQcliTo">点击组行主体仅展开 / 收起，不改变勾选</text>
+        <rect x="500" y="392" width="130" height="42" rx="8" fill="#EEF2FF" stroke="#4F46E5" data-page-node-id="42qa79UPt7ueUjyeCwXfop"></rect>
+        <text x="565" y="418" text-anchor="middle" fill="#4F46E5" font-size="12" data-page-node-id="X0ulKZwKlipIjA1biyQGHO">点击"全选"</text>
+        <line x1="630" y1="413" x2="668" y2="413" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="Tmdgr7rSuw3P9ULOYC3iVT"></line>
+        <rect x="670" y="392" width="240" height="42" rx="8" fill="#ECFDF5" stroke="#10B981" data-page-node-id="MkxYCI0JRf0jD6CfuDgP6A"></rect>
+        <text x="790" y="411" text-anchor="middle" fill="#059669" font-size="11.5" data-page-node-id="4QBLDMj6T8fwPTOUFy1QOm">选中 / 取消全部 95 个权限节点</text>
+        <text x="790" y="427" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="bwgcZAXrZnB57JNGHLr7Zi">各级计数与三态复选框实时刷新</text>
+
+        <!-- 流程三 -->
+        <text x="20" y="490" fill="#4F46E5" font-size="14" font-weight="700" data-page-node-id="JHLQZklBmPvHXu0RReUjTw">流程三：查看角色（系统默认角色权限预览）</text>
+        <rect x="20" y="510" width="160" height="42" rx="8" fill="#EEF2FF" stroke="#4F46E5" data-page-node-id="2gaGp40fdfMVHTH1UtpaCS"></rect>
+        <text x="100" y="528" text-anchor="middle" fill="#4F46E5" font-size="12" data-page-node-id="UEYiVJE35yuMbvZ19XSkzZ">系统默认角色行</text>
+        <text x="100" y="544" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="RBbjVn2xEf6gZ3B3UMFjJ0">操作列仅"查看"</text>
+        <line x1="180" y1="531" x2="218" y2="531" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="gjfkLcS0fMZrJqVKlWbhZx"></line>
+        <rect x="220" y="510" width="120" height="42" rx="8" fill="#FFFFFF" stroke="#A5B4FC" data-page-node-id="G1n0uSG6QYPqaDx3mbppq7"></rect>
+        <text x="280" y="536" text-anchor="middle" fill="#374151" font-size="12" data-page-node-id="GceWwgkkvg90AUzzVgTRmV">点击"查看"</text>
+        <line x1="340" y1="531" x2="378" y2="531" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="siac5XDEVQDdf490pcXoZm"></line>
+        <rect x="380" y="510" width="300" height="42" rx="8" fill="#FFFFFF" stroke="#A5B4FC" data-page-node-id="3TdctayYAcruOZAyNaFcWf"></rect>
+        <text x="530" y="528" text-anchor="middle" fill="#374151" font-size="11.5" data-page-node-id="j5vexXF1ukJ2uZdXxAyPdL">只读弹窗：基本信息 + 权限树全展开</text>
+        <text x="530" y="544" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="EohwUcqLb0Eg4C8XGrZZHp">所有者呈全部选中（总数/总数）；普通用户隐藏授权区</text>
+        <line x1="680" y1="531" x2="718" y2="531" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="sn7UDfMYGDkIyFaftVwEZb"></line>
+        <rect x="720" y="510" width="190" height="42" rx="8" fill="#ECFDF5" stroke="#10B981" data-page-node-id="lvw3FEiXdeAV686RDfI8hV"></rect>
+        <text x="815" y="528" text-anchor="middle" fill="#059669" font-size="12" data-page-node-id="2No7rX0iR4tGDDldke0CNb">关闭</text>
+        <text x="815" y="544" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="suULILWqnQ5nKSdqnClqZn">关闭按钮 / 右上角 X / 点击遮罩</text>
+
+        <!-- 流程四 -->
+        <text x="20" y="610" fill="#4F46E5" font-size="14" font-weight="700" data-page-node-id="B3XVmsuquNNlQ8BSyKN5ab">流程四：删除角色（单条 / 批量）</text>
+        <rect x="20" y="630" width="170" height="42" rx="8" fill="#EEF2FF" stroke="#4F46E5" data-page-node-id="MFEVUAFd4EsEmECN0CkPU4"></rect>
+        <text x="105" y="648" text-anchor="middle" fill="#4F46E5" font-size="12" data-page-node-id="GKG21Oo0HA9ZchloVIIKk7">自定义角色行点"删除"</text>
+        <text x="105" y="664" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="S6k4q3NMRu1kYckjg8kTKd">系统默认角色无此入口</text>
+        <line x1="190" y1="651" x2="228" y2="651" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="gbfrBacbikkRRsCiJ6BcoU"></line>
+        <rect x="230" y="630" width="200" height="42" rx="8" fill="#FEF2F2" stroke="#EF4444" data-page-node-id="QgAvcXzjIy9hjG157Sv4rl"></rect>
+        <text x="330" y="648" text-anchor="middle" fill="#DC2626" font-size="11.5" data-page-node-id="CqkWIaFOtbnGtmTe1kuyTJ">确认弹窗（含角色名称）</text>
+        <text x="330" y="664" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="yFrVj8Yq7CxETZMQjxYbIm">"此操作不可撤销"</text>
+        <line x1="430" y1="651" x2="468" y2="651" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="4TCnHAdrVPTKCVr9FF4wqQ"></line>
+        <rect x="470" y="630" width="200" height="42" rx="8" fill="#ECFDF5" stroke="#10B981" data-page-node-id="L5gRjSG4skRY5eKFGm4GXV"></rect>
+        <text x="570" y="648" text-anchor="middle" fill="#059669" font-size="11.5" data-page-node-id="y3mOqATKZGpjIVkXxVViYE">确认删除 → 移除并刷新列表</text>
+        <text x="570" y="664" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="QnbSLp7ZFusKu5ZYfB1Ke3">取消 / 遮罩点击则放弃</text>
+        <rect x="20" y="694" width="170" height="42" rx="8" fill="#EEF2FF" stroke="#4F46E5" data-page-node-id="XUZYyIibYIs32H5cMsMjoa"></rect>
+        <text x="105" y="712" text-anchor="middle" fill="#4F46E5" font-size="12" data-page-node-id="DlRqiGTaMHDiV8kdIsYZRT">勾选角色 + 顶部"删除"</text>
+        <text x="105" y="728" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="CTXc3BMIcahciZjn6BKJ8G">批量入口</text>
+        <line x1="190" y1="715" x2="228" y2="715" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="Bj42mJZpLna6ox6TU40WH6"></line>
+        <polygon points="290,690 350,715 290,740 230,715" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5" data-page-node-id="IJdx164fJHiRPLaRzlEvDh"></polygon>
+        <text x="290" y="719" text-anchor="middle" fill="#92400E" font-size="11.5" data-page-node-id="D6RhShruHODxeuFAXtHHQT">已勾选？</text>
+        <line x1="350" y1="715" x2="388" y2="715" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="tF3GqGbO149Vwr81EFfGmc"></line>
+        <text x="368" y="707" text-anchor="middle" fill="#059669" font-size="10.5" data-page-node-id="0pmEEkP1kAsPvEgydVeLAx">是</text>
+        <rect x="390" y="694" width="190" height="42" rx="8" fill="#FEF2F2" stroke="#EF4444" data-page-node-id="oqGaBMsfNDXzdVAIjB0gsp"></rect>
+        <text x="485" y="712" text-anchor="middle" fill="#DC2626" font-size="11.5" data-page-node-id="UOTWkHySAPNiH37K4Z33mB">确认弹窗（含勾选数量 N）</text>
+        <text x="485" y="728" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="VM5sIWn1RNEnpLGzFAtuB4">"此操作不可撤销"</text>
+        <line x1="580" y1="715" x2="618" y2="715" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="29MkIfUHMUecgBTdfPltaG"></line>
+        <rect x="620" y="694" width="230" height="42" rx="8" fill="#ECFDF5" stroke="#10B981" data-page-node-id="6SBb6cFVKMonCzut0JtK6P"></rect>
+        <text x="735" y="712" text-anchor="middle" fill="#059669" font-size="11.5" data-page-node-id="jZpOh5393mGr1QnLpC4nSn">确认删除 → 全部移除并清空勾选</text>
+        <text x="735" y="728" text-anchor="middle" fill="#9CA3AF" font-size="10" data-page-node-id="xnt2EzbmOykYIFwBDNxhyd">刷新列表</text>
+        <rect x="230" y="756" width="200" height="38" rx="8" fill="#FEF2F2" stroke="#EF4444" data-page-node-id="miyKHOlebvtDYzqiyEmncy"></rect>
+        <text x="330" y="780" text-anchor="middle" fill="#DC2626" font-size="11.5" data-page-node-id="XP8zynK59wOYoGyKAcl4gc">否：提示"请先选择要删除的角色"</text>
+        <line x1="290" y1="740" x2="290" y2="754" stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)" data-page-node-id="TPT9znBMCQGB2TSzobhvcy"></line>
+
+        <!-- 流程五 -->
+        <text x="20" y="330" fill="none" font-size="1" data-page-node-id="mzBJgnDkpWyoXPUXrp3UdW">占位</text>
+      </svg>
+    </div>
+    <div class="note" data-page-node-id="1OfQr4qMdNcBAth3EAlOOn">
+      <strong data-page-node-id="1pivakvo8TJPfUkCyzQM0L">流程五：搜索与全选。</strong>在搜索框输入关键词 → 列表按角色名称实时过滤（不区分大小写）→ 无匹配结果时表格主体替换为"暂无角色数据"空状态；点击表头全选复选框 → 对当前筛选结果内的所有行全选 / 全不选。勾选状态不随搜索过滤清除，批量删除以全部已勾选角色为准（含被筛选隐藏但仍处于勾选状态的行）。
+    </div>
+  </div>
+
+  <!-- 三、详细设计 -->
+  <div class="section" id="sec3" data-page-node-id="fQMR82ZvgWdNUPZVHoenyP">
+    <h2 data-page-node-id="iGc4wlKhwPqZNfFEgYmMwL">三、详细设计</h2>
+    <p data-page-node-id="PJRMqP4uGM2dWO3E2VE71y">本模块共一个主页面与三个弹窗：<strong data-page-node-id="SyEE1H0M20Ql6R2eDx53My">3.1 角色列表页</strong>（浏览与全部操作入口）、<strong data-page-node-id="NfRwsGYPo81eds0BDyRXWr">3.2 新增/编辑角色弹窗</strong>（表单与权限授权）、<strong data-page-node-id="vFwb8AqZdnreht545GmZxk">3.3 查看角色弹窗</strong>（只读权限预览）、<strong data-page-node-id="Di9yeWcgInuTwYr4z5CW7i">3.4 删除确认弹窗</strong>（单条/批量二次确认）。每个页面按"功能描述 → 显示字段说明 →（如有表单）表单字段说明"展开。</p>
+
+    <!-- 3.1 -->
+    <h3 id="sec3-1" data-page-node-id="yRdI1aaxq2CGYzAEqfrFY8">3.1 角色列表页</h3>
+
+    <h4 data-page-node-id="jgDNehgdoNChjISSqnWGK1">功能描述</h4>
+    <p data-page-node-id="IQjEzisHkOeV6XAKvy3nvi">角色列表页是模块首页，位于"系统管理 &gt; 角色管理"菜单下，集中呈现企业内全部角色。页面顶部为面包屑与两个全局操作按钮（删除、新增角色）；下方为搜索框，按角色名称实时过滤列表；主体为角色表格，展示名称（系统默认角色带"系统默认"标签）、角色标识、可访问系统、备注、创建人/创建时间、更新人/更新时间，以及随行类型变化的操作列——系统默认角色仅"查看"，自定义角色提供"编辑"与"删除"。表格支持行勾选与表头三态全选，勾选后通过顶部"删除"按钮批量删除。列表无数据或搜索无结果时展示空状态。表格下方固定展示系统默认角色的权限说明文案。</p>
+
+    <h4 data-page-node-id="cSgYfVqHpbBWjLGYHDZULi">显示字段说明（列表格式）</h4>
+    <table data-page-node-id="Hw5lr9KiOQczFKgTHr7mJc">
+      <tbody data-page-node-id="HDSQkfiyxJ83oUqLLpzuEI">
+        <tr data-page-node-id="TlmeUOR4KqPwpoLx4zbZET"><th style="width:16%" data-page-node-id="k8qCbPW9VI8ZEuCkpgJ8ay">字段 / 按钮</th><th style="width:42%" data-page-node-id="kJod5NsXzwnNjOgXt9FSNW">规则</th><th data-page-node-id="OJN6BZEHMV9i6zq7us1PaP">来源 / 例外 / 边界</th></tr>
+        <tr data-page-node-id="myJQE00Ffv4D5qwkWWPB6b">
+          <td data-page-node-id="cZmNoRGsn6luZBGHxCTv5h">面包屑</td>
+          <td data-page-node-id="WjFlxFadXwMFsDh1YF4KhU">页面顶部左侧固定展示"系统管理 &gt; 角色管理"，当前页名称加深加粗</td>
+          <td data-page-node-id="xsR9kVFK5yYh56LDF2CeSE">系统固定文案，标识页面在管理端的菜单归属</td>
+        </tr>
+        <tr data-page-node-id="n5cshEPBpEVAt3LLohbWYO">
+          <td data-page-node-id="oqUAEl82M4PxG36z2eY6aZ">新增角色按钮</td>
+          <td data-page-node-id="7DmsosBxZY1dwbaHugyTuf">顶部右侧蓝色主按钮（＋图标 + "新增角色"）；点击打开"新增角色"弹窗</td>
+          <td data-page-node-id="clT5pfdHP7t3x129xdsaSW">打开时表单为空；可访问系统默认勾选"管理端"，权限勾选为空</td>
+        </tr>
+        <tr data-page-node-id="CxewK8afNNQ4qNBYjspQRc">
+          <td data-page-node-id="gr86tadDaBbQF6RqKJbBNt">删除按钮（批量删除）</td>
+          <td data-page-node-id="wVII9ls1MY1KOwpCQCFhdH">顶部右侧次级按钮（垃圾桶图标 + "删除"）；点击打开批量删除确认弹窗，文案含勾选数量</td>
+          <td data-page-node-id="nIPbYDpfCJlS9CAhBaShEH">例外：未勾选任何角色时提示"请先选择要删除的角色"，不打开弹窗。边界：批量删除以全部已勾选角色为准，包含被搜索筛选隐藏但仍处于勾选状态的行</td>
+        </tr>
+        <tr data-page-node-id="7UMPBLYUL9hxn3H0QsMcnx">
+          <td data-page-node-id="OrBrCcwMT6qdQt9IhvWEq8">搜索框</td>
+          <td data-page-node-id="MHs6HU6xm0JmJb5memRnov">占位提示"搜索角色名称"，带放大镜图标；输入时实时过滤列表</td>
+          <td data-page-node-id="9ih1UVzBqykqUxvKuStUhx">仅按角色名称匹配，不区分大小写，支持部分匹配；不搜索角色标识、备注等其他字段；无结果时展示空状态；过滤不清除已有勾选</td>
+        </tr>
+        <tr data-page-node-id="OLsfHPHlJoD16VrCx8s4sd">
+          <td data-page-node-id="gayqZK7HTb0DkBAF6JnZop">全选复选框（表头）</td>
+          <td data-page-node-id="8bsE8MULy1ipCd2LaXq9Hs">三态显示：当前筛选结果全部勾选→选中态；部分勾选→半选态；未勾选→空态。点击在"全选 / 全不选"间切换</td>
+          <td data-page-node-id="Ox8xGFzq1JDJHHnn24YFHl">作用范围仅为当前筛选结果内的行；空状态时恢复为未选中态</td>
+        </tr>
+        <tr data-page-node-id="jVtDI4cB6VX5nwZ2JFva7i">
+          <td data-page-node-id="Fv9vp0Go9IrWQw6OZSlZPx">行复选框</td>
+          <td data-page-node-id="w8p1fh7C9aNbAgxKzl0Kfi">点击切换该行选中状态，选中行参与批量删除</td>
+          <td data-page-node-id="aHBB4lQj8BBD1ZFaDkAHds">系统默认角色行同样可被勾选（批量删除时不做单独拦截，操作需谨慎）</td>
+        </tr>
+        <tr data-page-node-id="DWOLgJZiAA4wTyqp7fTWeu">
+          <td data-page-node-id="F0IA4Pxud0TYAiOVtPImP2">名称</td>
+          <td data-page-node-id="ZpMiPfj2onDO7Noa4q2SW2">角色名称，深色加粗；系统默认角色在名称后附加灰色"系统默认"标签</td>
+          <td data-page-node-id="5YPd1bduNrUn3vAxYGuyee">来源：角色基本信息；标签由角色类型（系统预置 / 自定义）派生</td>
+        </tr>
+        <tr data-page-node-id="AVwnakQwiREl1aXmzcgIjF">
+          <td data-page-node-id="p9L4vK0pMP2BxZxFxdOLIN">角色标识</td>
+          <td data-page-node-id="yEYI2CDTYrZo61DJR9CSvv">角色唯一编码，灰色文字展示（如 ROLE_SUPER_ADMIN、ROLE_USER）</td>
+          <td data-page-node-id="vPr89PXBLHHQVL5IiKCajm">创建角色时录入；系统预置角色由系统初始化写入</td>
+        </tr>
+        <tr data-page-node-id="DAi0VcTFGoK1mejOAVItJN">
+          <td data-page-node-id="XxIpv73CubD59RW2srWwNs">可访问系统</td>
+          <td data-page-node-id="TcK413xlD9JqVGkwmSdAZF">按固定顺序展示"管理端、客户端"，以顿号分隔</td>
+          <td data-page-node-id="0AfdIg8X0EI6QYwwvEKw79">来源：角色可访问系统配置；未配置任何端时展示"-"</td>
+        </tr>
+        <tr data-page-node-id="Um6OpS1KEckR0nmPjDbo1e">
+          <td data-page-node-id="ESV8nlJ9yluuYIfJikOz8p">备注</td>
+          <td data-page-node-id="8hFRorIKY1FlhAfvGbEAUZ">角色备注说明文字，灰色展示</td>
+          <td data-page-node-id="lHIxMrgBIZ0zbEJnV9S2be">来源：角色基本信息；备注为空时展示"-"</td>
+        </tr>
+        <tr data-page-node-id="rAP9DEcQ1BwvS1rHppkaUL">
+          <td data-page-node-id="xewNKTEqgrKGO1GfSOTzFQ">创建人 / 创建时间</td>
+          <td data-page-node-id="zEkRkSoQLA1Odqchz3JDwN">展示创建该角色的账号与创建日期（YYYY-MM-DD）</td>
+          <td data-page-node-id="HqAgu02x6siv5Q1eF9XM0i">保存新增时由系统自动写入当前登录用户与当天日期；系统预置角色由系统初始化写入</td>
+        </tr>
+        <tr data-page-node-id="x1ePnPJz7DO0lrgSFJEyVX">
+          <td data-page-node-id="DS5TUdgqPp9WDfHPi3aNwC">更新人 / 更新时间</td>
+          <td data-page-node-id="TotlMdW64X7ds9JY6Aav1Y">展示最近一次编辑的操作账号与编辑日期（YYYY-MM-DD）</td>
+          <td data-page-node-id="YcrcTf83XBZhnvHqH22GNs">保存编辑时由系统自动刷新；角色从未被编辑过时更新人展示"-"</td>
+        </tr>
+        <tr data-page-node-id="Nv3h3pvcFRYSGi2aq3NTZ8">
+          <td data-page-node-id="jUM9Hp41Rs4afWaEkiEdvE">操作列（系统默认角色）</td>
+          <td data-page-node-id="UHR2FDLFAQ4B2PvEdhoWf8">仅展示"查看"链接（蓝色）；点击打开查看角色弹窗</td>
+          <td data-page-node-id="pohwWCCrgwDrd5VY5vaE1D">系统默认角色不可编辑、不可删除，故不提供对应入口</td>
+        </tr>
+        <tr data-page-node-id="j5IPApI2ZoYT3lMFRzWTdl">
+          <td data-page-node-id="ag54VivST0TfjcHHSAuHRT">操作列（自定义角色）</td>
+          <td data-page-node-id="X0fm0Zn14QSgO7EmTbdAAr">展示"编辑"（蓝色）+"删除"（红色）两个链接；编辑打开弹窗并回显数据，删除打开单条删除确认弹窗</td>
+          <td data-page-node-id="S2MLHVFtsmHCoYek0LGfmD">删除为高危操作，红色标识并强制二次确认</td>
+        </tr>
+        <tr data-page-node-id="oUzOuIyXnP56CUePMbGBkE">
+          <td data-page-node-id="oDliZmdhEE4bfNC8EBEp7i">空状态</td>
+          <td data-page-node-id="DnbMP8n6vnZnXeGCDEVFw3">列表无数据或搜索无结果时，表格主体替换为文件夹图标 + "暂无角色数据"</td>
+          <td data-page-node-id="RMB6Ax7NZwWPtCeD3NM3WA">清空搜索关键词后自动恢复列表展示</td>
+        </tr>
+        <tr data-page-node-id="BBCEKxLtTw1r7EaEF8lI5P">
+          <td data-page-node-id="bym0qiWXTfBThDQjURVa8m">底部提示文案</td>
+          <td data-page-node-id="JOzzKb2DfSvSk6dQQAqH2K">表格下方固定说明：系统默认"所有者"和"普通用户"两个角色，所有者拥有管理端和客户端的所有权限，普通用户拥有客户端的使用权限</td>
+          <td data-page-node-id="tAEi5mnw5gxtJhxzAgNGqj">系统固定文案，角色名与端名以彩色关键词样式突出</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:13px; color:var(--text-secondary);" data-page-node-id="oXeG4pkJysDQQlYcDGeXRM">说明：本页无表单（搜索框为即时过滤控件，不构成表单提交），故不含"表单字段说明"模块。</p>
+
+    <hr data-page-node-id="AOcFHuyxqvAcX4PoIDxraP">
+    <!-- 3.2 -->
+    <h3 id="sec3-2" data-page-node-id="DolPs1rx2dTrGZ5JEPeJqP">3.2 新增/编辑角色弹窗</h3>
+
+    <h4 data-page-node-id="0ttUhmdS1gQdYNa13v2Jd3">功能描述</h4>
+    <p data-page-node-id="fBO0FmYCTw0kgGljTlwXix">新增与编辑共用同一弹窗，通过标题与数据状态区分：由顶部"新增角色"按钮打开时为空白表单；由行内"编辑"打开时标题变为"编辑角色"并回显该角色的全部既有配置。表单包含名称、角色标识、可访问系统、备注四个基础项，以及"管理端授权"权限树区域——仅当可访问系统勾选了"管理端"时展示。权限树按"权限组 → 菜单 → 按钮权限"三级组织，支持全选、整组勾选、菜单勾选（连带其下按钮）与单按钮勾选（自动补选所属菜单），各级复选框具备选中/半选/未选三态，并实时展示"已选数/总数"计数（全选行与每个权限组行）。点击"确认"逐项校验必填项后保存；点击"取消"、右上角 X 或遮罩关闭弹窗且不保存。</p>
+
+    <h4 data-page-node-id="mRXrMYtxe7bNVOOpngDE1A">显示字段说明（列表格式）</h4>
+    <table data-page-node-id="HoAWubLeDiDQ8690QxdQH7">
+      <tbody data-page-node-id="ohUhnegNfuz5bRLaAwzQHR">
+        <tr data-page-node-id="L4aEs1CF3WZAFx2doq04ao"><th style="width:16%" data-page-node-id="uVkCa2s6JZLguNY9CW0dKl">字段 / 按钮</th><th style="width:42%" data-page-node-id="rveYZjUHVqJiR8bIHA9x7k">规则</th><th data-page-node-id="ltV3573HD1nY96ckH1sygA">来源 / 例外 / 边界</th></tr>
+        <tr data-page-node-id="dEiwZVBvgo9CoWVKT26Ftw">
+          <td data-page-node-id="n0GUeWCBvyM1rrywQYvy7D">弹窗标题</td>
+          <td data-page-node-id="iMRlbNJmMN5nVg2nkP6tEi">新增入口打开显示"新增角色"；编辑入口打开显示"编辑角色"</td>
+          <td data-page-node-id="dyrG9YfeuXpo8oqHXbWq4U">由打开入口决定；编辑时回显名称、标识、备注、可访问系统与权限勾选</td>
+        </tr>
+        <tr data-page-node-id="k1llEYoos9xZKa1uM7Putd">
+          <td data-page-node-id="AFC4JHBOqiupY1TelJaXmm">可访问系统选择卡片</td>
+          <td data-page-node-id="bgs28dFsw2aLU1Z0mNHSje">"管理端""客户端"两张并排卡片，各带复选框；选中卡片蓝色描边高亮，点击切换选中状态</td>
+          <td data-page-node-id="u7biPpwe3kMUJQSvUOLHj4">多选控件，非单选；至少保留一项（保存时校验）</td>
+        </tr>
+        <tr data-page-node-id="mk6djYDsCNFQ7cHJJFaTX0">
+          <td data-page-node-id="KxfSfVmXrcQUXKi9YAnqtQ">管理端授权区域</td>
+          <td data-page-node-id="uLFJ3HvE5MF2hKfPYuG7TU">仅当"管理端"卡片选中时整块展示；取消选中"管理端"时整块隐藏</td>
+          <td data-page-node-id="K1QUj1hp9lwNkN6j8jbcS1">隐藏期间本次会话中已勾选的权限保留，重新勾选"管理端"后恢复显示，不自动清空</td>
+        </tr>
+        <tr data-page-node-id="F50LTpMPvX4bKBzKm0Ue9R">
+          <td data-page-node-id="ijUuTHQb4Y2xo6SBIgVUYN">权限树 · 全选行</td>
+          <td data-page-node-id="s7vPZD48baWRUrjEc6nfhA">固定在权限树顶部："全选 (已选数/总数)" + 三态复选框；点击在全选 / 全不选间切换</td>
+          <td data-page-node-id="TQEWXgtcmZmbSWqXsQvlqu">总数 = 权限树全部菜单与按钮权限节点（95 个）；全部选中→选中态，部分选中→半选态，未选→空态</td>
+        </tr>
+        <tr data-page-node-id="RgFpxXDZDhq8vU0PF5ohu7">
+          <td data-page-node-id="4wRgRAJXHqA8T0Y6YQszeI">权限树 · 权限组行</td>
+          <td data-page-node-id="xDaqGbrOsnsrW1GSk44G17">三态复选框 + 组名 + "(已选数/总数)"计数 + 展开箭头；点击行主体展开 / 收起该组（箭头旋转 90°），点击复选框整组选中 / 取消（不触发展开收起）</td>
+          <td data-page-node-id="lnO7M2iF4DMdizFWcGGgzr">三个权限组（企业智能体、资源管理、企业管理）默认全部展开；组计数与三态随子节点勾选实时刷新；展开状态在弹窗内跨操作保持</td>
+        </tr>
+        <tr data-page-node-id="XjDHBd5Ds5NZv3jHTHkd79">
+          <td data-page-node-id="0jUZGv4AMEXI0oTOtX1hHL">权限树 · 菜单行</td>
+          <td data-page-node-id="ut8209tq4Dv6RlYLx8yeY6">复选框 + 菜单名（左侧固定宽度）+ 该菜单的按钮权限胶囊列表；点击行任意非按钮区域，选中 / 取消该菜单及其下全部按钮权限</td>
+          <td data-page-node-id="FXJocoyqliTnrcvVWfmvGC">菜单勾选具有独立语义（可访问该功能页面）；全部按钮取消后菜单仍可保持选中</td>
+        </tr>
+        <tr data-page-node-id="kJGdw18D4o8Zra82sGquCR">
+          <td data-page-node-id="8mVdfbtTaR3jegDQogCA8d">权限树 · 按钮权限项</td>
+          <td data-page-node-id="owvxzvpr3em5I7A5t3lUfI">胶囊样式小复选框 + 按钮名，选中时蓝底蓝边高亮；点击单独选中 / 取消该按钮权限</td>
+          <td data-page-node-id="FmS49eiynvpu5uN6CTSCts">联动规则：选中某按钮时若其所属菜单未选中，自动补选菜单；取消按钮不联动取消菜单</td>
+        </tr>
+        <tr data-page-node-id="xBteGsaZ7UdVJ2ORmB9g5A">
+          <td data-page-node-id="VOquIjqpqLAcldfqdtBCv9">取消按钮</td>
+          <td data-page-node-id="Hv0umZO9hP4NAwEFYeoO1G">底部左侧灰色按钮；点击关闭弹窗，不保存任何修改</td>
+          <td data-page-node-id="2NbDpDWxlywH24uA998LuS">关闭后再次打开时表单重置（新增为空白、编辑重新回显），不保留上次未保存的输入</td>
+        </tr>
+        <tr data-page-node-id="SUCsIfz6txylsLy0oixgys">
+          <td data-page-node-id="UIAPOK9jembjd05ICtgk1D">确认按钮</td>
+          <td data-page-node-id="p9pt1x5to7uKz85KXAcBg8">底部右侧蓝色主按钮；点击执行必填校验，通过后保存角色并关闭弹窗、刷新列表</td>
+          <td data-page-node-id="KoErDSNcvaw0CqRlYaayo1">校验不通过时逐项提示且不关闭弹窗；新增写入创建人/创建时间，编辑仅刷新更新人/更新时间</td>
+        </tr>
+        <tr data-page-node-id="kahrjMmCWMsMKQJDm1MR8F">
+          <td data-page-node-id="c2kcUmOX1vFu28Z4Mm4Ef3">遮罩</td>
+          <td data-page-node-id="9VAG6jnJhqirhPggaJug4u">半透明黑色全屏遮罩，弹窗居中展示，带淡入与上浮动画</td>
+          <td data-page-node-id="6CMYEQYFnT4kEbfh26T8hI">点击遮罩空白处等同"取消"，直接关闭且不保存</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4 data-page-node-id="bifiJEWkgXNqTBzSYMKfwg">表单字段说明</h4>
+    <table data-page-node-id="KJ0trijjzJAMGDCsfaYNBG">
+      <tbody data-page-node-id="zMkdt7l0hNAjYj3TwnCjy6">
+        <tr data-page-node-id="ck2UdV3kBoAkD9MH576dMO"><th style="width:16%" data-page-node-id="xdWPxE9aBZ0Jqy9ChRRm7g">字段</th><th style="width:14%" data-page-node-id="oQnVJAaJ0pKLQMm7Wq5UAx">类型</th><th style="width:8%" data-page-node-id="mLoMoLO2IrqhJAE5bGSV2J">必填</th><th data-page-node-id="c3Aemjj6kKHbW8iwf2HqwK">说明</th></tr>
+        <tr data-page-node-id="oXuxsn9vK54sXUdglY0xA2">
+          <td data-page-node-id="Ao9dwB1kohk2646cey2pd1">名称</td>
+          <td data-page-node-id="SORkOEe4zxBJWKbLZu5Gku">单行文本</td>
+          <td data-page-node-id="v6adk1hbcP6ikOsc6EPjH1">是</td>
+          <td data-page-node-id="awWXMGmpgEqYWjVLSfxKvd">角色显示名称；占位提示"请输入名称"。为空时提交提示"请输入角色名称"并阻止保存。前后空格自动去除</td>
+        </tr>
+        <tr data-page-node-id="AWUdJOXwy6mlWt4TkDEaxe">
+          <td data-page-node-id="yXcQkyT12EEv0zGGGrZ7i7">角色标识</td>
+          <td data-page-node-id="G6oVjzGAt7OR2jqNwJP6S9">单行文本</td>
+          <td data-page-node-id="gmnxTccgFR3OT2S6lpxtNq">是</td>
+          <td data-page-node-id="o2cCs8CIOu7z6NU7S1ahCO">角色唯一编码，供系统权限判定使用；占位提示"请输入角色标识，如 ROLE_ADMIN"。为空时提交提示"请输入角色标识"并阻止保存</td>
+        </tr>
+        <tr data-page-node-id="uGcymMSFIDnGuRw5xrgFZn">
+          <td data-page-node-id="tcW6XsINCIBpdAKL5n570V">可访问系统</td>
+          <td data-page-node-id="XQiApDFCGaFPRX10eYHWd5">多选卡片</td>
+          <td data-page-node-id="oRuCTmP8NeR62Dw4UCSeAb">是</td>
+          <td data-page-node-id="NCRuIhTOAEBh2ZpoiCjuvn">可选"管理端""客户端"，支持多选；未选择任何一项时提交提示"请选择可访问系统"并阻止保存。勾选"管理端"联动展示"管理端授权"权限树区域</td>
+        </tr>
+        <tr data-page-node-id="nctoeKSbuROhOe4d7iidKs">
+          <td data-page-node-id="p4Dc3s1PrubjWRgvMIMTKQ">备注</td>
+          <td data-page-node-id="Z7yAw3lAX1iqC0wFlG4Cn9">单行文本</td>
+          <td data-page-node-id="uvjwB6cKgaPI0s9FvGmAOy">否</td>
+          <td data-page-node-id="nCvTVjY6x16cMt620nGwfQ">角色用途说明；占位提示"请输入备注"。为空时列表中展示"-"</td>
+        </tr>
+        <tr data-page-node-id="NQvHgaiUk9z7NRqHBEB87M">
+          <td data-page-node-id="tbgvxk3zqV2l98TD7p705h">管理端授权</td>
+          <td data-page-node-id="CAGyN2fe4GlISYG1vvYhY4">权限树（组 → 菜单 → 按钮三级）</td>
+          <td data-page-node-id="waqBPJu5jcS3PvLhje1n5k">否</td>
+          <td data-page-node-id="YocHbHfKcRQ49i9v3Ni5jV">仅"管理端"选中时展示；提供全选、整组、菜单、按钮四级勾选方式，各级计数与三态复选框实时联动。允许不勾选任何权限直接保存（角色可进入管理端但无任何功能权限）</td>
+        </tr>
+        <tr data-page-node-id="yEYCcsPl2lqtwDeZTwBFyr">
+          <td data-page-node-id="u68273PWHMWH9FJLOByJg0">确认（表单按钮）</td>
+          <td data-page-node-id="H7QNgOQNwJrDVV5VJ6SAJE">按钮</td>
+          <td data-page-node-id="V3R0vpBj7QMFuxw6ap8ieJ">—</td>
+          <td data-page-node-id="E7LvkhmTFDvVr32ozwpt7B">按"名称 → 角色标识 → 可访问系统"顺序逐项校验，任一不通过则提示并中断。通过后保存：新增生成自定义角色并写入创建人/创建时间/更新人/更新时间（当前用户、当天日期）；编辑更新表单内容与权限集合并刷新更新人/更新时间。保存后关闭弹窗并刷新列表</td>
+        </tr>
+        <tr data-page-node-id="0mfAx11EfJstb50bSPdopH">
+          <td data-page-node-id="4G6QXZ2f23nMbRIFmDQUQL">取消（表单按钮）</td>
+          <td data-page-node-id="4K57QSc0Cm8QwjBpVdced1">按钮</td>
+          <td data-page-node-id="BVWU3LieDPGwe7e0eagre2">—</td>
+          <td data-page-node-id="tedO0MzVbhdHOA9tEeTbO3">直接关闭弹窗，放弃本次全部输入与勾选，不做任何校验</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4 data-page-node-id="VEKBaF6u4grk03SvEDs4zO">管理端权限资源结构</h4>
+    <p data-page-node-id="PQeIOPlxgueW4yJt68rCeu">权限树节点由系统预置，共 3 个权限组、10 个菜单、85 个按钮权限（合计 95 个可勾选权限节点）：</p>
+    <table data-page-node-id="bxFfFcAc6EHEU9wg9gYsKK">
+      <tbody data-page-node-id="OvPfMIBTVaZppVsBQE1xRn">
+        <tr data-page-node-id="R49MJntZKjUBECOjBSumjb"><th style="width:14%" data-page-node-id="qb9hyHn0884wdaTbzuazke">权限组</th><th style="width:14%" data-page-node-id="iGyee6Y87iWDgOMIrHwqMP">菜单</th><th data-page-node-id="pOyhbMNHlhkMDZfCrBK5Mi">按钮权限</th></tr>
+        <tr data-page-node-id="iOwAiEDwbs42apPvaoFMGo"><td rowspan="2" data-page-node-id="cLETO4n2gCDybI3PxCXLyX">企业智能体</td><td data-page-node-id="9fek3gQ8b7RnjKnIvi1xQn">专家管理</td><td data-page-node-id="mTR4YaFHCaehqfKLBjoE6B">列表查看、新建专家、编辑专家、删除专家、启禁用专家、回收站彻底删除、回收站恢复、专家保存、专家发布、类别管理、新增类别、编辑类别、删除类别（13 项）</td></tr>
+        <tr data-page-node-id="GPuXSbTHMJhCDaUWIefC0L"><td data-page-node-id="8igvMmCsrKvt6V6Q3rOHEq">专家团管理</td><td data-page-node-id="zt73CvTzwlmH3ivWbdnifS">列表查看、导入专家团、编辑专家团、删除专家团、启禁用专家团、回收站彻底删除、回收站恢复、类别管理、新增类别、编辑类别、删除类别（11 项）</td></tr>
+        <tr data-page-node-id="aQGTjf2qogRoCreUpG1Mls"><td rowspan="4" data-page-node-id="GDC1BJ1W5XVDRrmGlCzKGG">资源管理</td><td data-page-node-id="QIbcXSf2Rv8YoINplP4neD">模型管理</td><td data-page-node-id="GjMZsPZz4bKBa5JGWLfpQS">模型列表查看、新增模型供应商、设置模型供应商、新增模型、编辑模型、删除模型、启禁用模型、token统计查看、token限额查看、全局默认限额修改、限额启禁用、限额单用户编辑（12 项）</td></tr>
+        <tr data-page-node-id="3MZuiCbgSCSejogM6SJLGY"><td data-page-node-id="rc1E6Ir5Cs8JLOkd8e1Uza">MCP服务</td><td data-page-node-id="BcBGiTAHlOVdVmQIPA9IKe">列表查看、添加MCP服务、编辑MCP服务、删除MCP服务、回收站彻底删除、回收站恢复（6 项）</td></tr>
+        <tr data-page-node-id="E9mpNwhrHGbTt2bDnu1LVu"><td data-page-node-id="Jjpe5vajGhOMduPFditAKw">技能管理</td><td data-page-node-id="Vs2XfOYrkwCpFI3qAmUa7z">列表查看、导入技能、编辑技能、删除技能、启禁用技能、导出技能、回收站彻底删除、回收站恢复、类别管理、新增类别、编辑类别、删除类别（12 项）</td></tr>
+        <tr data-page-node-id="dDpQvwIG7At53xXMOSPAMi"><td data-page-node-id="5ZTMZU42Kw2Yyoh82IpgKP">专家词库</td><td data-page-node-id="EjFjaaVOQsmcDXvaDLJEJV">列表查看、新增词条、编辑词条、删除词条、启禁用词条、回收站彻底删除、回收站恢复、类别管理、新增类别、编辑类别、删除类别（11 项）</td></tr>
+        <tr data-page-node-id="hEDB5uAz3mhugdy920STxb"><td rowspan="4" data-page-node-id="uJla4EFeFV4Muk99lMp3l7">企业管理</td><td data-page-node-id="QcipgqpyFkPZFZqiwFODeA">部门管理</td><td data-page-node-id="dIxgojY4ZFlCW9OK7gtzo9">列表查看、新增部门、编辑部门、删除部门、添加成员、删除成员（6 项）</td></tr>
+        <tr data-page-node-id="kpQwEBrs33oXgdMZp0vqGA"><td data-page-node-id="yTjmgWu2wlJ10nQcTnD8N5">成员管理</td><td data-page-node-id="pUeySETjxp5YDW97KEmicQ">列表查看、添加成员、编辑成员、删除成员、启禁用成员、重置密码（6 项）</td></tr>
+        <tr data-page-node-id="nXpolbSCh6u09DvpVS7PB3"><td data-page-node-id="8x09JzHOVfV3EF6d1j2oLr">角色管理</td><td data-page-node-id="XhTDbWZyrpoRsV0Ms4iH6t">列表查看、新增角色、编辑角色、删除角色（4 项）</td></tr>
+        <tr data-page-node-id="SRHBqJHQQrgZL2IdIliJK5"><td data-page-node-id="uPtP7AWEDBWbnq2QJnQbYw">菜单管理</td><td data-page-node-id="JcEgFu15FwOq9OvdEM5984">列表查看、新增菜单、编辑菜单、删除菜单（4 项）</td></tr>
+      </tbody>
+    </table>
+
+    <hr data-page-node-id="hplLE8qoaFGupr6kTAwZk8">
+    <!-- 3.3 -->
+    <h3 id="sec3-3" data-page-node-id="tNbC3l4WstW0oEn6fnDBJ4">3.3 查看角色弹窗</h3>
+
+    <h4 data-page-node-id="IaTyXpEzA5oagC0YKnpo4A">功能描述</h4>
+    <p data-page-node-id="AshuYcW5bsM4QNnfP0DQCM">查看角色弹窗面向系统默认角色（所有者、普通用户）提供只读的权限预览，入口为列表中该类角色行的"查看"链接。弹窗以与编辑表单一致的布局展示名称、角色标识、可访问系统、备注四项基础信息（全部只读），以及"管理端授权"只读权限树——仅当该角色的可访问系统包含"管理端"时展示。权限树默认全部展开且不可收起，所有复选框与按钮权限项均不可点击，仅呈现该角色的权限选中状态与计数。拥有全部权限的角色（所有者）所有节点呈选中态、计数为总数/总数；仅客户端的角色（普通用户）不展示授权区。弹窗底部仅提供"关闭"按钮，右上角 X 与遮罩点击同样关闭。</p>
+
+    <h4 data-page-node-id="DFeZP8dySCAG5aCnftlwuM">显示字段说明（列表格式）</h4>
+    <table data-page-node-id="Uqsf7LcJK9SJ5o2grEa3HG">
+      <tbody data-page-node-id="rqkAZ0CtBtqrw7HUCI9gw8">
+        <tr data-page-node-id="hEGNJ8T9D2Bty2gfpze1oj"><th style="width:16%" data-page-node-id="2njJErLgEOpFFmH1EWPMVo">字段 / 按钮</th><th style="width:42%" data-page-node-id="u1RH2FGvFNsgfUsgmWLAxJ">规则</th><th data-page-node-id="aPKROMsDRSYAvpSrL8po1c">来源 / 例外 / 边界</th></tr>
+        <tr data-page-node-id="qAQhBtkgNyZ0WBu5YYpNid">
+          <td data-page-node-id="3XuBWWGJwG7cZxS1C20wVy">弹窗标题</td>
+          <td data-page-node-id="dOkaAQdUmCWzzC3GM2ro2v">固定显示"查看角色"</td>
+          <td data-page-node-id="b3aL3jSfjWiFBuldSkuu4G">系统固定文案；仅系统默认角色可进入本弹窗</td>
+        </tr>
+        <tr data-page-node-id="EimxXi8GXYRC0nOIyLNMW1">
+          <td data-page-node-id="rpKW9qARnOUyOc909WccKQ">名称 / 角色标识 / 备注</td>
+          <td data-page-node-id="CT0S3Hjeh11uKUu2bdR7ZG">单行只读文本框，回显角色既有值，不可聚焦编辑</td>
+          <td data-page-node-id="bBdiaN1c7xCDSH7RsXOQ16">来源：角色基本信息；备注为空时文本框为空</td>
+        </tr>
+        <tr data-page-node-id="2QFRjXekx9VqwQIWRQT99H">
+          <td data-page-node-id="1zjE0BuKm711YCsG32eGaS">可访问系统</td>
+          <td data-page-node-id="P1FjaF38AUEX1gBMIk64hb">只读选择卡片，按角色配置呈现"管理端""客户端"的选中高亮样式</td>
+          <td data-page-node-id="Iye1xOPnju6q3qgHGUhHqz">卡片不可点击、不响应切换操作，仅做状态展示</td>
+        </tr>
+        <tr data-page-node-id="PyZZXrjPEd0Aur7AZxDBMc">
+          <td data-page-node-id="89oGsTBecBpzj1DLwGIKtN">管理端授权区域</td>
+          <td data-page-node-id="n42CHC1byS5HGWXUIcplu6">仅当角色可访问系统包含"管理端"时展示只读权限树；否则整块隐藏</td>
+          <td data-page-node-id="vZVrXRX9saymBuwak4EECk">边界：普通用户（仅客户端）不展示该区域；所有者（管理端 + 客户端）展示</td>
+        </tr>
+        <tr data-page-node-id="MGOrsObNPFC7hD31q7ixuH">
+          <td data-page-node-id="QldhxtBgJCtMOiWkJzEGh8">只读权限树</td>
+          <td data-page-node-id="2zAs1hQQyyCxdbJnOGTROU">三个权限组全部展开且不可收起（箭头固定朝下）；菜单与按钮权限按角色已保存的权限集合呈现选中态；全部复选框与胶囊项不可点击</td>
+          <td data-page-node-id="vu07QzNgGCsj1d8HZfsvXr">例外：拥有全部权限的角色（所有者）所有节点呈选中态，无需逐节点匹配</td>
+        </tr>
+        <tr data-page-node-id="kNeagm2WlUgibSoXfi4stL">
+          <td data-page-node-id="WKcgY8SX9PWNjZyzMo2KX6">全选计数行</td>
+          <td data-page-node-id="q0tUoSyODnD78pjOQDBFTE">"全选 (已选数/总数)" + 三态复选框（仅展示，不可点击）</td>
+          <td data-page-node-id="jGwivTEtQwBigMZMuFrfaB">全部权限角色计数为总数/总数（95/95）、复选框呈选中态；部分授权按实际勾选数统计并呈半选态</td>
+        </tr>
+        <tr data-page-node-id="PkpyFqRSwDmZnSrypTLJ5Z">
+          <td data-page-node-id="NBhmmQ0D8HrGEuEqMXJAYU">关闭按钮</td>
+          <td data-page-node-id="EvUFTPZ5bUDquvDQAKmiaq">底部右侧蓝色主按钮"关闭"；点击关闭弹窗</td>
+          <td data-page-node-id="PWW9GxFnaIXMZRJi1AcC5K">右上角 X、点击遮罩空白处同样关闭；关闭不影响任何数据</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:13px; color:var(--text-secondary);" data-page-node-id="NiqBolllTEDhA3w0IkF0DL">说明：本弹窗为纯只读展示，无可提交的表单，故不含"表单字段说明"模块。</p>
+
+    <hr data-page-node-id="QQMMu9MlCw2biCrIcYte5P">
+    <!-- 3.4 -->
+    <h3 id="sec3-4" data-page-node-id="l8xFIwNvQ748B91rlDVDmJ">3.4 删除确认弹窗</h3>
+
+    <h4 data-page-node-id="C85mXn9NNGUv5ny25rwpSH">功能描述</h4>
+    <p data-page-node-id="HsrLTJzqD5aL22aOtilu3c">删除确认弹窗是角色删除的统一二次确认层，服务两个入口：自定义角色行内的"删除"链接（单条删除）与列表顶部的"删除"按钮（批量删除）。弹窗为小尺寸居中卡片，包含琥珀色警示图标、随入口变化的标题与文案：单条删除标题为"确认删除"，文案含目标角色名称；批量删除标题为"批量删除"，文案含勾选的角色数量。两种场景均明示"此操作不可撤销"。点击红色"确认删除"按钮执行删除并刷新列表（批量删除同时清空勾选状态）；点击"取消"、右上角遮罩空白处放弃操作并关闭弹窗。</p>
+
+    <h4 data-page-node-id="BtbxNXS0jA1eq7xKupbEaJ">显示字段说明（列表格式）</h4>
+    <table data-page-node-id="GAVIDOnDspbCLuTCMCxgqd">
+      <tbody data-page-node-id="3EIygehJA7Ej6EbX7wvnkF">
+        <tr data-page-node-id="wCnML1xmbOdgVWILTz9hu4"><th style="width:16%" data-page-node-id="Wt7xTmR6xvlH8NSzLIbVVE">字段 / 按钮</th><th style="width:42%" data-page-node-id="08GAO1azNHkJYFA7qukf9v">规则</th><th data-page-node-id="iDeEHTyOlBqoxRWR6dhEH4">来源 / 例外 / 边界</th></tr>
+        <tr data-page-node-id="7pNqoU174jWxgiS7VUQNLL">
+          <td data-page-node-id="JaVuoUnWSI1pzKu3oaIt6c">警示图标</td>
+          <td data-page-node-id="Vu2aT7nZDhdTXuU2vzsuMJ">弹窗顶部居中展示琥珀色圆形感叹号图标</td>
+          <td data-page-node-id="1o3LRM73pww6wHO6KGXqAD">系统固定视觉元素，提示高危操作</td>
+        </tr>
+        <tr data-page-node-id="3uDlLEHyFZwXQM1S9Jziwu">
+          <td data-page-node-id="PsHeKlPB8xW1ffOFWulrAd">标题</td>
+          <td data-page-node-id="p2Udd66fFIfEJzDZjwCprv">单条删除显示"确认删除"；批量删除显示"批量删除"</td>
+          <td data-page-node-id="9QhyfFxrB8TL1ThGpRImAG">由触发入口决定</td>
+        </tr>
+        <tr data-page-node-id="v2l7nzMVElSYkINGVDwWwL">
+          <td data-page-node-id="vEgGUclvGD1t8brEqyYxXl">提示文案</td>
+          <td data-page-node-id="ns7mOCBsRv5IJn15JqP4xc">单条："确定要删除角色「角色名」吗？此操作不可撤销。"；批量："确定要删除选中的 N 个角色吗？此操作不可撤销。"</td>
+          <td data-page-node-id="P8p5iIyxOuy3YEGoXwTWDs">角色名来源：被删除角色；N 来源：当前已勾选角色数量</td>
+        </tr>
+        <tr data-page-node-id="NcC5iiw37M3oQjWHDcceAl">
+          <td data-page-node-id="irPSuuj2p242xrvGmJLmi1">取消按钮</td>
+          <td data-page-node-id="MpGWOR2zYeyX4GBSst2eQA">灰色按钮；点击关闭弹窗，不执行删除</td>
+          <td data-page-node-id="jhGoAiIyAfHuqTRLIZq0jZ">点击遮罩空白处同样关闭并放弃操作</td>
+        </tr>
+        <tr data-page-node-id="r5Kfy4rplwvtlh0AvhJfRL">
+          <td data-page-node-id="hm3ccFGwIINEo3jQpRBt8F">确认删除按钮</td>
+          <td data-page-node-id="fwipb26k2qobE9xXaEaMqq">红色主按钮；点击后立即执行删除、关闭弹窗并刷新列表</td>
+          <td data-page-node-id="jGrpsnawQperu1DbhjD1x2">单条：移除该角色；批量：移除全部已勾选角色并清空勾选状态。删除不可撤销、无回收站。边界：系统默认角色行不提供单条删除入口；批量删除按勾选范围执行，勾选包含系统默认角色时不做单独拦截，操作需谨慎</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:13px; color:var(--text-secondary);" data-page-node-id="Lx6kLXvrdCHlgTHI3UHi2N">说明：本弹窗为确认交互，无表单输入项，故不含"表单字段说明"模块。</p>
+  </div>
+
+  <div style="text-align:center; padding:40px 0; color: var(--text-secondary); font-size:13px;" data-page-node-id="Fv7nkfPuWwms2G4jIODZee">
+    — 文档结束 · 欢迎评审讨论 —
+  </div>
+
+</div>
+</div>
+
+<script>
+(function() {
+  document.querySelectorAll('.sidebar a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.getElementById(this.getAttribute('href').substring(1));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  var sections = [];
+  document.querySelectorAll('[id^="sec"]').forEach(function(el) { sections.push({ id: el.id, el: el }); });
+  var navLinks = {};
+  document.querySelectorAll('.sidebar a[data-target]').forEach(function(link) {
+    navLinks[link.getAttribute('data-target')] = link;
+  });
+  function onScroll() {
+    var scrollTop = window.scrollY + 80;
+    var current = '';
+    for (var i = sections.length - 1; i >= 0; i--) {
+      if (scrollTop >= sections[i].el.offsetTop) { current = sections[i].id; break; }
+    }
+    Object.values(navLinks).forEach(function(link) { link.classList.remove('active'); });
+    if (current && navLinks[current]) navLinks[current].classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+})();
+</script>
+
+</body></html>
