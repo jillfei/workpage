@@ -68,6 +68,13 @@
   .story .goal { color: var(--text-secondary); }
   .note { background: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid #3B82F6; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 14px; color: #1E40AF; }
   .warn { background: #FEF2F2; border: 1px solid #FECACA; border-left: 4px solid #EF4444; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 14px; color: #991B1B; }
+  .version-image-thumb { display: block; width: 180px; max-width: 100%; height: auto; border: 1px solid var(--border); border-radius: 6px; cursor: zoom-in; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .version-image-thumb:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(31, 41, 55, 0.16); }
+  .image-preview { position: fixed; inset: 0; z-index: 1000; display: none; align-items: center; justify-content: center; padding: 32px; background: rgba(17, 24, 39, 0.78); cursor: zoom-out; }
+  .image-preview.is-open { display: flex; }
+  .image-preview img { display: block; max-width: min(1100px, 92vw); max-height: 90vh; width: auto; height: auto; border-radius: 8px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); cursor: default; }
+  .image-preview-close { position: absolute; top: 18px; right: 24px; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.16); color: #FFFFFF; font-size: 28px; line-height: 1; cursor: pointer; }
+  .image-preview-close:hover { background: rgba(255, 255, 255, 0.28); }
   hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
   @media (max-width: 900px) { .sidebar { display: none; } .main-content { margin-left: 0; } }
   @media (max-width: 640px) { .container { padding: 0 12px; } .hero { padding: 40px 20px; } .hero h1 { font-size: 24px; } .section { padding: 24px; } .meta-bar { gap: 16px; } }
@@ -102,11 +109,20 @@
     <table style="margin:0;">
       <tbody><tr><th style="width:15%">文档版本</th><th style="width:15%">修改日期</th><th style="width:15%">修改人</th><th>修改说明</th></tr>
       <tr>
-        <td>v2.0</td>
+        <td>v1.0</td>
         <td>2026-07-28</td>
         <td>孙礼飞</td><td>按标准产品需求文档格式重构：重排为「概述 / 功能架构与流程图 / 详细设计」三层结构；详细设计以页面为单位，补充「显示字段说明（字段·按钮、规则、来源/例外/边界）」与「表单字段说明」模块；</td>
       </tr>
-    </tbody></table>
+      <tr>
+        <td>v1.1</td>
+        <td>2026-9-9</td>
+        <td>孙礼飞</td>
+        <td>
+          <img class="version-image-thumb" src="img/content-v2.jpg" alt="v1.1 修改说明" data-preview-image>
+        </td>
+      </tr>
+    </tbody>
+	</table>
   </div>
 
   <!-- ========== 一、概述 ========== -->
@@ -558,6 +574,11 @@
 </div>
 </div>
 
+<div class="image-preview" data-image-preview aria-hidden="true">
+  <button class="image-preview-close" type="button" aria-label="关闭图片预览">&times;</button>
+  <img src="" alt="" data-preview-target>
+</div>
+
 <script>
 (function() {
   document.querySelectorAll('.sidebar a[href^="#"]').forEach(function(link) {
@@ -583,6 +604,30 @@
   }
   window.addEventListener('scroll', onScroll);
   onScroll();
+
+  var preview = document.querySelector('[data-image-preview]');
+  var previewTarget = preview.querySelector('[data-preview-target]');
+  var closeButton = preview.querySelector('.image-preview-close');
+  document.querySelectorAll('[data-preview-image]').forEach(function(image) {
+    image.addEventListener('click', function() {
+      previewTarget.src = this.src;
+      previewTarget.alt = this.alt;
+      preview.classList.add('is-open');
+      preview.setAttribute('aria-hidden', 'false');
+    });
+  });
+  function closePreview() {
+    preview.classList.remove('is-open');
+    preview.setAttribute('aria-hidden', 'true');
+    previewTarget.src = '';
+  }
+  closeButton.addEventListener('click', closePreview);
+  preview.addEventListener('click', function(event) {
+    if (event.target === preview) { closePreview(); }
+  });
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' && preview.classList.contains('is-open')) { closePreview(); }
+  });
 })();
 </script>
 
