@@ -81,7 +81,6 @@
             line-height: 1.5;
         }
         .hint-role { background: #fef3c7; color: #92400e; }
-        .hint-system { background: #dbeafe; color: #1d4ed8; }
 
         /* ── 操作链接 ── */
         .action-link {
@@ -235,31 +234,6 @@
             box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
         }
         .form-input::placeholder { color: #9ca3af; }
-
-        .system-options {
-            display: flex;
-            gap: 12px;
-        }
-        .system-option {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            color: #374151;
-            cursor: pointer;
-            user-select: none;
-            transition: border-color 0.15s, background-color 0.15s;
-        }
-        .system-option:hover { border-color: #93c5fd; }
-        .system-option.selected {
-            border-color: #3b82f6;
-            background: #eff6ff;
-        }
-        #previewSystemOptions .system-option { cursor: default; }
 
         /* ── 自定义 checkbox ── */
         .custom-checkbox {
@@ -498,7 +472,6 @@
                         </th>
                         <th>名称</th>
                         <th>角色标识</th>
-                        <th>可访问系统</th>
                         <th>备注</th>
                         <th>创建人</th>
                         <th>创建时间</th>
@@ -516,7 +489,6 @@
                 <p class="text-sm">暂无角色数据</p>
             </div>
         </div>
-        <p class="text-sm text-gray-500 pt-2">提示：系统默认 <span class="hint-key hint-role">所有者</span> 和 <span class="hint-key hint-role">普通用户</span> 两个角色，<span class="hint-key hint-role">所有者</span> 拥有 <span class="hint-key hint-system">管理端</span> 和 <span class="hint-key hint-system">客户端</span> 的所有权限，<span class="hint-key hint-role">普通用户</span> 拥有 <span class="hint-key hint-system">客户端</span> 的使用权限。</p>
     </div><!-- end 内容滚动区 -->
 </div><!-- end page-wrap -->
 
@@ -542,20 +514,6 @@
             <div>
                 <div class="form-label">角色标识 <span class="required">*</span></div>
                 <input class="form-input" id="roleCode" placeholder="请输入角色标识，如 ROLE_ADMIN" type="text"/>
-            </div>
-            <!-- 可访问系统 -->
-            <div>
-                <div class="form-label">可访问系统 <span class="required">*</span></div>
-                <div class="system-options">
-                    <div class="system-option" data-system="admin" onclick="toggleSystem('admin')">
-                        <div class="custom-checkbox"></div>
-                        <span>管理端</span>
-                    </div>
-                    <div class="system-option" data-system="client" onclick="toggleSystem('client')">
-                        <div class="custom-checkbox"></div>
-                        <span>客户端</span>
-                    </div>
-                </div>
             </div>
             <!-- 备注 -->
             <div>
@@ -602,19 +560,6 @@
             <div>
                 <div class="form-label">角色标识 <span class="required">*</span></div>
                 <input class="form-input" id="previewRoleCode" type="text" readonly/>
-            </div>
-            <div>
-                <div class="form-label">可访问系统 <span class="required">*</span></div>
-                <div class="system-options" id="previewSystemOptions">
-                    <div class="system-option" data-system="admin">
-                        <div class="custom-checkbox"></div>
-                        <span>管理端</span>
-                    </div>
-                    <div class="system-option" data-system="client">
-                        <div class="custom-checkbox"></div>
-                        <span>客户端</span>
-                    </div>
-                </div>
             </div>
             <div>
                 <div class="form-label">备注</div>
@@ -684,9 +629,7 @@ const permissionTreeData = [
 ];
 
 let roles = [
-    { id: 1, name: '所有者', code: 'ROLE_SUPER_ADMIN', systems: ['admin', 'client'], desc: '系统所有者,拥有所有权限', creator: '正凯', createTime: '2026-03-24', updater: '正凯', updateTime: '2026-03-24', isSystem: true, perms: ['all'] },
-    { id: 2, name: '普通用户', code: 'ROLE_USER', systems: ['client'], desc: '新用户注册默认分配客户端使用权限', creator: '正凯', createTime: '2026-03-24', updater: '正凯', updateTime: '2026-03-24', isSystem: true, perms: [] },
-    { id: 3, name: '运营', code: 'ROLE_OPERATOR', systems: ['admin'], desc: '', creator: '孙礼飞', createTime: '2026-06-16', updater: '-', updateTime: '2026-06-16', isSystem: false, perms: ['resource', 'model_mgmt', 'mcp_service', 'skill_mgmt', 'expert_lexicon'] },
+    { id: 1, name: '运营', code: 'ROLE_OPERATOR', desc: '', creator: '孙礼飞', createTime: '2026-06-16', updater: '-', updateTime: '2026-06-16', isSystem: false, perms: ['resource', 'model_mgmt', 'mcp_service', 'skill_mgmt', 'expert_lexicon'] },
 ];
 
 let selectedIds = new Set();
@@ -695,7 +638,6 @@ let deletingRoleId = null;
 let isBatchDelete = false;
 let expandedGroups = new Set(['agent', 'resource', 'system']);
 let checkedPerms = new Set();
-let checkedSystems = new Set();
 
 // ─ 初始化 ──
 document.addEventListener('DOMContentLoaded', function() {
@@ -720,7 +662,6 @@ function renderTable() {
     tbody.innerHTML = filtered.map(r => {
         const checked = selectedIds.has(r.id) ? 'checked' : '';
         const tagHtml = r.isSystem ? '<span class="tag tag-default">系统默认</span>' : '';
-        const systemText = formatSystemNames(r.systems);
         const descText = r.desc || '-';
         const actions = r.isSystem
             ? '<span class="action-link" onclick="previewRole(' + r.id + ')">查看</span>'
@@ -729,7 +670,6 @@ function renderTable() {
             '<td><div class="custom-checkbox ' + checked + '" onclick="toggleSelect(' + r.id + ')"></div></td>' +
             '<td class="font-medium text-gray-900">' + r.name + tagHtml + '</td>' +
             '<td class="text-gray-500">' + r.code + '</td>' +
-            '<td>' + systemText + '</td>' +
             '<td class="text-gray-500">' + descText + '</td>' +
             '<td>' + r.creator + '</td>' +
             '<td>' + r.createTime + '</td>' +
@@ -787,16 +727,13 @@ function openModal(roleId) {
         document.getElementById('roleName').value = role.name;
         document.getElementById('roleCode').value = role.code;
         document.getElementById('roleDesc').value = role.desc || '';
-        checkedSystems = new Set(role.systems || []);
         checkedPerms = new Set(role.perms || []);
     } else {
         document.getElementById('roleName').value = '';
         document.getElementById('roleCode').value = '';
         document.getElementById('roleDesc').value = '';
-        checkedSystems = new Set(['admin']);
         checkedPerms = new Set();
     }
-    renderSystemOptions();
     renderPermTree();
     document.getElementById('roleModal').classList.add('active');
 }
@@ -804,30 +741,6 @@ function openModal(roleId) {
 function closeModal() {
     document.getElementById('roleModal').classList.remove('active');
     editingRoleId = null;
-}
-
-// ── 可访问系统 ──
-function getSystemName(system) {
-    return system === 'client' ? '客户端' : '管理端';
-}
-
-function formatSystemNames(systems) {
-    return ['admin', 'client'].filter(system => (systems || []).includes(system)).map(getSystemName).join('、') || '-';
-}
-
-function toggleSystem(system) {
-    if (checkedSystems.has(system)) checkedSystems.delete(system);
-    else checkedSystems.add(system);
-    renderSystemOptions();
-}
-
-function renderSystemOptions() {
-    document.querySelectorAll('.system-option').forEach(option => {
-        const selected = checkedSystems.has(option.dataset.system);
-        option.classList.toggle('selected', selected);
-        option.querySelector('.custom-checkbox').classList.toggle('checked', selected);
-    });
-    document.getElementById('adminPermissionSection').classList.toggle('hidden', !checkedSystems.has('admin'));
 }
 
 // ── 权限树 ──
@@ -960,7 +873,6 @@ function saveRole() {
     const desc = document.getElementById('roleDesc').value.trim();
     if (!name) { alert('请输入角色名称'); return; }
     if (!code) { alert('请输入角色标识'); return; }
-    if (checkedSystems.size === 0) { alert('请选择可访问系统'); return; }
 
     const now = new Date().toISOString().slice(0, 10);
 
@@ -969,7 +881,6 @@ function saveRole() {
         role.name = name;
         role.code = code;
         role.desc = desc;
-        role.systems = Array.from(checkedSystems);
         role.perms = Array.from(checkedPerms);
         role.updater = '当前用户';
         role.updateTime = now;
@@ -977,7 +888,6 @@ function saveRole() {
         const newId = Math.max(...roles.map(r => r.id)) + 1;
         roles.push({
             id: newId, name, code, desc,
-            systems: Array.from(checkedSystems),
             creator: '当前用户', createTime: now,
             updater: '当前用户', updateTime: now,
             isSystem: false,
@@ -1038,12 +948,6 @@ function previewRole(id) {
     document.getElementById('previewRoleName').value = role.name;
     document.getElementById('previewRoleCode').value = role.code;
     document.getElementById('previewRoleDesc').value = role.desc || '';
-    document.querySelectorAll('#previewSystemOptions .system-option').forEach(option => {
-        const selected = (role.systems || []).includes(option.dataset.system);
-        option.classList.toggle('selected', selected);
-        option.querySelector('.custom-checkbox').classList.toggle('checked', selected);
-    });
-    document.getElementById('previewAdminPermissionSection').classList.toggle('hidden', !(role.systems || []).includes('admin'));
     const allPermissionIds = getAllPermissionIds();
     const checkedPermissionCount = role.perms.includes('all')
         ? allPermissionIds.length

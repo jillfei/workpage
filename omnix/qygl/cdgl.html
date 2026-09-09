@@ -172,7 +172,7 @@
         .modal-box {
             background: #fff;
             border-radius: 12px;
-            width: 600px;
+            width: 1000px;
             max-height: 85vh;
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
@@ -609,7 +609,7 @@
                 </div>
 
                 <!-- 排序号 -->
-                <div class="form-group">
+                <div class="form-group" id="sortRow">
                     <label class="form-label">排序号 <span class="required">*</span></label>
                     <input class="form-input" id="sortOrder" placeholder="数字越小越靠前" type="number" value="0" />
                 </div>
@@ -671,17 +671,17 @@
         }
 
         let menuData = [
-            createCatalog(1, '企业智能体', '/agent', 'mdi:robot', [
+            createCatalog(1, '企业智能体', '', 'mdi:robot', [
                 createMenu(11, '专家管理', 1, 'agent/expert', 'mdi:list-box-outline', ['列表查看', '新建专家', '编辑专家', '删除专家', '启禁用专家', '回收站彻底删除', '回收站恢复', '专家保存', '专家发布', '类别管理', '新增类别', '编辑类别', '删除类别']),
                 createMenu(12, '专家团管理', 1, 'agent/team', 'mdi:account-group-outline', ['列表查看', '导入专家团', '编辑专家团', '删除专家团', '启禁用专家团', '回收站彻底删除', '回收站恢复', '类别管理', '新增类别', '编辑类别', '删除类别'])
             ]),
-            createCatalog(2, '资源管理', '/resource', 'mdi:database', [
+            createCatalog(2, '资源管理', '', 'mdi:database', [
                 createMenu(21, '模型管理', 2, 'resource/model', 'mdi:brain', ['模型列表查看', '新增模型供应商', '设置模型供应商', '新增模型', '编辑模型', '删除模型', '启禁用模型', 'token统计查看', 'token限额查看', '全局默认限额修改', '限额启禁用', '限额单用户编辑']),
                 createMenu(22, 'MCP服务', 2, 'resource/mcp', 'mdi:graph-outline', ['列表查看', '添加MCP服务', '编辑MCP服务', '删除MCP服务', '回收站彻底删除', '回收站恢复']),
                 createMenu(23, '技能管理', 2, 'resource/skill', 'mdi:lightning-bolt-outline', ['列表查看', '导入技能', '编辑技能', '删除技能', '启禁用技能', '导出技能', '回收站彻底删除', '回收站恢复', '类别管理', '新增类别', '编辑类别', '删除类别']),
                 createMenu(24, '专家词库', 2, 'resource/lexicon', 'mdi:book-open-page-variant-outline', ['列表查看', '新增词条', '编辑词条', '删除词条', '启禁用词条', '回收站彻底删除', '回收站恢复', '类别管理', '新增类别', '编辑类别', '删除类别'])
             ]),
-            createCatalog(3, '企业管理', '/system', 'mdi:cog-outline', [
+            createCatalog(3, '企业管理', '', 'mdi:cog-outline', [
                 createMenu(31, '部门管理', 3, 'system/dept', 'mdi:office-building-outline', ['列表查看', '新增部门', '编辑部门', '删除部门', '添加成员', '删除成员']),
                 createMenu(32, '成员管理', 3, 'system/member', 'mdi:account-group', ['列表查看', '添加成员', '编辑成员', '删除成员', '启禁用成员', '重置密码']),
                 createMenu(33, '角色管理', 3, 'system/role', 'mdi:shield-account', ['列表查看', '新增角色', '编辑角色', '删除角色']),
@@ -974,6 +974,7 @@
             document.getElementById('routeRow').style.display = type === 'menu' ? 'block' : 'none';
             document.getElementById('permRow').style.display = isButton ? 'block' : 'none';
             document.getElementById('iconRow').style.display = isButton ? 'none' : 'block';
+            document.getElementById('sortRow').style.display = isButton ? 'none' : 'block';
             document.getElementById('extraRow').style.display = isButton ? 'none' : 'grid';
             document.getElementById('externalRow').style.display = type === 'menu' ? 'block' : 'none';
 
