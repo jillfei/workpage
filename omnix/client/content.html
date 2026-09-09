@@ -15,6 +15,9 @@
       overflow-x: hidden;
       color: #1a1a1a;
     }
+	.displaynone{
+		display: none;
+	}
 
     /* ========== Welcome Hero ========== */
     .welcome {
@@ -22,7 +25,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 300px 40px 30px 40px;
+      padding: 200px 40px 30px 40px;
       text-align: center;
     }
     .welcome-inner {
@@ -163,6 +166,28 @@
       height: 15px;
       stroke-width: 1.8;
     }
+    .connector-summary {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      margin-left: -2px;
+      cursor: pointer;
+    }
+    .connector-summary-icon {
+      width: 23px;
+      height: 23px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: -5px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: #f5f5f5;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      font-size: 14px;
+      line-height: 1;
+    }
+    .connector-summary-icon:first-child { margin-left: 0; }
 
     /* Knowledge base dropdown */
     .kb-dropdown-wrapper,
@@ -274,6 +299,175 @@
       color: #999;
       font-weight: 500;
     }
+    .select-dropdown-skill-item {
+      position: relative;
+    }
+    .select-dropdown-skill-item::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: -8px;
+      width: 8px;
+      height: 100%;
+    }
+    .select-dropdown-skill-item > .skill-dropdown {
+      top: -9px;
+      bottom: auto;
+      left: calc(100% + 8px);
+    }
+    .select-dropdown-skill-item:hover > .skill-dropdown,
+    .select-dropdown-skill-item > .skill-dropdown:hover {
+      display: block;
+    }
+    .select-dropdown-connector-item {
+      position: relative;
+    }
+    .select-dropdown-connector-item::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: -8px;
+      width: 8px;
+      height: 100%;
+    }
+    .connector-dropdown {
+      position: absolute;
+      top: -9px;
+      left: calc(100% + 8px);
+      width: 350px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+      border: 1px solid #e8e8e8;
+      padding: 10px 0;
+      display: none;
+      z-index: 100;
+    }
+    .select-dropdown-connector-item:hover > .connector-dropdown,
+    .select-dropdown-connector-item > .connector-dropdown:hover,
+    .select-dropdown-connector-item.connector-open > .connector-dropdown {
+      display: block;
+    }
+    .select-dropdown.connector-direct {
+      width: 0;
+      height: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .select-dropdown.connector-direct > .select-dropdown-item:not(.select-dropdown-connector-item) {
+      display: none;
+    }
+    .select-dropdown.connector-direct > .select-dropdown-connector-item {
+      position: static;
+      width: 0;
+      height: 0;
+      padding: 0;
+      gap: 0;
+      background: transparent;
+      font-size: 0;
+    }
+    .select-dropdown.connector-direct > .select-dropdown-connector-item > span,
+    .select-dropdown.connector-direct > .select-dropdown-connector-item > svg {
+      display: none;
+    }
+    .select-dropdown.connector-direct .connector-dropdown {
+      top: auto;
+      bottom: 0;
+      left: 32px;
+    }
+    .connector-search-wrap { padding: 2px 9px 10px; }
+    .connector-search {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 10px 8px 32px;
+      border: 0;
+      border-radius: 8px;
+      outline: none;
+      color: #333;
+      font-size: 13px;
+      background: #f1f1f1 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 10px center no-repeat;
+    }
+    .connector-search::placeholder { color: #999; }
+    .connector-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .connector-item:hover { background: #f7f7f7; }
+    .connector-item.selected { background: #f0f4ff; }
+    .connector-item.disabled { cursor: default; }
+    .connector-item.disabled .connector-icon,
+    .connector-item.disabled .connector-info { opacity: 0.45; }
+    .connector-item.selected .connector-title::after {
+      content: ' ✓';
+      color: #4a6cf7;
+      font-weight: 600;
+    }
+    .connector-icon {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: 7px;
+      font-size: 17px;
+      background: #f5f5f5;
+    }
+    .connector-info { flex: 1; min-width: 0; }
+    .connector-title { font-size: 13px; line-height: 18px; color: #222; font-weight: 600; }
+    .connector-desc {
+      max-width: 275px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: 12px;
+      line-height: 17px;
+      color: #999;
+    }
+    .connector-divider { height: 1px; margin: 6px 10px 4px; background: #e8e8e8; }
+    .connector-switch {
+      position: relative;
+      width: 26px;
+      height: 16px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: #c9cdd4;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .connector-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .connector-switch.enabled { background: #12bfa0; }
+    .connector-switch.enabled::after { transform: translateX(10px); }
+    .connector-manage {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 14px;
+      color: #333;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .connector-manage:hover { background: #f7f7f7; }
+    .connector-manage svg { width: 16px; height: 16px; color: #555; }
 
     /* Project dropdown */
     .project-dropdown {
@@ -365,9 +559,6 @@
     .project-tag-remove:hover { background: #e0e0e0; color: #666; }
 
     /* Skill dropdown */
-    .skill-dropdown-wrapper {
-      position: relative;
-    }
     .skill-dropdown {
       position: absolute;
       bottom: calc(100% + 8px);
@@ -1355,27 +1546,11 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
                 上传照片和文件
               </div>
-              <div class="select-dropdown-section-title">插件</div>
-              <div class="select-dropdown-item" data-name="Goole Chrome 浏览器插件" onclick="toggleSelectPlugin(this)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                Goole Chrome 浏览器插件
-              </div>
-			  <div class="select-dropdown-item" data-name="Mineru 文档解析" onclick="toggleSelectPlugin(this)">
-			    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-			    Mineru 文档解析
-			  </div>
-			  <div class="select-dropdown-item" data-name="PPT 生成" onclick="toggleSelectPlugin(this)">
-			    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-			    PPT 生成
-			  </div>
-            </div>
-          </div>
-          <div class="skill-dropdown-wrapper">
-            <button class="toolbar-btn" title="技能" onclick="toggleSkillDropdown()">
-              🔨 技能
-              <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="skill-dropdown" id="skillDropdown">
+              <div class="select-dropdown-item select-dropdown-skill-item">
+                <span style="font-size:16px">🔨</span>
+                技能
+                <svg style="width:10px;height:10px;color:#aaa;margin-left:auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg>
+                <div class="skill-dropdown" id="skillDropdown">
               <div class="skill-search-wrap">
                 <input type="text" class="skill-search" placeholder="搜索技能" id="skillSearch" oninput="filterSkills()" />
               </div>
@@ -1421,9 +1596,53 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 管理技能
               </div>
+                </div>
+              </div>
+              <div class="select-dropdown-item select-dropdown-connector-item">
+                <span style="font-size:16px">🔌</span>
+                连接器
+                <svg style="width:10px;height:10px;color:#aaa;margin-left:auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg>
+                <div class="connector-dropdown" id="connectorDropdown">
+                  <div class="connector-search-wrap">
+                    <input type="text" class="connector-search" placeholder="搜索连接器" oninput="filterConnectors(this.value)" />
+                  </div>
+                  <div id="connectorList">
+                    <div class="connector-item" data-name="图片生成" data-desc="图片生成工具，提供文生图、图生图 AI 绘图能力" onclick="selectConnector(this)">
+                      <div class="connector-icon">🎨</div>
+                      <div class="connector-info">
+                        <div class="connector-title">图片生成</div>
+                        <div class="connector-desc">图片生成工具，提供文生图、图生图 AI 绘图能力，支持多种创作场景</div>
+                      </div>
+                      <button type="button" class="connector-switch enabled" aria-label="禁用图片生成" aria-pressed="true" onclick="toggleConnector(event, this)"></button>
+                    </div>
+                    <div class="connector-item disabled" data-name="网页抓取" data-desc="提供网页内容抓取功能，将 HTML 转换为 Markdown" onclick="selectConnector(this)">
+                      <div class="connector-icon">📊</div>
+                      <div class="connector-info">
+                        <div class="connector-title">网页抓取</div>
+                        <div class="connector-desc">提供网页内容抓取功能，将 HTML 转换为 Markdown 格式，方便阅读和处理</div>
+                      </div>
+                      <button type="button" class="connector-switch" aria-label="启用网页抓取" aria-pressed="false" onclick="toggleConnector(event, this)"></button>
+                    </div>
+                    <div class="connector-item" data-name="联网搜索" data-desc="面向 AI 应用的搜索引擎，提供实时信息" onclick="selectConnector(this)">
+                      <div class="connector-icon">🔎</div>
+                      <div class="connector-info">
+                        <div class="connector-title">联网搜索</div>
+                        <div class="connector-desc">这是一款面向 AI 应用的搜索引擎，提供来自数十亿网页的实时信息</div>
+                      </div>
+                      <button type="button" class="connector-switch enabled" aria-label="禁用联网搜索" aria-pressed="true" onclick="toggleConnector(event, this)"></button>
+                    </div>
+                  </div>
+                  <div class="connector-divider"></div>
+                  <div class="connector-manage" onclick="parentClick('./connector/list.html')">
+                    <span style="font-size:16px">⚙</span>
+                    管理连接器
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="mcp-dropdown-wrapper">
+          <div class="connector-summary" id="connectorSummary" aria-label="已启用连接器" onclick="openConnectorDropdown(event)"></div>
+          <div class="mcp-dropdown-wrapper displaynone">
             <button class="toolbar-btn" title="MCP" onclick="toggleMcpDropdown()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
               MCP
@@ -1449,7 +1668,7 @@
             </div>
           </div>
 		  <div style="align-items:center;gap:4px;flex-wrap:wrap;">
-		    <div class="zj-dropdown-wrapper">
+		    <div class="zj-dropdown-wrapper displaynone">
 		      <button class="toolbar-btn" id="zjBtn" title="专家·专家团" onclick="toggleZjDropdown()">
 		        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M10 15h4"/><path d="M2 15l2-5"/><path d="M22 15l-2-5"/></svg>
 		        专家·专家团
@@ -1511,7 +1730,7 @@
 		    </div>
 		    <div id="zjTagsArea" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
 		  </div>
-          <div class="kb-dropdown-wrapper">
+          <div class="kb-dropdown-wrapper displaynone">
             <button class="toolbar-btn" id="kbBtn" title="本地知识库" onclick="toggleKbDropdown()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
               本地知识库
@@ -1542,36 +1761,6 @@
               <div class="kb-manage-item" onclick="parentClick('./zsk/list.html')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 管理知识库
-              </div>
-            </div>
-          </div>
-          <div class="perm-dropdown-wrapper">
-            <button class="toolbar-btn" id="permBtn" title="默认权限" onclick="togglePermDropdown()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <span id="permBtnText">默认权限</span>
-              <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="perm-dropdown" id="permDropdown">
-              <div class="perm-item" data-value="default" onclick="selectPerm(this)">
-                <svg class="perm-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <div class="perm-item-content">
-                  <span class="perm-item-label">只读</span>
-                  <span class="perm-item-desc">仅对文件内容读取，无编辑及其他权限</span>
-                </div>
-              </div>
-              <div class="perm-item selected" data-value="read" onclick="selectPerm(this)">
-                <svg class="perm-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-                <div class="perm-item-content">
-                  <span class="perm-item-label">默认权限</span>
-                  <span class="perm-item-desc">支持对路径内全部文件的读写</span>
-                </div>
-              </div>
-              <div class="perm-item" data-value="edit" onclick="selectPerm(this)">
-                <svg class="perm-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <div class="perm-item-content">
-                  <span class="perm-item-label">完全访问</span>
-                  <span class="perm-item-desc">可不受限制地访问互联网和您电脑上的任何文件</span>
-                </div>
               </div>
             </div>
           </div>
@@ -1721,6 +1910,36 @@
             <div class="project-dropdown-item" onclick="handleProjectAction('use-folder')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
               使用现有文件夹
+            </div>
+          </div>
+        </div>
+        <div class="perm-dropdown-wrapper">
+          <button class="toolbar-btn" id="permBtn" title="默认权限" onclick="togglePermDropdown()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span id="permBtnText">默认权限</span>
+            <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="perm-dropdown" id="permDropdown">
+            <div class="perm-item" data-value="default" onclick="selectPerm(this)">
+              <svg class="perm-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <div class="perm-item-content">
+                <span class="perm-item-label">只读</span>
+                <span class="perm-item-desc">仅对文件内容读取，无编辑及其他权限</span>
+              </div>
+            </div>
+            <div class="perm-item selected" data-value="read" onclick="selectPerm(this)">
+              <svg class="perm-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+              <div class="perm-item-content">
+                <span class="perm-item-label">默认权限</span>
+                <span class="perm-item-desc">支持对路径内全部文件的读写</span>
+              </div>
+            </div>
+            <div class="perm-item" data-value="edit" onclick="selectPerm(this)">
+              <svg class="perm-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <div class="perm-item-content">
+                <span class="perm-item-label">完全访问</span>
+                <span class="perm-item-desc">可不受限制地访问互联网和您电脑上的任何文件</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1880,6 +2099,8 @@
 
     function toggleSelectDropdown() {
       const dropdown = document.getElementById('selectDropdown');
+      document.querySelector('.select-dropdown-connector-item').classList.remove('connector-open');
+      dropdown.classList.remove('connector-direct');
       dropdown.classList.toggle('show');
       if (dropdown.classList.contains('show')) {
         document.querySelectorAll('#selectDropdown .select-dropdown-item[data-name]').forEach(el => {
@@ -2075,17 +2296,7 @@
 
     // Skill dropdown logic
     const addedSkills = new Set();
-
-    function toggleSkillDropdown() {
-      const dropdown = document.getElementById('skillDropdown');
-      dropdown.classList.toggle('show');
-      if (dropdown.classList.contains('show')) {
-        document.querySelectorAll('#skillList .skill-item').forEach(item => {
-          item.classList.toggle('selected', addedSkills.has(item.dataset.name));
-        });
-        setTimeout(() => document.getElementById('skillSearch').focus(), 50);
-      }
-    }
+    const addedConnectors = new Set();
 
     function addSkill(item) {
       const name = item.dataset.name;
@@ -2107,7 +2318,7 @@
 
     function renderSkillTags() {
       const area = document.getElementById('textareaTagsArea');
-      area.querySelectorAll('.skill-tag:not([data-kb-id])').forEach(el => el.remove());
+      area.querySelectorAll('.skill-tag:not([data-kb-id]):not([data-connector])').forEach(el => el.remove());
       addedSkills.forEach(name => {
         const el = document.querySelector(`#skillList .skill-item[data-name="${name}"]`);
         const color = el ? el.dataset.color : '#4a6cf7';
@@ -2136,6 +2347,86 @@
       document.getElementById('skillDropdown').classList.remove('show');
       console.log('Skill action:', action);
     }
+
+    function filterConnectors(query) {
+      const keyword = query.toLowerCase();
+      document.querySelectorAll('#connectorList .connector-item').forEach(item => {
+        const name = item.dataset.name.toLowerCase();
+        const desc = item.dataset.desc.toLowerCase();
+        item.style.display = (name.includes(keyword) || desc.includes(keyword)) ? '' : 'none';
+      });
+    }
+
+    function openConnectorDropdown(event) {
+      event.stopPropagation();
+      const dropdown = document.getElementById('selectDropdown');
+      dropdown.classList.add('show', 'connector-direct');
+      document.querySelector('.select-dropdown-connector-item').classList.add('connector-open');
+    }
+
+    function toggleConnector(event, button) {
+      event.stopPropagation();
+      const enabled = button.classList.toggle('enabled');
+      const item = button.closest('.connector-item');
+      const name = item.dataset.name;
+      item.classList.toggle('disabled', !enabled);
+      if (!enabled && addedConnectors.has(name)) removeConnector(name);
+      renderConnectorSummary();
+      button.setAttribute('aria-pressed', String(enabled));
+      button.setAttribute('aria-label', `${enabled ? '禁用' : '启用'}${name}`);
+    }
+
+    function selectConnector(item) {
+      if (!item.querySelector('.connector-switch').classList.contains('enabled')) return;
+      const name = item.dataset.name;
+      if (addedConnectors.has(name)) {
+        removeConnector(name);
+        return;
+      }
+      addedConnectors.add(name);
+      item.classList.add('selected');
+      renderConnectorTags();
+    }
+
+    function removeConnector(name) {
+      addedConnectors.delete(name);
+      const item = document.querySelector(`#connectorList .connector-item[data-name="${name}"]`);
+      if (item) item.classList.remove('selected');
+      renderConnectorTags();
+    }
+
+    function renderConnectorTags() {
+      const area = document.getElementById('textareaTagsArea');
+      area.querySelectorAll('.skill-tag[data-connector]').forEach(el => el.remove());
+      addedConnectors.forEach(name => {
+        const tag = document.createElement('div');
+        tag.className = 'skill-tag';
+        tag.dataset.connector = name;
+        tag.innerHTML = `
+          <div class="skill-tag-icon" style="background:#12bfa0;color:#fff">🔌</div>
+          <span>${name}</span>
+          <div class="skill-tag-remove" onclick="removeConnector('${name}')">✕</div>
+        `;
+        area.appendChild(tag);
+      });
+    }
+
+    function renderConnectorSummary() {
+      const summary = document.getElementById('connectorSummary');
+      if (!summary) return;
+      summary.innerHTML = '';
+      document.querySelectorAll('#connectorList .connector-item').forEach(item => {
+        const toggle = item.querySelector('.connector-switch');
+        if (!toggle || !toggle.classList.contains('enabled')) return;
+        const icon = document.createElement('span');
+        icon.className = 'connector-summary-icon';
+        icon.title = item.dataset.name;
+        icon.textContent = item.querySelector('.connector-icon').textContent.trim();
+        summary.appendChild(icon);
+      });
+    }
+
+    renderConnectorSummary();
 
     // MCP dropdown logic
     const mcpData = [
@@ -2611,17 +2902,16 @@
         document.getElementById('kbDropdown').classList.remove('show');
       }
       const selectWrapper = document.querySelector('.select-dropdown-wrapper');
-      if (!selectWrapper.contains(e.target)) {
+      const connectorSummary = document.getElementById('connectorSummary');
+      if (!selectWrapper.contains(e.target) && !connectorSummary.contains(e.target)) {
         document.getElementById('selectDropdown').classList.remove('show');
+        document.getElementById('selectDropdown').classList.remove('connector-direct');
+        document.querySelector('.select-dropdown-connector-item').classList.remove('connector-open');
       }
       const projectWrapper = document.querySelector('.project-dropdown-wrapper');
       const projectTagsArea = document.getElementById('projectTagsArea');
       if (!projectWrapper.contains(e.target) && !projectTagsArea.contains(e.target)) {
         document.getElementById('projectDropdown').classList.remove('show');
-      }
-      const skillWrapper = document.querySelector('.skill-dropdown-wrapper');
-      if (!skillWrapper.contains(e.target)) {
-        document.getElementById('skillDropdown').classList.remove('show');
       }
       const mcpWrapper = document.querySelector('.mcp-dropdown-wrapper');
       if (!mcpWrapper.contains(e.target)) {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MCP</title>
+  <title>连接器</title>
   <style>
     :root {
       --primary: #6366f1;
@@ -47,6 +47,284 @@
     /* ---------- Main ---------- */
     main { padding: 8px 24px 48px; }
 
+    /* ---------- 分类页签 ---------- */
+    .category-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 20px 0 4px;
+    }
+
+    .category-tools {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 320px;
+      height: 40px;
+      padding: 0 12px;
+      background: #fff;
+      border: 1px solid #e4e4e7;
+      border-radius: 10px;
+      color: #a1a1aa;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .search-box:focus-within {
+      border-color: #a1a1aa;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .08);
+    }
+
+    .search-box input {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 14px;
+      color: #18181b;
+    }
+
+    .search-box input::placeholder {
+      color: #a1a1aa;
+    }
+
+    .view-toggle {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px;
+      background: #f4f4f5;
+      border-radius: 10px;
+    }
+
+    .view-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 500;
+      color: #71717a;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
+    }
+
+    .view-btn:hover {
+      color: #18181b;
+    }
+
+    .view-btn.active {
+      background: #fff;
+      border-color: #e4e4e7;
+      color: #18181b;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .06);
+    }
+
+    .view-btn:focus-visible {
+      outline: 2px solid rgba(99, 102, 241, .4);
+      outline-offset: 2px;
+    }
+
+    .mcp-tabs {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mcp-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mcp-tab {
+      appearance: none;
+      border: none;
+      background: transparent;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color .15s, border-color .15s;
+    }
+
+    .mcp-tab:hover {
+      color: var(--text-main);
+    }
+
+    .mcp-tab.active {
+      color: var(--text-main);
+      font-weight: 600;
+      border-bottom-color: var(--text-main);
+    }
+
+    .mcp-tab:focus-visible {
+      outline: 2px solid rgba(99, 102, 241, .4);
+      outline-offset: -2px;
+      border-radius: 6px;
+    }
+
+    .mcp-section[hidden] {
+      display: none;
+    }
+
+    .mcp-tag {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 8px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #f4f4f5;
+      font-size: 12px;
+      font-weight: 400;
+      color: #52525b;
+      white-space: nowrap;
+      vertical-align: 2px;
+    }
+
+    .mcp-tag.installed {
+      background: #ecfdf5;
+      color: #16a34a;
+    }
+
+    .mcp-chevron {
+      color: #a1a1aa;
+      flex-shrink: 0;
+    }
+
+    .search-empty {
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .search-empty-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #3f3f46;
+    }
+
+    .search-empty-desc {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #71717a;
+    }
+
+    #container[data-view="card"] .mcp-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    #container[data-view="card"] .mcp-card {
+      align-items: flex-start;
+      padding: 18px 20px;
+    }
+
+    #container[data-view="card"] .mcp-icon {
+      width: 44px;
+      height: 44px;
+      font-size: 19px;
+    }
+
+    #container[data-view="card"] .mcp-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    #container[data-view="card"] .mcp-name .mcp-tag {
+      margin-left: 0;
+    }
+
+    #container[data-view="card"] .mcp-desc {
+      margin-top: 6px;
+    }
+
+    @media (max-width: 1100px) {
+      .category-toolbar {
+        flex-wrap: wrap;
+      }
+
+      .category-tools {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+
+      .search-box {
+        width: auto;
+        flex: 1;
+        min-width: 220px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      #container[data-view="card"] .mcp-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mcp-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      padding: 40px 24px;
+      border: 1px dashed #e4e4e7;
+      border-radius: 14px;
+      color: var(--text-muted);
+      text-align: center;
+      background: #fafafa;
+    }
+
+    .mcp-empty-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 14px;
+      border-radius: 14px;
+      background: #fff;
+      color: #a1a1aa;
+      box-shadow: var(--shadow);
+    }
+
+    .mcp-empty-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #3f3f46;
+    }
+
+    .mcp-empty-desc {
+      margin-top: 5px;
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 360px;
+    }
+
     /* 顶部成功提示 Toast */
     #toast {
       position: fixed;
@@ -78,6 +356,70 @@
       margin-bottom: 12px;
     }
 
+    .market-filters {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: -4px 0 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .market-filters::-webkit-scrollbar {
+      display: none;
+    }
+
+    .market-filter {
+      appearance: none;
+      border: 1px solid transparent;
+      background: #f4f4f5;
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #52525b;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
+    }
+
+    .market-filter:hover {
+      color: #18181b;
+    }
+
+    .market-filter.active {
+      background: #fff;
+      border-color: #e4e4e7;
+      color: #18181b;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .06);
+    }
+
+    .market-filter:focus-visible {
+      outline: 2px solid rgba(99, 102, 241, .4);
+      outline-offset: 2px;
+    }
+
+    .market-filter-expand {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: transparent;
+    }
+
+    .market-filter-expand svg {
+      transition: transform .2s ease;
+    }
+
+    .market-filters.expanded {
+      flex-wrap: wrap;
+      overflow-x: visible;
+    }
+
+    .market-filters.expanded .market-filter-expand svg {
+      transform: rotate(180deg);
+    }
+
     .mcp-list {
       display: flex;
       flex-direction: column;
@@ -95,6 +437,10 @@
       background: #fff;
       transition: background .15s, border-color .15s;
       cursor: pointer;
+    }
+
+    .mcp-card[hidden] {
+      display: none !important;
     }
 
     .mcp-card:hover {
@@ -128,6 +474,15 @@
     .mcp-icon.sql { background: #0055ff; }
     .mcp-icon.ima { background: #1f1f1f; }
     .mcp-icon.qqmail { background: #ffb800; }
+    .mcp-icon.plugin.chrome {
+      background: #f8fafc;
+      color: #4285f4;
+    }
+
+    .mcp-icon.plugin.canvas {
+      background: #f5f3ff;
+      color: #7c3aed;
+    }
 
     .mcp-info {
       flex: 1;
@@ -180,6 +535,82 @@
 
     .mcp-action.add:hover {
       background: #fafafa;
+      color: #18181b;
+    }
+
+    /* 连接器市场：安装连接器 / 已安装 按钮（参考图片蓝色实心按钮样式） */
+    .mcp-install-btn,
+    .mcp-installed-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+      flex-shrink: 0;
+      border: 1px solid transparent;
+      font-family: inherit;
+      line-height: 1;
+    }
+
+    .mcp-install-btn {
+      background: #2563eb;
+      color: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s, background .15s;
+    }
+
+    .mcp-card:hover .mcp-install-btn {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mcp-install-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .mcp-install-btn:active {
+      background: #1e40af;
+    }
+
+    .mcp-installed-btn {
+      background: #eff6ff;
+      color: #2563eb;
+      border-color: #bfdbfe;
+      cursor: pointer;
+    }
+
+    .mcp-installed-btn:hover {
+      background: #dbeafe;
+    }
+
+    /* 试一试按钮（已安装状态） */
+    .mcp-try-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      flex-shrink: 0;
+      font-family: inherit;
+      line-height: 1;
+      background: #f4f4f5;
+      color: #3f3f46;
+      border: 1px solid #e4e4e7;
+      transition: background .15s, color .15s;
+    }
+
+    .mcp-try-btn:hover {
+      background: #e4e4e7;
       color: #18181b;
     }
 
@@ -419,6 +850,24 @@
       flex-shrink: 0;
     }
 
+    /* 已安装卡片：··· 按钮与开关并排常显（参考已安装列表样式） */
+    .mcp-more-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .mcp-more-wrap .mcp-more-btn {
+      position: static;
+      opacity: 1;
+      width: 28px;
+      height: 28px;
+    }
+
+    .mcp-more-wrap .mcp-more-menu {
+      top: calc(100% + 6px);
+      right: 0;
+    }
+
     /* ---------- Modal ---------- */
     .modal-overlay {
       position: fixed;
@@ -575,7 +1024,14 @@
       line-height: 1.5;
     }
 
-    /* 图标字段 */
+    /* 头像字段 */
+    .avatar-label-hint {
+      margin-left: 8px;
+      font-size: 12px;
+      font-weight: 400;
+      color: #a1a1aa;
+    }
+
     .avatar-field {
       display: flex;
       align-items: center;
@@ -583,10 +1039,10 @@
     }
 
     .avatar-preview {
-      width: 40px;
-      height: 40px;
+      width: 56px;
+      height: 56px;
       border-radius: 10px;
-      background: #f4f4f5;
+      background: #fafafa;
       border: 1px dashed #d4d4d8;
       flex-shrink: 0;
       display: flex;
@@ -600,7 +1056,7 @@
     }
 
     .avatar-preview:hover {
-      background: #fafafa;
+      background: #f4f4f5;
       border-color: #a1a1aa;
     }
 
@@ -618,6 +1074,16 @@
     .avatar-hint {
       font-size: 13px;
       color: #71717a;
+      line-height: 1.6;
+    }
+
+    .avatar-hint a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    .avatar-hint a:hover {
+      text-decoration: underline;
     }
 
     .modal-footer {
@@ -693,46 +1159,218 @@
       <div class="logo-box">
 		<svg width="20" height="20" class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
 	  </div>
-      <h1>MCP</h1>
+      <h1>连接器</h1>
     </div>
 
     <div class="add-wrap">
       <button class="btn-add" id="add-skill-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
-        添加服务器
+        添加连接器
       </button>
     </div>
   </header>
 
   <!-- Skills -->
   <main>
-    <div id="container">
-      <!-- 自定义 MCP -->
-      <section class="mcp-section">
-        <h2 class="section-title">自定义MCP</h2>
+    <div class="category-toolbar">
+      <nav class="mcp-tabs" role="tablist" aria-label="连接器分类">
+        <button class="mcp-tab active" type="button" id="category-tab-market" data-category-tab="market" role="tab" aria-selected="true" aria-controls="category-market">连接器市场</button>
+  <button class="mcp-tab" type="button" id="category-tab-enterprise" data-category-tab="enterprise" role="tab" aria-selected="false" aria-controls="category-enterprise" tabindex="-1">企业连接器</button>
+        <button class="mcp-tab" type="button" id="category-tab-plugin" data-category-tab="plugin" role="tab" aria-selected="false" aria-controls="category-plugin" tabindex="-1">插件</button>
+  <button class="mcp-tab" type="button" id="category-tab-installed" data-category-tab="installed" role="tab" aria-selected="false" aria-controls="category-installed" tabindex="-1">已安装</button>
+      </nav>
+
+      <div class="category-tools">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="connector-search" type="search" placeholder="搜索连接器" autocomplete="off" aria-label="搜索连接器">
+        </div>
+        <div class="view-toggle" role="group" aria-label="切换视图">
+          <button class="view-btn active" type="button" data-view="list" aria-pressed="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            列表
+          </button>
+          <button class="view-btn" type="button" data-view="card" aria-pressed="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            卡片
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="container" data-view="list">
+      <!-- 自定义连接器 -->
+      <section class="mcp-section" id="category-installed" data-category-panel="installed" role="tabpanel" aria-labelledby="category-tab-installed" hidden>
+        <div class="market-filters" role="group" aria-label="已安装来源筛选">
+          <button class="market-filter active" type="button" data-installed-filter="all" aria-pressed="true">全部来源</button>
+          <button class="market-filter" type="button" data-installed-filter="连接器市场" aria-pressed="false">连接器市场</button>
+          <button class="market-filter" type="button" data-installed-filter="企业连接器" aria-pressed="false">企业连接器</button>
+          <button class="market-filter" type="button" data-installed-filter="插件" aria-pressed="false">插件</button>
+          <button class="market-filter" type="button" data-installed-filter="自定义连接器" aria-pressed="false">自定义连接器</button>
+        </div>
         <div class="mcp-list">
-          <div class="mcp-card" data-icon="globe" data-source="自定义MCP">
+          <div class="mcp-card" data-icon="dingtalk" data-source="连接器市场">
+            <div class="mcp-icon market dingtalk">钉</div>
+            <div class="mcp-info">
+              <div class="mcp-name">钉钉消息推送<span class="mcp-tag">连接器市场</span></div>
+              <div class="mcp-desc">通过命令行管理钉钉全产品能力：AI 表格、考勤、日历、群聊与机器人、通讯录、开放平台文档、DING 消息、钉...</div>
+            </div>
+            <div class="mcp-more-wrap">
+              <button class="mcp-more-btn" aria-label="更多操作">···</button>
+              <div class="mcp-more-menu">
+                <button class="mcp-more-menu-item" data-action="try">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  试一试
+                </button>
+                <button class="mcp-more-menu-item danger" data-action="uninstall">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  卸载
+                </button>
+              </div>
+            </div>
+            <label class="mcp-switch">
+              <input type="checkbox" checked>
+              <span class="mcp-switch-track"></span>
+            </label>
+          </div>
+
+          <div class="mcp-card" data-icon="tencentdocs" data-source="连接器市场">
+            <div class="mcp-icon market" style="background:#2b6cff">腾</div>
+            <div class="mcp-info">
+              <div class="mcp-name">腾讯文档 TENCENT DOCS<span class="mcp-tag">连接器市场</span></div>
+              <div class="mcp-desc">腾讯文档（docs.qq.com）- 在线云文档平台，是创建、编辑、管理文档的首选 skill。涉及"新建/创建/编辑/读取/查看/搜索文档"...</div>
+            </div>
+            <div class="mcp-more-wrap">
+              <button class="mcp-more-btn" aria-label="更多操作">···</button>
+              <div class="mcp-more-menu">
+                <button class="mcp-more-menu-item" data-action="try">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  试一试
+                </button>
+                <button class="mcp-more-menu-item danger" data-action="uninstall">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  卸载
+                </button>
+              </div>
+            </div>
+            <label class="mcp-switch">
+              <input type="checkbox" checked>
+              <span class="mcp-switch-track"></span>
+            </label>
+          </div>
+
+          <div class="mcp-card" data-icon="wiki" data-source="企业连接器">
+            <div class="mcp-icon market" style="background:#4f46e5">知</div>
+            <div class="mcp-info">
+              <div class="mcp-name">企业知识库检索<span class="mcp-tag">企业连接器</span></div>
+              <div class="mcp-desc">对接企业 Wiki 与内部文档平台，支持按空间、标签检索文档内容，为 AI 助手提供内部知识问答能力。</div>
+            </div>
+            <div class="mcp-more-wrap">
+              <button class="mcp-more-btn" aria-label="更多操作">···</button>
+              <div class="mcp-more-menu">
+                <button class="mcp-more-menu-item" data-action="try">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  试一试
+                </button>
+                <button class="mcp-more-menu-item danger" data-action="uninstall">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  卸载
+                </button>
+              </div>
+            </div>
+            <label class="mcp-switch">
+              <input type="checkbox" checked>
+              <span class="mcp-switch-track"></span>
+            </label>
+          </div>
+
+          <div class="mcp-card" data-icon="supplier" data-source="企业连接器">
+            <div class="mcp-icon market" style="background:#18181b">供</div>
+            <div class="mcp-info">
+              <div class="mcp-name">供应商评估专家<span class="mcp-tag">企业连接器</span></div>
+              <div class="mcp-desc">供应商评估与采购决策专家。覆盖寻源筛选、1688 选厂、背调核查、验厂审核、五维评分分级、成本拆解议价、账期合同...</div>
+            </div>
+            <div class="mcp-more-wrap">
+              <button class="mcp-more-btn" aria-label="更多操作">···</button>
+              <div class="mcp-more-menu">
+                <button class="mcp-more-menu-item" data-action="try">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  试一试
+                </button>
+                <button class="mcp-more-menu-item danger" data-action="uninstall">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  卸载
+                </button>
+              </div>
+            </div>
+            <label class="mcp-switch">
+              <input type="checkbox" checked>
+              <span class="mcp-switch-track"></span>
+            </label>
+          </div>
+
+          <div class="mcp-card" data-icon="chrome" data-source="插件" data-plugin="chrome">
+            <div class="mcp-icon plugin chrome">
+              <svg width="22" height="22" viewBox="0 0 48 48">
+                <circle cx="24" cy="24" r="20" fill="#fff"/>
+                <path fill="#ea4335" d="M24 4c9.9 0 18.3 7.2 19.8 16.6H31.5C29.6 16.7 27.1 15 24 15c-3.3 0-6.1 1.8-7.6 4.4L9.3 8.1C13 5.1 18.3 4 24 4z"/>
+                <path fill="#34a853" d="M8.4 9.6l7.1 12.2C15.2 22.9 15 24.4 15 26c0 4.4 3.2 8.1 7.4 8.8l-5 12.2C9.6 44.5 4 35.1 4 24c0-5.5 1.6-10.6 4.4-14.4z"/>
+                <path fill="#4285f4" d="M43.8 20.6C44.5 21.6 44 23 44 24c0 11.4-9.6 20.7-21.5 20L29 32.1c3.6-1 6.1-4.3 6.1-8.1 0-1.2-.3-2.4-.8-3.4h9.5z"/>
+                <circle cx="24" cy="24" r="8" fill="#fff"/>
+                <circle cx="24" cy="24" r="6.5" fill="#4285f4"/>
+              </svg>
+            </div>
+            <div class="mcp-info">
+              <div class="mcp-name">浏览器控制<span class="mcp-tag">插件</span></div>
+              <div class="mcp-desc">用 OmniX 控制和调试 Chrome 浏览器</div>
+            </div>
+            <div class="mcp-more-wrap">
+              <button class="mcp-more-btn" aria-label="更多操作">···</button>
+              <div class="mcp-more-menu">
+                <button class="mcp-more-menu-item" data-action="try">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  试一试
+                </button>
+                <button class="mcp-more-menu-item danger" data-action="uninstall">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  卸载
+                </button>
+              </div>
+            </div>
+            <label class="mcp-switch">
+              <input type="checkbox" checked>
+              <span class="mcp-switch-track"></span>
+            </label>
+          </div>
+
+          <div class="mcp-card" data-icon="globe" data-source="自定义连接器">
             <div class="mcp-icon custom">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             </div>
             <div class="mcp-info">
-              <div class="mcp-name">联网搜索增强</div>
+              <div class="mcp-name">联网搜索增强<span class="mcp-tag">自定义连接器</span></div>
               <div class="mcp-desc">提供专业级的联网搜索增强服务，支持多维数据分析与自动化处理，极大提升工作效率。</div>
             </div>
             <button class="mcp-edit" data-name="联网搜索增强" data-protocol="sse" data-desc="提供专业级的联网搜索增强服务，支持多维数据分析与自动化处理，极大提升工作效率。" data-url="http://localhost:8080/mcp" data-headers="">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              
+
             </button>
-            <button class="mcp-more-btn" aria-label="更多操作">···</button>
-            <div class="mcp-more-menu">
-              <button class="mcp-more-menu-item" data-action="edit">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                编辑
-              </button>
-              <button class="mcp-more-menu-item danger" data-action="uninstall">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                卸载
-              </button>
+            <div class="mcp-more-wrap">
+              <button class="mcp-more-btn" aria-label="更多操作">···</button>
+              <div class="mcp-more-menu">
+                <button class="mcp-more-menu-item" data-action="try">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  试一试
+                </button>
+                <button class="mcp-more-menu-item" data-action="edit">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  编辑
+                </button>
+                <button class="mcp-more-menu-item danger" data-action="uninstall">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  卸载
+                </button>
+              </div>
             </div>
             <label class="mcp-switch">
               <input type="checkbox" checked>
@@ -740,28 +1378,34 @@
             </label>
           </div>
 
-          <div class="mcp-card" data-icon="map" data-source="自定义MCP">
+          <div class="mcp-card" data-icon="map" data-source="自定义连接器">
             <div class="mcp-icon custom">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
             </div>
             <div class="mcp-info">
-              <div class="mcp-name">高德地图服务</div>
+              <div class="mcp-name">高德地图服务<span class="mcp-tag">自定义连接器</span></div>
               <div class="mcp-desc">根据地理坐标，规划多种出行方式的通勤方案。例如，驾车规划会考虑路况，骑行规划会考虑天桥和单行道...</div>
             </div>
             <button class="mcp-edit" data-name="高德地图服务" data-protocol="http" data-desc="根据地理坐标，规划多种出行方式的通勤方案。例如，驾车规划会考虑路况，骑行规划会考虑天桥和单行道..." data-url="http://localhost:8081/mcp" data-headers="">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              
+
             </button>
-            <button class="mcp-more-btn" aria-label="更多操作">···</button>
-            <div class="mcp-more-menu">
-              <button class="mcp-more-menu-item" data-action="edit">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                编辑
-              </button>
-              <button class="mcp-more-menu-item danger" data-action="uninstall">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                卸载
-              </button>
+            <div class="mcp-more-wrap">
+              <button class="mcp-more-btn" aria-label="更多操作">···</button>
+              <div class="mcp-more-menu">
+                <button class="mcp-more-menu-item" data-action="try">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  试一试
+                </button>
+                <button class="mcp-more-menu-item" data-action="edit">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  编辑
+                </button>
+                <button class="mcp-more-menu-item danger" data-action="uninstall">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  卸载
+                </button>
+              </div>
             </div>
             <label class="mcp-switch">
               <input type="checkbox" checked>
@@ -769,95 +1413,401 @@
             </label>
           </div>
 
-          <div class="mcp-card" data-icon="mail" data-source="自定义MCP">
-            <div class="mcp-icon custom">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            </div>
-            <div class="mcp-info">
-              <div class="mcp-name">微信公众号管理</div>
-              <div class="mcp-desc">通过自然语言描述完成内容管理、素材上传和文章发布等操作。</div>
-            </div>
-            <button class="mcp-edit" data-name="微信公众号管理" data-protocol="stdio" data-desc="通过自然语言描述完成内容管理、素材上传和文章发布等操作。" data-url="http://localhost:8082/mcp" data-headers="">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              
-            </button>
-            <button class="mcp-more-btn" aria-label="更多操作">···</button>
-            <div class="mcp-more-menu">
-              <button class="mcp-more-menu-item" data-action="edit">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                编辑
-              </button>
-              <button class="mcp-more-menu-item danger" data-action="uninstall">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                卸载
-              </button>
-            </div>
-            <label class="mcp-switch">
-              <input type="checkbox" checked>
-              <span class="mcp-switch-track"></span>
-            </label>
-          </div>
+        </div>
+        <div class="search-empty" hidden>
+          <p class="search-empty-title">未找到匹配的连接器</p>
+          <p class="search-empty-desc">换个关键词试试，或清除搜索条件。</p>
         </div>
       </section>
 
-      <!-- MCP 市场 -->
-      <section class="mcp-section">
-        <h2 class="section-title">MCP市场</h2>
+      <!-- 连接器市场 -->
+      <section class="mcp-section" id="category-market" data-category-panel="market" role="tabpanel" aria-labelledby="category-tab-market">
+        <div class="market-filters" role="group" aria-label="连接器市场分类">
+          <button class="market-filter active" type="button" data-market-filter="all" aria-pressed="true">全部</button>
+          <button class="market-filter" type="button" data-market-filter="pay-skill" aria-pressed="false">Pay Skill</button>
+          <button class="market-filter" type="button" data-market-filter="office" aria-pressed="false">办公效率</button>
+          <button class="market-filter" type="button" data-market-filter="content" aria-pressed="false">内容创作</button>
+          <button class="market-filter" type="button" data-market-filter="development" aria-pressed="false">开发编程</button>
+          <button class="market-filter" type="button" data-market-filter="data" aria-pressed="false">数据分析</button>
+          <button class="market-filter" type="button" data-market-filter="design" aria-pressed="false">设计多媒体</button>
+          <button class="market-filter" type="button" data-market-filter="agent" aria-pressed="false">AI Agent</button>
+          <button class="market-filter" type="button" data-market-filter="knowledge" aria-pressed="false">知识管理</button>
+          <button class="market-filter" type="button" data-market-filter="business" aria-pressed="false">商业运营</button>
+          <button class="market-filter" type="button" data-market-filter="education" aria-pressed="false">教育学习</button>
+          <button class="market-filter market-filter-expand" type="button" data-market-expand aria-expanded="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            展开
+          </button>
+        </div>
         <div class="mcp-list">
-          <div class="mcp-card" data-icon="dingtalk" data-source="MCP市场">
+          <div class="mcp-card" data-icon="dingtalk" data-source="连接器市场" data-market-categories="office business">
             <div class="mcp-icon market dingtalk">钉</div>
             <div class="mcp-info">
-              <div class="mcp-name">钉钉消息推送</div>
+              <div class="mcp-name">钉钉消息推送<span class="mcp-tag">连接器市场</span></div>
               <div class="mcp-desc">通过命令行管理钉钉全产品能力：AI 表格、考勤、日历、群聊与机器人、通讯录、开放平台文档、DING 消息、钉...</div>
             </div>
-            <button class="mcp-action add" aria-label="添加">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+            <button class="mcp-try-btn" aria-label="试一试">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              试一试
             </button>
           </div>
 
-          <div class="mcp-card" data-icon="feishu" data-source="MCP市场">
+          <div class="mcp-card" data-icon="feishu" data-source="连接器市场" data-market-categories="office knowledge business">
             <div class="mcp-icon market feishu">飞</div>
             <div class="mcp-info">
               <div class="mcp-name">飞书文档集成</div>
               <div class="mcp-desc">通过命令行管理飞书 Lark 全产品能力：即时通讯、邮箱、日历、云文档、电子表格、多维表格（Base）、幻灯片...</div>
             </div>
-            <button class="mcp-action add" aria-label="添加">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
             </button>
           </div>
 
-          <div class="mcp-card" data-icon="sql" data-source="MCP市场">
+          <div class="mcp-card" data-icon="sql" data-source="连接器市场" data-market-categories="development data">
             <div class="mcp-icon market sql">S</div>
             <div class="mcp-info">
               <div class="mcp-name">SQL查询助手</div>
               <div class="mcp-desc">提供专业级的联网搜索增强服务，支持多维数据分析与自动化处理，极大提升工作效率。</div>
             </div>
-            <button class="mcp-action add" aria-label="添加">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
             </button>
           </div>
 
-          <div class="mcp-card" data-icon="ima" data-source="MCP市场">
+          <div class="mcp-card" data-icon="ima" data-source="连接器市场" data-market-categories="content knowledge">
             <div class="mcp-icon market ima">i</div>
             <div class="mcp-info">
               <div class="mcp-name">ima知识库</div>
               <div class="mcp-desc">读取知识库资料及文档，浏览知识库详情。</div>
             </div>
-            <button class="mcp-action add" aria-label="添加">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
             </button>
           </div>
 
-          <div class="mcp-card" data-icon="qqmail" data-source="MCP市场">
+          <div class="mcp-card" data-icon="qqmail" data-source="连接器市场" data-market-categories="office business">
             <div class="mcp-icon market qqmail">Q</div>
             <div class="mcp-info">
               <div class="mcp-name">QQ邮箱</div>
               <div class="mcp-desc">收发、搜索和整理 QQ 邮件。用自然语言读取邮件内容，汇总邮件数据，管理文件夹。</div>
             </div>
-            <button class="mcp-action add" aria-label="添加">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
             </button>
           </div>
+
+          <div class="mcp-card" data-icon="mobile-check" data-source="连接器市场" data-market-categories="office business">
+            <div class="mcp-icon market" style="background:#2563eb">智</div>
+            <div class="mcp-info">
+              <div class="mcp-name">运营商空号检测</div>
+              <div class="mcp-desc">通过手机号码查询其在网活跃度，返回包括空号、实号、停机、库无、沉默号、风险号等状态。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="invoice-parse" data-source="连接器市场" data-market-categories="office business">
+            <div class="mcp-icon market" style="background:#0ea5e9">票</div>
+            <div class="mcp-info">
+              <div class="mcp-name">票据文件解析与格式转换</div>
+              <div class="mcp-desc">面向企业财务材料预处理，接收 OFD、PDF、PNG、JPEG 等票据文件的 HTTPS 地址，返回格式、页数与结构检查。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="wanfang-search" data-source="连接器市场" data-market-categories="knowledge education">
+            <div class="mcp-icon market" style="background:#dc2626">万</div>
+            <div class="mcp-info">
+              <div class="mcp-name">万方文献检索</div>
+              <div class="mcp-desc">基于 MCP 标准封装的学术文献检索工具，为 AI Agent、科研助手、知识检索提供文献检索与获取能力。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="wanfang-journal" data-source="连接器市场" data-market-categories="knowledge education">
+            <div class="mcp-icon market" style="background:#b91c1c">万</div>
+            <div class="mcp-info">
+              <div class="mcp-name">万方期刊全文</div>
+              <div class="mcp-desc">万方数据文献获取 MCP 服务，专为学术文献的检索与获取设计，能够为 AI Agent、科研助手提供全文能力。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="xuantong" data-source="连接器市场" data-market-categories="design data">
+            <div class="mcp-icon market" style="background:#2563eb">玄</div>
+            <div class="mcp-info">
+              <div class="mcp-name">玄瞳 AI 快消行业图片识别处理</div>
+              <div class="mcp-desc">主要聚焦于计算机视觉领域，通过物体检测、图像分类、图像处理，提高人员工作效率和费用管控能力。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="business-info" data-source="连接器市场" data-market-categories="business data">
+            <div class="mcp-icon market" style="background:#1f2937">企</div>
+            <div class="mcp-info">
+              <div class="mcp-name">企业工商信息查询</div>
+              <div class="mcp-desc">传入公司全称、注册号或社会统一信用代码，即可查询企业工商相关信息，包括法人、注册资本等。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="invoice-check" data-source="连接器市场" data-market-categories="business data">
+            <div class="mcp-icon market" style="background:#0ea5e9">验</div>
+            <div class="mcp-info">
+              <div class="mcp-name">发票查验与风险核验</div>
+              <div class="mcp-desc">面向财务共享、费控、应付和审计团队，提供发票真伪核验、发票状态检测、台账信息核对和批量查验能力。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="express" data-source="连接器市场" data-market-categories="office business">
+            <div class="mcp-icon market" style="background:#1f2937">递</div>
+            <div class="mcp-info">
+              <div class="mcp-name">快递查询</div>
+              <div class="mcp-desc">输入快递单号和快递代号查询实时物流信息，支持单号自动识别，可查询国内外上千家物流快递公司。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="mobile-location" data-source="连接器市场" data-market-categories="office business">
+            <div class="mcp-icon market" style="background:#334155">号</div>
+            <div class="mcp-info">
+              <div class="mcp-name">手机号归属地查询</div>
+              <div class="mcp-desc">毫秒级响应，支持全国手机三网的号码归属地查询，可查询虚拟运营商，准确度高，响应快。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="mobile-status" data-source="连接器市场" data-market-categories="office business">
+            <div class="mcp-icon market" style="background:#0f172a">网</div>
+            <div class="mcp-info">
+              <div class="mcp-name">手机号在网状态查询</div>
+              <div class="mcp-desc">传入手机号，查询该手机号的在网状态，返回正常使用、停机、在网但不可用、不在网、预销号等状态。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="mobile-carrier" data-source="连接器市场" data-market-categories="office business">
+            <div class="mcp-icon market" style="background:#1e293b">运</div>
+            <div class="mcp-info">
+              <div class="mcp-name">手机号归属运营商查询</div>
+              <div class="mcp-desc">通过手机号查询携号转网信息与归属地信息，直连三大运营商，支持移动、电信、联通号码，实时核验。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="video-gen" data-source="连接器市场" data-market-categories="content design">
+            <div class="mcp-icon market" style="background:#7c3aed">视</div>
+            <div class="mcp-info">
+              <div class="mcp-name">视频生成</div>
+              <div class="mcp-desc">视频生成 MCP 服务，提供文生视频、图生视频等工具。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+        </div>
+        <div class="search-empty" hidden>
+          <p class="search-empty-title">未找到匹配的连接器</p>
+          <p class="search-empty-desc">换个关键词试试，或清除搜索条件。</p>
+        </div>
+      </section>
+
+      <!-- 企业连接器 -->
+      <section class="mcp-section" id="category-enterprise" data-category-panel="enterprise" role="tabpanel" aria-labelledby="category-tab-enterprise" hidden>
+        <div class="market-filters" role="group" aria-label="企业连接器分类">
+          <button class="market-filter active" type="button" data-enterprise-filter="all" aria-pressed="true">全部</button>
+          <button class="market-filter" type="button" data-enterprise-filter="collab" aria-pressed="false">办公协同</button>
+          <button class="market-filter" type="button" data-enterprise-filter="crm" aria-pressed="false">客户与销售</button>
+          <button class="market-filter" type="button" data-enterprise-filter="report" aria-pressed="false">数据报表</button>
+          <button class="market-filter" type="button" data-enterprise-filter="devops" aria-pressed="false">研发运维</button>
+        </div>
+        <div class="mcp-list">
+          <div class="mcp-card" data-icon="wiki" data-source="企业连接器" data-enterprise-categories="collab">
+            <div class="mcp-icon market" style="background:#4f46e5">知</div>
+            <div class="mcp-info">
+              <div class="mcp-name">企业知识库检索<span class="mcp-tag">企业连接器</span></div>
+              <div class="mcp-desc">对接企业 Wiki 与内部文档平台，支持按空间、标签检索文档内容，为 AI 助手提供内部知识问答能力。</div>
+            </div>
+            <button class="mcp-try-btn" aria-label="试一试">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              试一试
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="mailbox" data-source="企业连接器" data-enterprise-categories="collab">
+            <div class="mcp-icon market" style="background:#0891b2">邮</div>
+            <div class="mcp-info">
+              <div class="mcp-name">企业邮箱助手</div>
+              <div class="mcp-desc">读写企业邮箱邮件、查询往来记录、起草回复，支持按项目与往来对象自动归档。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="crm" data-source="企业连接器" data-enterprise-categories="crm">
+            <div class="mcp-icon market" style="background:#ea580c">客</div>
+            <div class="mcp-info">
+              <div class="mcp-name">CRM 客户画像查询</div>
+              <div class="mcp-desc">查询客户基本信息、跟进记录与成交历史，辅助销售在沟通前快速了解客户全貌。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="leads" data-source="企业连接器" data-enterprise-categories="crm">
+            <div class="mcp-icon market" style="background:#c026d3">线</div>
+            <div class="mcp-info">
+              <div class="mcp-name">销售线索分发</div>
+              <div class="mcp-desc">按区域与行业自动归集线索，查询线索流转状态，并推送到对应销售负责人。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="bi" data-source="企业连接器" data-enterprise-categories="report">
+            <div class="mcp-icon market" style="background:#059669">报</div>
+            <div class="mcp-info">
+              <div class="mcp-name">BI 报表取数</div>
+              <div class="mcp-desc">连接企业 BI 平台，用自然语言查询经营指标与看板数据，支持导出明细表格。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="finance" data-source="企业连接器" data-enterprise-categories="report">
+            <div class="mcp-icon market" style="background:#65a30d">财</div>
+            <div class="mcp-info">
+              <div class="mcp-name">财务共享对账</div>
+              <div class="mcp-desc">对接财务共享中心，查询应收应付、费用报销进度与对账差异明细。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="pipeline" data-source="企业连接器" data-enterprise-categories="devops">
+            <div class="mcp-icon market" style="background:#475569">流</div>
+            <div class="mcp-info">
+              <div class="mcp-name">发布流水线查询</div>
+              <div class="mcp-desc">查询 CI/CD 流水线状态、发布记录与回滚历史，支持触发指定环境的部署任务。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="logs" data-source="企业连接器" data-enterprise-categories="devops">
+            <div class="mcp-icon market" style="background:#9333ea">志</div>
+            <div class="mcp-info">
+              <div class="mcp-name">日志检索平台</div>
+              <div class="mcp-desc">对接统一日志平台，按服务、级别与时间范围检索应用日志，快速定位线上问题。</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装连接器">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装连接器
+            </button>
+          </div>
+        </div>
+        <div class="search-empty" hidden>
+          <p class="search-empty-title">未找到匹配的连接器</p>
+          <p class="search-empty-desc">换个关键词试试，或清除搜索条件。</p>
+        </div>
+      </section>
+
+      <!-- 插件 -->
+      <section class="mcp-section" id="category-plugin" data-category-panel="plugin" role="tabpanel" aria-labelledby="category-tab-plugin" hidden>
+        <div class="mcp-list">
+          <div class="mcp-card" data-icon="chrome" data-source="插件" data-plugin="chrome">
+            <div class="mcp-icon plugin chrome">
+              <svg width="22" height="22" viewBox="0 0 48 48">
+                <circle cx="24" cy="24" r="20" fill="#fff"/>
+                <path fill="#ea4335" d="M24 4c9.9 0 18.3 7.2 19.8 16.6H31.5C29.6 16.7 27.1 15 24 15c-3.3 0-6.1 1.8-7.6 4.4L9.3 8.1C13 5.1 18.3 4 24 4z"/>
+                <path fill="#34a853" d="M8.4 9.6l7.1 12.2C15.2 22.9 15 24.4 15 26c0 4.4 3.2 8.1 7.4 8.8l-5 12.2C9.6 44.5 4 35.1 4 24c0-5.5 1.6-10.6 4.4-14.4z"/>
+                <path fill="#4285f4" d="M43.8 20.6C44.5 21.6 44 23 44 24c0 11.4-9.6 20.7-21.5 20L29 32.1c3.6-1 6.1-4.3 6.1-8.1 0-1.2-.3-2.4-.8-3.4h9.5z"/>
+                <circle cx="24" cy="24" r="8" fill="#fff"/>
+                <circle cx="24" cy="24" r="6.5" fill="#4285f4"/>
+              </svg>
+            </div>
+            <div class="mcp-info">
+              <div class="mcp-name">浏览器控制<span class="mcp-tag">插件</span></div>
+              <div class="mcp-desc">用 OmniX 控制和调试 Chrome 浏览器</div>
+            </div>
+            <button class="mcp-try-btn" aria-label="试一试">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              试一试
+            </button>
+          </div>
+
+          <div class="mcp-card" data-icon="canvas" data-source="插件" data-plugin="canvas">
+            <div class="mcp-icon plugin canvas">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="4"/>
+                <path d="M9 15l6-6"/>
+                <path d="M9 9h6v6"/>
+              </svg>
+            </div>
+            <div class="mcp-info">
+              <div class="mcp-name">AI 无限画布</div>
+              <div class="mcp-desc">在无限画布中进行视觉构思、图片生成和标注修改</div>
+            </div>
+            <button class="mcp-install-btn" aria-label="安装插件">
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+ 安装插件
+            </button>
+          </div>
+        </div>
+
+        <div class="search-empty" hidden>
+          <p class="search-empty-title">未找到匹配的插件</p>
+          <p class="search-empty-desc">换个关键词试试，或清除搜索条件。</p>
         </div>
       </section>
     </div>
@@ -865,7 +1815,7 @@
 
   <div id="toast"></div>
 
-  <!-- Add MCP Modal -->
+  <!-- Add Connector Modal -->
   <div class="modal-overlay" id="add-mcp-modal">
     <div class="modal">
       <div class="modal-header">
@@ -873,8 +1823,8 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         </div>
         <div class="modal-title-wrap">
-          <div class="modal-title">添加MCP</div>
-          <div class="modal-subtitle">安装 MCP 服务，为 AI 扩展更多工具能力</div>
+          <div class="modal-title">添加连接器</div>
+          <div class="modal-subtitle">安装连接器，为 AI 扩展更多工具能力</div>
         </div>
         <button class="modal-close" id="modal-close" aria-label="关闭">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -887,15 +1837,15 @@
           <input class="form-input" id="mcp-name" type="text" placeholder="请输入服务器名称">
         </div>
 
-        <div class="form-group"  style="display: none">
-          <label class="form-label">图标</label>
+        <div class="form-group">
+          <label class="form-label">头像<span class="avatar-label-hint">支持 JPG、PNG，最大 2MB</span></label>
           <div class="avatar-field">
-            <div class="avatar-preview" id="avatar-preview" role="button" tabindex="0" title="点击上传图标">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <div class="avatar-preview" id="avatar-preview" role="button" tabindex="0" title="点击上传头像">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
             </div>
-            <input type="file" id="mcp-avatar" accept="image/*" hidden>
-            <span class="avatar-hint">点击图标上传图片</span>
+            <span class="avatar-hint">连接器可在 <a href="javascript:void(0)">魔搭</a>、<a href="javascript:void(0)">百炼</a>、<a href="javascript:void(0)">MCPso</a> 等市场获取。</span>
           </div>
+          <input type="file" id="mcp-avatar" accept="image/jpeg,image/png" hidden>
         </div>
 
         <div class="form-group">
@@ -910,7 +1860,7 @@
 
         <div class="form-group">
           <label class="form-label required" for="mcp-desc">描述</label>
-          <textarea class="form-textarea" id="mcp-desc" placeholder="请输入MCP服务描述"></textarea>
+          <textarea class="form-textarea" id="mcp-desc" placeholder="请输入连接器服务描述"></textarea>
         </div>
 
         <div class="form-group">
@@ -926,12 +1876,12 @@
 
       <div class="modal-footer">
         <button class="btn btn-secondary" id="modal-cancel">取消</button>
-        <button class="btn btn-primary" id="modal-submit">添加MCP</button>
+        <button class="btn btn-primary" id="modal-submit">添加连接器</button>
       </div>
     </div>
   </div>
 
-  <!-- Edit MCP Modal -->
+  <!-- Edit Connector Modal -->
   <div class="modal-overlay" id="edit-mcp-modal">
     <div class="modal">
       <div class="modal-header">
@@ -939,8 +1889,8 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </div>
         <div class="modal-title-wrap">
-          <div class="modal-title">编辑MCP</div>
-          <div class="modal-subtitle">修改 MCP 服务配置</div>
+          <div class="modal-title">编辑连接器</div>
+          <div class="modal-subtitle">修改连接器服务配置</div>
         </div>
         <button class="modal-close" id="edit-modal-close" aria-label="关闭">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -953,15 +1903,15 @@
           <input class="form-input" id="edit-name" type="text" placeholder="请输入服务器名称">
         </div>
 
-        <div class="form-group" style="display: none">
-          <label class="form-label">图标</label>
+        <div class="form-group">
+          <label class="form-label">头像<span class="avatar-label-hint">支持 JPG、PNG，最大 2MB</span></label>
           <div class="avatar-field">
-            <div class="avatar-preview" id="edit-avatar-preview" role="button" tabindex="0" title="点击上传图标">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <div class="avatar-preview" id="edit-avatar-preview" role="button" tabindex="0" title="点击上传头像">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
             </div>
-            <input type="file" id="edit-avatar" accept="image/*" hidden>
-            <span class="avatar-hint">点击图标上传图片</span>
+            <span class="avatar-hint">连接器可在 <a href="javascript:void(0)">魔搭</a>、<a href="javascript:void(0)">百炼</a>、<a href="javascript:void(0)">MCPso</a> 等市场获取。</span>
           </div>
+          <input type="file" id="edit-avatar" accept="image/jpeg,image/png" hidden>
         </div>
 
         <div class="form-group">
@@ -976,7 +1926,7 @@
 
         <div class="form-group">
           <label class="form-label required" for="edit-desc">描述</label>
-          <textarea class="form-textarea" id="edit-desc" placeholder="请输入MCP服务描述"></textarea>
+          <textarea class="form-textarea" id="edit-desc" placeholder="请输入连接器服务描述"></textarea>
         </div>
 
         <div class="form-group">
@@ -1007,14 +1957,14 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         </div>
         <div class="modal-title-wrap">
-          <div class="modal-title">卸载 MCP</div>
+          <div class="modal-title">卸载连接器</div>
           <div class="modal-subtitle">此操作不可撤销</div>
         </div>
         <button class="modal-close" id="uninstall-confirm-close" aria-label="关闭">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
       </div>
-      <div class="confirm-text" id="uninstall-confirm-text">确定要卸载该 MCP 服务吗？</div>
+      <div class="confirm-text" id="uninstall-confirm-text">确定要卸载该连接器服务吗？</div>
       <div class="modal-footer">
         <button class="btn btn-secondary" id="uninstall-confirm-cancel">取消</button>
         <button class="btn btn-danger" id="uninstall-confirm-ok">确认卸载</button>
@@ -1025,7 +1975,9 @@
   <script>
     (function () {
       const toast = document.getElementById('toast');
-      const DEFAULT_AVATAR_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+      const DEFAULT_AVATAR_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>';
+      const AVATAR_MAX_SIZE = 2 * 1024 * 1024;
+      const AVATAR_TYPES = ['image/jpeg', 'image/png'];
 
       function showToast(message) {
         toast.textContent = message;
@@ -1045,6 +1997,16 @@
         input.addEventListener('change', () => {
           const file = input.files && input.files[0];
           if (!file) return;
+          if (!AVATAR_TYPES.includes(file.type)) {
+            showToast('仅支持 JPG、PNG 格式的图片');
+            input.value = '';
+            return;
+          }
+          if (file.size > AVATAR_MAX_SIZE) {
+            showToast('图片大小不能超过 2MB');
+            input.value = '';
+            return;
+          }
           const reader = new FileReader();
           reader.onload = () => {
             onData(reader.result);
@@ -1106,7 +2068,7 @@
         if (!url) { showToast('请输入服务地址'); return; }
 
         console.log({ name, protocol, desc, url, headers, avatar });
-        showToast('MCP 添加成功');
+        showToast('连接器添加成功');
         closeAddModal();
       });
 
@@ -1158,24 +2120,30 @@
       uninstallConfirmOk.addEventListener('click', () => {
         if (pendingUninstallCard) {
           const card = pendingUninstallCard;
-          const isCustom = card.dataset.source === '自定义MCP';
+          const isCustom = card.dataset.source === '自定义连接器';
+          const inInstalledPanel = !!card.closest('#category-installed');
 
-          if (isCustom) {
-            const cardName = (card.querySelector('.mcp-name') || {}).textContent || '该服务';
+          if (isCustom || inInstalledPanel) {
+            const cardName = getCardName(card) || '该服务';
             card.remove();
-            console.log('uninstalled (custom)', cardName);
+            console.log('uninstalled (removed)', cardName);
             showToast('已卸载 ' + cardName);
           } else {
-            const uninstallBtn = card.querySelector('.mcp-uninstall-btn');
-            if (uninstallBtn) uninstallBtn.remove();
+            const tryBtn = card.querySelector('.mcp-try-btn');
+            if (tryBtn) tryBtn.remove();
 
-            // 重建加号按钮，恢复为未添加状态
+            // 重建安装按钮，恢复为未安装状态
             const addBtn = document.createElement('button');
-            addBtn.className = 'mcp-action add';
-            addBtn.setAttribute('aria-label', '添加');
-            addBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>';
+            const installText = card.dataset.source === '插件' ? '安装插件' : '安装连接器';
+            addBtn.className = 'mcp-install-btn';
+            addBtn.setAttribute('aria-label', installText);
+            addBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>' + installText;
             card.appendChild(addBtn);
             bindAddButton(addBtn);
+
+            // 卸载后移除名称旁的"连接器市场"标签
+            const tag = card.querySelector('.mcp-name .mcp-tag');
+            if (tag) tag.remove();
 
             console.log('uninstalled (restored)', pendingUninstallName);
             showToast('已卸载 ' + pendingUninstallName);
@@ -1213,7 +2181,12 @@
           const menu = card.querySelector('.mcp-more-menu');
           menu.classList.remove('open');
 
-          if (action === 'edit') {
+          if (action === 'try') {
+            const name = getCardName(card) || '连接器';
+            const qs = new URLSearchParams({ name: name, icon: card.dataset.icon || '', source: card.dataset.source || '', added: 'true' });
+            if (card.dataset.plugin) qs.set('plugin', card.dataset.plugin);
+            location.href = 'detail.html?' + qs.toString();
+          } else if (action === 'edit') {
             const editBtn = card.querySelector('.mcp-edit');
             if (editBtn) {
               const data = {
@@ -1227,38 +2200,55 @@
               openEditModal(card, data);
             }
           } else if (action === 'uninstall') {
-            const name = (card.querySelector('.mcp-name') || {}).textContent || '该服务';
+            const name = getCardName(card) || '该服务';
             openUninstallConfirm(card, name);
           }
         });
       });
 
+      // 取卡片名称（不含来源标签文字）
+      function getCardName(card) {
+        const nameEl = card.querySelector('.mcp-name');
+        if (!nameEl) return '';
+        const first = nameEl.childNodes[0];
+        return (first ? first.textContent : nameEl.textContent).trim();
+      }
+
       function bindAddButton(btn) {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           const card = btn.closest('.mcp-card');
-          const name = (card.querySelector('.mcp-name') || {}).textContent || 'MCP';
+          const name = getCardName(card) || '连接器';
           const spinner = document.createElement('span');
           spinner.className = 'mcp-spinner';
-          btn.replaceWith(spinner);
+    btn.replaceWith(spinner);
           setTimeout(() => {
-            showToast('添加' + name + '成功');
+            showToast('安装' + name + '成功');
             spinner.remove();
 
-            const uninstallBtn = document.createElement('button');
-            uninstallBtn.className = 'mcp-uninstall-btn';
-            uninstallBtn.setAttribute('aria-label', '卸载');
-            uninstallBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-            uninstallBtn.addEventListener('click', (e) => {
+            const tryBtn = document.createElement('button');
+            tryBtn.className = 'mcp-try-btn';
+            tryBtn.setAttribute('aria-label', '试一试');
+    tryBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>试一试';
+            tryBtn.addEventListener('click', (e) => {
               e.stopPropagation();
               openUninstallConfirm(card, name);
             });
-            card.appendChild(uninstallBtn);
+            card.appendChild(tryBtn);
+
+            // 安装成功后，给名称加上来源标签（若不存在）
+            const nameEl = card.querySelector('.mcp-name');
+            if (nameEl && !nameEl.querySelector('.mcp-tag')) {
+              const tag = document.createElement('span');
+              tag.className = 'mcp-tag';
+              tag.textContent = card.dataset.source || '连接器市场';
+              nameEl.appendChild(tag);
+            }
           }, 1200);
         });
       }
 
-      document.querySelectorAll('.mcp-action.add').forEach(bindAddButton);
+      document.querySelectorAll('.mcp-install-btn').forEach(bindAddButton);
 
       // 点击空白处关闭卡片下拉菜单
       document.addEventListener('click', () => closeAllCardMenus());
@@ -1266,15 +2256,17 @@
       // ---------- 点击 MCP 卡片跳转到详情页（携带 name / icon / source / added 参数）----------
       document.querySelectorAll('.mcp-card').forEach((card) => {
         card.addEventListener('click', (e) => {
-          if (e.target.closest('.mcp-more-btn') || e.target.closest('.mcp-more-menu') || e.target.closest('.mcp-switch') || e.target.closest('.mcp-edit')) return;
-          const name = (card.querySelector('.mcp-name') || {}).textContent || 'MCP';
+          if (e.target.closest('.mcp-more-btn') || e.target.closest('.mcp-more-menu') || e.target.closest('.mcp-switch') || e.target.closest('.mcp-edit') || e.target.closest('.mcp-install-btn') || e.target.closest('.mcp-try-btn')) return;
+          const name = getCardName(card) || '连接器';
           const icon = card.dataset.icon || '';
           const source = card.dataset.source || '';
-          // 是否添加：自定义恒为已添加；市场按卡片当前是否显示开关判断
-          const isCustom = source === '自定义MCP';
-          const isAddedCard = !!card.querySelector('.mcp-uninstall-btn');
-          const added = (isCustom || isAddedCard) ? 'true' : 'false';
+    // 是否添加：已安装面板/自定义恒为已添加；市场按卡片当前是否显示试一试按钮判断
+          const isCustom = source === '自定义连接器';
+          const inInstalledPanel = !!card.closest('#category-installed');
+          const isAddedCard = !!card.querySelector('.mcp-try-btn');
+          const added = (isCustom || isAddedCard || inInstalledPanel) ? 'true' : 'false';
           const qs = new URLSearchParams({ name: name, icon: icon, source: source, added: added });
+          if (card.dataset.plugin) qs.set('plugin', card.dataset.plugin);
           location.href = 'detail.html?' + qs.toString();
         });
       });
@@ -1341,11 +2333,11 @@
         });
       });
 
-      document.querySelectorAll('.mcp-section:first-child .mcp-switch input').forEach((input) => {
+      document.querySelectorAll('#category-installed .mcp-switch input, #category-plugin .mcp-switch input').forEach((input) => {
         input.addEventListener('change', (e) => {
           e.stopPropagation();
           const card = input.closest('.mcp-card');
-          const name = (card.querySelector('.mcp-name') || {}).textContent || 'MCP';
+          const name = getCardName(card) || '连接器';
           const enabled = input.checked;
           console.log(name + ' enabled =', enabled);
           showToast(enabled ? '已启用 ' + name : '已禁用 ' + name);
@@ -1392,11 +2384,158 @@
         if (editModal.classList.contains('show')) closeEditModal();
         if (uninstallConfirmModal.classList.contains('show')) closeUninstallConfirm();
       });
+
+      // ---------- 连接器分类页签 ----------
+      const categoryTabs = Array.from(document.querySelectorAll('[data-category-tab]'));
+      const categoryPanels = Array.from(document.querySelectorAll('[data-category-panel]'));
+
+      function activateCategory(category, focusTab = false) {
+        const activeIndex = categoryTabs.findIndex((tab) => tab.dataset.categoryTab === category);
+        if (activeIndex < 0) return;
+
+        categoryTabs.forEach((tab, index) => {
+          const isActive = index === activeIndex;
+          tab.classList.toggle('active', isActive);
+          tab.setAttribute('aria-selected', String(isActive));
+          tab.tabIndex = isActive ? 0 : -1;
+        });
+
+        categoryPanels.forEach((panel) => {
+          panel.hidden = panel.dataset.categoryPanel !== category;
+        });
+
+        if (focusTab) categoryTabs[activeIndex].focus();
+      }
+
+      categoryTabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => activateCategory(tab.dataset.categoryTab));
+        tab.addEventListener('keydown', (e) => {
+          if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+          e.preventDefault();
+          const nextIndex = e.key === 'ArrowRight'
+            ? (index + 1) % categoryTabs.length
+            : (index - 1 + categoryTabs.length) % categoryTabs.length;
+          activateCategory(categoryTabs[nextIndex].dataset.categoryTab, true);
+        });
+      });
+
+      // ---------- 视图切换与搜索 ----------
+      const container = document.getElementById('container');
+      const viewButtons = Array.from(document.querySelectorAll('.view-btn'));
+      const searchInput = document.getElementById('connector-search');
+      const searchPanels = Array.from(document.querySelectorAll('[data-category-panel]'));
+      const marketFilters = Array.from(document.querySelectorAll('[data-market-filter]'));
+      const marketExpand = document.querySelector('[data-market-expand]');
+      const marketFiltersWrap = document.querySelector('.market-filters');
+      let activeMarketFilter = 'all';
+      const enterpriseFilters = Array.from(document.querySelectorAll('[data-enterprise-filter]'));
+      let activeEnterpriseFilter = 'all';
+      const installedFilters = Array.from(document.querySelectorAll('[data-installed-filter]'));
+      let activeInstalledFilter = 'all';
+
+      function applySearchFilter() {
+        const keyword = searchInput.value.trim().toLowerCase();
+
+        searchPanels.forEach((panel) => {
+          const cards = Array.from(panel.querySelectorAll('.mcp-card'));
+          if (!cards.length) return;
+
+          let visibleCount = 0;
+          cards.forEach((card) => {
+            const name = (card.querySelector('.mcp-name') || {}).textContent || '';
+            const desc = (card.querySelector('.mcp-desc') || {}).textContent || '';
+            const categories = (card.dataset.marketCategories || card.dataset.enterpriseCategories || '').split(/\s+/).filter(Boolean);
+            const text = (name + ' ' + desc).toLowerCase();
+            const matchedSearch = !keyword || text.includes(keyword);
+            const isMarketPanel = panel.id === 'category-market';
+            const isEnterprisePanel = panel.id === 'category-enterprise';
+            const isInstalledPanel = panel.id === 'category-installed';
+            let matchedCategory = true;
+            if (isMarketPanel) {
+              matchedCategory = activeMarketFilter === 'all' || categories.includes(activeMarketFilter);
+            } else if (isEnterprisePanel) {
+              matchedCategory = activeEnterpriseFilter === 'all' || categories.includes(activeEnterpriseFilter);
+            } else if (isInstalledPanel) {
+              matchedCategory = activeInstalledFilter === 'all' || card.dataset.source === activeInstalledFilter;
+            }
+            const matched = matchedSearch && matchedCategory;
+            card.hidden = !matched;
+            if (matched) visibleCount += 1;
+          });
+
+          const empty = panel.querySelector('.search-empty');
+          if (empty) {
+            empty.hidden = visibleCount !== 0;
+            const title = empty.querySelector('.search-empty-title');
+            if (title && visibleCount === 0) {
+              title.textContent = keyword
+                ? '未找到与「' + searchInput.value.trim() + '」相关的连接器'
+                : '该分类下暂无连接器';
+            }
+          }
+        });
+      }
+
+      marketFilters.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          activeMarketFilter = btn.dataset.marketFilter;
+          marketFilters.forEach((item) => {
+            const active = item === btn;
+            item.classList.toggle('active', active);
+            item.setAttribute('aria-pressed', String(active));
+          });
+          applySearchFilter();
+        });
+      });
+
+      enterpriseFilters.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          activeEnterpriseFilter = btn.dataset.enterpriseFilter;
+          enterpriseFilters.forEach((item) => {
+            const active = item === btn;
+            item.classList.toggle('active', active);
+            item.setAttribute('aria-pressed', String(active));
+          });
+          applySearchFilter();
+        });
+      });
+
+      installedFilters.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          activeInstalledFilter = btn.dataset.installedFilter;
+          installedFilters.forEach((item) => {
+            const active = item === btn;
+            item.classList.toggle('active', active);
+            item.setAttribute('aria-pressed', String(active));
+          });
+          applySearchFilter();
+        });
+      });
+
+      if (marketExpand && marketFiltersWrap) {
+        marketExpand.addEventListener('click', () => {
+          const expanded = marketFiltersWrap.classList.toggle('expanded');
+          marketExpand.setAttribute('aria-expanded', String(expanded));
+        });
+      }
+
+      viewButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          container.dataset.view = btn.dataset.view;
+          viewButtons.forEach((item) => {
+            const active = item === btn;
+            item.classList.toggle('active', active);
+            item.setAttribute('aria-pressed', String(active));
+          });
+        });
+      });
+
+      searchInput.addEventListener('input', applySearchFilter);
     })();
   </script>
   
   <style> .prd-fab-wrapper { position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; align-items: center; justify-content: center; }  .prd-fab-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #ffffff; box-shadow: 0 8px 28px rgba(79, 70, 229, 0.45); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; text-decoration: none; cursor: pointer; border: none; outline: none; position: relative; } .prd-fab-btn:hover { transform: scale(1.10); box-shadow: 0 12px 40px rgba(79, 70, 229, 0.60); } .prd-fab-btn:active { transform: scale(0.92); } .prd-fab-btn svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08)); } .prd-fab-tooltip { position: absolute; right: 50px; background: #1e293b; color: #f1f5f9; padding: 6px 16px; border-radius: 8px; font-family: -apple-system, 'Inter', 'Microsoft YaHei', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.3px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateX(4px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); } .prd-fab-tooltip::after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); border-left: 6px solid #1e293b; border-top: 6px solid transparent; border-bottom: 6px solid transparent; } .prd-fab-btn:hover .prd-fab-tooltip { opacity: 1; transform: translateX(0); }  @media (max-width: 640px) { .prd-fab-wrapper { bottom: 20px; right: 20px; } .prd-fab-btn { width: 48px; height: 48px; } .prd-fab-btn svg { width: 22px; height: 22px; } .prd-fab-tooltip { right: 60px; font-size: 12px; padding: 4px 12px; } .prd-fab-tooltip::after { right: -5px; border-width: 5px; } }  @media (prefers-color-scheme: dark) { .prd-fab-tooltip { background: #0f172a; color: #e2e8f0; } .prd-fab-tooltip::after { border-left-color: #0f172a; } }</style>
-  <div class="prd-fab-wrapper"> <a class="prd-fab-btn" href="./mcp_prd.html" target="_blank" rel="noopener noreferrer" aria-label="查看 PRD 文档">  <svg viewBox="0 0 24 24"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /> <polyline points="14 2 14 8 20 8" /> <line x1="8" y1="13" x2="16" y2="13" /> <line x1="8" y1="17" x2="16" y2="17" /> </svg> <span class="prd-fab-tooltip">PRD 文档</span></a></div>
+  <div class="prd-fab-wrapper"> <a class="prd-fab-btn" href="./KHDmcp_prd.html" target="_blank" rel="noopener noreferrer" aria-label="查看 PRD 文档">  <svg viewBox="0 0 24 24"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /> <polyline points="14 2 14 8 20 8" /> <line x1="8" y1="13" x2="16" y2="13" /> <line x1="8" y1="17" x2="16" y2="17" /> </svg> <span class="prd-fab-tooltip">PRD 文档</span></a></div>
   
 </body>
 </html>

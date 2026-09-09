@@ -4,12 +4,11 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>个人用户管理</title>
-    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
     <script src="https://cdn.jsdmirror.com/npm/iconify-icon@3.0.2/dist/iconify-icon.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        *, *::before, *::after { box-sizing: border-box; }
+        *, *::before, *::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: #e5e7eb; }
 
         html, body {
             height: 100%;
@@ -132,6 +131,138 @@
         }
         .upload-area:hover { border-color: #3b82f6; background: #f0f7ff; }
         .upload-area.dragover { border-color: #3b82f6; background: #eff6ff; }
+
+        table { border-collapse: collapse; }
+        button, a[href] { cursor: pointer; }
+
+        .flex { display: flex; }
+        .hidden { display: none; }
+        .block { display: block; }
+        .grid { display: grid; }
+        .flex-1 { flex: 1 1 0%; }
+        .flex-shrink-0 { flex-shrink: 0; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .justify-end { justify-content: flex-end; }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .gap-4 { gap: 1rem; }
+        .space-x-1 > * + * { margin-left: 0.25rem; }
+        .space-x-2 > * + * { margin-left: 0.5rem; }
+        .space-x-3 > * + * { margin-left: 0.75rem; }
+        .space-x-4 > * + * { margin-left: 1rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .w-full { width: 100%; }
+        .w-8 { width: 2rem; }
+        .w-10 { width: 2.5rem; }
+        .w-12 { width: 3rem; }
+        .h-8 { height: 2rem; }
+        .h-12 { height: 3rem; }
+        .h-16 { height: 4rem; }
+        .max-w-md { max-width: 28rem; }
+        .max-w-lg { max-width: 32rem; }
+        .max-w-sm { max-width: 24rem; }
+        .p-6 { padding: 1.5rem; }
+        .px-1\.5 { padding-left: 0.375rem; padding-right: 0.375rem; }
+        .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .px-8 { padding-left: 2rem; padding-right: 2rem; }
+        .py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-5 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+        .pl-10 { padding-left: 2.5rem; }
+        .pr-4 { padding-right: 1rem; }
+        .mx-1 { margin-left: 0.25rem; margin-right: 0.25rem; }
+        .mx-4 { margin-left: 1rem; margin-right: 1rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-0\.5 { margin-top: 0.125rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .left-3 { left: 0.75rem; }
+        .top-1\/2 { top: 50%; }
+        .-translate-y-1\/2 { transform: translateY(-50%); }
+        .overflow-hidden { overflow: hidden; }
+        .overflow-y-auto { overflow-y: auto; }
+        .border { border-width: 1px; }
+        .border-b { border-bottom-width: 1px; }
+        .border-t { border-top-width: 1px; }
+        .rounded { border-radius: 0.25rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-2xl { border-radius: 1rem; }
+        .rounded-full { border-radius: 9999px; }
+        .border-gray-100 { border-color: #f3f4f6; }
+        .border-gray-200 { border-color: #e5e7eb; }
+        .border-blue-200 { border-color: #bfdbfe; }
+        .text-left { text-align: left; }
+        .text-center { text-align: center; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+        .text-white { color: #fff; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-gray-500 { color: #6b7280; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-900 { color: #111827; }
+        .text-blue-400 { color: #60a5fa; }
+        .text-blue-500 { color: #3b82f6; }
+        .text-blue-600 { color: #2563eb; }
+        .text-blue-700 { color: #1d4ed8; }
+        .text-red-500 { color: #ef4444; }
+        .text-amber-600 { color: #d97706; }
+        .text-violet-600 { color: #7c3aed; }
+        .bg-white { background-color: #fff; }
+        .bg-gray-50 { background-color: #f9fafb; }
+        .bg-gray-100 { background-color: #f3f4f6; }
+        .bg-gray-50\/50 { background-color: rgba(249, 250, 251, 0.5); }
+        .bg-blue-50 { background-color: #eff6ff; }
+        .bg-blue-600 { background-color: #2563eb; }
+        .bg-red-100 { background-color: #fee2e2; }
+        .bg-red-500 { background-color: #ef4444; }
+        .bg-amber-100 { background-color: #fef3c7; }
+        .bg-amber-500 { background-color: #f59e0b; }
+        .bg-violet-100 { background-color: #ede9fe; }
+        .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        .cursor-not-allowed { cursor: not-allowed; }
+        .opacity-50 { opacity: 0.5; }
+        .divide-y > * + * { border-top-width: 1px; border-top-style: solid; }
+        .divide-gray-100 > * + * { border-color: #f3f4f6; }
+        .hover\:text-gray-900:hover { color: #111827; }
+        .hover\:text-gray-600:hover { color: #4b5563; }
+        .hover\:bg-gray-50:hover { background-color: #f9fafb; }
+        .hover\:bg-blue-700:hover { background-color: #1d4ed8; }
+        .hover\:bg-amber-600:hover { background-color: #d97706; }
+        .hover\:bg-red-600:hover { background-color: #dc2626; }
+        .hover\:text-blue-800:hover { color: #1e40af; }
+        .hover\:text-blue-600:hover { color: #2563eb; }
+        .hover\:underline:hover { text-decoration: underline; }
+        .focus\:outline-none:focus { outline: none; }
+        .focus\:ring-2:focus { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        .focus\:border-blue-500:focus { border-color: #3b82f6; }
+        .focus\:ring-1:focus { box-shadow: 0 0 0 1px #3b82f6; }
     </style>
 </head>
 <body>
@@ -234,7 +365,7 @@
     <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
             <h3 class="text-lg font-semibold text-gray-900" id="userModalTitle">新增个人用户</h3>
-            <button onclick="closeUserModal()" class="text-gray-400 hover:text-gray-600">
+            <button onclick="closeUserModal()" class="text-gray-400 hover:text-gray-600 bg-white">
                 <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
             </button>
         </div>
@@ -396,9 +527,9 @@ function renderTable() {
             </td>
             <td class="px-4 py-3">
                 <div class="flex items-center space-x-2">
-                    <button onclick="openEditModal(${u.id})" class="text-blue-600 hover:text-blue-800 text-sm font-medium">编辑</button>
-                    <button onclick="openDeleteModal(${u.id})" class="text-gray-400 hover:text-gray-600 text-sm font-medium">删除</button>
-                    <button onclick="openResetPwdModal(${u.id})" class="text-gray-400 hover:text-gray-600 text-sm font-medium">重置密码</button>
+                    <button onclick="openEditModal(${u.id})" class="text-blue-600 hover:text-blue-800 text-sm font-medium bg-white">编辑</button>
+                    <button onclick="openDeleteModal(${u.id})" class="text-gray-400 hover:text-gray-600 text-sm font-medium bg-white">删除</button>
+                    <button onclick="openResetPwdModal(${u.id})" class="text-gray-400 hover:text-gray-600 text-sm font-medium bg-white">重置密码</button>
                 </div>
             </td>
         `;

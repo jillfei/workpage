@@ -4,12 +4,14 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>用户管理</title>
-    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js"></script>
+
     <script src="https://cdn.jsdmirror.com/npm/iconify-icon@3.0.2/dist/iconify-icon.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        *, *::before, *::after { box-sizing: border-box; }
+        *, *::before, *::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: #e5e7eb; }
+
+        table { border-collapse: collapse; }
 
         html, body {
             height: 100%;
@@ -22,6 +24,13 @@
             font-family: 'Inter', 'Microsoft YaHei', sans-serif;
             background: #f9fafb;
             color: #1f2937;
+        }
+
+        .page-wrap {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
         /* Custom scrollbar */
@@ -166,7 +175,171 @@
             display: flex; justify-content: space-between; align-items: center;
             padding: 8px 14px; border-top: 1px solid #f3f4f6; margin-top: 4px;
         }
-		
+
+        button, a[href] { cursor: pointer; }
+
+        /* === Tailwind Utility Replacements === */
+        .flex { display: flex; }
+        .inline-flex { display: inline-flex; }
+        .block { display: block; }
+        .hidden { display: none; }
+        .grid { display: grid; }
+        .flex-1 { flex: 1 1 0%; }
+        .flex-col { flex-direction: column; }
+        .flex-wrap { flex-wrap: wrap; }
+        .flex-shrink-0 { flex-shrink: 0; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .justify-end { justify-content: flex-end; }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .gap-1 { gap: 0.25rem; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .space-x-1 > :not([hidden]) ~ :not([hidden]) { margin-left: 0.25rem; }
+        .space-x-2 > :not([hidden]) ~ :not([hidden]) { margin-left: 0.5rem; }
+        .space-x-3 > :not([hidden]) ~ :not([hidden]) { margin-left: 0.75rem; }
+        .space-x-4 > :not([hidden]) ~ :not([hidden]) { margin-left: 1rem; }
+        .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; }
+        .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem; }
+        .w-full { width: 100%; }
+        .w-8 { width: 2rem; }
+        .w-10 { width: 2.5rem; }
+        .w-14 { width: 3.5rem; }
+        .h-full { height: 100%; }
+        .h-16 { height: 4rem; }
+        .h-8 { height: 2rem; }
+        .h-14 { height: 3.5rem; }
+        .h-56 { height: 14rem; }
+        .max-w-md { max-width: 28rem; }
+        .max-w-lg { max-width: 32rem; }
+        .max-w-sm { max-width: 24rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .px-1 { padding-left: 0.25rem; padding-right: 0.25rem; }
+        .px-1\.5 { padding-left: 0.375rem; padding-right: 0.375rem; }
+        .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .px-8 { padding-left: 2rem; padding-right: 2rem; }
+        .py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-5 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+        .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+        .pl-10 { padding-left: 2.5rem; }
+        .pr-4 { padding-right: 1rem; }
+        .mx-1 { margin-left: 0.25rem; margin-right: 0.25rem; }
+        .mx-4 { margin-left: 1rem; margin-right: 1rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+		.mb-6 { margin-bottom: 1.5rem; }
+        .mt-0\.5 { margin-top: 0.125rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-3 { margin-top: 0.75rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mr-1\.5 { margin-right: 0.375rem; }
+        .mr-2 { margin-right: 0.5rem; }
+        .ml-auto { margin-left: auto; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-5xl { font-size: 3rem; line-height: 1; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+        .text-left { text-align: left; }
+        .text-center { text-align: center; }
+        .text-white { color: #fff; }
+        .text-gray-300 { color: #d1d5db; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-gray-500 { color: #6b7280; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-900 { color: #111827; }
+        .text-blue-400 { color: #60a5fa; }
+        .text-blue-500 { color: #3b82f6; }
+        .text-blue-600 { color: #2563eb; }
+        .text-blue-700 { color: #1d4ed8; }
+        .text-red-500 { color: #ef4444; }
+        .text-red-600 { color: #dc2626; }
+        .text-purple-600 { color: #9333ea; }
+        .text-green-600 { color: #16a34a; }
+        .text-amber-500 { color: #f59e0b; }
+        .text-amber-700 { color: #b45309; }
+        .text-orange-600 { color: #ea580c; }
+        .bg-white { background-color: #fff; }
+        .bg-gray-50 { background-color: #f9fafb; }
+        .bg-gray-100 { background-color: #f3f4f6; }
+        .bg-blue-50 { background-color: #eff6ff; }
+        .bg-blue-100 { background-color: #dbeafe; }
+        .bg-blue-600 { background-color: #2563eb; }
+        .bg-red-50 { background-color: #fef2f2; }
+        .bg-red-600 { background-color: #dc2626; }
+        .bg-green-100 { background-color: #dcfce7; }
+        .bg-purple-100 { background-color: #f3e8ff; }
+        .bg-orange-100 { background-color: #ffedd5; }
+        .bg-amber-50 { background-color: #fffbeb; }
+        .bg-gray-50\/50 { background-color: rgb(249 250 251 / 0.5); }
+        .border { border-width: 1px; }
+        .border-2 { border-width: 2px; }
+        .border-b { border-bottom-width: 1px; }
+        .border-t { border-top-width: 1px; }
+        .border-dashed { border-style: dashed; }
+        .border-gray-100 { border-color: #f3f4f6; }
+        .border-gray-200 { border-color: #e5e7eb; }
+        .border-blue-400 { border-color: #60a5fa; }
+        .border-amber-200 { border-color: #fde68a; }
+        .border-red-200 { border-color: #fecaca; }
+        .rounded { border-radius: 0.25rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-2xl { border-radius: 1rem; }
+        .rounded-full { border-radius: 9999px; }
+        .divide-y > :not([hidden]) ~ :not([hidden]) { border-top-width: 1px; }
+        .divide-gray-100 > :not([hidden]) ~ :not([hidden]) { border-color: #f3f4f6; }
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .left-3 { left: 0.75rem; }
+        .top-1\/2 { top: 50%; }
+        .-translate-y-1\/2 { transform: translateY(-50%); }
+        .overflow-hidden { overflow: hidden; }
+        .overflow-y-auto { overflow-y: auto; }
+        .shadow-2xl { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
+        .cursor-pointer { cursor: pointer; }
+        .cursor-not-allowed { cursor: not-allowed; }
+        .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-duration: 150ms; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+        .transition-all { transition-property: all; transition-duration: 150ms; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+        .hover\:text-gray-900:hover { color: #111827; }
+        .hover\:bg-gray-50:hover { background-color: #f9fafb; }
+        .hover\:bg-gray-100:hover { background-color: #f3f4f6; }
+        .hover\:text-gray-600:hover { color: #4b5563; }
+        .hover\:text-blue-600:hover { color: #2563eb; }
+        .hover\:text-blue-700:hover { color: #1d4ed8; }
+        .hover\:text-blue-800:hover { color: #1e40af; }
+        .hover\:bg-blue-700:hover { background-color: #1d4ed8; }
+        .hover\:bg-red-700:hover { background-color: #b91c1c; }
+        .hover\:bg-blue-50:hover { background-color: #eff6ff; }
+        .hover\:border-blue-300:hover { border-color: #93c5fd; }
+        .hover\:bg-red-100:hover { background-color: #fee2e2; }
+        .hover\:underline:hover { text-decoration: underline; }
+        .hover\:border-blue-400:hover { border-color: #60a5fa; }
+        .focus\:outline-none:focus { outline: none; }
+        .focus\:ring-2:focus { box-shadow: 0 0 0 2px rgb(59 130 246 / 0.2); }
+        .focus\:ring-1:focus { box-shadow: 0 0 0 1px #3b82f6; }
+        .focus\:border-blue-500:focus { border-color: #3b82f6; }
     </style>
 </head>
 <body>
@@ -174,28 +347,26 @@
 <!-- Toast container -->
 <div class="toast-container" id="toastContainer"></div>
 
-<div class="flex h-full">
+<div class="page-wrap">
 
-    <!-- 主内容区 -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-
-        <!-- 顶部操作栏 -->
-        <header class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
+    <!-- 顶部操作栏 -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
+				   
 			<div class="flex items-center space-x-2 text-sm text-gray-500">
 			    <span>系统管理</span>
 			    <iconify-icon icon="mdi:chevron-right"></iconify-icon>
 			    <span class="text-gray-900 font-medium">用户管理</span>
 			</div>
             <div class="flex items-center space-x-2">
-                <button class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                <button class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">
                     <iconify-icon icon="mdi:download-outline"></iconify-icon>
                     <span>导出</span>
                 </button>
-                <button onclick="openImportModal()" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                <button onclick="openImportModal()" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">
                     <iconify-icon icon="mdi:upload-outline"></iconify-icon>
                     <span>导入</span>
                 </button>
-                <button onclick="openAddModal()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                <button onclick="openAddModal()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     <iconify-icon icon="mdi:plus"></iconify-icon>
                     <span>新增成员</span>
                 </button>
@@ -302,356 +473,13 @@
                             <th class="text-left px-4 py-3 font-medium text-gray-500">操作</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        <!-- Row 1: 正凯 -->
-                        <tr data-owner="true">
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-semibold">孙</div>
-                                    <span class="font-medium text-gray-900">孙礼飞</span>
-                                    <!--span class="tag-owner">所有者</span-->
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">—</td>
-                            <td class="px-4 py-3 text-gray-500">总部</td>
-                            <td class="px-4 py-3 text-gray-500">—</td>
-                            <td class="px-4 py-3 text-gray-500">654321@qq.com</td>
-                            <td class="px-4 py-3"><span class="text-purple-600 font-medium">所有者</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle" style="pointer-events:none;opacity:0.6;"><input type="checkbox" checked disabled/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium hidden" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Row 2: 26653 -->
-                        <tr>
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-semibold">26</div>
-                                    <span class="font-medium text-gray-900">—</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">26653</td>
-                            <td class="px-4 py-3 text-gray-500">总部</td>
-                            <td class="px-4 py-3 text-gray-500">—</td>
-                            <td class="px-4 py-3 text-gray-500">26653@zhink.cc</td>
-                            <td class="px-4 py-3"><span class="text-blue-600 font-medium">管理员</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Row 3: 唐迁 -->
-                        <tr>
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-semibold">唐</div>
-                                    <span class="font-medium text-gray-900">唐迁</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">56183</td>
-                            <td class="px-4 py-3 text-gray-500">总部</td>
-                            <td class="px-4 py-3 text-gray-500">138****6183</td>
-                            <td class="px-4 py-3 text-gray-500">56183@zhink.com</td>
-                            <td class="px-4 py-3"><span class="text-blue-600 font-medium">管理员</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Row 4: 许悦 -->
-                        <tr>
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-semibold">许</div>
-                                    <span class="font-medium text-gray-900">许悦</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">56202</td>
-                            <td class="px-4 py-3 text-gray-500">总部</td>
-                            <td class="px-4 py-3 text-gray-500">139****6202</td>
-                            <td class="px-4 py-3 text-gray-500">xy-56202@zhink.cc</td>
-                            <td class="px-4 py-3"><span class="text-blue-600 font-medium">管理员</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Row 5: 陈佳斌 -->
-                        <tr>
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-semibold">陈</div>
-                                    <span class="font-medium text-gray-900">陈佳斌</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">56711</td>
-                            <td class="px-4 py-3 text-gray-500">总部</td>
-                            <td class="px-4 py-3 text-gray-500">137****6711</td>
-                            <td class="px-4 py-3 text-gray-500">56711@zhink.cc</td>
-                            <td class="px-4 py-3"><span class="text-green-600 font-medium">成员</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Row 6: 代胜燃 -->
-                        <tr>
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-semibold">代</div>
-                                    <span class="font-medium text-gray-900">代胜燃</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">33515</td>
-                            <td class="px-4 py-3 text-gray-500">总部</td>
-                            <td class="px-4 py-3 text-gray-500">136****3515</td>
-                            <td class="px-4 py-3 text-gray-500">dsr-33515@zhink.cc</td>
-                            <td class="px-4 py-3"><span class="text-green-600 font-medium">成员</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Row 7: 王金 -->
-                        <tr>
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-semibold">王</div>
-                                    <span class="font-medium text-gray-900">王金</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">33326</td>
-                            <td class="px-4 py-3 text-gray-500">总部</td>
-                            <td class="px-4 py-3 text-gray-500">135****3326</td>
-                            <td class="px-4 py-3 text-gray-500">33326@zhink.cc</td>
-                            <td class="px-4 py-3"><span class="text-green-600 font-medium">成员</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Row 8: 苏展祺 -->
-                        <tr>
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-semibold">苏</div>
-                                    <span class="font-medium text-gray-900">苏展祺</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">33726</td>
-                            <td class="px-4 py-3 text-gray-500">总部</td>
-                            <td class="px-4 py-3 text-gray-500">138****3726</td>
-                            <td class="px-4 py-3 text-gray-500">33726@zhink.cc</td>
-                            <td class="px-4 py-3"><span class="text-green-600 font-medium">成员</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Row 9: 范天月 -->
-                        <tr>
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-semibold">范</div>
-                                    <span class="font-medium text-gray-900">范天月</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">23253</td>
-                            <td class="px-4 py-3 text-gray-500">总部</td>
-                            <td class="px-4 py-3 text-gray-500">139****3253</td>
-                            <td class="px-4 py-3 text-gray-500">23253@zhink.cc</td>
-                            <td class="px-4 py-3"><span class="text-green-600 font-medium">成员</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Row 10: 202101 -->
-                        <tr>
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-semibold">20</div>
-                                    <span class="font-medium text-gray-900">—</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">202101</td>
-                            <td class="px-4 py-3 text-gray-500">总部</td>
-                            <td class="px-4 py-3 text-gray-500">—</td>
-                            <td class="px-4 py-3 text-gray-500">202101@zhink.cc</td>
-                            <td class="px-4 py-3"><span class="text-green-600 font-medium">成员</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Row 11: 李明 -->
-                        <tr>
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-semibold">李</div>
-                                    <span class="font-medium text-gray-900">李明</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">10001</td>
-                            <td class="px-4 py-3 text-gray-500">生产部</td>
-                            <td class="px-4 py-3 text-gray-500">138****0001</td>
-                            <td class="px-4 py-3 text-gray-500">liming@zhink.cc</td>
-                            <td class="px-4 py-3"><span class="text-green-600 font-medium">成员</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Row 12: 张华 -->
-                        <tr>
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-semibold">张</div>
-                                    <span class="font-medium text-gray-900">张华</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">10002</td>
-                            <td class="px-4 py-3 text-gray-500">采购部</td>
-                            <td class="px-4 py-3 text-gray-500">139****0002</td>
-                            <td class="px-4 py-3 text-gray-500">zhanghua@zhink.cc</td>
-                            <td class="px-4 py-3"><span class="text-green-600 font-medium">成员</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox" checked/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Row 13: 赵强 -->
-                        <tr>
-                            <td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-semibold">赵</div>
-                                    <span class="font-medium text-gray-900">赵强</span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">10003</td>
-                            <td class="px-4 py-3 text-gray-500">财务部</td>
-                            <td class="px-4 py-3 text-gray-500">137****0003</td>
-                            <td class="px-4 py-3 text-gray-500">zhaoqiang@zhink.cc</td>
-                            <td class="px-4 py-3"><span class="text-green-600 font-medium">成员</span></td>
-                            <td class="px-4 py-3">
-                                <label class="toggle"><input type="checkbox"/><span class="slider"></span></label>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-2">
-                                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>
-                                    <button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody class="divide-y divide-gray-100" id="memberTableBody"></tbody>
                 </table>
             </div>
 
             <!-- 分页 -->
-            <div class="flex items-center justify-between mt-4">
-                <div class="text-sm text-gray-500">
-                    共 <span class="font-medium text-gray-700">18</span> 条记录，每页
-                    <select class="border border-gray-200 rounded px-2 py-1 text-sm mx-1 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                        <option>10</option><option>20</option><option>50</option>
-                    </select>
-                    条
-                </div>
-                <div class="flex items-center space-x-2">
-                    <button class="px-3 py-1.5 text-sm text-gray-400 border border-gray-200 rounded-lg cursor-not-allowed" disabled>上一页</button>
-                    <button class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg font-medium">1</button>
-                    <button class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">2</button>
-                    <button class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50">下一页</button>
-                </div>
-            </div>
+            <div class="flex items-center justify-between mt-4" id="paginationWrap"></div>
         </div>
-
-    </div>
 
 </div>
 
@@ -811,6 +639,105 @@
 </div>
 
 <script>
+// ============ Member Data & Render ============
+var members = [
+    { avatar: '孙', avatarBg: 'bg-blue-100', avatarColor: 'text-blue-600', name: '孙礼飞', accountId: '—', dept: '总部', phone: '—', email: '654321@qq.com', role: '所有者', roleColor: 'text-purple-600', enabled: true, isOwner: true },
+    { avatar: '26', avatarBg: 'bg-gray-100', avatarColor: 'text-gray-600', name: '—', accountId: '26653', dept: '总部', phone: '—', email: '26653@zhink.cc', role: '管理员', roleColor: 'text-blue-600', enabled: true },
+    { avatar: '唐', avatarBg: 'bg-gray-100', avatarColor: 'text-gray-600', name: '唐迁', accountId: '56183', dept: '总部', phone: '138****6183', email: '56183@zhink.com', role: '管理员', roleColor: 'text-blue-600', enabled: true },
+    { avatar: '许', avatarBg: 'bg-gray-100', avatarColor: 'text-gray-600', name: '许悦', accountId: '56202', dept: '总部', phone: '139****6202', email: 'xy-56202@zhink.cc', role: '管理员', roleColor: 'text-blue-600', enabled: true },
+    { avatar: '陈', avatarBg: 'bg-gray-100', avatarColor: 'text-gray-600', name: '陈佳斌', accountId: '56711', dept: '总部', phone: '137****6711', email: '56711@zhink.cc', role: '成员', roleColor: 'text-green-600', enabled: true },
+    { avatar: '代', avatarBg: 'bg-gray-100', avatarColor: 'text-gray-600', name: '代胜燃', accountId: '33515', dept: '总部', phone: '136****3515', email: 'dsr-33515@zhink.cc', role: '成员', roleColor: 'text-green-600', enabled: true },
+    { avatar: '王', avatarBg: 'bg-gray-100', avatarColor: 'text-gray-600', name: '王金', accountId: '33326', dept: '总部', phone: '135****3326', email: '33326@zhink.cc', role: '成员', roleColor: 'text-green-600', enabled: true },
+    { avatar: '苏', avatarBg: 'bg-gray-100', avatarColor: 'text-gray-600', name: '苏展祺', accountId: '33726', dept: '总部', phone: '138****3726', email: '33726@zhink.cc', role: '成员', roleColor: 'text-green-600', enabled: true },
+    { avatar: '范', avatarBg: 'bg-gray-100', avatarColor: 'text-gray-600', name: '范天月', accountId: '23253', dept: '总部', phone: '139****3253', email: '23253@zhink.cc', role: '成员', roleColor: 'text-green-600', enabled: true },
+    { avatar: '20', avatarBg: 'bg-gray-100', avatarColor: 'text-gray-600', name: '—', accountId: '202101', dept: '总部', phone: '—', email: '202101@zhink.cc', role: '成员', roleColor: 'text-green-600', enabled: true },
+    { avatar: '李', avatarBg: 'bg-green-100', avatarColor: 'text-green-600', name: '李明', accountId: '10001', dept: '生产部', phone: '138****0001', email: 'liming@zhink.cc', role: '成员', roleColor: 'text-green-600', enabled: true },
+    { avatar: '张', avatarBg: 'bg-purple-100', avatarColor: 'text-purple-600', name: '张华', accountId: '10002', dept: '采购部', phone: '139****0002', email: 'zhanghua@zhink.cc', role: '成员', roleColor: 'text-green-600', enabled: true },
+    { avatar: '赵', avatarBg: 'bg-orange-100', avatarColor: 'text-orange-600', name: '赵强', accountId: '10003', dept: '财务部', phone: '137****0003', email: 'zhaoqiang@zhink.cc', role: '成员', roleColor: 'text-green-600', enabled: false }
+];
+
+var currentPage = 1;
+var pageSize = 10;
+
+function renderMemberTable() {
+    var tbody = document.getElementById('memberTableBody');
+    var total = members.length;
+    var totalPages = Math.ceil(total / pageSize) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+    var start = (currentPage - 1) * pageSize;
+    var end = Math.min(start + pageSize, total);
+    var pageItems = members.slice(start, end);
+
+    tbody.innerHTML = pageItems.map(function(m, idx) {
+        var i = start + idx;
+        var toggleStyle = m.isOwner ? ' style="pointer-events:none;opacity:0.6;"' : '';
+        var deleteBtn = m.isOwner ? '' : '<button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmDelete(this)">删除</button>';
+        return '<tr data-index="' + i + '"' + (m.isOwner ? ' data-owner="true"' : '') + '>' +
+            '<td class="px-4 py-3"><input type="checkbox" class="custom-checkbox"/></td>' +
+            '<td class="px-4 py-3"><div class="flex items-center space-x-2"><div class="w-8 h-8 rounded-full ' + m.avatarBg + ' ' + m.avatarColor + ' flex items-center justify-center text-xs font-semibold">' + m.avatar + '</div><span class="font-medium text-gray-900">' + m.name + '</span></div></td>' +
+            '<td class="px-4 py-3 text-gray-500">' + m.accountId + '</td>' +
+            '<td class="px-4 py-3 text-gray-500">' + m.dept + '</td>' +
+            '<td class="px-4 py-3 text-gray-500">' + m.phone + '</td>' +
+            '<td class="px-4 py-3 text-gray-500">' + m.email + '</td>' +
+            '<td class="px-4 py-3"><span class="' + m.roleColor + ' font-medium">' + m.role + '</span></td>' +
+            '<td class="px-4 py-3"><label class="toggle"' + toggleStyle + '><input type="checkbox"' + (m.enabled ? ' checked' : '') + (m.isOwner ? ' disabled' : '') + '/><span class="slider"></span></label></td>' +
+            '<td class="px-4 py-3"><div class="flex items-center space-x-2">' +
+                '<button class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="openEditModal(this)">编辑</button>' +
+                deleteBtn +
+                '<button class="text-gray-400 hover:text-gray-600 text-sm font-medium" onclick="confirmResetPassword(this)">重置密码</button>' +
+            '</div></td></tr>';
+    }).join('');
+
+    renderPagination();
+}
+
+function renderPagination() {
+    var wrap = document.getElementById('paginationWrap');
+    var total = members.length;
+    var totalPages = Math.ceil(total / pageSize) || 1;
+    var start = (currentPage - 1) * pageSize + 1;
+    var end = Math.min(currentPage * pageSize, total);
+
+    var pagesHtml = '';
+    for (var i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+            pagesHtml += '<button class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg font-medium">' + i + '</button>';
+        } else {
+            pagesHtml += '<button class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50" onclick="goToPage(' + i + ')">' + i + '</button>';
+        }
+    }
+
+    wrap.innerHTML =
+        '<div class="text-sm text-gray-500">' +
+            '共 <span class="font-medium text-gray-700">' + total + '</span> 条记录，每页 ' +
+            '<select class="border border-gray-200 rounded px-2 py-1 text-sm mx-1 focus:outline-none focus:ring-1 focus:ring-blue-500" onchange="changePageSize(this.value)">' +
+                '<option value="10"' + (pageSize === 10 ? ' selected' : '') + '>10</option>' +
+                '<option value="20"' + (pageSize === 20 ? ' selected' : '') + '>20</option>' +
+                '<option value="50"' + (pageSize === 50 ? ' selected' : '') + '>50</option>' +
+            '</select> 条' +
+        '</div>' +
+        '<div class="flex items-center space-x-2">' +
+            '<button class="px-3 py-1.5 text-sm text-gray-400 border border-gray-200 rounded-lg' + (currentPage <= 1 ? ' cursor-not-allowed" disabled' : '" onclick="goToPage(' + (currentPage - 1) + ')') + '>上一页</button>' +
+            pagesHtml +
+            '<button class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50' + (currentPage >= totalPages ? ' cursor-not-allowed" disabled' : '" onclick="goToPage(' + (currentPage + 1) + ')') + '>下一页</button>' +
+        '</div>';
+}
+
+function goToPage(page) {
+    var totalPages = Math.ceil(members.length / pageSize) || 1;
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    renderMemberTable();
+}
+
+function changePageSize(size) {
+    pageSize = parseInt(size);
+    currentPage = 1;
+    renderMemberTable();
+}
+
+renderMemberTable();
+
 // ============ Toast ============
 function showToast(msg) {
     var container = document.getElementById('toastContainer');
@@ -822,8 +749,10 @@ function showToast(msg) {
 }
 
 // ============ Select All ============
-document.getElementById('selectAll').addEventListener('change', function() {
-    document.querySelectorAll('.member-table tbody .custom-checkbox').forEach(function(cb) { cb.checked = this.checked; }.bind(this));
+document.addEventListener('change', function(e) {
+    if (e.target.id === 'selectAll') {
+        document.querySelectorAll('.member-table tbody .custom-checkbox').forEach(function(cb) { cb.checked = e.target.checked; });
+    }
 });
 
 // ============ Member Modal (Add / Edit) ============
@@ -853,35 +782,25 @@ function openAddModal() {
 function openEditModal(btn) {
     var tr = btn.closest('tr');
     editingRow = tr;
+    var idx = parseInt(tr.getAttribute('data-index'));
+    var m = members[idx];
     document.getElementById('memberModalTitle').textContent = '编辑用户';
     document.getElementById('memberSubmitBtn').textContent = '保存修改';
     document.getElementById('passwordField').style.display = 'none';
 
-    // Owner: hide role checkboxes, show "拥有所有权限"
-    var isOwner = tr.getAttribute('data-owner') === 'true';
-    document.getElementById('roleCheckboxes').style.display = isOwner ? 'none' : '';
-    document.getElementById('ownerRoleInfo').style.display = isOwner ? '' : 'none';
-    if (isOwner) { document.getElementById('ownerRoleInfo').classList.remove('hidden'); }
+    document.getElementById('roleCheckboxes').style.display = m.isOwner ? 'none' : '';
+    document.getElementById('ownerRoleInfo').style.display = m.isOwner ? '' : 'none';
+    if (m.isOwner) { document.getElementById('ownerRoleInfo').classList.remove('hidden'); }
     else { document.getElementById('ownerRoleInfo').classList.add('hidden'); }
 
-    var cells = tr.querySelectorAll('td');
-    // Name
-    var nameEl = cells[1].querySelector('.font-medium.text-gray-900');
-    document.getElementById('modalName').value = nameEl ? nameEl.textContent.trim() : '';
-    // Employee ID
-    document.getElementById('modalEmployeeId').value = cells[2].textContent.trim();
-    // Department
-    document.getElementById('modalDept').value = cells[3].textContent.trim();
-    // Phone
-    document.getElementById('modalPhone').value = cells[4].textContent.trim();
-    // Email
-    document.getElementById('modalEmail').value = cells[5].textContent.trim();
-    // Role
-    var roleText = cells[6].textContent.trim();
+    document.getElementById('modalName').value = m.name === '—' ? '' : m.name;
+    document.getElementById('modalEmployeeId').value = m.accountId;
+    document.getElementById('modalDept').value = m.dept;
+    document.getElementById('modalPhone').value = m.phone === '—' ? '' : m.phone;
+    document.getElementById('modalEmail').value = m.email;
     document.querySelectorAll('.modal-role-cb').forEach(function(cb) {
-        cb.checked = (cb.value === roleText);
+        cb.checked = (cb.value === m.role);
     });
-    // Remark - clear
     document.getElementById('modalRemark').value = '';
 
     document.getElementById('memberModal').classList.add('active');
@@ -893,21 +812,20 @@ function closeMemberModal() {
 
 function submitMemberForm() {
     if (editingRow) {
-        // Update row data
-        var cells = editingRow.querySelectorAll('td');
-        var nameVal = document.getElementById('modalName').value || '—';
-        var nameEl = cells[1].querySelector('.font-medium.text-gray-900');
-        if (nameEl) nameEl.textContent = nameVal;
-        cells[2].textContent = document.getElementById('modalEmployeeId').value;
-        cells[3].textContent = document.getElementById('modalDept').value;
-        cells[4].textContent = document.getElementById('modalPhone').value || '—';
-        cells[5].textContent = document.getElementById('modalEmail').value;
-        // Update role
+        var idx = parseInt(editingRow.getAttribute('data-index'));
+        var m = members[idx];
+        m.name = document.getElementById('modalName').value || '—';
+        m.accountId = document.getElementById('modalEmployeeId').value;
+        m.dept = document.getElementById('modalDept').value;
+        m.phone = document.getElementById('modalPhone').value || '—';
+        m.email = document.getElementById('modalEmail').value;
         var selectedRoles = [];
         document.querySelectorAll('.modal-role-cb:checked').forEach(function(cb) { selectedRoles.push(cb.value); });
         if (selectedRoles.length > 0) {
-            cells[6].innerHTML = '<span class="text-blue-600 font-medium">' + selectedRoles.join('、') + '</span>';
+            m.role = selectedRoles[0];
+            m.roleColor = selectedRoles[0] === '管理员' ? 'text-blue-600' : 'text-green-600';
         }
+        renderMemberTable();
         showToast('修改已保存');
     } else {
         showToast('成员创建成功');
@@ -920,6 +838,9 @@ var deleteTarget = null;
 
 function confirmDelete(btn) {
     deleteTarget = btn.closest('tr');
+    var idx = parseInt(deleteTarget.getAttribute('data-index'));
+    var m = members[idx];
+    document.getElementById('deleteUserName').textContent = m.name === '—' ? m.accountId : m.name;
     document.getElementById('deleteModal').classList.add('active');
 }
 
@@ -930,9 +851,9 @@ function closeDeleteModal() {
 
 function doDelete() {
     if (deleteTarget) {
-        deleteTarget.style.transition = 'opacity 0.3s';
-        deleteTarget.style.opacity = '0';
-        setTimeout(function() { deleteTarget.remove(); }, 300);
+        var idx = parseInt(deleteTarget.getAttribute('data-index'));
+        members.splice(idx, 1);
+        renderMemberTable();
     }
     closeDeleteModal();
     showToast('删除成功');
@@ -943,6 +864,9 @@ var resetPwdTarget = null;
 
 function confirmResetPassword(btn) {
     resetPwdTarget = btn.closest('tr');
+    var idx = parseInt(resetPwdTarget.getAttribute('data-index'));
+    var m = members[idx];
+    document.getElementById('resetPwdUserName').textContent = m.name === '—' ? m.accountId : m.name;
     document.getElementById('resetPwdModal').classList.add('active');
 }
 
