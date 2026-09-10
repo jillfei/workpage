@@ -477,6 +477,90 @@ body {
 .notice-box .notice-icon { flex-shrink: 0; margin-top: 2px; }
 .notice-box .notice-text { font-size: var(--font-xs); color: var(--text-secondary); line-height: 1.6; }
 
+/* ========== Connector Cards ========== */
+.connector-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  overflow: hidden;
+  background: var(--bg-white);
+}
+
+.connector-card:last-child { margin-bottom: 0; }
+
+.connector-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; cursor: pointer; transition: var(--transition);
+}
+
+.connector-header:hover { background: var(--bg); }
+
+.connector-icon {
+  width: 40px; height: 40px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 14px; font-weight: 600;
+}
+
+.connector-info { flex: 1; min-width: 0; }
+.connector-name { font-size: var(--font-sm); font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
+.connector-desc { font-size: var(--font-xs); color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.connector-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+
+.connector-tool-count {
+  font-size: var(--font-xs); color: var(--text-secondary);
+  padding: 3px 8px; background: var(--bg); border-radius: 4px;
+  margin-right: 4px;
+}
+
+.connector-delete-btn {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); color: var(--text-tertiary);
+  cursor: pointer; transition: var(--transition); border: none; background: none;
+}
+
+.connector-delete-btn:hover { background: var(--danger-light); color: var(--danger); }
+
+.connector-expand-btn {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); color: var(--text-tertiary);
+  cursor: pointer; transition: var(--transition); border: none; background: none;
+}
+
+.connector-expand-btn:hover { background: var(--bg); color: var(--text-secondary); }
+
+.connector-card.expanded .connector-expand-btn { transform: rotate(180deg); }
+
+.connector-tools {
+  display: none; border-top: 1px solid var(--border);
+  padding: 4px 0;
+}
+
+.connector-card.expanded .connector-tools { display: block; }
+
+.connector-tool-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px 10px 66px;
+  border-bottom: 1px solid var(--bg);
+}
+
+.connector-tool-item:last-child { border-bottom: none; }
+
+.connector-tool-info { flex: 1; min-width: 0; }
+.connector-tool-name { font-size: var(--font-sm); font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
+.connector-tool-desc { font-size: var(--font-xs); color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.connector-tool-delete {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); color: var(--text-tertiary);
+  cursor: pointer; transition: var(--transition); border: none; background: none; flex-shrink: 0;
+}
+
+.connector-tool-delete:hover { background: var(--danger-light); color: var(--danger); }
+
 /* ========== Scrollbar ========== */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -675,27 +759,25 @@ body {
 <div class="config-section">
   <div class="section-header">
     <h2 class="section-title">扩展能力</h2>
-    <p class="section-desc">为专家绑定工具、MCP 和技能，扩展其能力边界</p>
+    <p class="section-desc">为专家绑定工具、连接器和技能，扩展其能力边界</p>
   </div>
 
   <div class="config-card">
 
-    <!-- MCP -->
+    <!-- 连接器 -->
     <div class="form-group">
-      <label class="form-label">MCP</label>
+      <label class="form-label">连接器</label>
       <div class="selector-trigger" onclick="openTopModal('mcp')">
         <div class="selector-trigger-left">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          <span>管理 MCP</span>
+          <span>管理连接器</span>
         </div>
         <div class="selector-trigger-right">
-          <span>已选 1 个</span>
+          <span id="connectorCountLabel">已选 0 个</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       </div>
-      <div class="selected-tags" style="margin-top:8px;">
-        <div class="selected-tag">数据库查询 MCP <span class="tag-remove">×</span></div>
-      </div>
+      <div id="connectorList"></div>
     </div>
 
     <!-- 技能 -->
@@ -707,10 +789,11 @@ body {
           <span>管理技能</span>
         </div>
         <div class="selector-trigger-right">
-          <span>已选 0 个</span>
+          <span id="skillCountLabel">已选 0 个</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       </div>
+      <div id="skillList"></div>
     </div>
   </div>
 </div>
@@ -814,8 +897,8 @@ body {
       .top-modal-btn-outline:hover { border-color: #D1D5DB; color: #1F2937; background: #F9FAFB; }
       .top-modal-btn-primary { background: #3B82F6; color: #fff; }
       .top-modal-btn-primary:hover { background: #2563EB; }
-      .top-modal-btn-ghost { background: transparent; color: #6B7280; border: none; padding: 6px 10px; font-size: 12px; }
-      .top-modal-btn-ghost:hover { color: #3B82F6; background: #EFF6FF; }
+      .top-modal-btn-ghost { background: transparent; color: #6B7280; border: 1px solid #E5E7EB; padding: 6px 10px; font-size: 12px; }
+      .top-modal-btn-ghost:hover { color: #3B82F6; border-color: #3B82F6; background: #EFF6FF; }
 
       /* List items */
       .top-modal-item {
@@ -845,7 +928,7 @@ body {
       .top-modal-item-tags { display: flex; gap: 4px; margin-top: 4px; }
       .top-modal-item-tag { font-size: 11px; padding: 1px 6px; border-radius: 3px; background: #F3F4F6; color: #9CA3AF; }
 
-      /* MCP expandable */
+      /* 连接器 expandable */
       .top-mcp-item { border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
       .top-mcp-header {
         display: flex; align-items: center; gap: 12px;
@@ -861,6 +944,7 @@ body {
         padding: 8px 0 8px 48px; border-bottom: 1px solid #F3F4F6;
       }
       .top-mcp-sub:last-of-type { border-bottom: none; }
+      .top-mcp-sub.added { background: #F0F9FF; }
       .top-mcp-sub-name { font-size: 12px; font-weight: 500; color: #1F2937; }
       .top-mcp-sub-desc { font-size: 11px; color: #9CA3AF; }
       .top-mcp-actions { padding: 8px 0 0; text-align: right; }
@@ -950,6 +1034,26 @@ body {
         display: flex; align-items: center; justify-content: flex-end; gap: 8px;
         padding: 12px 20px; border-top: 1px solid #E5E7EB;
       }
+
+      /* MCP Modal Tabs */
+      .top-modal .model-tabs {
+        display: flex;
+        border-bottom: 1px solid #E5E7EB;
+        padding: 0 20px;
+      }
+      .top-modal .model-tab {
+        padding: 12px 16px;
+        font-size: 13px;
+        color: #6B7280;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+        margin-bottom: -1px;
+        user-select: none;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
+      .top-modal .model-tab:hover { color: #1F2937; }
+      .top-modal .model-tab.active { color: #3B82F6; border-bottom-color: #3B82F6; font-weight: 500; }
     `;
     doc.head.appendChild(style);
     if (doc === topDoc) styleInjected = true;
@@ -986,36 +1090,75 @@ body {
       ]
     }
   };
+  window.modalData = modalData;
 
   var mcpData = [
     {
-      id:'mcp1', name:'数据库查询 MCP', avatar:'DB', avatarBg:'#EFF6FF', avatarColor:'#3B82F6',
-      meta:'张三 · 2026-06-15', desc:'支持 MySQL、PostgreSQL 数据库的增删改查操作', selected:true, expanded:true,
+      id:'mcp1', name:'数据库查询连接器', avatar:'DB', avatarBg:'#EFF6FF', avatarColor:'#3B82F6',
+      meta:'张三 · 2026-06-15', desc:'支持 MySQL、PostgreSQL 数据库的增删改查操作', selected:false, expanded:false,
+      category:'enterprise',
       subs: [
         { name:'执行 SQL 查询', desc:'执行 SELECT 查询语句并返回结果' },
         { name:'执行数据写入', desc:'执行 INSERT/UPDATE/DELETE 操作' },
         { name:'获取表结构', desc:'获取指定数据库的表结构信息' },
-      ]
+      ],
+      addedSubs: []
     },
     {
-      id:'mcp2', name:'HTTP 请求 MCP', avatar:'API', avatarBg:'#ECFDF5', avatarColor:'#10B981',
+      id:'mcp2', name:'HTTP 请求连接器', avatar:'API', avatarBg:'#ECFDF5', avatarColor:'#10B981',
       meta:'李四 · 2026-05-20', desc:'发送 HTTP 请求，支持 GET/POST/PUT/DELETE', selected:false, expanded:false,
+      category:'enterprise',
       subs: [
         { name:'GET 请求', desc:'发送 GET 请求获取数据' },
         { name:'POST 请求', desc:'发送 POST 请求提交数据' },
-      ]
+      ],
+      addedSubs: []
     },
     {
-      id:'mcp3', name:'文件系统 MCP', avatar:'FS', avatarBg:'#FFFBEB', avatarColor:'#F59E0B',
+      id:'mcp3', name:'文件系统连接器', avatar:'FS', avatarBg:'#FFFBEB', avatarColor:'#F59E0B',
       meta:'王五 · 2026-04-10', desc:'读写本地或远程文件系统', selected:false, expanded:false,
+      category:'market',
       subs: [
         { name:'读取文件', desc:'读取指定路径的文件内容' },
         { name:'写入文件', desc:'将内容写入指定文件' },
-      ]
+      ],
+      addedSubs: []
+    },
+    {
+      id:'mcp4', name:'Bocha AI 搜索', avatar:'B', avatarBg:'#EFF6FF', avatarColor:'#3B82F6',
+      meta:'官方 · 2026-08-01', desc:'这是一款面向 AI 应用的搜索引擎，提供联网搜索能力', selected:false, expanded:false,
+      category:'market',
+      subs: [
+        { name:'bocha_ai_search', desc:'Search with Bocha AI Search, recognizes the semantics of search queries' },
+        { name:'bocha_web_search', desc:'Search with Bocha Web Search and get enhanced search results' },
+      ],
+      addedSubs: []
+    },
+    {
+      id:'mcp5', name:'网页抓取', avatar:'W', avatarBg:'#ECFDF5', avatarColor:'#10B981',
+      meta:'官方 · 2026-07-15', desc:'提供网页内容抓取功能，将HTML转换为结构化数据', selected:false, expanded:false,
+      category:'market',
+      subs: [
+        { name:'fetch_webpage', desc:'抓取指定URL的网页内容并返回文本' },
+      ],
+      addedSubs: []
+    },
+    {
+      id:'mcp6', name:'图片生成', avatar:'I', avatarBg:'#FEF2F2', avatarColor:'#EF4444',
+      meta:'官方 · 2026-07-20', desc:'图片生成工具，提供文生图、图生图 AI 绘画能力', selected:false, expanded:false,
+      category:'market',
+      subs: [
+        { name:'text_to_image', desc:'根据文本描述生成图片' },
+        { name:'image_to_image', desc:'根据参考图生成新图片' },
+      ],
+      addedSubs: []
     }
   ];
+  window.mcpData = mcpData;
 
   // ===== Build & Open Modal on Top =====
+  var mcpCurrentTab = 'all';
+
   window.openTopModal = function(type) {
     var doc = getTop();
     injectStyles(doc);
@@ -1033,7 +1176,7 @@ body {
     modal.className = 'top-modal' + (isMcp ? ' wide' : '');
 
     if (isMcp) {
-      modal.innerHTML = buildMcpModalHTML();
+      modal.innerHTML = buildMcpModalHTML(mcpCurrentTab);
     } else {
       modal.innerHTML = buildListModalHTML(type);
     }
@@ -1084,38 +1227,55 @@ body {
     '</div>';
   }
 
-  function buildMcpModalHTML() {
-    var itemsHtml = mcpData.map(function(mcp) {
-      var subsHtml = mcp.subs.map(function(sub) {
-        return '<div class="top-mcp-sub">' +
+  function buildMcpModalHTML(activeTab) {
+    activeTab = activeTab || 'all';
+    var filteredData = mcpData.filter(function(m) {
+      if (activeTab === 'all') return true;
+      return m.category === activeTab;
+    });
+    var itemsHtml = filteredData.map(function(mcp) {
+      var addedCount = mcp.addedSubs ? mcp.addedSubs.length : 0;
+      var allAdded = addedCount === mcp.subs.length;
+      var subsHtml = mcp.subs.map(function(sub, idx) {
+        var isAdded = mcp.addedSubs && mcp.addedSubs.indexOf(idx) > -1;
+        return '<div class="top-mcp-sub' + (isAdded ? ' added' : '') + '">' +
           '<div><div class="top-mcp-sub-name">'+sub.name+'</div><div class="top-mcp-sub-desc">'+sub.desc+'</div></div>' +
-          '<button class="top-modal-btn top-modal-btn-ghost" data-action="addSub" data-mcp="'+mcp.id+'" data-sub="'+sub.name+'">单独添加</button>' +
+          '<button class="top-modal-btn top-modal-btn-ghost" data-action="addSub" data-mcp="'+mcp.id+'" data-idx="'+idx+'">'+(isAdded ? '- 移除' : '+ 添加')+'</button>' +
         '</div>';
       }).join('');
 
       return '<div class="top-mcp-item' + (mcp.expanded ? ' expanded' : '') + (mcp.selected ? ' selected' : '') + '" data-id="'+mcp.id+'">' +
         '<div class="top-mcp-header" data-action="toggleMcp">' +
-          '<div class="top-modal-item-check" data-action="toggleMcpCheck"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
           '<div class="top-modal-item-avatar" style="background:'+mcp.avatarBg+';color:'+mcp.avatarColor+';">'+mcp.avatar+'</div>' +
           '<div class="top-modal-item-content">' +
             '<div class="top-modal-item-header"><span class="top-modal-item-name">'+mcp.name+'</span><span class="top-modal-item-meta">'+mcp.meta+'</span></div>' +
             '<div class="top-modal-item-desc">'+mcp.desc+'</div>' +
           '</div>' +
+          '<div class="top-mcp-added-count" style="font-size:12px;color:#9CA3AF;margin-right:8px;">已添加 '+addedCount+' 个</div>' +
           '<span class="top-mcp-expand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
         '</div>' +
         '<div class="top-mcp-body">' + subsHtml +
-          '<div class="top-mcp-actions"><button class="top-modal-btn top-modal-btn-outline" data-action="addAll" data-mcp="'+mcp.id+'">整体添加 MCP</button></div>' +
+          '<div class="top-mcp-actions"><button class="top-modal-btn ' + (allAdded ? 'top-modal-btn-outline' : 'top-modal-btn-primary') + '" data-action="addAll" data-mcp="'+mcp.id+'">'+(allAdded ? '整体移除' : '整体添加')+'</button></div>' +
         '</div>' +
       '</div>';
     }).join('');
 
     var selectedCount = mcpData.filter(function(m){ return m.selected; }).length;
 
+    var allClass = activeTab === 'all' ? ' active' : '';
+    var entClass = activeTab === 'enterprise' ? ' active' : '';
+    var mktClass = activeTab === 'market' ? ' active' : '';
+
     return '<div class="top-modal-header">' +
-      '<h3 class="top-modal-title">选择 MCP</h3>' +
+      '<h3 class="top-modal-title">选择连接器</h3>' +
       '<button class="top-modal-close" data-action="close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
     '</div>' +
-    '<div class="top-modal-search"><input placeholder="搜索 MCP 名称或描述..." data-action="search"></div>' +
+    '<div class="model-tabs">' +
+      '<div class="model-tab' + allClass + '" data-tab="all">全部</div>' +
+      '<div class="model-tab' + entClass + '" data-tab="enterprise">企业连接器</div>' +
+      '<div class="model-tab' + mktClass + '" data-tab="market">连接器市场</div>' +
+    '</div>' +
+    '<div class="top-modal-search"><input placeholder="搜索连接器名称或描述..." data-action="search"></div>' +
     '<div class="top-modal-body" data-role="list">'+itemsHtml+'</div>' +
     '<div class="top-modal-footer">' +
       '<span class="footer-count" data-role="count">已选 '+selectedCount+' 个</span>' +
@@ -1132,6 +1292,41 @@ body {
   function updateCount(modal, count) {
     var el = modal.querySelector('[data-role="count"]');
     if (el) el.textContent = '已选 ' + count + ' 个';
+  }
+
+  function renderMcpModalBody(modal) {
+    mcpData.forEach(function(mcp) {
+      var mcpEl = modal.querySelector('.top-mcp-item[data-id="'+mcp.id+'"]');
+      if (!mcpEl) return;
+      var addedCount = mcp.addedSubs ? mcp.addedSubs.length : 0;
+      var allAdded = addedCount === mcp.subs.length;
+      // Update added count display
+      var countEl = mcpEl.querySelector('.top-mcp-added-count');
+      if (countEl) countEl.textContent = '已添加 ' + addedCount + ' 个';
+      // Update sub buttons
+      var subBtns = mcpEl.querySelectorAll('[data-action="addSub"]');
+      subBtns.forEach(function(btn) {
+        var idx = parseInt(btn.dataset.idx);
+        var isAdded = mcp.addedSubs && mcp.addedSubs.indexOf(idx) > -1;
+        btn.textContent = isAdded ? '- 移除' : '+ 添加';
+        var subRow = btn.closest('.top-mcp-sub');
+        if (subRow) {
+          if (isAdded) subRow.classList.add('added');
+          else subRow.classList.remove('added');
+        }
+      });
+      // Update addAll button
+      var addAllBtn = mcpEl.querySelector('[data-action="addAll"]');
+      if (addAllBtn) {
+        if (allAdded) {
+          addAllBtn.textContent = '整体移除';
+          addAllBtn.className = 'top-modal-btn top-modal-btn-outline';
+        } else {
+          addAllBtn.textContent = '整体添加';
+          addAllBtn.className = 'top-modal-btn top-modal-btn-primary';
+        }
+      }
+    });
   }
 
   // ===== List Modal Events =====
@@ -1177,15 +1372,25 @@ body {
     }
   }
 
-  // ===== MCP Modal Events =====
+  // ===== 连接器 Modal Events =====
   function bindMcpEvents(modal, doc) {
     modal.addEventListener('click', function(e) {
       var target = e.target;
+      // Tab switching
+      var tabEl = target.closest('.model-tab[data-tab]');
+      if (tabEl) {
+        mcpCurrentTab = tabEl.dataset.tab;
+        modal.querySelectorAll('.model-tab').forEach(function(t) { t.classList.remove('active'); });
+        tabEl.classList.add('active');
+        var body = modal.querySelector('[data-role="list"]');
+        body.innerHTML = buildMcpModalHTML(mcpCurrentTab).match(/<div class="top-modal-body"[^>]*>([\s\S]*)<\/div><div class="top-modal-footer">/)[1];
+        return;
+      }
       // Close
       if (target.closest('[data-action="close"]')) { closeModal(doc); return; }
       // Confirm
       if (target.closest('[data-action="confirm"]')) {
-        updateTagsFromData('mcp');
+        renderConnectorList();
         closeModal(doc);
         return;
       }
@@ -1193,30 +1398,25 @@ body {
       if (target.closest('[data-action="toggleMcp"]')) {
         var mcpItem = target.closest('.top-mcp-item');
         if (mcpItem) {
-          // If clicking the checkbox area
-          if (target.closest('[data-action="toggleMcpCheck"]')) {
-            var id = mcpItem.dataset.id;
-            var found = mcpData.find(function(m){ return m.id === id; });
-            if (found) {
-              found.selected = !found.selected;
-              mcpItem.classList.toggle('selected');
-              var count = mcpData.filter(function(m){ return m.selected; }).length;
-              updateCount(modal, count);
-            }
-            return;
-          }
           mcpItem.classList.toggle('expanded');
         }
         return;
       }
-      // Add all
+      // Add all / Remove all
       if (target.closest('[data-action="addAll"]')) {
+        e.stopPropagation();
         var mcpId = target.closest('[data-action="addAll"]').dataset.mcp;
         var found = mcpData.find(function(m){ return m.id === mcpId; });
         if (found) {
-          found.selected = true;
-          var mcpEl = modal.querySelector('.top-mcp-item[data-id="'+mcpId+'"]');
-          if (mcpEl) mcpEl.classList.add('selected');
+          var allAdded = found.addedSubs && found.addedSubs.length === found.subs.length;
+          if (allAdded) {
+            found.addedSubs = [];
+            found.selected = false;
+          } else {
+            found.addedSubs = found.subs.map(function(_, idx){ return idx; });
+            found.selected = true;
+          }
+          renderMcpModalBody(modal);
           var count = mcpData.filter(function(m){ return m.selected; }).length;
           updateCount(modal, count);
         }
@@ -1226,11 +1426,22 @@ body {
       if (target.closest('[data-action="addSub"]')) {
         var btn = target.closest('[data-action="addSub"]');
         var mcpId = btn.dataset.mcp;
+        var idx = parseInt(btn.dataset.idx);
         var found = mcpData.find(function(m){ return m.id === mcpId; });
         if (found) {
-          found.selected = true;
-          var mcpEl = modal.querySelector('.top-mcp-item[data-id="'+mcpId+'"]');
-          if (mcpEl) mcpEl.classList.add('selected');
+          if (!found.addedSubs) found.addedSubs = [];
+          var pos = found.addedSubs.indexOf(idx);
+          if (pos > -1) {
+            found.addedSubs.splice(pos, 1);
+          } else {
+            found.addedSubs.push(idx);
+          }
+          if (found.addedSubs.length > 0) {
+            found.selected = true;
+          } else {
+            found.selected = false;
+          }
+          renderMcpModalBody(modal);
           var count = mcpData.filter(function(m){ return m.selected; }).length;
           updateCount(modal, count);
         }
@@ -1269,34 +1480,9 @@ body {
       }).join('');
       document.getElementById('pluginCountLabel').textContent = '已选 ' + items.length + ' 个';
     } else if (type === 'mcp') {
-      // Find the MCP section tags container (second one in extension section)
-      var triggers = document.querySelectorAll('.selector-trigger');
-      var mcpTagsContainer = null;
-      triggers.forEach(function(t) {
-        if (t.textContent.indexOf('管理 MCP') > -1) {
-          mcpTagsContainer = t.nextElementSibling;
-        }
-      });
-      if (mcpTagsContainer) {
-        var items = mcpData.filter(function(m){ return m.selected; });
-        mcpTagsContainer.innerHTML = items.map(function(m){
-          return '<div class="selected-tag">'+m.name+' <span class="tag-remove" onclick="removeTag(this)">×</span></div>';
-        }).join('');
-      }
+      renderConnectorList();
     } else if (type === 'skill') {
-      var triggers = document.querySelectorAll('.selector-trigger');
-      var skillTagsContainer = null;
-      triggers.forEach(function(t) {
-        if (t.textContent.indexOf('管理技能') > -1) {
-          skillTagsContainer = t.nextElementSibling;
-        }
-      });
-      if (skillTagsContainer) {
-        var items = modalData.skill.items.filter(function(i){ return i.selected; });
-        skillTagsContainer.innerHTML = items.map(function(i){
-          return '<div class="selected-tag">'+i.name+' <span class="tag-remove" onclick="removeTag(this)">×</span></div>';
-        }).join('');
-      }
+      renderSkillList();
     }
   }
 
@@ -1619,6 +1805,118 @@ function removeGreetingQ(el) {
 
 // Tags
 function removeTag(el) { el.parentElement.remove(); }
+
+// ===== Connector Rendering =====
+function renderConnectorList() {
+  var container = document.getElementById('connectorList');
+  if (!container) return;
+  var items = mcpData.filter(function(m){ return m.selected; });
+  var countLabel = document.getElementById('connectorCountLabel');
+  if (countLabel) countLabel.textContent = '已选 ' + items.length + ' 个';
+  if (items.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = items.map(function(mcp) {
+    var toolsHtml = mcp.subs.map(function(sub, idx) {
+      return '<div class="connector-tool-item">' +
+        '<div class="connector-tool-info">' +
+          '<div class="connector-tool-name">' + sub.name + '</div>' +
+          '<div class="connector-tool-desc">' + sub.desc + '</div>' +
+        '</div>' +
+        '<button class="connector-tool-delete" onclick="removeConnectorTool(\'' + mcp.id + '\',' + idx + ')" title="删除此工具">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+        '</button>' +
+      '</div>';
+    }).join('');
+
+    return '<div class="connector-card' + (mcp.expanded ? ' expanded' : '') + '" data-id="' + mcp.id + '">' +
+      '<div class="connector-header" onclick="toggleConnectorExpand(\'' + mcp.id + '\')">' +
+        '<div class="connector-icon" style="background:' + mcp.avatarBg + ';color:' + mcp.avatarColor + ';">' + mcp.avatar + '</div>' +
+        '<div class="connector-info">' +
+          '<div class="connector-name">' + mcp.name + '</div>' +
+          '<div class="connector-desc">' + mcp.desc + '</div>' +
+        '</div>' +
+        '<div class="connector-actions">' +
+          '<span class="connector-tool-count">工具(' + mcp.subs.length + ')</span>' +
+          '<button class="connector-delete-btn" onclick="event.stopPropagation();deleteConnector(\'' + mcp.id + '\')" title="删除连接器">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+          '</button>' +
+          '<button class="connector-expand-btn" title="展开/收起">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="connector-tools">' + toolsHtml + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function toggleConnectorExpand(id) {
+  var found = mcpData.find(function(m){ return m.id === id; });
+  if (found) {
+    found.expanded = !found.expanded;
+    var card = document.querySelector('.connector-card[data-id="' + id + '"]');
+    if (card) card.classList.toggle('expanded');
+  }
+}
+
+function deleteConnector(id) {
+  var found = mcpData.find(function(m){ return m.id === id; });
+  if (found) {
+    found.selected = false;
+    found.addedSubs = [];
+    renderConnectorList();
+  }
+}
+
+function removeConnectorTool(mcpId, toolIdx) {
+  var found = mcpData.find(function(m){ return m.id === mcpId; });
+  if (found) {
+    found.subs.splice(toolIdx, 1);
+    renderConnectorList();
+  }
+}
+
+function renderSkillList() {
+  var container = document.getElementById('skillList');
+  if (!container) return;
+  var items = modalData.skill.items.filter(function(i){ return i.selected; });
+  var countLabel = document.getElementById('skillCountLabel');
+  if (countLabel) countLabel.textContent = '已选 ' + items.length + ' 个';
+  if (items.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = items.map(function(skill) {
+    return '<div class="connector-card" data-skill-id="' + skill.id + '">' +
+      '<div class="connector-header" style="cursor:default;">' +
+        '<div class="connector-icon" style="background:' + skill.avatarBg + ';color:' + skill.avatarColor + ';">' + skill.avatar + '</div>' +
+        '<div class="connector-info">' +
+          '<div class="connector-name">' + skill.name + '</div>' +
+          '<div class="connector-desc">' + skill.desc + '</div>' +
+        '</div>' +
+        '<div class="connector-actions">' +
+          '<button class="connector-delete-btn" onclick="removeSkill(\'' + skill.id + '\')" title="删除技能">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function removeSkill(id) {
+  var found = modalData.skill.items.find(function(i){ return i.id === id; });
+  if (found) {
+    found.selected = false;
+    renderSkillList();
+  }
+}
+
+// Initial render
+renderConnectorList();
+renderSkillList();
 </script>
 </body>
 </html>
