@@ -2,7 +2,7 @@
 <html lang="zh-CN"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>专家管理 - 产品需求文档 PRD v1.0</title>
+<title>专家管理 - 产品需求文档 PRD v1.1</title>
 <style>
   :root {
     --primary: #4F46E5;
@@ -161,7 +161,7 @@
         <li><a href="#sec3-9" class="">3.9 类别管理弹窗</a></li>
         <li><a href="#sec3-10" class="">3.10 发布管理弹窗</a></li>
         <li><a href="#sec3-11" class="">3.11 专家词库弹窗</a></li>
-        <li><a href="#sec3-12" class="">3.12 MCP选择弹窗</a></li>
+        <li><a href="#sec3-12" class="">3.12 连接器选择弹窗</a></li>
         <li><a href="#sec3-13" class="">3.13 技能选择弹窗</a></li>
         <li><a href="#sec3-14" class="">3.14 确认弹窗</a></li>
         <li><a href="#sec3-15" class="active">3.15 AI智能创建专家弹窗</a></li>
@@ -177,7 +177,7 @@
   <!-- Hero -->
   <div class="hero">
     <h1>专家管理</h1>
-    <p>专家全生命周期管理 · 配置调试 · 发布运维 —— 产品需求文档 v1.0</p>
+    <p>专家全生命周期管理 · 配置调试 · 发布运维 —— 产品需求文档 v1.1</p>
   </div>
 
   <!-- Meta -->
@@ -186,10 +186,21 @@
       <tbody>
         <tr><th style="width:15%">文档版本</th><th style="width:15%">修改日期</th><th style="width:15%">修改人</th><th>修改说明</th></tr>
         <tr>
+          <td>v1.1</td>
+          <td>2026-09-10</td>
+          <td>产品团队</td>
+          <td>
+            <strong>1. 将"MCP"更名为"连接器"</strong>，统一术语表达，降低用户理解成本；
+            <strong>2. 连接器选择弹窗新增标签页</strong>，分为"全部"、"企业连接器"、"连接器市场"三个标签页，便于分类管理连接器资源。
+            <br>
+            <img src="images/zjgl-v2.jpg" alt="连接器选择弹窗" style="max-width:240px;border-radius:8px;margin-top:12px;border:1px solid #E5E7EB;cursor:pointer;transition:all 0.2s;" onclick="openImageModal(this.src)" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'" onmouseout="this.style.boxShadow='none'">
+          </td>
+        </tr>
+        <tr>
           <td>v1.0</td>
           <td>2026-08-03</td>
           <td>产品团队</td>
-          <td>初稿，覆盖专家管理列表、新建/编辑/删除、专家详情配置与调试、预览对话、回收站、类别管理、发布管理、专家词库、MCP/技能绑定等全部功能模块</td>
+          <td>初稿，覆盖专家管理列表、新建/编辑/删除、专家详情配置与调试、预览对话、回收站、类别管理、发布管理、专家词库、连接器/技能绑定等全部功能模块</td>
         </tr>
       </tbody>
     </table>
@@ -206,7 +217,7 @@
       <li><strong>配置与调试割裂</strong>：专家的系统提示词、模型、工具等配置与实际对话调试分散在不同界面，修改配置后无法即时验证效果，需要反复切换页面。</li>
       <li><strong>版本管理缺失</strong>：专家发布后缺乏版本记录与回溯能力，修改后无法回到历史版本，协作场景下难以追踪变更。</li>
       <li><strong>生命周期管控弱</strong>：删除即永久消失，无回收站机制；上下架状态管理不直观，无法快速控制专家的可用性。</li>
-      <li><strong>能力扩展不便</strong>：为专家绑定 MCP 服务和技能的操作路径较深，缺乏统一的扩展能力管理入口。</li>
+      <li><strong>能力扩展不便</strong>：为专家绑定连接器和技能的操作路径较深，缺乏统一的扩展能力管理入口。</li>
     </ul>
     <p>本产品旨在提供一个<strong>覆盖专家全生命周期</strong>的管理平台，从创建、配置、调试、发布到下架、删除、恢复，形成完整闭环，并通过"配置-调试一体化"的三栏布局，显著提升专家的配置效率和质量。</p>
 
@@ -221,7 +232,7 @@
         </tr>
         <tr>
           <td>AI 应用配置工程师</td>
-          <td>编写系统提示词、选择模型、绑定 MCP 与技能，并通过实时对话调试专家效果</td>
+          <td>编写系统提示词、选择模型、绑定连接器与技能，并通过实时对话调试专家效果</td>
           <td>配置调试一体化、即时验证、版本可回溯</td>
         </tr>
         <tr>
@@ -241,9 +252,9 @@
     <table>
       <tbody>
         <tr><th style="width:16%">概念</th><th>定义</th></tr>
-        <tr><td>专家</td><td>预配置的 AI 角色，包含模型选择、系统提示词、扩展能力（MCP/技能）等配置，是用户与 AI 交互的执行主体。</td></tr>
+        <tr><td>专家</td><td>预配置的 AI 角色，包含模型选择、系统提示词、扩展能力（连接器/技能）等配置，是用户与 AI 交互的执行主体。</td></tr>
         <tr><td>系统提示词</td><td>定义专家角色定位、能力范围和行为准则的自然语言指令，决定专家的回答风格与能力边界。</td></tr>
-        <tr><td>MCP</td><td>Model Context Protocol 服务，为专家提供外部工具调用能力（如数据库查询、HTTP 请求、文件系统操作），可整体或按子功能绑定。</td></tr>
+        <tr><td>连接器</td><td>Model Context Protocol 服务，为专家提供外部工具调用能力（如数据库查询、HTTP 请求、文件系统操作），可整体或按子功能绑定。分为"企业连接器"和"连接器市场"两类。</td></tr>
         <tr><td>技能</td><td>可复用的能力模块（如多语言翻译、图表生成、智能摘要），绑定后扩展专家的特定处理能力。</td></tr>
         <tr><td>专家词库</td><td>预置的专业角色提示词模板库，覆盖采购、法务、供应链、财务、质量、招标等领域，可一键应用。</td></tr>
         <tr><td>发布</td><td>将专家配置固化为一个版本并上线可用的操作，需填写发布描述，发布后记录在版本历史中。</td></tr>
@@ -270,7 +281,7 @@
       <span class="actor">作为AI应用配置工程师，</span><span class="want">我希望每次发布专家时都要填写发布描述，并能查看和还原历史版本，</span><span class="goal">以便追踪专家的演进过程，在配置出错时快速回滚。</span>
     </div>
     <div class="story">
-      <span class="actor">作为平台管理员，</span><span class="want">我希望在配置页通过弹窗统一管理专家绑定的 MCP 和技能，支持搜索和批量选择，</span><span class="goal">以便高效扩展专家能力，无需在多个页面间来回操作。</span>
+      <span class="actor">作为平台管理员，</span><span class="want">我希望在配置页通过弹窗统一管理专家绑定的连接器和技能，支持搜索和批量选择，</span><span class="goal">以便高效扩展专家能力，无需在多个页面间来回操作。</span>
     </div>
 
     <h3 id="sec1-5">1.5 非目标</h3>
@@ -311,7 +322,7 @@
         <!-- Layer 2: 专家配置层 -->
         <rect x="260" y="120" width="220" height="56" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
         <text x="370" y="146" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">专家配置层</text>
-        <text x="370" y="164" text-anchor="middle" fill="#6B7280" font-size="11">模型 · 提示词 · MCP · 技能</text>
+        <text x="370" y="164" text-anchor="middle" fill="#6B7280" font-size="11">模型 · 提示词 · 连接器 · 技能</text>
 
         <!-- Layer 3: 调试预览层 -->
         <rect x="500" y="120" width="220" height="56" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
@@ -602,7 +613,7 @@
     <h3 id="sec3-5">3.5 专家配置页</h3>
 
     <h4>功能描述</h4>
-    <p>专家配置页是详情页左栏的核心内容，用于配置专家的基础能力和扩展能力。页面分为两大区块："核心配置"区块包含模型选择和系统提示词编辑；"扩展能力"区块包含 MCP 绑定和技能绑定。系统提示词编辑器提供专家词库、AI 优化和全屏编辑三个辅助功能。MCP 和技能通过弹窗进行选择管理。</p>
+    <p>专家配置页是详情页左栏的核心内容，用于配置专家的基础能力和扩展能力。页面分为两大区块："核心配置"区块包含模型选择和系统提示词编辑；"扩展能力"区块包含连接器绑定和技能绑定。系统提示词编辑器提供专家词库、AI 优化和全屏编辑三个辅助功能。连接器和技能通过弹窗进行选择管理。</p>
 
     <h4>显示字段说明</h4>
     <table>
@@ -616,8 +627,8 @@
         <tr><td>全屏按钮</td><td>工具按钮</td><td>点击进入全屏编辑模式，全屏内可编辑提示词并退出回填</td></tr>
         <tr><td>字符计数</td><td>文本</td><td>显示"当前字符数 / 20000"</td></tr>
         <tr><td>提示词说明</td><td>提示文本</td><td>显示"系统提示词用于定义专家的角色定位、回答风格和能力边界"</td></tr>
-        <tr><td>区块标题-扩展能力</td><td>文本</td><td>显示"扩展能力"标题和描述"为专家绑定工具、MCP 和技能，扩展其能力边界"</td></tr>
-        <tr><td>MCP管理入口</td><td>选择触发器</td><td>显示"管理 MCP"文案和已选数量；点击打开 MCP 选择弹窗；已选 MCP 以标签形式展示在下方，每个标签可单独移除</td></tr>
+        <tr><td>区块标题-扩展能力</td><td>文本</td><td>显示"扩展能力"标题和描述"为专家绑定工具、连接器和技能，扩展其能力边界"</td></tr>
+        <tr><td>连接器管理入口</td><td>选择触发器</td><td>显示"管理连接器"文案和已选数量；点击打开连接器选择弹窗；已选连接器以卡片形式展示在下方，每个卡片可展开查看子工具，支持整体删除和单独删除工具</td></tr>
         <tr><td>技能管理入口</td><td>选择触发器</td><td>显示"管理技能"文案和已选数量；点击打开技能选择弹窗；已选技能以标签形式展示在下方，每个标签可单独移除</td></tr>
       </tbody>
     </table>
@@ -636,7 +647,7 @@
         <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
         <tr><td>模型显示</td><td>只读文本</td><td>显示当前选中的模型名称，不可展开下拉</td></tr>
         <tr><td>系统提示词</td><td>只读文本域</td><td>灰底只读，不可编辑；保留滚动浏览能力；显示完整提示词内容和字符计数</td></tr>
-        <tr><td>MCP管理入口</td><td>禁用触发器</td><td>灰显，显示已选数量和已选标签，不可点击打开弹窗</td></tr>
+        <tr><td>连接器管理入口</td><td>禁用触发器</td><td>灰显，显示已选数量和已选卡片，不可点击打开弹窗</td></tr>
         <tr><td>技能管理入口</td><td>禁用触发器</td><td>灰显，显示已选数量和已选标签，不可点击打开弹窗</td></tr>
       </tbody>
     </table>
@@ -790,24 +801,26 @@
 
     <hr>
 
-    <!-- 3.12 MCP选择弹窗 -->
-    <h3 id="sec3-12">3.12 MCP选择弹窗</h3>
+    <!-- 3.12 连接器选择弹窗 -->
+    <h3 id="sec3-12">3.12 连接器选择弹窗</h3>
 
     <h4>功能描述</h4>
-    <p>MCP选择弹窗以可展开列表形式展示所有可用的 MCP 服务，支持搜索、多选、整体添加和单独添加子功能。每个 MCP 条目显示头像、名称、创建人、更新时间、描述，展开后显示其包含的子功能列表。用户可勾选整个 MCP，也可单独添加某个子功能。</p>
+    <p>连接器选择弹窗以可展开列表形式展示所有可用的连接器服务，支持标签页切换、搜索、整体添加和单独添加子工具。弹窗顶部提供三个标签页："全部"、"企业连接器"、"连接器市场"，便于用户按来源分类浏览。每个连接器条目显示头像、名称、创建人、更新时间、描述，展开后显示其包含的子工具列表。用户可整体添加整个连接器，也可单独添加某个子工具。已添加的子工具数量显示在连接器右上角，全部添加后"整体添加"按钮变为"整体移除"。</p>
 
     <h4>显示字段说明</h4>
     <table>
       <tbody>
         <tr><th style="width:14%">字段/按钮</th><th style="width:10%">类型</th><th>规则/来源/例外/边界</th></tr>
-        <tr><td>弹窗标题</td><td>文本</td><td>显示"选择 MCP"</td></tr>
-        <tr><td>搜索框</td><td>输入框</td><td>placeholder："搜索 MCP 名称或描述..."；实时过滤</td></tr>
-        <tr><td>MCP条目</td><td>可展开列表项</td><td>显示勾选框、头像、名称、创建人、描述、展开箭头；点击展开显示子功能<br>数据来源：MCP服务（所有数据、排序一致）</td></tr>
-        <tr><td>子功能项</td><td>列表项</td><td>显示子功能名称和描述；右侧"单独添加"按钮可单独绑定该子功能<br>数据来源：当前MCP的工具列表；</td></tr>
-        <tr><td>整体添加MCP按钮</td><td>按钮</td><td>一键绑定整个MCP及其全部子功能</td></tr>
-        <tr><td>已选数量</td><td>文本</td><td>底部显示"已选 N 个"（以MCP条目数进行统计）</td></tr>
+        <tr><td>弹窗标题</td><td>文本</td><td>显示"选择连接器"</td></tr>
+        <tr><td>标签页</td><td>标签切换</td><td>三个标签页："全部"（默认）、"企业连接器"、"连接器市场"；点击切换过滤列表；"企业连接器"显示企业内部创建的连接器，"连接器市场"显示平台提供的官方连接器</td></tr>
+        <tr><td>搜索框</td><td>输入框</td><td>placeholder："搜索连接器名称或描述..."；实时过滤</td></tr>
+        <tr><td>连接器条目</td><td>可展开列表项</td><td>显示头像、名称、创建人、描述、已添加数量、展开箭头；点击展开显示子工具<br>数据来源：连接器服务（所有数据、排序一致）</td></tr>
+        <tr><td>子工具项</td><td>列表项</td><td>显示子工具名称和描述；右侧"+ 添加"按钮可单独添加该子工具；已添加后变为"- 移除"<br>数据来源：当前连接器的工具列表</td></tr>
+        <tr><td>整体添加按钮</td><td>按钮</td><td>一键添加整个连接器及其全部子工具；全部添加后按钮变为"整体移除"，点击可移除所有子工具</td></tr>
+        <tr><td>已添加数量</td><td>文本</td><td>连接器条目右上角显示"已添加 N 个"</td></tr>
+        <tr><td>已选数量</td><td>文本</td><td>底部显示"已选 N 个"（以连接器条目数进行统计）</td></tr>
         <tr><td>取消按钮</td><td>按钮</td><td>关闭弹窗，不保存选择</td></tr>
-        <tr><td>确认按钮</td><td>主按钮</td><td>确认选择，更新配置页的MCP标签</td></tr>
+        <tr><td>确认按钮</td><td>主按钮</td><td>确认选择，更新配置页的连接器卡片列表</td></tr>
       </tbody>
     </table>
 
@@ -897,8 +910,28 @@
 </div>
 </div>
 
+<!-- ========== Image Modal ========== -->
+<div id="imageModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:10000;align-items:center;justify-content:center;cursor:pointer;" onclick="closeImageModal()">
+  <img id="imageModalImg" src="" alt="" style="max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+  <div style="position:absolute;top:20px;right:24px;color:white;font-size:28px;cursor:pointer;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,0.1);transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'" onclick="event.stopPropagation();closeImageModal()">✕</div>
+</div>
+
 <!-- ========== Scroll Spy & Smooth Scroll ========== -->
 <script>
+function openImageModal(src) {
+  var modal = document.getElementById('imageModal');
+  var img = document.getElementById('imageModalImg');
+  img.src = src;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeImageModal() {
+  document.getElementById('imageModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeImageModal();
+});
 (function() {
   document.querySelectorAll('.sidebar a[href^="#"]').forEach(function(link) {
     link.addEventListener('click', function(e) {
