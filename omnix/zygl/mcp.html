@@ -45,6 +45,8 @@
     transition: .18s ease;
   }
   .btn:hover { box-shadow: var(--shadow-hover); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn:disabled:hover { box-shadow: none; }
   .btn.primary { background: var(--blue); color: #fff; }
   .btn.primary:hover { background: var(--blue-dark); }
   .btn.trash-btn { position: relative; }
@@ -87,6 +89,8 @@
     max-height: 320px; overflow: auto; display: none;
   }
   .dropdown.open .dropdown-menu { display: block; }
+  .dropdown-menu-right { left: auto; right: 0; min-width: 140px; }
+  .topbar-dropdown .dropdown-menu { z-index: 50; }
   .dropdown-item {
     display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px;
     color: #4a5568; font-size: 14px; cursor: pointer; white-space: nowrap;
@@ -160,13 +164,6 @@
   .edit-btn:hover { background: #eef3ff; color: var(--blue); }
   .empty { padding: 70px 20px; text-align: center; color: #8a94a6; }
   .footer { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 32px; color: #647084; font-size: 13px; }
-  .pager { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-  .page-btn {
-    width: 32px; height: 32px; border: 1px solid #e2e7ee; background: #fff;
-    border-radius: 6px; color: #5b6577; cursor: pointer; display: grid; place-items: center;
-  }
-  .page-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
-  .page-btn:disabled { opacity: .45; cursor: not-allowed; }
   select {
     height: 34px; border: 1px solid #e2e7ee; border-radius: 6px;
     background: #fff; color: var(--text); font: inherit; padding: 0 8px; outline: none;
@@ -345,10 +342,20 @@
     border-radius: 8px; font-size: 13px; color: #556173; white-space: pre-wrap;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; line-height: 1.6;
   }
-  .trash-item {
-    display: flex; align-items: center; gap: 12px; padding: 12px;
-    border: 1px solid var(--line); border-radius: 8px; margin-bottom: 10px;
+  .trash-meta { margin-top: 12px; color: #98a2b3; font-size: 12px; }
+  .trash-toolbar { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+  .trash-select-all { display: inline-flex; align-items: center; gap: 6px; color: #4a5568; font-size: 13px; cursor: pointer; margin-right: 4px; user-select: none; }
+  .trash-select-all input { width: 15px; height: 15px; margin: 0; accent-color: var(--blue); cursor: pointer; }
+  .trash-check { position: absolute; top: 12px; right: 12px; width: 15px; height: 15px; margin: 0; accent-color: var(--blue); cursor: pointer; }
+  .trash-actions {
+    margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
   }
+  .trash-actions .btn { border: 0; background: transparent; height: 30px; padding: 0 6px; }
+  .trash-actions .btn.restore { color: #4a5568; }
+  .trash-actions .btn.restore:hover { color: var(--blue); box-shadow: none; }
+  .trash-actions .btn.purge { color: #e5484d; }
+  .trash-actions .btn.purge:hover { box-shadow: none; }
   .btn.ghost { background: #fff; border-color: #e2e7ee; }
   .btn.danger { background: #fff; color: #e5484d; border-color: #ffd4d6; }
   .cat-subtitle { margin-top: 8px; color: #647084; font-size: 13px; }
@@ -395,14 +402,21 @@
     max-width: min(520px, calc(100vw - 48px));
     font-size: 13px; line-height: 1.7;
     opacity: 0; pointer-events: none; transition: .25s ease; z-index: 60;
-    cursor: pointer;
+    cursor: move;
   }
   .top-alert.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+  .top-alert.dragging { transition: none; user-select: none; }
   .top-alert-icon {
     flex: 0 0 20px; width: 20px; height: 20px; border-radius: 50%;
     background: #17233d; color: #fff; display: grid; place-items: center;
     font-weight: 700; font-size: 12px; margin-top: 2px;
   }
+  .top-alert-close {
+    flex: 0 0 22px; width: 22px; height: 22px; margin: -2px -6px 0 2px;
+    border: 0; border-radius: 6px; background: transparent; color: #8a94a6;
+    cursor: pointer; display: grid; place-items: center; font-size: 13px; line-height: 1;
+  }
+  .top-alert-close:hover { background: #f0f3f8; color: var(--text); }
   @media (max-width: 640px) {
     .page { padding: 18px 14px; }
     .topbar { flex-wrap: wrap; }
@@ -425,14 +439,26 @@
       回收站
       <span class="badge" id="trashCount" hidden>0</span>
     </button>
-    <button class="btn ghost" id="categoryBtn" title="设置分类">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-      设置分类
-    </button>
-    <button class="btn primary" id="addBtn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
-      添加连接器
-    </button>
+    <div class="dropdown topbar-dropdown" id="catSettingDropdown">
+      <button class="btn ghost" id="categoryBtn" title="设置分类">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        设置分类
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" id="catSettingMenu">
+        <div class="dropdown-item" role="menuitem" data-cat-scope="enterprise">企业连接器</div>
+        <div class="dropdown-item" role="menuitem" data-cat-scope="market">连接器市场</div>
+      </div>
+    </div>
+    <div class="dropdown topbar-dropdown" id="addDropdown">
+      <button class="btn primary" id="addBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+        添加连接器
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" id="addMenu">
+        <div class="dropdown-item" role="menuitem" data-add-scope="enterprise">企业连接器</div>
+        <div class="dropdown-item" role="menuitem" data-add-scope="market">连接器市场</div>
+      </div>
+    </div>
   </header>
 
   <section class="filter-row">
@@ -468,22 +494,52 @@
 
   <footer class="footer">
     <span id="totalText">共 0 条</span>
-    <div class="pager">
-      <select id="pageSize" title="每页条数">
-        <option value="10">10 条/页</option>
-        <option value="20" selected>20 条/页</option>
-        <option value="50">50 条/页</option>
-      </select>
-      <button class="page-btn" id="prevPage" title="上一页" aria-label="上一页">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
-      </button>
-      <span id="pageNumbers" style="display:flex;gap:6px"></span>
-      <button class="page-btn" id="nextPage" title="下一页" aria-label="下一页">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>
-      </button>
-    </div>
   </footer>
 </main>
+
+<main class="page" id="trashPage" hidden>
+  <header class="detail-topbar">
+    <h1>连接器</h1>
+    <div class="spacer"></div>
+    <button class="btn ghost" id="trashExit" type="button">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      退出回收站
+    </button>
+  </header>
+  <section class="filter-row">
+    <nav class="main-tabs" role="tablist">
+      <button class="main-tab active" data-trash-view="all" role="tab">全部</button>
+      <button class="main-tab" data-trash-view="enterprise" role="tab">企业连接器</button>
+      <button class="main-tab" data-trash-view="market" role="tab">连接器市场</button>
+    </nav>
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="trashSearch" type="search" placeholder="搜索回收站" autocomplete="off">
+    </div>
+    <div class="trash-toolbar">
+      <label class="trash-select-all"><input type="checkbox" id="trashSelectAll"> 全选</label>
+      <button class="btn ghost" id="trashBatchRestore" type="button" disabled>批量恢复</button>
+      <button class="btn danger" id="trashBatchPurge" type="button" disabled>批量删除</button>
+    </div>
+  </section>
+  <section class="grid" id="trashGrid" aria-live="polite"></section>
+  <div class="empty" id="trashEmpty" hidden>回收站是空的</div>
+  <footer class="footer">
+    <span id="trashTotal">共 0 条</span>
+  </footer>
+</main>
+
+<div class="modal-mask" id="trashPurgeModal">
+  <div class="modal narrow" style="width:min(460px,100%)">
+    <button type="button" class="close-x" data-close="trashPurgeModal" title="关闭">✕</button>
+    <div class="modal-title" style="text-align:center">确认彻底删除？</div>
+    <p style="color:#7a8499;margin:14px 0 4px" id="trashPurgeText"></p>
+    <div class="modal-actions center">
+      <button type="button" class="btn ghost" data-close="trashPurgeModal">取消</button>
+      <button type="button" class="btn danger" id="trashPurgeConfirmBtn">彻底删除</button>
+    </div>
+  </div>
+</div>
 
 <main class="page detail-page" id="detailPage" hidden>
   <header class="detail-topbar">
@@ -498,7 +554,7 @@
 <div class="modal-mask" id="addModal">
   <form class="modal narrow" id="addForm">
     <button type="button" class="close-x" data-close="addModal" title="关闭">✕</button>
-    <div class="modal-title" style="text-align:center" id="addModalTitle">新增连接器</div>
+    <div class="modal-title" style="text-align:center" id="addModalTitle">新增企业连接器</div>
     <div class="add-form">
       <div class="field">
         <label>头像 <span class="label-hint">支持 JPG、PNG，最大 2MB</span></label>
@@ -514,7 +570,7 @@
       <div class="field"><label>类别 <i class="req">*</i></label>
         <div class="cat-picker" id="mcpCatChecks"></div>
       </div>
-      <div class="field"><label for="mcpName">服务器名称 <i class="req">*</i></label><input id="mcpName" name="name" required maxlength="40" placeholder="请输入服务器名称"></div>
+      <div class="field"><label for="mcpName">连接器名称 <i class="req">*</i></label><input id="mcpName" name="name" required maxlength="40" placeholder="请输入连接器名称"></div>
       <div class="field"><label for="mcpProto">传输协议 <i class="req">*</i></label>
         <select id="mcpProto" name="proto" required>
           <option value="" disabled selected hidden>请选择传输协议</option>
@@ -543,7 +599,7 @@
 <div class="modal-mask" id="authModal">
   <form class="modal narrow" id="authForm">
     <button type="button" class="close-x" data-close="authModal" title="关闭">✕</button>
-    <div class="modal-title" style="text-align:center" id="authModalTitle">编辑连接器</div>
+    <div class="modal-title" style="text-align:center" id="authModalTitle">新增市场连接器</div>
     <div class="auth-sub">配置凭据后，所有成员都可以在管理端和客户端使用此连接器。</div>
     <div class="add-form">
       <div class="field">
@@ -561,7 +617,7 @@
         <label>类别 <i class="req">*</i></label>
         <div class="cat-picker" id="authCatChecks"></div>
       </div>
-      <div class="field"><label for="authName">服务器名称 <i class="req">*</i></label><input id="authName" name="name" required maxlength="40" placeholder="请输入服务器名称"></div>
+      <div class="field"><label for="authName">连接器名称 <i class="req">*</i></label><input id="authName" name="name" required maxlength="40" placeholder="请输入连接器名称"></div>
       <div class="field"><label for="authBuiltin">是否需要客户端内置 <i class="req">*</i></label>
         <select id="authBuiltin" name="builtin">
           <option value="否">否</option>
@@ -606,18 +662,10 @@
   </div>
 </div>
 
-<div class="modal-mask" id="trashModal">
-  <div class="modal">
-    <button class="close-x" data-close="trashModal" title="关闭">✕</button>
-    <div class="modal-title">回收站</div>
-    <div id="trashList" style="margin-top:18px"></div>
-  </div>
-</div>
-
 <div class="modal-mask" id="categoryModal">
   <div class="modal">
     <button class="close-x" data-close="categoryModal" title="关闭">✕</button>
-    <div class="modal-title">类别管理</div>
+    <div class="modal-title" id="categoryModalTitle">类别管理</div>
     <div class="cat-subtitle">用于维护技能筛选和导入使用的类别。</div>
     <div class="cat-toolbar"><button class="btn primary" id="addCategoryBtn">＋ 新增类别</button></div>
     <div class="cat-table-wrap">
@@ -668,6 +716,7 @@
 <div class="top-alert" id="topAlert" role="alert">
   <div class="top-alert-icon">!</div>
   <div id="topAlertText"></div>
+  <button type="button" class="top-alert-close" id="topAlertClose" title="关闭">✕</button>
 </div>
 
 <script>
@@ -707,22 +756,22 @@ const services = [
   { id: 12, name: '住宿预订服务', owner: '官方', source: 'market', cat: '客户服务', status: '未发布', desc: '酒店目的地解析、住宿检索、房型详情与可订状态查询。', creator: 'admin', date: '2026-07-22', tools: 6, calls: 8, color: '#8b5cf6' }
 ];
 
-const trash = [];
+const trash = [
+  { id: 101, name: '八字MCP', owner: '自定义', source: 'enterprise', cat: '通用基础', status: '已发布', desc: '使用Bazi MCP解锁精准的八字解读——这是首个由AI驱动的八字计算工具。针对现有AI算命工具（如GPT和DeepSeek）做专业校准', creator: 'OmniX', date: '2026-08-20', tools: 2, calls: 15, color: '#2563eb', deletedAt: '2026/08/31', deletedBy: 'OmniX' },
+  { id: 102, name: 'PDF 文档解析', owner: '自定义', source: 'enterprise', cat: '办公效率', status: '已发布', desc: '解析 PDF 文档内容，支持文本提取、表格识别与结构化输出，适用于合同、报告等场景', creator: 'admin', date: '2026-07-15', tools: 4, calls: 203, color: '#0891b2', deletedAt: '2026/08/12', deletedBy: 'admin' },
+  { id: 103, name: 'Notion 知识库', owner: '官方', source: 'market', cat: '办公效率', status: '已发布', desc: '连接 Notion 工作区，支持页面检索、内容读取与写入，让 AI 直接操作知识库', creator: 'admin', date: '2026-06-28', tools: 9, calls: 88, color: '#17233d', deletedAt: '2026/08/05', deletedBy: 'admin' },
+  { id: 104, name: '天气查询', owner: '官方', source: 'market', cat: '通用基础', status: '未发布', desc: '提供全球城市实时天气、未来 7 天预报与气象预警查询能力', creator: 'admin', date: '2026-06-10', tools: 3, calls: 541, color: '#f59e0b', deletedAt: '2026/07/23', deletedBy: 'OmniX' }
+];
 const currentUser = 'OmniX';
 let view = 'enterprise';
 let keyword = '';
 let catFilter = '';
 let statusFilter = '';
 let ownerFilter = '';
-let page = 1;
 
 const cardGrid = document.getElementById('cardGrid');
 const emptyState = document.getElementById('emptyState');
 const totalText = document.getElementById('totalText');
-const pageNumbers = document.getElementById('pageNumbers');
-const prevPage = document.getElementById('prevPage');
-const nextPage = document.getElementById('nextPage');
-const pageSize = document.getElementById('pageSize');
 const searchInput = document.getElementById('searchInput');
 const trashCount = document.getElementById('trashCount');
 
@@ -816,39 +865,46 @@ function render() {
   if (view === 'market' && ownerFilter) { ownerFilter = ''; renderOwnerDropdown(); }
   ownerDropdown.style.display = view === 'enterprise' ? '' : 'none';
   const rows = filteredServices();
-  const size = Number(pageSize.value);
-  const pages = Math.max(1, Math.ceil(rows.length / size));
-  page = Math.min(page, pages);
-  const start = (page - 1) * size;
-  const visible = rows.slice(start, start + size);
 
-  cardGrid.replaceChildren(...visible.map(renderCard));
+  cardGrid.replaceChildren(...rows.map(renderCard));
   emptyState.hidden = rows.length > 0;
   cardGrid.style.display = rows.length ? '' : 'none';
   totalText.textContent = `共 ${rows.length} 条`;
-
-  let nums = '';
-  for (let i = 1; i <= pages; i++) {
-    nums += `<button class="page-btn ${i === page ? 'active' : ''}" data-page="${i}" ${i === page ? 'aria-current="page"' : ''}>${i}</button>`;
-  }
-  pageNumbers.innerHTML = nums;
-  pageNumbers.querySelectorAll('[data-page]').forEach(btn => {
-    btn.addEventListener('click', () => { page = Number(btn.dataset.page); render(); });
-  });
-  prevPage.disabled = page <= 1;
-  nextPage.disabled = page >= pages;
 }
 
+// 悬浮提示窗：可拖动，仅点击关闭按钮关闭
+const topAlertEl = document.getElementById('topAlert');
 function showTopAlert(message) {
-  const el = document.getElementById('topAlert');
   document.getElementById('topAlertText').textContent = message;
-  el.classList.add('show');
-  clearTimeout(showTopAlert._timer);
-  showTopAlert._timer = setTimeout(() => el.classList.remove('show'), 4000);
+  topAlertEl.classList.add('show');
 }
-document.getElementById('topAlert').addEventListener('click', () => {
-  document.getElementById('topAlert').classList.remove('show');
+document.getElementById('topAlertClose').addEventListener('click', () => {
+  topAlertEl.classList.remove('show');
 });
+(function enableTopAlertDrag() {
+  let dragState = null;
+  topAlertEl.addEventListener('mousedown', event => {
+    if (event.target.closest('.top-alert-close')) return;
+    const rect = topAlertEl.getBoundingClientRect();
+    dragState = { dx: event.clientX - rect.left, dy: event.clientY - rect.top };
+    topAlertEl.classList.add('dragging');
+    topAlertEl.style.left = rect.left + 'px';
+    topAlertEl.style.top = rect.top + 'px';
+    topAlertEl.style.transform = 'none';
+    event.preventDefault();
+  });
+  document.addEventListener('mousemove', event => {
+    if (!dragState) return;
+    const x = Math.min(Math.max(event.clientX - dragState.dx, 0), window.innerWidth - topAlertEl.offsetWidth);
+    const y = Math.min(Math.max(event.clientY - dragState.dy, 0), window.innerHeight - topAlertEl.offsetHeight);
+    topAlertEl.style.left = x + 'px';
+    topAlertEl.style.top = y + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    dragState = null;
+    topAlertEl.classList.remove('dragging');
+  });
+})();
 
 let pendingDeleteId = null;
 document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
@@ -868,6 +924,9 @@ function moveToTrash(id) {
   const idx = services.findIndex(item => item.id === id);
   if (idx < 0) return;
   const [item] = services.splice(idx, 1);
+  const now = new Date();
+  item.deletedAt = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+  item.deletedBy = currentUser;
   trash.unshift(item);
   render();
   updateTrash();
@@ -878,46 +937,165 @@ function restoreFromTrash(id) {
   const idx = trash.findIndex(item => item.id === id);
   if (idx < 0) return;
   const [item] = trash.splice(idx, 1);
+  trashSelected.delete(item.id);
   services.unshift(item);
   render();
   updateTrash();
   showToast(`已恢复「${item.name}」`);
 }
 
-function permanentlyDelete(id) {
-  const idx = trash.findIndex(item => item.id === id);
-  if (idx < 0) return;
-  const [item] = trash.splice(idx, 1);
+let pendingPurgeIds = [];
+function permanentlyDelete(ids) {
+  const names = [];
+  ids.forEach(id => {
+    const idx = trash.findIndex(item => item.id === id);
+    if (idx < 0) return;
+    names.push(trash[idx].name);
+    trash.splice(idx, 1);
+    trashSelected.delete(id);
+  });
+  if (!names.length) return;
   updateTrash();
-  showToast(`已永久删除「${item.name}」`);
+  showToast(`已彻底删除「${names.join('、')}」`);
 }
+document.getElementById('trashPurgeConfirmBtn').addEventListener('click', () => {
+  if (!pendingPurgeIds.length) return;
+  const ids = pendingPurgeIds;
+  pendingPurgeIds = [];
+  closeModal('trashPurgeModal');
+  permanentlyDelete(ids);
+});
+function askPurge(ids) {
+  pendingPurgeIds = ids;
+  document.getElementById('trashPurgeText').textContent = ids.length > 1
+    ? `彻底删除后不可恢复，确认删除选中的 ${ids.length} 个连接器？`
+    : `彻底删除后不可恢复，确认删除「${trash.find(item => item.id === ids[0])?.name || ''}」？`;
+  openModal('trashPurgeModal');
+}
+
+// ===== 回收站整页 =====
+let trashView = 'all';
+let trashKeyword = '';
+let trashSelected = new Set();
+const trashGrid = document.getElementById('trashGrid');
+const trashEmpty = document.getElementById('trashEmpty');
+const trashTotal = document.getElementById('trashTotal');
+const trashSelectAll = document.getElementById('trashSelectAll');
+const trashBatchRestore = document.getElementById('trashBatchRestore');
+const trashBatchPurge = document.getElementById('trashBatchPurge');
+
+function renderTrashCard(item) {
+  const icon = iconFor(item);
+  const card = document.createElement('article');
+  card.className = 'mcp-card';
+  card.innerHTML = `
+    <input type="checkbox" class="trash-check" aria-label="选择 ${escapeHtml(item.name)}" ${trashSelected.has(item.id) ? 'checked' : ''}>
+    <div class="card-head">
+      <div class="logo" style="${icon.style}">${icon.text}</div>
+      <div>
+        <div class="name">${escapeHtml(item.name)}</div>
+        <div class="owner">@ ${item.owner === '自定义' ? '企业' : item.owner}</div>
+      </div>
+    </div>
+    <p class="desc" title="${escapeHtml(item.desc)}">${escapeHtml(item.desc)}</p>
+    <div class="trash-meta">在 ${item.deletedAt || item.date} 被 ${escapeHtml(item.deletedBy || item.creator)} 删除</div>
+    <div class="trash-actions">
+      <button type="button" class="btn restore">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+        恢复
+      </button>
+      <button type="button" class="btn purge">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+        彻底删除
+      </button>
+    </div>`;
+  card.querySelector('.trash-check').addEventListener('change', event => {
+    if (event.target.checked) trashSelected.add(item.id);
+    else trashSelected.delete(item.id);
+    syncTrashToolbar();
+  });
+  card.querySelector('.restore').addEventListener('click', () => restoreFromTrash(item.id));
+  card.querySelector('.purge').addEventListener('click', () => askPurge([item.id]));
+  return card;
+}
+
+function filteredTrash() {
+  const kw = trashKeyword.trim().toLowerCase();
+  return trash.filter(item => {
+    const byView = trashView === 'all' || item.source === trashView;
+    const bySearch = !kw || item.name.toLowerCase().includes(kw);
+    return byView && bySearch;
+  });
+}
+
+function syncTrashToolbar() {
+  const rows = filteredTrash();
+  const selectedInRows = rows.filter(item => trashSelected.has(item.id));
+  trashSelectAll.checked = rows.length > 0 && selectedInRows.length === rows.length;
+  trashSelectAll.indeterminate = selectedInRows.length > 0 && selectedInRows.length < rows.length;
+  const hasSelection = trashSelected.size > 0;
+  trashBatchRestore.disabled = !hasSelection;
+  trashBatchPurge.disabled = !hasSelection;
+}
+
+function renderTrash() {
+  const rows = filteredTrash();
+
+  trashGrid.replaceChildren(...rows.map(renderTrashCard));
+  trashEmpty.hidden = rows.length > 0;
+  trashGrid.style.display = rows.length ? '' : 'none';
+  trashTotal.textContent = `共 ${rows.length} 条`;
+  syncTrashToolbar();
+}
+
+trashSelectAll.addEventListener('change', () => {
+  const rows = filteredTrash();
+  if (trashSelectAll.checked) rows.forEach(item => trashSelected.add(item.id));
+  else rows.forEach(item => trashSelected.delete(item.id));
+  renderTrash();
+});
+trashBatchRestore.addEventListener('click', () => {
+  const ids = [...trashSelected].filter(id => trash.some(item => item.id === id));
+  if (!ids.length) return;
+  ids.forEach(id => {
+    const idx = trash.findIndex(item => item.id === id);
+    if (idx < 0) return;
+    services.unshift(trash[idx]);
+    trash.splice(idx, 1);
+    trashSelected.delete(id);
+  });
+  render();
+  updateTrash();
+  showToast(`已恢复 ${ids.length} 个连接器`);
+});
+trashBatchPurge.addEventListener('click', () => {
+  const ids = [...trashSelected].filter(id => trash.some(item => item.id === id));
+  if (ids.length) askPurge(ids);
+});
 
 function updateTrash() {
   trashCount.textContent = trash.length;
   trashCount.hidden = trash.length === 0;
-  const list = document.getElementById('trashList');
-  if (!trash.length) {
-    list.innerHTML = '<div class="empty">回收站是空的</div>';
-    return;
-  }
-  list.innerHTML = trash.map(item => {
-    const icon = iconFor(item);
-    return `
-      <div class="trash-item">
-        <div class="logo" style="${icon.style}; width:36px;height:36px;font-size:16px">${icon.text}</div>
-        <div style="min-width:0">
-          <div style="font-weight:600">${escapeHtml(item.name)}</div>
-          <div style="color:#8a94a6;font-size:12px;margin-top:4px">${item.date} · ${escapeHtml(item.creator)}</div>
-        </div>
-        <div style="margin-left:auto;display:flex;gap:8px">
-          <button class="btn ghost" data-restore="${item.id}">恢复</button>
-          <button class="btn danger" data-delete="${item.id}">删除</button>
-        </div>
-      </div>`;
-  }).join('');
-  list.querySelectorAll('[data-restore]').forEach(btn => btn.addEventListener('click', () => restoreFromTrash(Number(btn.dataset.restore))));
-  list.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', () => permanentlyDelete(Number(btn.dataset.delete))));
+  if (!document.getElementById('trashPage').hidden) renderTrash();
 }
+
+document.querySelectorAll('[data-trash-view]').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('[data-trash-view]').forEach(item => item.classList.remove('active'));
+    tab.classList.add('active');
+    trashView = tab.dataset.trashView;
+    renderTrash();
+  });
+});
+document.getElementById('trashSearch').addEventListener('input', event => {
+  trashKeyword = event.target.value;
+  renderTrash();
+});
+function closeTrashPage() {
+  document.getElementById('trashPage').hidden = true;
+  document.getElementById('listPage').hidden = false;
+}
+document.getElementById('trashExit').addEventListener('click', closeTrashPage);
 
 function toolsFor(item) {
   if (Array.isArray(item.toolList) && item.toolList.length) return item.toolList;
@@ -1080,7 +1258,13 @@ document.addEventListener('keydown', event => {
   if (event.key === 'Escape') document.querySelectorAll('.modal-mask.open').forEach(mask => mask.classList.remove('open'));
 });
 
-document.getElementById('trashBtn').addEventListener('click', () => { updateTrash(); openModal('trashModal'); });
+document.getElementById('trashBtn').addEventListener('click', () => {
+  trashSelected.clear();
+  document.getElementById('listPage').hidden = true;
+  document.getElementById('trashPage').hidden = false;
+  renderTrash();
+  window.scrollTo(0, 0);
+});
 
 // ===== 类别管理 =====
 const categories = [
@@ -1155,7 +1339,24 @@ document.getElementById('catDelConfirmBtn').addEventListener('click', () => {
   showToast(`已删除类别「${cat.name}」`);
 });
 
-document.getElementById('categoryBtn').addEventListener('click', () => { renderCategories(); openModal('categoryModal'); });
+// 顶栏「设置分类」下拉：企业连接器 / 连接器市场
+const catSettingDropdown = document.getElementById('catSettingDropdown');
+document.getElementById('categoryBtn').addEventListener('click', event => {
+  event.stopPropagation();
+  const open = catSettingDropdown.classList.contains('open');
+  closeDropdowns();
+  if (!open) catSettingDropdown.classList.add('open');
+});
+document.querySelectorAll('#catSettingMenu .dropdown-item').forEach(item => {
+  item.addEventListener('click', event => {
+    event.stopPropagation();
+    closeDropdowns();
+    document.getElementById('categoryModalTitle').textContent =
+      item.dataset.catScope === 'market' ? '连接器市场类别管理' : '企业连接器类别管理';
+    renderCategories();
+    openModal('categoryModal');
+  });
+});
 document.getElementById('addCategoryBtn').addEventListener('click', () => openCatForm(null));
 
 // 类别新增/编辑弹窗
@@ -1200,13 +1401,12 @@ catForm.addEventListener('submit', event => {
   closeModal('catFormModal');
   renderCategories();
 });
-searchInput.addEventListener('input', () => { keyword = searchInput.value; page = 1; render(); });
+searchInput.addEventListener('input', () => { keyword = searchInput.value; render(); });
 document.querySelectorAll('.main-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.main-tab').forEach(item => item.classList.remove('active'));
     tab.classList.add('active');
     view = tab.dataset.view;
-    page = 1;
     render();
   });
 });
@@ -1247,7 +1447,6 @@ function renderCatDropdown() {
   catDropdownMenu.querySelectorAll('.dropdown-item').forEach(el => {
     el.addEventListener('click', () => {
       catFilter = el.dataset.value;
-      page = 1;
       closeDropdowns();
       renderCatDropdown();
       render();
@@ -1264,7 +1463,6 @@ function renderStatusDropdown() {
   statusDropdownMenu.querySelectorAll('.dropdown-item').forEach(el => {
     el.addEventListener('click', () => {
       statusFilter = el.dataset.value;
-      page = 1;
       closeDropdowns();
       renderStatusDropdown();
       render();
@@ -1281,7 +1479,6 @@ function renderOwnerDropdown() {
   ownerDropdownMenu.querySelectorAll('.dropdown-item').forEach(el => {
     el.addEventListener('click', () => {
       ownerFilter = el.dataset.value;
-      page = 1;
       closeDropdowns();
       renderOwnerDropdown();
       render();
@@ -1293,6 +1490,8 @@ function closeDropdowns() {
   ownerDropdown.classList.remove('open');
   catDropdown.classList.remove('open');
   statusDropdown.classList.remove('open');
+  catSettingDropdown.classList.remove('open');
+  addDropdown.classList.remove('open');
   ownerDropdownBtn.setAttribute('aria-expanded', 'false');
   catDropdownBtn.setAttribute('aria-expanded', 'false');
   statusDropdownBtn.setAttribute('aria-expanded', 'false');
@@ -1323,9 +1522,6 @@ renderOwnerDropdown();
 renderCatDropdown();
 renderStatusDropdown();
 
-prevPage.addEventListener('click', () => { page--; render(); });
-nextPage.addEventListener('click', () => { page++; render(); });
-pageSize.addEventListener('change', () => { page = 1; render(); });
 
 // 类别多选（新增MCP弹窗）
 const mcpCatChecks = document.getElementById('mcpCatChecks');
@@ -1360,16 +1556,32 @@ function resetAvatar() {
   avatarIcon.style.display = '';
 }
 
-document.getElementById('addBtn').addEventListener('click', () => {
-  // 连接器市场：打开新增模式的市场表单
-  if (view === 'market') { openAuthModal(null); return; }
-  editingId = null;
-  document.getElementById('addModalTitle').textContent = '新增连接器';
-  document.getElementById('addForm').reset();
-  resetAvatar();
-  selectedCats = [];
-  renderMcpCatChecks();
-  openModal('addModal');
+// 顶栏「添加连接器」下拉：企业连接器 / 连接器市场
+const addDropdown = document.getElementById('addDropdown');
+document.getElementById('addBtn').addEventListener('click', event => {
+  event.stopPropagation();
+  const open = addDropdown.classList.contains('open');
+  closeDropdowns();
+  if (!open) addDropdown.classList.add('open');
+});
+document.querySelectorAll('#addMenu .dropdown-item').forEach(item => {
+  item.addEventListener('click', event => {
+    event.stopPropagation();
+    closeDropdowns();
+    if (item.dataset.addScope === 'market') {
+      // 连接器市场：API Key 授权表单
+      openAuthModal(null);
+    } else {
+      // 企业连接器：自建 MCP 表单
+      editingId = null;
+      document.getElementById('addModalTitle').textContent = '新增企业连接器';
+      document.getElementById('addForm').reset();
+      resetAvatar();
+      selectedCats = [];
+      renderMcpCatChecks();
+      openModal('addModal');
+    }
+  });
 });
 
 function openEditModal(item) {
@@ -1380,7 +1592,7 @@ function openEditModal(item) {
   }
   // 企业连接器：编辑表单
   editingId = item.id;
-  document.getElementById('addModalTitle').textContent = '编辑连接器';
+  document.getElementById('addModalTitle').textContent = '编辑企业连接器';
   const form = document.getElementById('addForm');
   form.reset();
   form.name.value = item.name || '';
@@ -1431,7 +1643,7 @@ function renderAuthCatChecks() {
 function openAuthModal(item) {
   authTarget = item;
   const isEdit = !!item;
-  document.getElementById('authModalTitle').textContent = isEdit ? '编辑连接器' : '新增连接器';
+  document.getElementById('authModalTitle').textContent = isEdit ? '编辑市场连接器' : '新增市场连接器';
   const form = document.getElementById('authForm');
   form.reset();
   authSelectedCats = isEdit ? (Array.isArray(item.cats) ? [...item.cats] : (item.cat ? [item.cat] : [])) : [];
@@ -1495,7 +1707,7 @@ document.getElementById('authForm').addEventListener('submit', event => {
   const url = document.getElementById('authUrl').value.trim();
   const builtin = document.getElementById('authBuiltin').value;
   const key = document.getElementById('authApiKey').value.trim();
-  if (!name) { showToast('请输入服务器名称'); return; }
+  if (!name) { showToast('请输入连接器名称'); return; }
   if (!desc) { showToast('请输入描述'); return; }
   if (!url) { showToast('请输入服务地址'); return; }
   if (!key) { showToast('请输入 API Key'); return; }
@@ -1528,7 +1740,6 @@ document.getElementById('authForm').addEventListener('submit', event => {
       avatar: authAvatarData,
       color: LOGO_COLORS[Math.floor(Math.random() * LOGO_COLORS.length)]
     });
-    page = 1;
     showToast('连接器已保存');
   }
   closeModal('authModal');
@@ -1620,7 +1831,6 @@ document.getElementById('addForm').addEventListener('submit', event => {
       avatar: avatarData,
       color: LOGO_COLORS[Math.floor(Math.random() * LOGO_COLORS.length)]
     });
-    page = 1;
     showToast('连接器已保存');
   }
 
