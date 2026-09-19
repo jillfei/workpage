@@ -1371,111 +1371,6 @@
             font-weight: 600;
             flex-shrink: 0;
         }
-
-        .skill-card-checkbox {
-            width: 18px;
-            height: 18px;
-            accent-color: #4f46e5;
-            border-radius: 4px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .skill-card-list-badges {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .skill-card-list-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .skill-card-list-badge.whitelist {
-            background: #D1FAE5;
-            color: #059669;
-        }
-        .skill-card-list-badge.whitelist:hover {
-            background: #059669;
-            color: #fff;
-        }
-        .skill-card-list-badge.blacklist {
-            background: #FEE2E2;
-            color: #DC2626;
-        }
-        .skill-card-list-badge.blacklist:hover {
-            background: #DC2626;
-            color: #fff;
-        }
-
-        .batch-action-bar {
-            display: none;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
-            background: #EEF2FF;
-            border: 1px solid #C7D2FE;
-            border-radius: 10px;
-            margin-bottom: 16px;
-        }
-        .batch-action-bar.active {
-            display: flex;
-        }
-        .batch-action-bar .batch-info {
-            font-size: 13px;
-            color: #4F46E5;
-            font-weight: 500;
-        }
-        .batch-action-bar .batch-info strong {
-            font-weight: 700;
-        }
-        .batch-action-bar .batch-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: all 0.15s;
-        }
-        .batch-action-bar .batch-btn.whitelist {
-            background: #D1FAE5;
-            color: #059669;
-            border-color: #A7F3D0;
-        }
-        .batch-action-bar .batch-btn.whitelist:hover {
-            background: #059669;
-            color: #fff;
-            border-color: #059669;
-        }
-        .batch-action-bar .batch-btn.blacklist {
-            background: #FEE2E2;
-            color: #DC2626;
-            border-color: #FECACA;
-        }
-        .batch-action-bar .batch-btn.blacklist:hover {
-            background: #DC2626;
-            color: #fff;
-            border-color: #DC2626;
-        }
-        .batch-action-bar .batch-btn.cancel {
-            background: #fff;
-            color: #6B7280;
-            border-color: #E5E7EB;
-        }
-        .batch-action-bar .batch-btn.cancel:hover {
-            background: #F3F4F6;
-            color: #1F2937;
-        }
     </style>
 </head>
 <body>
@@ -1639,19 +1534,6 @@
                             <iconify-icon icon="mdi:cog-outline"></iconify-icon>
                         </button>
                     </div>
-                </div>
-
-                <div class="batch-action-bar" id="batch-action-bar">
-                    <span class="batch-info">已选择 <strong id="batch-selected-count">0</strong> 个技能</span>
-                    <button class="batch-btn whitelist" onclick="openBatchListModal('whitelist')">
-                        <iconify-icon icon="mdi:shield-check-outline" style="font-size:14px;"></iconify-icon>
-                        批量设置白名单
-                    </button>
-                    <button class="batch-btn blacklist" onclick="openBatchListModal('blacklist')">
-                        <iconify-icon icon="mdi:shield-cancel-outline" style="font-size:14px;"></iconify-icon>
-                        批量设置黑名单
-                    </button>
-                    <button class="batch-btn cancel" onclick="clearSkillSelection()">取消选择</button>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="skill-grid">
@@ -2289,7 +2171,6 @@
             { id: 1, name: '代码审查助手', icon: '🐳', category: '代码生成', department: ['研发中心'], desc: '自动审查代码质量，提供改进建议，支持多种编程语言。', status: 'published',
                 enabled: true, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-07-05 14:30',
                 source: 'enterprise', auditStatus: null, rejectReason: '',
-                whitelist: [], blacklist: [],
                 files: [
                     { name: 'SKILL.md', type: 'file', size: '2.4 KB', protected: true },
                     { name: 'scripts', type: 'folder', children: [
@@ -2304,7 +2185,6 @@
             { id: 2, name: '数据分析看板', icon: '📊', category: '数据分析', department: ['研发中心'], desc: '自动连接数据源，生成可视化分析看板，支持自定义指标和维度。', status: 'published',
                 enabled: true, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-07-04 09:15',
                 source: 'personal', auditStatus: 'approved', rejectReason: '',
-                whitelist: [], blacklist: [],
                 files: [
                     { name: 'SKILL.md', type: 'file', size: '1.8 KB', protected: true },
                     { name: 'scripts', type: 'folder', children: [
@@ -2314,14 +2194,12 @@
             { id: 3, name: '文档翻译助手', icon: '📝', category: '文档处理', department: ['营销中心'], desc: '支持多语言文档翻译，保持原文格式，可处理 PDF、Word 等格式。', status: 'disabled',
                 enabled: false, createdBy: '王博士', updatedBy: '王博士', updatedAt: '2026-07-03 16:45',
                 source: 'personal', auditStatus: 'auditing', rejectReason: '',
-                whitelist: [], blacklist: [],
                 files: [
                     { name: 'SKILL.md', type: 'file', size: '1.5 KB', protected: true }
                 ] },
             { id: 4, name: '会议纪要生成器', icon: '⚙️', category: '文档处理', department: ['交付中心'], desc: '从会议录音转写文字中自动生成结构化会议纪要，提取行动项并分配负责人。',
                 status: 'published', enabled: true, createdBy: '李工', updatedBy: '李工', updatedAt: '2026-07-02 11:20',
                 source: 'enterprise', auditStatus: null, rejectReason: '',
-                whitelist: [], blacklist: [],
                 files: [
                     { name: 'SKILL.md', type: 'file', size: '3.1 KB', protected: true },
                     { name: 'scripts', type: 'folder', children: [
@@ -2331,14 +2209,12 @@
             { id: 5, name: '智能客服机器人', icon: '🔍', category: '知识检索', department: ['交付中心'], desc: '基于企业知识库的智能问答系统，支持多轮对话和知识图谱检索。', status: 'disabled',
                 enabled: false, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-06-28 08:00',
                 source: 'personal', auditStatus: 'rejected', rejectReason: '技能描述不够详细，请补充完整的使用说明和调用示例。',
-                whitelist: [], blacklist: [],
                 files: [
                     { name: 'SKILL.md', type: 'file', size: '2.0 KB', protected: true }
                 ] },
             { id: 6, name: '自动化部署工具', icon: '🔧', category: '自动化流程', department: ['研发中心'], desc: '一键式应用部署与回滚，支持多环境管理和灰度发布策略。', status: 'disabled',
                 enabled: false, createdBy: '王博士', updatedBy: '王博士', updatedAt: '2026-07-01 13:10',
                 source: 'personal', auditStatus: 'auditing', rejectReason: '',
-                whitelist: [], blacklist: [],
                 files: [
                     { name: 'SKILL.md', type: 'file', size: '1.2 KB', protected: true },
                     { name: 'scripts', type: 'folder', children: [
@@ -2372,7 +2248,6 @@
 
         // ─── 回收站选中状态管理 ───
         let selectedRecycleIds = new Set();
-        let selectedSkillIds = new Set();
 
         // 图标状态
         let createIconData = '🤖';
@@ -2430,10 +2305,7 @@
                 selectedRecycleIds.clear();
             }
 
-            if (view === 'list') {
-                selectedSkillIds.clear();
-                renderSkillGrid();
-            }
+            if (view === 'list') renderSkillGrid();
             if (view === 'recycle') renderRecycleGrid();
         }
 
@@ -2514,13 +2386,9 @@
                 const auditBtnHtml = (isPersonal && isAuditing)
                     ? `<button class="audit-btn" onclick="event.stopPropagation();openAuditModal(${s.id})" title="审核"><iconify-icon icon="mdi:shield-check-outline" style="font-size:14px;"></iconify-icon>审核</button>`
                     : '';
-                const whitelistCount = (s.whitelist || []).length;
-                const blacklistCount = (s.blacklist || []).length;
-                const isChecked = selectedSkillIds.has(s.id) ? 'checked' : '';
                 return `
                 <div class="skill-card bg-white rounded-xl border border-gray-200 p-5 cursor-pointer relative" onclick="openDetail(${s.id})">
                     <div class="flex items-center gap-3 mb-1">
-                        <input type="checkbox" class="skill-card-checkbox" data-id="${s.id}" ${isChecked} onclick="event.stopPropagation()" onchange="toggleSkillSelection(${s.id}, this.checked)" />
                         <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${iconHtml}</div>
                         <h3 class="font-semibold text-gray-900 truncate flex-1">${s.name}</h3>
                         ${auditTagHtml}
@@ -2536,20 +2404,10 @@
                             </span>
                         </div>
                     </div>
-                    ${s.department && s.department.length ? '<div class="flex items-center gap-1 mb-2 ml-10 text-xs text-gray-500"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M18 15h-2v2h2m0-6h-2v2h2m2 6h-8v-2h2v-2h-2v-2h2v-2h-2V9h8M10 7H8V5h2m0 6H8V9h2m0 6H8v-2h2m0 6H8v-2h2M6 7H4V5h2m0 6H4V9h2m0 6H4v-2h2m0 6H4v-2h2m6-10V3H2v18h20V7z"></path></svg><span>' + s.department.join('、') + '</span></div>' : ''}
+                    ${s.department && s.department.length ? '<div class="flex items-center gap-1 mb-2 ml-14 text-xs text-gray-500"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M18 15h-2v2h2m0-6h-2v2h2m2 6h-8v-2h2v-2h-2v-2h2v-2h-2V9h8M10 7H8V5h2m0 6H8V9h2m0 6H8v-2h2m0 6H8v-2h2M6 7H4V5h2m0 6H4V9h2m0 6H4v-2h2m0 6H4v-2h2m6-10V3H2v18h20V7z"></path></svg><span>' + s.department.join('、') + '</span></div>' : ''}
                     <div class="flex items-center gap-2 mb-2.5 flex-wrap">
                         <span class="tag tag-category">${s.category}</span>
                         ${sourceTag}
-                        <div class="skill-card-list-badges ml-auto">
-                            <span class="skill-card-list-badge whitelist" onclick="event.stopPropagation();openSingleListModal(${s.id}, 'whitelist')" title="白名单设置">
-                                <iconify-icon icon="mdi:shield-check-outline" style="font-size:12px;"></iconify-icon>
-                                ${whitelistCount}
-                            </span>
-                            <span class="skill-card-list-badge blacklist" onclick="event.stopPropagation();openSingleListModal(${s.id}, 'blacklist')" title="黑名单设置">
-                                <iconify-icon icon="mdi:shield-cancel-outline" style="font-size:12px;"></iconify-icon>
-                                ${blacklistCount}
-                            </span>
-                        </div>
                     </div>
                     <p class="text-xs text-gray-500 mb-3 leading-relaxed line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height: calc(14px * 1.5 * 2); ">${s.desc}</p>
                     <div class="flex items-center justify-between pt-3 border-t border-gray-100">
@@ -2570,217 +2428,6 @@
             }).join('');
 
             renderPagination(start, end, filteredSkills.length, totalPages);
-        }
-
-        function toggleSkillSelection(id, checked) {
-            if (checked) {
-                selectedSkillIds.add(id);
-            } else {
-                selectedSkillIds.delete(id);
-            }
-            updateBatchActionBar();
-        }
-
-        function clearSkillSelection() {
-            selectedSkillIds.clear();
-            document.querySelectorAll('.skill-card-checkbox').forEach(cb => cb.checked = false);
-            updateBatchActionBar();
-        }
-
-        function updateBatchActionBar() {
-            const bar = document.getElementById('batch-action-bar');
-            const countEl = document.getElementById('batch-selected-count');
-            if (selectedSkillIds.size > 0) {
-                bar.classList.add('active');
-                countEl.textContent = selectedSkillIds.size;
-            } else {
-                bar.classList.remove('active');
-            }
-        }
-
-        function openBatchListModal(type) {
-            if (selectedSkillIds.size === 0) {
-                showToast('请先选择技能', 'error');
-                return;
-            }
-            currentListType = type;
-            tempSelectedPeople = new Set();
-            
-            const modalId = type + 'Modal';
-            const containerId = type + '-people-tree';
-            const container = document.getElementById(containerId);
-            
-            let html = '';
-            if (type === 'whitelist') {
-                html = renderAllDepartmentsTree();
-            } else {
-                html = renderBatchSkillDepartmentsTree();
-            }
-            container.innerHTML = html;
-            updateListSelectedCount();
-            openModal(modalId);
-        }
-
-        function renderBatchSkillDepartmentsTree() {
-            const selectedSkills = skills.filter(s => selectedSkillIds.has(s.id));
-            const allDepts = new Set();
-            selectedSkills.forEach(s => {
-                if (s.department) {
-                    s.department.forEach(d => allDepts.add(d));
-                }
-            });
-            
-            if (allDepts.size === 0) {
-                return '<p class="text-sm text-gray-400 text-center py-8">选中的技能未设置归属部门</p>';
-            }
-            
-            let html = '';
-            enterprisePeople.forEach(group => {
-                const matchedChildren = group.children.filter(child => allDepts.has(child.dept));
-                if (matchedChildren.length === 0) return;
-                
-                const groupChecked = isAllGroupSelectedInList(matchedChildren);
-                html += `<div class="people-tree-group">
-                    <div class="people-tree-dept">
-                        <input type="checkbox" class="dept-checkbox" ${groupChecked ? 'checked' : ''} 
-                            onchange="toggleBatchDeptSelection('${group.dept}', this.checked, true)" />
-                        <iconify-icon icon="mdi:domain" style="font-size:16px;"></iconify-icon>
-                        <span>${group.dept}</span>
-                    </div>
-                    <div class="people-tree-members">`;
-                matchedChildren.forEach(dept => {
-                    const deptChecked = isAllDeptSelectedForDept(dept);
-                    html += `<div class="people-tree-dept">
-                        <input type="checkbox" class="dept-checkbox" ${deptChecked ? 'checked' : ''} 
-                            onchange="toggleBatchDeptSelection('${dept.dept}', this.checked, false)" />
-                        <iconify-icon icon="mdi:domain" style="font-size:15px;"></iconify-icon>
-                        <span>${dept.dept}</span>
-                    </div>
-                    <div class="people-tree-members">`;
-                    dept.members.forEach(member => {
-                        const memberKey = dept.dept + ':' + member;
-                        const checked = tempSelectedPeople.has(memberKey) ? 'checked' : '';
-                        const initial = member.charAt(0);
-                        html += `<div class="people-tree-member">
-                            <input type="checkbox" class="member-checkbox" data-dept="${dept.dept}" data-name="${member}" ${checked} 
-                                onchange="toggleMemberSelection('${dept.dept}', '${member}', this.checked)" />
-                            <span class="member-avatar">${initial}</span>
-                            <span>${member}</span>
-                        </div>`;
-                    });
-                    html += `</div>`;
-                });
-                html += `</div></div>`;
-            });
-            return html;
-        }
-
-        function toggleBatchDeptSelection(deptName, checked, isParent) {
-            const selectedSkills = skills.filter(s => selectedSkillIds.has(s.id));
-            const allDepts = new Set();
-            selectedSkills.forEach(s => {
-                if (s.department) {
-                    s.department.forEach(d => allDepts.add(d));
-                }
-            });
-            
-            if (isParent) {
-                const group = enterprisePeople.find(g => g.dept === deptName);
-                if (group) {
-                    group.children.filter(c => allDepts.has(c.dept)).forEach(dept => {
-                        dept.members.forEach(member => {
-                            const key = dept.dept + ':' + member;
-                            if (checked) {
-                                tempSelectedPeople.add(key);
-                            } else {
-                                tempSelectedPeople.delete(key);
-                            }
-                        });
-                    });
-                }
-            } else {
-                if (allDepts.has(deptName)) {
-                    const group = enterprisePeople.find(g => g.children.some(c => c.dept === deptName));
-                    if (group) {
-                        const dept = group.children.find(c => c.dept === deptName);
-                        if (dept) {
-                            dept.members.forEach(member => {
-                                const key = deptName + ':' + member;
-                                if (checked) {
-                                    tempSelectedPeople.add(key);
-                                } else {
-                                    tempSelectedPeople.delete(key);
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-            refreshBatchPeopleTree();
-        }
-
-        function refreshBatchPeopleTree() {
-            const containerId = currentListType + '-people-tree';
-            const container = document.getElementById(containerId);
-            if (currentListType === 'whitelist') {
-                container.innerHTML = renderAllDepartmentsTree();
-            } else {
-                container.innerHTML = renderBatchSkillDepartmentsTree();
-            }
-            updateListSelectedCount();
-        }
-
-        function openSingleListModal(skillId, type) {
-            const skill = skills.find(s => s.id === skillId);
-            if (!skill) return;
-            
-            selectedSkillIds.clear();
-            selectedSkillIds.add(skillId);
-            
-            currentListType = type;
-            tempSelectedPeople = new Set(skill[type] || []);
-            
-            const modalId = type + 'Modal';
-            const containerId = type + '-people-tree';
-            const container = document.getElementById(containerId);
-            
-            let html = '';
-            if (type === 'whitelist') {
-                html = renderAllDepartmentsTree();
-            } else {
-                currentSkill = skill;
-                html = renderSkillDepartmentsTree();
-            }
-            container.innerHTML = html;
-            updateListSelectedCount();
-            openModal(modalId);
-        }
-
-        function saveListSelection(type) {
-            if (selectedSkillIds.size > 1) {
-                selectedSkillIds.forEach(id => {
-                    const skill = skills.find(s => s.id === id);
-                    if (skill) {
-                        skill[type] = Array.from(tempSelectedPeople);
-                    }
-                });
-                showToast(`已批量设置 ${selectedSkillIds.size} 个技能的${type === 'whitelist' ? '白名单' : '黑名单'}`, 'success');
-                clearSkillSelection();
-                renderSkillGrid();
-            } else if (selectedSkillIds.size === 1) {
-                const skillId = Array.from(selectedSkillIds)[0];
-                const skill = skills.find(s => s.id === skillId);
-                if (skill) {
-                    skill[type] = Array.from(tempSelectedPeople);
-                }
-                showToast(`${type === 'whitelist' ? '白名单' : '黑名单'}已保存`, 'success');
-                if (currentView === 'detail') {
-                    updateDetailListCounts();
-                } else {
-                    renderSkillGrid();
-                }
-            }
-            closeModal(type + 'Modal');
         }
 
         function toggleSkill(id, enabled) {
@@ -3237,7 +2884,6 @@
             if (uploadOverrideBtn) uploadOverrideBtn.style.display = detailMode === 'edit' ? '' : 'none';
 
             document.getElementById('file-tree').innerHTML = renderFileTree(currentSkill.files);
-            updateDetailListCounts();
             showView('detail');
         }
 
@@ -3431,8 +3077,6 @@
                 updatedBy: '孙礼飞',
                 updatedAt: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit',
                         hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-'),
-                whitelist: [],
-                blacklist: [],
                 files: [{ name: 'SKILL.md', type: 'file', size: '0 KB', protected: true }]
             };
             skills.unshift(newSkill);
@@ -3573,8 +3217,6 @@
                 updatedBy: '孙礼飞',
                 updatedAt: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit',
                         hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-'),
-                whitelist: [],
-                blacklist: [],
                 files: [{ name: 'SKILL.md', type: 'file', size: '0 KB', protected: true }]
             };
             skills.unshift(newSkill);
@@ -4286,333 +3928,6 @@
                 document.querySelectorAll('.dept-selector-trigger').forEach(t => t.classList.remove('open'));
             }
         });
-
-        // ═══════════════════════════════════════════════
-        // 白名单/黑名单 - 企业人员数据
-        // ═══════════════════════════════════════════════
-        const enterprisePeople = [
-            {
-                dept: '思维特',
-                children: [
-                    { dept: '营销中心', members: ['张三', '李四', '王五', '赵六'] },
-                    { dept: '研发中心', members: ['孙礼飞', '王博士', '李工', '陈工', '刘工'] },
-                    { dept: '交付中心', members: ['周工', '吴工', '郑工', '冯工'] }
-                ]
-            }
-        ];
-
-        let currentListType = '';
-        let tempSelectedPeople = new Set();
-
-        function openListModal(type) {
-            if (!currentSkill) return;
-            
-            selectedSkillIds.clear();
-            selectedSkillIds.add(currentSkill.id);
-            
-            currentListType = type;
-            tempSelectedPeople = new Set(currentSkill[type] || []);
-            
-            const modalId = type + 'Modal';
-            const containerId = type + '-people-tree';
-            const container = document.getElementById(containerId);
-            
-            let html = '';
-            if (type === 'whitelist') {
-                html = renderAllDepartmentsTree();
-            } else {
-                html = renderSkillDepartmentsTree();
-            }
-            container.innerHTML = html;
-            updateListSelectedCount();
-            openModal(modalId);
-        }
-
-        function renderAllDepartmentsTree() {
-            let html = '';
-            enterprisePeople.forEach(group => {
-                const groupChecked = isAllGroupSelected(group);
-                html += `<div class="people-tree-group">
-                    <div class="people-tree-dept">
-                        <input type="checkbox" class="dept-checkbox" ${groupChecked ? 'checked' : ''} 
-                            onchange="toggleDeptSelection('${group.dept}', this.checked, true)" />
-                        <iconify-icon icon="mdi:domain" style="font-size:16px;"></iconify-icon>
-                        <span>${group.dept}</span>
-                    </div>
-                    <div class="people-tree-members">`;
-                group.children.forEach(dept => {
-                    const deptChecked = isAllDeptSelected(dept);
-                    html += `<div class="people-tree-dept">
-                        <input type="checkbox" class="dept-checkbox" ${deptChecked ? 'checked' : ''} 
-                            onchange="toggleDeptSelection('${dept.dept}', this.checked, false)" />
-                        <iconify-icon icon="mdi:domain" style="font-size:15px;"></iconify-icon>
-                        <span>${dept.dept}</span>
-                    </div>
-                    <div class="people-tree-members">`;
-                    dept.members.forEach(member => {
-                        const memberKey = dept.dept + ':' + member;
-                        const checked = tempSelectedPeople.has(memberKey) ? 'checked' : '';
-                        const initial = member.charAt(0);
-                        html += `<div class="people-tree-member">
-                            <input type="checkbox" class="member-checkbox" data-dept="${dept.dept}" data-name="${member}" ${checked} 
-                                onchange="toggleMemberSelection('${dept.dept}', '${member}', this.checked)" />
-                            <span class="member-avatar">${initial}</span>
-                            <span>${member}</span>
-                        </div>`;
-                    });
-                    html += `</div>`;
-                });
-                html += `</div></div>`;
-            });
-            return html;
-        }
-
-        function renderSkillDepartmentsTree() {
-            if (!currentSkill || !currentSkill.department || currentSkill.department.length === 0) {
-                return '<p class="text-sm text-gray-400 text-center py-8">该技能未设置归属部门</p>';
-            }
-            
-            let html = '';
-            const skillDepts = currentSkill.department;
-            
-            enterprisePeople.forEach(group => {
-                const matchedChildren = group.children.filter(child => skillDepts.includes(child.dept));
-                if (matchedChildren.length === 0) return;
-                
-                const groupChecked = isAllGroupSelectedInList(matchedChildren);
-                html += `<div class="people-tree-group">
-                    <div class="people-tree-dept">
-                        <input type="checkbox" class="dept-checkbox" ${groupChecked ? 'checked' : ''} 
-                            onchange="toggleDeptSelectionInList('${group.dept}', this.checked, true)" />
-                        <iconify-icon icon="mdi:domain" style="font-size:16px;"></iconify-icon>
-                        <span>${group.dept}</span>
-                    </div>
-                    <div class="people-tree-members">`;
-                matchedChildren.forEach(dept => {
-                    const deptChecked = isAllDeptSelectedForDept(dept);
-                    html += `<div class="people-tree-dept">
-                        <input type="checkbox" class="dept-checkbox" ${deptChecked ? 'checked' : ''} 
-                            onchange="toggleDeptSelectionInList('${dept.dept}', this.checked, false)" />
-                        <iconify-icon icon="mdi:domain" style="font-size:15px;"></iconify-icon>
-                        <span>${dept.dept}</span>
-                    </div>
-                    <div class="people-tree-members">`;
-                    dept.members.forEach(member => {
-                        const memberKey = dept.dept + ':' + member;
-                        const checked = tempSelectedPeople.has(memberKey) ? 'checked' : '';
-                        const initial = member.charAt(0);
-                        html += `<div class="people-tree-member">
-                            <input type="checkbox" class="member-checkbox" data-dept="${dept.dept}" data-name="${member}" ${checked} 
-                                onchange="toggleMemberSelection('${dept.dept}', '${member}', this.checked)" />
-                            <span class="member-avatar">${initial}</span>
-                            <span>${member}</span>
-                        </div>`;
-                    });
-                    html += `</div>`;
-                });
-                html += `</div></div>`;
-            });
-            return html;
-        }
-
-        function isAllGroupSelected(group) {
-            for (const dept of group.children) {
-                for (const member of dept.members) {
-                    if (!tempSelectedPeople.has(dept.dept + ':' + member)) return false;
-                }
-            }
-            return true;
-        }
-
-        function isAllDeptSelected(dept) {
-            for (const member of dept.members) {
-                if (!tempSelectedPeople.has(dept.dept + ':' + member)) return false;
-            }
-            return true;
-        }
-
-        function isAllGroupSelectedInList(children) {
-            for (const dept of children) {
-                for (const member of dept.members) {
-                    if (!tempSelectedPeople.has(dept.dept + ':' + member)) return false;
-                }
-            }
-            return true;
-        }
-
-        function isAllDeptSelectedForDept(dept) {
-            for (const member of dept.members) {
-                if (!tempSelectedPeople.has(dept.dept + ':' + member)) return false;
-            }
-            return true;
-        }
-
-        function toggleDeptSelection(deptName, checked, isParent) {
-            if (isParent) {
-                const group = enterprisePeople.find(g => g.dept === deptName);
-                if (group) {
-                    group.children.forEach(dept => {
-                        dept.members.forEach(member => {
-                            const key = dept.dept + ':' + member;
-                            if (checked) {
-                                tempSelectedPeople.add(key);
-                            } else {
-                                tempSelectedPeople.delete(key);
-                            }
-                        });
-                    });
-                }
-            } else {
-                const group = enterprisePeople.find(g => g.children.some(c => c.dept === deptName));
-                if (group) {
-                    const dept = group.children.find(c => c.dept === deptName);
-                    if (dept) {
-                        dept.members.forEach(member => {
-                            const key = deptName + ':' + member;
-                            if (checked) {
-                                tempSelectedPeople.add(key);
-                            } else {
-                                tempSelectedPeople.delete(key);
-                            }
-                        });
-                    }
-                }
-            }
-            refreshPeopleTree();
-        }
-
-        function toggleDeptSelectionInList(deptName, checked, isParent) {
-            if (!currentSkill) return;
-            const skillDepts = currentSkill.department || [];
-            
-            if (isParent) {
-                const group = enterprisePeople.find(g => g.dept === deptName);
-                if (group) {
-                    group.children.filter(c => skillDepts.includes(c.dept)).forEach(dept => {
-                        dept.members.forEach(member => {
-                            const key = dept.dept + ':' + member;
-                            if (checked) {
-                                tempSelectedPeople.add(key);
-                            } else {
-                                tempSelectedPeople.delete(key);
-                            }
-                        });
-                    });
-                }
-            } else {
-                const group = enterprisePeople.find(g => g.children.some(c => c.dept === deptName));
-                if (group) {
-                    const dept = group.children.find(c => c.dept === deptName);
-                    if (dept && skillDepts.includes(deptName)) {
-                        dept.members.forEach(member => {
-                            const key = deptName + ':' + member;
-                            if (checked) {
-                                tempSelectedPeople.add(key);
-                            } else {
-                                tempSelectedPeople.delete(key);
-                            }
-                        });
-                    }
-                }
-            }
-            refreshPeopleTree();
-        }
-
-        function toggleMemberSelection(deptName, memberName, checked) {
-            const key = deptName + ':' + memberName;
-            if (checked) {
-                tempSelectedPeople.add(key);
-            } else {
-                tempSelectedPeople.delete(key);
-            }
-            updateListSelectedCount();
-            updateDeptCheckboxes();
-        }
-
-        function refreshPeopleTree() {
-            const containerId = currentListType + '-people-tree';
-            const container = document.getElementById(containerId);
-            if (currentListType === 'whitelist') {
-                container.innerHTML = renderAllDepartmentsTree();
-            } else {
-                container.innerHTML = renderSkillDepartmentsTree();
-            }
-            updateListSelectedCount();
-        }
-
-        function updateDeptCheckboxes() {
-            const container = document.getElementById(currentListType + '-people-tree');
-            const deptCheckboxes = container.querySelectorAll('.dept-checkbox');
-            
-            if (currentListType === 'whitelist') {
-                deptCheckboxes.forEach(cb => {
-                    const deptRow = cb.closest('.people-tree-dept');
-                    const deptName = deptRow.querySelector('span').textContent;
-                    const isParent = deptRow.parentElement.classList.contains('people-tree-group') && 
-                                     deptRow.parentElement.querySelector('.people-tree-members');
-                    
-                    if (isParent) {
-                        const group = enterprisePeople.find(g => g.dept === deptName);
-                        if (group) {
-                            cb.checked = isAllGroupSelected(group);
-                        }
-                    } else {
-                        const group = enterprisePeople.find(g => g.children.some(c => c.dept === deptName));
-                        if (group) {
-                            const dept = group.children.find(c => c.dept === deptName);
-                            if (dept) {
-                                cb.checked = isAllDeptSelected(dept);
-                            }
-                        }
-                    }
-                });
-            } else {
-                const skillDepts = currentSkill?.department || [];
-                deptCheckboxes.forEach(cb => {
-                    const deptRow = cb.closest('.people-tree-dept');
-                    const deptName = deptRow.querySelector('span').textContent;
-                    const isParent = deptRow.parentElement.classList.contains('people-tree-group') && 
-                                     deptRow.parentElement.querySelector('.people-tree-members');
-                    
-                    if (isParent) {
-                        const group = enterprisePeople.find(g => g.dept === deptName);
-                        if (group) {
-                            const matchedChildren = group.children.filter(c => skillDepts.includes(c.dept));
-                            cb.checked = isAllGroupSelectedInList(matchedChildren);
-                        }
-                    } else {
-                        if (skillDepts.includes(deptName)) {
-                            const group = enterprisePeople.find(g => g.children.some(c => c.dept === deptName));
-                            if (group) {
-                                const dept = group.children.find(c => c.dept === deptName);
-                                if (dept) {
-                                    cb.checked = isAllDeptSelectedForDept(dept);
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        function updateListSelectedCount() {
-            const countEl = document.getElementById(currentListType + '-selected-count');
-            if (countEl) {
-                countEl.textContent = tempSelectedPeople.size;
-            }
-        }
-
-        function updateDetailListCounts() {
-            if (!currentSkill) return;
-            const whitelistCount = document.getElementById('detail-whitelist-count');
-            const blacklistCount = document.getElementById('detail-blacklist-count');
-            if (whitelistCount) {
-                whitelistCount.textContent = (currentSkill.whitelist || []).length;
-            }
-            if (blacklistCount) {
-                blacklistCount.textContent = (currentSkill.blacklist || []).length;
-            }
-        }
 
         // ═══════════════════════════════════════════════
         // 初始化
