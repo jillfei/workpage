@@ -1208,11 +1208,6 @@
                         <iconify-icon icon="mdi:arrow-left"></iconify-icon>
                         <span>返回</span>
                     </button>
-                    <button id="btn-audit-detail" onclick="openAuditModal(currentSkill.id)" class="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm">
-                        <iconify-icon icon="mdi:shield-check-outline"></iconify-icon>
-                        <span>审核</span>
-                    </button>
-                    <a id="btn-debug-detail" href="#" onclick="openDebugPage();return false;" style="display:inline-flex;align-items:center;gap:3px;padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;background:#D1FAE5;color:#059669;border:1px solid #A7F3D0;text-decoration:none;cursor:pointer;transition:all 0.15s;white-space:nowrap;" onmouseover="this.style.background='#059669';this.style.color='#fff';this.style.borderColor='#059669';" onmouseout="this.style.background='#D1FAE5';this.style.color='#059669';this.style.borderColor='#A7F3D0';" title="调试"><iconify-icon icon="mdi:bug" style="font-size:14px;"></iconify-icon><span>调试</span></a>
                     <button onclick="showToast('导出成功','success')" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                         <iconify-icon icon="mdi:download-outline"></iconify-icon>
                         <span>导出技能</span>
@@ -1809,19 +1804,6 @@
             </div>
             <div class="px-6 py-5">
                 <p class="text-sm text-gray-600 mb-4">请对技能 <strong id="audit-skill-name"></strong> 进行审核操作：</p>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">审核结果 <span class="text-red-500">*</span></label>
-                    <div class="flex gap-4">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="audit-result" value="approved" onchange="toggleAuditRejectSection()" class="accent-indigo-600">
-                            <span class="text-sm text-gray-700">通过</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="audit-result" value="rejected" onchange="toggleAuditRejectSection()" class="accent-indigo-600">
-                            <span class="text-sm text-gray-700">驳回</span>
-                        </label>
-                    </div>
-                </div>
                 <div id="audit-reject-section" class="hidden">
                     <label class="block text-sm font-medium text-gray-700 mb-2">驳回原因 <span class="text-red-500">*</span></label>
                     <textarea id="audit-reject-reason" oninput="document.getElementById('audit-reject-char-count').textContent=this.value.length" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm resize-none" rows="4" placeholder="请输入驳回原因（必填）..." maxlength="500"></textarea>
@@ -1830,7 +1812,8 @@
             </div>
             <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
                 <button onclick="closeModal('auditModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
-                <button onclick="confirmAudit()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">提交</button>
+                <button onclick="confirmAudit('rejected')" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700">驳回</button>
+                <button onclick="confirmAudit('approved')" class="px-5 py-2 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700">通过</button>
             </div>
         </div>
     </div>
@@ -2547,10 +2530,6 @@
             if (fileBtn) fileBtn.style.display = detailMode === 'edit' ? '' : 'none';
             const uploadOverrideBtn = document.getElementById('btn-upload-override');
             if (uploadOverrideBtn) uploadOverrideBtn.style.display = detailMode === 'edit' ? '' : 'none';
-            const auditBtn = document.getElementById('btn-audit-detail');
-            if (auditBtn) auditBtn.style.display = (isPersonal && isAuditing) ? '' : 'none';
-            const debugBtn = document.getElementById('btn-debug-detail');
-            if (debugBtn) debugBtn.style.display = '';
 
             document.getElementById('file-tree').innerHTML = renderFileTree(currentSkill.files);
             showView('detail');
@@ -3376,35 +3355,18 @@
             document.getElementById('audit-reject-section').classList.add('hidden');
             document.getElementById('audit-reject-reason').value = '';
             document.getElementById('audit-reject-char-count').textContent = '0';
-            document.querySelectorAll('input[name="audit-result"]').forEach(r => r.checked = false);
             openModal('auditModal');
         }
 
-        function toggleAuditRejectSection() {
-            const result = document.querySelector('input[name="audit-result"]:checked');
-            if (result && result.value === 'rejected') {
-                document.getElementById('audit-reject-section').classList.remove('hidden');
-            } else {
-                document.getElementById('audit-reject-section').classList.add('hidden');
-            }
-        }
-
-        function confirmAudit() {
+        function confirmAudit(action) {
             if (!auditTargetId) return;
             const skill = skills.find(s => s.id === auditTargetId);
             if (!skill) return;
 
-            const resultRadio = document.querySelector('input[name="audit-result"]:checked');
-            if (!resultRadio) {
-                showToast('请选择审核结果', 'error');
-                return;
-            }
-
-            const action = resultRadio.value;
-
             if (action === 'rejected') {
                 const reason = document.getElementById('audit-reject-reason').value.trim();
                 if (!reason) {
+                    document.getElementById('audit-reject-section').classList.remove('hidden');
                     document.getElementById('audit-reject-reason').focus();
                     showToast('请填写驳回原因', 'error');
                     return;
@@ -3421,26 +3383,21 @@
             auditTargetId = null;
             closeModal('auditModal');
             renderSkillGrid();
-            if (currentView === 'detail' && currentSkill && currentSkill.id === skill.id) {
-                openDetail(skill.id);
-            }
             showToast(action === 'approved' ? '审核通过' : '已驳回', 'success');
         }
+
+        document.getElementById('audit-reject-reason')?.addEventListener('input', function() {
+            document.getElementById('audit-reject-char-count').textContent = this.value.length;
+            if (this.value.trim()) {
+                document.getElementById('audit-reject-section').classList.remove('hidden');
+            }
+        });
 
         document.getElementById('auditModal')?.addEventListener('click', function(e) {
             if (e.target === this) {
                 auditTargetId = null;
             }
         });
-
-        // ═══════════════════════════════════════════════
-        // 调试操作
-        // ═══════════════════════════════════════════════
-        function openDebugPage() {
-            if (!currentSkill) return;
-            const url = `../qyznt/zjgl.html?type=detail&id=${currentSkill.id}&title=${encodeURIComponent(currentSkill.name)}&desc=${encodeURIComponent(currentSkill.desc)}`;
-            window.location.href = url;
-        }
 
         // ═══════════════════════════════════════════════
         // 初始化

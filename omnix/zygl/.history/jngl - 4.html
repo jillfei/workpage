@@ -1208,11 +1208,6 @@
                         <iconify-icon icon="mdi:arrow-left"></iconify-icon>
                         <span>返回</span>
                     </button>
-                    <button id="btn-audit-detail" onclick="openAuditModal(currentSkill.id)" class="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm">
-                        <iconify-icon icon="mdi:shield-check-outline"></iconify-icon>
-                        <span>审核</span>
-                    </button>
-                    <a id="btn-debug-detail" href="#" onclick="openDebugPage();return false;" style="display:inline-flex;align-items:center;gap:3px;padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;background:#D1FAE5;color:#059669;border:1px solid #A7F3D0;text-decoration:none;cursor:pointer;transition:all 0.15s;white-space:nowrap;" onmouseover="this.style.background='#059669';this.style.color='#fff';this.style.borderColor='#059669';" onmouseout="this.style.background='#D1FAE5';this.style.color='#059669';this.style.borderColor='#A7F3D0';" title="调试"><iconify-icon icon="mdi:bug" style="font-size:14px;"></iconify-icon><span>调试</span></a>
                     <button onclick="showToast('导出成功','success')" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                         <iconify-icon icon="mdi:download-outline"></iconify-icon>
                         <span>导出技能</span>
@@ -2547,10 +2542,6 @@
             if (fileBtn) fileBtn.style.display = detailMode === 'edit' ? '' : 'none';
             const uploadOverrideBtn = document.getElementById('btn-upload-override');
             if (uploadOverrideBtn) uploadOverrideBtn.style.display = detailMode === 'edit' ? '' : 'none';
-            const auditBtn = document.getElementById('btn-audit-detail');
-            if (auditBtn) auditBtn.style.display = (isPersonal && isAuditing) ? '' : 'none';
-            const debugBtn = document.getElementById('btn-debug-detail');
-            if (debugBtn) debugBtn.style.display = '';
 
             document.getElementById('file-tree').innerHTML = renderFileTree(currentSkill.files);
             showView('detail');
@@ -3421,9 +3412,6 @@
             auditTargetId = null;
             closeModal('auditModal');
             renderSkillGrid();
-            if (currentView === 'detail' && currentSkill && currentSkill.id === skill.id) {
-                openDetail(skill.id);
-            }
             showToast(action === 'approved' ? '审核通过' : '已驳回', 'success');
         }
 
@@ -3432,15 +3420,6 @@
                 auditTargetId = null;
             }
         });
-
-        // ═══════════════════════════════════════════════
-        // 调试操作
-        // ═══════════════════════════════════════════════
-        function openDebugPage() {
-            if (!currentSkill) return;
-            const url = `../qyznt/zjgl.html?type=detail&id=${currentSkill.id}&title=${encodeURIComponent(currentSkill.name)}&desc=${encodeURIComponent(currentSkill.desc)}`;
-            window.location.href = url;
-        }
 
         // ═══════════════════════════════════════════════
         // 初始化
