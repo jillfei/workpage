@@ -221,6 +221,7 @@
       padding: 3px 10px; border-radius: 999px;
       font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap;
       background: #f4f4f5; color: #52525b;
+	  display: none;
     }
     .src-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #a1a1aa; }
     .src-badge[data-src="技能市场"] { background: #eff6ff; color: #2563eb; }
@@ -336,115 +337,6 @@
     .card.disabled .icon-box,
     .card.disabled .card-body,
     .card.disabled .card-foot { opacity: .55; filter: grayscale(1); }
-
-    .card-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .btn-contribute {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px;
-      background: #fff;
-      border: 1px solid #e4e4e7;
-      border-radius: 999px;
-      font-size: 12px; font-weight: 500;
-      color: #7c3aed;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background .15s, border-color .15s;
-    }
-    .btn-contribute:hover { background: #faf5ff; border-color: #c4b5fd; }
-    .status-reviewing {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 12px; font-weight: 500;
-      color: #d97706;
-      background: #fffbeb;
-      border: 1px solid #fde68a;
-      white-space: nowrap;
-    }
-    .status-reviewing .review-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: #f59e0b;
-      animation: pulse-dot 1.5s ease-in-out infinite;
-    }
-    @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
-
-    .contributor-tag {
-      display: inline-flex; align-items: center;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 12px; font-weight: 500;
-      color: #7c3aed;
-      background: #f5f3ff;
-      border: 1px solid #ddd6fe;
-      white-space: nowrap;
-    }
-    .status-rejected {
-      display: inline-flex; align-items: center;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 12px; font-weight: 500;
-      color: #dc2626;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      white-space: nowrap;
-    }
-    .reject-info {
-      position: relative;
-      display: inline-flex; align-items: center;
-      cursor: help;
-    }
-    .reject-info .reject-icon {
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      background: #dc2626;
-      color: #fff;
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 700;
-      line-height: 1;
-    }
-    .reject-info .reject-tooltip {
-      position: absolute;
-      bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1e293b;
-      color: #f1f5f9;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 400;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .2s ease;
-      box-shadow: 0 4px 16px rgba(0,0,0,.18);
-      z-index: 20;
-    }
-    .reject-info .reject-tooltip::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border-left: 6px solid transparent;
-      border-right: 6px solid transparent;
-      border-top: 6px solid #1e293b;
-    }
-    .reject-info:hover .reject-tooltip {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .contribute-modal-body { text-align: center; padding: 8px 0 0; }
-    .contribute-modal-body .cm-icon {
-      width: 48px; height: 48px; border-radius: 50%;
-      background: #f5f3ff; color: #7c3aed;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 16px;
-    }
-    .contribute-modal-body .cm-text {
-      font-size: 14px; color: #3f3f46; line-height: 1.6; margin-bottom: 4px;
-    }
 
     /* 顶部成功提示 Toast */
     #toast {
@@ -778,29 +670,6 @@
     </div>
   </div>
 
-  <!-- Contribute Confirm Modal -->
-  <div class="modal-overlay hidden" id="contribute-modal">
-    <div class="modal" style="width:420px">
-      <div class="modal-header">
-        <h2>贡献为企业技能</h2>
-        <button class="modal-close" id="contribute-close">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-      <div class="contribute-modal-body">
-        <div class="cm-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
-        </div>
-        <p class="cm-text">贡献后，该技能审核通过后会成为企业技能，您也会成为该企业技能的贡献者！</p>
-        <p class="cm-text">注：审核过程中，技能修改无法被系统识别，审核通过后会被覆盖，请勿修改或提前做好备份！</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn cancel" id="contribute-cancel">取消</button>
-        <button class="btn dark" id="contribute-confirm">确认贡献</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     const ICONS = {
       "document": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
@@ -861,16 +730,7 @@
         stars: 140, downloads: "1,280万", featured: false },
       { id: 14, name: "Java编程专家", icon: "java", grad: "linear-gradient(135deg,#60a5fa,#2563eb)",
         desc: "Java 源码分析与编程专家。TRIGGER when: 分析Java源码、阅读Java代码、Java代码走读、Java项目结构分析、写Java代码、Java代码重构。",
-        stars: 140, downloads: "1,280万", featured: false },
-      { id: 15, name: "智能代码审查助手", icon: "diagram", grad: "linear-gradient(135deg,#a78bfa,#7c3aed)",
-        desc: "自动检测代码质量、安全漏洞和性能瓶颈，提供优化建议和最佳实践指导。",
-        stars: 86, downloads: "520万", featured: false, reviewStatus: "reviewing" },
-      { id: 16, name: "API文档生成器", icon: "document", grad: "linear-gradient(135deg,#34d399,#059669)",
-        desc: "根据代码自动生成标准化 API 文档，支持 OpenAPI/Swagger 格式，一键导出多种文档格式。",
-        stars: 120, downloads: "860万", featured: false, reviewStatus: "approved", contributor: "孙礼飞" },
-      { id: 17, name: "数据库优化大师", icon: "knowledge", grad: "linear-gradient(135deg,#f87171,#dc2626)",
-        desc: "SQL 语句分析与优化建议，索引优化方案生成，数据库性能瓶颈诊断与调优。",
-        stars: 65, downloads: "320万", featured: false, reviewStatus: "rejected", rejectReason: "技能描述信息不完整，请补充详细的功能说明" }
+        stars: 140, downloads: "1,280万", featured: false }
     ];
 
     SKILLS.forEach((s, i) => {
@@ -878,15 +738,12 @@
       s.enabled = i % 4 !== 0;
     });
 
+    // 为每个技能标注来源（用于「去试试」标签页展示）
     SKILLS.forEach(s => {
       if ([1, 2, 3, 4, 6, 7, 8].includes(s.id)) s.source = "技能市场";
-      else if ([5, 11, 13, 10, 16].includes(s.id)) s.source = "企业技能";
+      else if ([5, 11, 13, 10].includes(s.id)) s.source = "企业技能";
       else if ([12, 14].includes(s.id)) s.source = "系统内置";
       else s.source = "自定义";
-    });
-
-    SKILLS.forEach(s => {
-      if (s.id === 11) s.contributor = "孙礼飞";
     });
 
     const byId = ids => ids.map(id => {
@@ -898,7 +755,7 @@
       market: byId([1, 2, 3, 4, 6, 7, 8]),
       enterprise: byId([5, 11, 13, 10]),
       builtin: byId([12, 14]),
-      installed: byId([1, 9, 10, 15, 16, 17])
+      installed: byId([1, 9, 10])
     };
     // 系统内置 / 去试试 Tab 下的技能均为去试试且默认启用状态
     TAB_DATA.builtin.forEach(s => { s.installed = true; s.enabled = true; });
@@ -968,24 +825,7 @@
       });
       container.innerHTML = list.map(s => {
         const iconHtml = '<div class="icon-box" style="background:' + s.grad + '">' + (ICONS[s.icon] || "") + '</div>';
-        let titleExtraHtml = '';
-        if (currentTab === 'installed') {
-          if (s.reviewStatus === 'reviewing') {
-            titleExtraHtml = '<span class="status-reviewing"><span class="review-dot"></span>审核中</span>';
-          } else if (s.reviewStatus === 'approved') {
-            titleExtraHtml = '<span class="contributor-tag">贡献者：' + s.contributor + '</span>';
-          } else if (s.reviewStatus === 'rejected') {
-            titleExtraHtml = '<button class="btn-contribute" data-id="' + s.id + '">贡献为企业技能</button>' +
-              '<span class="status-rejected">审核不通过</span>' +
-              '<span class="reject-info"><span class="reject-icon">!</span><span class="reject-tooltip">' + (s.rejectReason || '') + '</span></span>';
-          } else if (s.source === '自定义') {
-            titleExtraHtml = '<button class="btn-contribute" data-id="' + s.id + '">贡献为企业技能</button>';
-          }
-        }
-        if (currentTab === 'enterprise' && s.contributor) {
-          titleExtraHtml = '<span class="contributor-tag">贡献者：' + s.contributor + '</span>';
-        }
-        const titleHtml = '<div class="card-title-row"><h3 class="card-title">' + s.name + '</h3>' + titleExtraHtml + '</div>';
+        const titleHtml = '<h3 class="card-title">' + s.name + '</h3>';
         const descHtml = '<p class="card-desc ' + (currentView === "card" ? "clamp-2" : "clamp-1") + '">' + s.desc + '</p>';
         const showStats = currentTab !== 'builtin' && currentTab !== 'installed' && currentTab !== 'enterprise';
         const statsHtml = showStats
@@ -1169,16 +1009,6 @@
         return;
       }
 
-      // 贡献为企业技能按钮
-      const contributeBtn = e.target.closest(".btn-contribute");
-      if (contributeBtn) {
-        e.stopPropagation();
-        const cid = Number(contributeBtn.getAttribute("data-id"));
-        contributeTargetId = cid;
-        document.getElementById("contribute-modal").classList.remove("hidden");
-        return;
-      }
-
       // 卡片点击（非操作按钮 / 非三点菜单）：当前窗口打开技能详情页
       const card = e.target.closest(".card");
       if (card && !e.target.closest(".card-menu")) {
@@ -1358,30 +1188,6 @@ function parentClick(url='') {
 		}
 	}
 }
-
-    // ---- Contribute modal ----
-    let contributeTargetId = null;
-    const contributeModal = document.getElementById("contribute-modal");
-    const contributeCloseBtn = document.getElementById("contribute-close");
-    const contributeCancelBtn = document.getElementById("contribute-cancel");
-    const contributeConfirmBtn = document.getElementById("contribute-confirm");
-
-    function closeContributeModal() {
-      contributeModal.classList.add("hidden");
-      contributeTargetId = null;
-    }
-    contributeCloseBtn.addEventListener("click", closeContributeModal);
-    contributeCancelBtn.addEventListener("click", closeContributeModal);
-    contributeModal.addEventListener("click", e => { if (e.target === contributeModal) closeContributeModal(); });
-
-    contributeConfirmBtn.addEventListener("click", () => {
-      if (contributeTargetId == null) return;
-      const skill = (TAB_DATA[currentTab] || []).find(x => x.id === contributeTargetId);
-      if (skill) { skill.reviewStatus = 'reviewing'; skill.rejectReason = ''; }
-      closeContributeModal();
-      render();
-      showToast("已提交贡献申请，等待审核");
-    });
 
     // ---- Init ----
     render();
