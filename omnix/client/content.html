@@ -1555,6 +1555,13 @@
                 <input type="text" class="skill-search" placeholder="搜索技能" id="skillSearch" oninput="filterSkills()" />
               </div>
               <div id="skillList">
+                <div class="skill-item" data-name="skill-creator" data-desc="创建或更新可复用技能，根据用途生成技能结构与说明。" data-color="#7c3aed" data-icon="🔨" onclick="addSkill(this)">
+                  <div class="skill-icon-wrap" style="background:#f3e8ff;color:#7c3aed">🔨</div>
+                  <div class="skill-info">
+                    <div class="skill-title">skill-creator</div>
+                    <div class="skill-desc">创建或更新可复用技能，根据用途生成技能结构与说明。</div>
+                  </div>
+                </div>
                 <div class="skill-item" data-name="腾讯文档" data-desc="腾讯文档 (docs.qq.com) -在线云文档平台，是创…" data-color="#4a6cf7" data-icon="📄" onclick="addSkill(this)">
                   <div class="skill-icon-wrap" style="background:#4a6cf7;color:#fff">📄</div>
                   <div class="skill-info">
@@ -2030,6 +2037,20 @@
       ta.style.height = Math.min(ta.scrollHeight, 180) + 'px';
     });
 
+    // URL 参数 prefill 回填：支持从「查找技能」等入口携带提示词跳入新会话
+    (function applyPrefill() {
+      const params = new URLSearchParams(window.location.search);
+      const prefill = params.get('prefill');
+      if (prefill) {
+        ta.value = prefill;
+        ta.style.height = 'auto';
+        ta.style.height = Math.min(ta.scrollHeight, 180) + 'px';
+        // 聚焦并将光标移至末尾，便于用户在「……」处续写
+        ta.focus();
+        ta.setSelectionRange(ta.value.length, ta.value.length);
+      }
+    })();
+
     // Knowledge base logic
     const selectedKbs = new Map();
 
@@ -2333,6 +2354,18 @@
         area.appendChild(tag);
       });
     }
+
+    // URL 参数 skill：支持从技能页进入新会话时自动挂载指定技能
+    (function applyPrefilledSkill() {
+      const skillName = new URLSearchParams(window.location.search).get('skill');
+      if (!skillName) return;
+      const item = Array.from(document.querySelectorAll('#skillList .skill-item'))
+        .find(el => el.dataset.name === skillName);
+      if (!item) return;
+      addedSkills.add(skillName);
+      item.classList.add('selected');
+      renderSkillTags();
+    })();
 
     function filterSkills() {
       const query = document.getElementById('skillSearch').value.toLowerCase();
