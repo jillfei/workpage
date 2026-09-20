@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude 技能资料库</title>
+<style>
+  :root{
+    --chrome:#1c1e24;
+    --chrome-2:#24272e;
+    --chrome-3:#2b2f38;
+    --text:#e8eaf2;
+    --text-2:#a6adc0;
+    --text-3:#757b90;
+    --line:rgba(255,255,255,.08);
+    --line-2:rgba(255,255,255,.14);
+    --accent:#7c8cff;
+    --accent-2:#5a6cf0;
+    --accent-grad:linear-gradient(120deg,#7c8cff,#a06bff);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    background:var(--chrome);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+    display:flex;
+  }
+
+  /* ===== Left Sidebar (参考 OmniX 手册风格) ===== */
+  .sidebar{
+    width:250px;flex:none;height:100vh;z-index:50;
+    background:var(--chrome-2);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .sb-brand{padding:18px 18px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:11px}
+  .sb-logo{
+    width:36px;height:36px;flex:none;border-radius:50%;background:var(--accent-grad);
+    display:grid;place-items:center;color:#fff;box-shadow:0 6px 16px rgba(109,124,255,.5);
+  }
+  .sb-logo svg{width:19px;height:19px}
+  .sb-brand .t b{display:block;font-size:14px;letter-spacing:.3px}
+  .sb-brand .t span{display:block;font-size:9.5px;letter-spacing:2.2px;color:var(--text-3);text-transform:uppercase;margin-top:2px}
+  .sb-search{padding:13px 14px 9px}
+  .searchbox{display:flex;align-items:center;gap:8px;background:var(--chrome-3);border:1px solid var(--line-2);border-radius:9px;padding:7px 11px;transition:.15s}
+  .searchbox:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(122,138,255,.14)}
+  .searchbox svg{width:14px;height:14px;color:var(--text-3);flex:none}
+  .searchbox input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text);font-size:12.5px;font-family:inherit}
+  .searchbox input::placeholder{color:var(--text-3)}
+  .kbd{font-family:ui-monospace,"Consolas","Courier New",monospace;font-size:10px;color:var(--text-2);border:1px solid var(--line-2);border-radius:5px;padding:1px 6px;background:var(--chrome);flex:none}
+  .sb-label{
+    font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-3);
+    padding:12px 20px 6px;font-weight:600;display:flex;align-items:center;gap:6px;
+  }
+  .sb-label::after{content:"";flex:1;height:1px;background:var(--line);margin-left:2px}
+  .sb-tabs{flex:1;padding:2px 12px 10px;overflow-y:auto}
+  .stab{
+    width:100%;display:flex;align-items:center;gap:11px;text-align:left;
+    padding:11px 14px;border-radius:11px;border:none;background:none;
+    color:var(--text-2);font-family:inherit;font-size:13px;cursor:pointer;transition:.18s;margin-bottom:4px;
+  }
+  .stab .num{font-family:ui-monospace,"Consolas","Courier New",monospace;font-size:11px;font-weight:700;color:var(--text-3);flex:none;width:20px;text-align:left}
+  .stab .ic{font-size:16px;flex:none}
+  .stab .meta{min-width:0}
+  .stab .meta b{display:block;font-size:13px;font-weight:600}
+  .stab:hover{background:rgba(255,255,255,.06);color:#fff}
+  .stab.active{background:linear-gradient(135deg,#6d7cff,#8b5cf6);color:#fff;font-weight:600;
+    box-shadow:0 6px 18px rgba(109,124,255,.35)}
+  .stab.active .num,.stab.active .ic{color:rgba(255,255,255,.92)}
+  .sb-foot{padding:12px 18px;border-top:1px solid var(--line);font-size:10.5px;color:var(--text-3);line-height:1.5}
+
+  /* ===== Main ===== */
+  .main{flex:1;min-width:0;height:100vh;display:flex;flex-direction:column;position:relative}
+
+  /* topbar */
+  .topbar{
+    height:54px;flex:none;display:flex;align-items:center;gap:12px;
+    padding:0 16px;background:var(--chrome-2);border-bottom:1px solid var(--line);z-index:20;
+  }
+  .topbar .tname{font-weight:700;font-size:14.5px;display:flex;align-items:center;gap:9px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbar .tname .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+  .spacer{flex:1}
+  .btn{
+    background:none;border:1px solid var(--line);color:var(--text-2);border-radius:8px;
+    padding:6px 12px;font-size:12.5px;cursor:pointer;transition:.15s;font-family:inherit;white-space:nowrap;
+  }
+  .btn:hover{color:#fff;border-color:var(--accent);background:rgba(124,140,255,.08)}
+  .btn.active{color:#fff;border-color:var(--accent);background:rgba(124,140,255,.16)}
+  .seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg .btn{border:none;border-radius:0;padding:6px 13px}
+  .pageinfo{font-size:12.5px;color:var(--text-2);display:flex;align-items:center;gap:7px}
+  .pageinfo b{color:#fff;min-width:2ch;text-align:center}
+
+  /* panes */
+  .pane{position:absolute;inset:0;padding-top:54px;display:none;flex-direction:column}
+  .pane.active{display:flex}
+  .pane .ptop{
+    display:flex;align-items:center;gap:12px;height:52px;flex:none;padding:0 16px;
+    background:var(--chrome-2);border-bottom:1px solid var(--line);
+  }
+  .pane .ptop .t{font-size:12.5px;color:var(--text-2)}
+  .pane .ptop .t b{color:#fff}
+  .canvas{flex:1;position:relative;overflow:hidden;background:#14161b;
+    background-image:radial-gradient(1200px 600px at 50% -10%,rgba(124,140,255,.07),transparent 60%);}
+
+  /* guide modes */
+  #continuous{position:absolute;inset:0;overflow-y:auto;scroll-behavior:smooth;display:none}
+  #continuous.on{display:block}
+  .cont-inner{max-width:900px;margin:0 auto;padding:30px 20px 90px}
+  .pitem{background:#fff;border-radius:6px;box-shadow:0 10px 34px rgba(0,0,0,.5);margin-bottom:32px;position:relative}
+  .pitem img{display:block;width:100%;height:auto}
+  .pitem .plabel{position:absolute;bottom:8px;right:12px;font-size:11px;color:#9aa0b0;background:#fff;padding:0 8px;border-radius:5px;opacity:.85}
+  #single{position:absolute;inset:0;overflow:hidden;display:none}
+  #single.on{display:flex;align-items:center;justify-content:center}
+  #singleStage{max-width:92%;max-height:calc(100% - 40px);display:flex;align-items:center;justify-content:center}
+  #singleStage img{max-width:100%;max-height:calc(100vh - 160px);width:auto;height:auto;background:#fff;border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.6);transition:transform .25s}
+  .navbtn{
+    position:absolute;top:50%;transform:translateY(-50%);z-index:10;
+    width:50px;height:74px;display:grid;place-items:center;border-radius:10px;
+    background:rgba(20,22,27,.6);border:1px solid var(--line);color:var(--text);cursor:pointer;font-size:25px;transition:.15s;backdrop-filter:blur(4px);
+  }
+  .navbtn:hover{background:rgba(124,140,255,.2);border-color:var(--accent)}
+  .navbtn.prev{left:14px}.navbtn.next{right:14px}
+  .hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:11.5px;color:var(--text-3);pointer-events:none}
+  .zoomctrl{position:absolute;bottom:14px;right:18px;display:flex;gap:6px;z-index:10}
+  .zoomctrl .btn{background:rgba(20,22,27,.7);backdrop-filter:blur(4px)}
+  #grid{position:absolute;inset:0;overflow-y:auto;display:none;padding:26px 22px 80px}
+  #grid.on{display:block}
+  .grid-inner{max-width:1180px;margin:0 auto}
+  .grid-inner h3{font-size:13px;color:var(--text-2);font-weight:600;margin:0 0 16px;letter-spacing:.3px}
+  .gwrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px}
+  .gitem{background:#fff;border-radius:6px;overflow:hidden;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.4);position:relative;transition:transform .15s}
+  .gitem:hover{transform:translateY(-3px);outline:2px solid var(--accent)}
+  .gitem img{display:block;width:100%;height:auto}
+  .gitem .n{position:absolute;top:6px;left:8px;font-size:11px;color:#666;background:rgba(255,255,255,.85);border-radius:4px;padding:0 6px}
+  .gitem .pov{position:absolute;inset:0;top:50%;display:none;place-items:center;color:#333;font-size:12px;background:rgba(255,255,255,.86)}
+  .gitem:hover .pov{display:grid}
+
+  /* tutorial pane */
+  .tut-wrap{flex:1;position:relative;background:#0c0c0c;display:flex;flex-direction:column}
+  #tutFrame{flex:1;width:100%;height:100%;border:0;background:var(--bg,#0c0c0c);display:block}
+
+  @media(max-width:760px){
+    body{display:block}
+    .sidebar{position:fixed;left:0;top:0;bottom:0;width:232px;transform:translateX(-100%);transition:transform .26s ease}
+    .sidebar.open{transform:none;box-shadow:0 0 50px rgba(0,0,0,.6)}
+    .main{height:100vh}
+    .burger{display:block}
+    .hide-m{display:none}
+  }
+  .burger{display:none;background:none;border:1px solid var(--line-2);color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer}
+  .scrim{display:none;position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.5);backdrop-filter:blur(2px)}
+  .scrim.show{display:block}
+</style>
+</head>
+<body>
+
+<!-- Left sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="t"><b>技能构建指南</b><span>Skills Library</span></div>
+  </div>
+  <div class="sb-search">
+    <div class="searchbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="searchInput" type="text" placeholder="搜索文档…">
+      <span class="kbd">Ctrl K</span>
+    </div>
+  </div>
+  <div class="sb-label">资料文档</div>
+  <nav class="sb-tabs">
+    <button class="stab active" data-tab="guide">
+      <span class="num">01</span>
+      <span class="meta"><b>Claude技能构建指南</b></span>
+    </button>
+    <button class="stab" data-tab="tut">
+      <span class="num">02</span>
+      <span class="meta"><b>技能撰写教程</b></span>
+    </button>
+  </nav>
+</aside>
+<div class="scrim" id="scrim"></div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Pane A: 技能构建指南 -->
+  <div class="pane active" id="pane-guide">
+    <div class="ptop">
+      <button class="burger" id="burger" aria-label="菜单">☰</button>
+      <div class="t"><b>Claude技能构建指南</b></div>
+      <div class="spacer"></div>
+      <div class="pageinfo hide-m" id="pageInfo"><b>1</b> / 33</div>
+      <div class="seg">
+        <button class="btn active" id="btnCont">连续</button>
+        <button class="btn" id="btnSingle">单页</button>
+        <button class="btn" id="btnGrid">缩略图</button>
+      </div>
+      <button class="btn" id="btnFull" title="全屏">⛶</button>
+    </div>
+    <div class="canvas">
+      <div id="continuous"><div class="cont-inner" id="contInner"></div></div>
+      <div id="single">
+        <button class="navbtn prev" id="prev">‹</button>
+        <div id="singleStage"></div>
+        <button class="navbtn next" id="next">›</button>
+        <div class="zoomctrl">
+          <button class="btn" id="zin">＋</button>
+          <button class="btn" id="zout">－</button>
+          <button class="btn" id="zreset">100%</button>
+        </div>
+        <div class="hint">← → 方向键翻页 · 封面在上方</div>
+      </div>
+      <div id="grid">
+        <div class="grid-inner">
+          <h3 id="gridTitle"></h3>
+          <div class="gwrap" id="gridWrap"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pane B: 技能撰写教程 -->
+  <div class="pane" id="pane-tut">
+    <div class="ptop">
+      <button class="burger" id="burger2" aria-label="菜单">☰</button>
+      <div class="t"><b>技能撰写教程</b></div>
+      <div class="spacer"></div>
+      <button class="btn" id="btnFullTut" title="全屏">⛶</button>
+    </div>
+    <div class="tut-wrap">
+      <iframe id="tutFrame" src="技能撰写教程.html" title="技能撰写教程"></iframe>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ===== Tab switching =====
+  const tabs = Array.from(document.querySelectorAll('.stab'));
+  const panes = { guide: document.getElementById('pane-guide'), tut: document.getElementById('pane-tut') };
+  function switchTab(name){
+    tabs.forEach(t=>t.classList.toggle('active', t.getAttribute('data-tab')===name));
+    Object.keys(panes).forEach(k=>panes[k].classList.toggle('active', k===name));
+    closeMenu();
+    if(name==='guide'){ /* if single mode, re-render */ }
+  }
+  tabs.forEach(t=>t.addEventListener('click',()=>switchTab(t.getAttribute('data-tab'))));
+
+  // mobile menu
+  const sidebar=document.getElementById('sidebar'), scrim=document.getElementById('scrim');
+  function openMenu(){sidebar.classList.add('open');scrim.classList.add('show');}
+  function closeMenu(){sidebar.classList.remove('open');scrim.classList.remove('show');}
+  document.getElementById('burger').addEventListener('click',openMenu);
+  document.getElementById('burger2').addEventListener('click',openMenu);
+  scrim.addEventListener('click',closeMenu);
+
+  // search: Ctrl+K focus + filter nav items
+  const searchInput=document.getElementById('searchInput');
+  document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){ e.preventDefault(); openMenu(); searchInput.focus(); }
+  });
+  searchInput.addEventListener('input',()=>{
+    const q=searchInput.value.trim().toLowerCase();
+    tabs.forEach(t=>{
+      const match=t.textContent.toLowerCase().includes(q);
+      t.style.display=!q||match?'':'none';
+    });
+  });
+
+  // ===== Guide viewer =====
+  const PAGES = Array.from({length:33}, (_,i)=>`assets/page-${String(i+1).padStart(2,'0')}.png`);
+  const TOTAL = PAGES.length;
+  const cont=document.getElementById('continuous'), contInner=document.getElementById('contInner');
+  const single=document.getElementById('single'), singleStage=document.getElementById('singleStage');
+  const grid=document.getElementById('grid'), gridWrap=document.getElementById('gridWrap'), gridTitle=document.getElementById('gridTitle');
+  const pageInfo=document.getElementById('pageInfo');
+  const btnCont=document.getElementById('btnCont'), btnSingle=document.getElementById('btnSingle'), btnGrid=document.getElementById('btnGrid');
+  let mode='cont', cur=1, zoom=1;
+
+  const frag=document.createDocumentFragment();
+  PAGES.forEach((src,i)=>{
+    const it=document.createElement('div'); it.className='pitem'+(i===0?' cover-wrap':'');
+    const img=document.createElement('img'); img.src=src; img.alt='第 '+(i+1)+' 页'; img.loading='lazy';
+    const lb=document.createElement('div'); lb.className='plabel'; lb.textContent='第 '+(i+1)+' 页';
+    it.appendChild(img); it.appendChild(lb); frag.appendChild(it);
+  });
+  contInner.appendChild(frag);
+
+  const gf=document.createDocumentFragment();
+  PAGES.forEach((src,i)=>{
+    const it=document.createElement('div'); it.className='gitem';
+    const img=document.createElement('img'); img.src=src; img.alt='第 '+(i+1)+' 页'; img.loading='lazy';
+    const n=document.createElement('div'); n.className='n'; n.textContent=(i+1);
+    const pov=document.createElement('div'); pov.className='pov'; pov.textContent='第 '+(i+1)+' 页 · 查看';
+    it.appendChild(img); it.appendChild(n); it.appendChild(pov);
+    it.addEventListener('click',()=>goTo(i+1,'single'));
+    gf.appendChild(it);
+  });
+  gridWrap.appendChild(gf);
+  gridTitle.textContent='共 '+TOTAL+' 页 · 点击任一页进入阅读';
+
+  function show(m){
+    mode=m;
+    cont.classList.toggle('on',m==='cont');
+    single.classList.toggle('on',m==='single');
+    grid.classList.toggle('on',m==='grid');
+    btnCont.classList.toggle('active',m==='cont');
+    btnSingle.classList.toggle('active',m==='single');
+    btnGrid.classList.toggle('active',m==='grid');
+    if(m==='single') render();
+  }
+  function render(){
+    pageInfo.innerHTML='<b>'+cur+'</b> / '+TOTAL;
+    singleStage.innerHTML='';
+    const img=document.createElement('img');
+    img.src=PAGES[cur-1]; img.alt='第 '+cur+' 页';
+    img.style.transform='scale('+zoom+')';
+    singleStage.appendChild(img);
+  }
+  function goTo(n,m){
+    const target=m||mode;
+    if(target==='grid'){ show('grid'); return; }
+    cur=Math.max(1,Math.min(TOTAL,n));
+    if(target==='cont'){
+      show('cont'); cont.scrollTo({top:0});
+      const items=contInner.querySelectorAll('.pitem');
+      if(items[cur-1]) items[cur-1].scrollIntoView({behavior:'smooth',block:'start'});
+    } else if(target==='single'){ show('single'); }
+  }
+  const step=d=>goTo(cur+d,'single');
+
+  btnCont.onclick=()=>show('cont');
+  btnSingle.onclick=()=>show('single');
+  btnGrid.onclick=()=>show('grid');
+  document.getElementById('prev').onclick=()=>step(-1);
+  document.getElementById('next').onclick=()=>step(1);
+  document.getElementById('zin').onclick=()=>{zoom=Math.min(3,zoom+0.2);render();};
+  document.getElementById('zout').onclick=()=>{zoom=Math.max(0.4,zoom-0.2);render();};
+  document.getElementById('zreset').onclick=()=>{zoom=1;render();};
+
+  function toggleFull(el){
+    if(!document.fullscreenElement){ if(el.requestFullscreen) el.requestFullscreen(); }
+    else { if(document.exitFullscreen) document.exitFullscreen(); }
+  }
+  document.getElementById('btnFull').onclick=()=>toggleFull(document.getElementById('pane-guide'));
+  document.getElementById('btnFullTut').onclick=()=>toggleFull(document.getElementById('pane-tut'));
+
+  document.addEventListener('keydown',e=>{
+    if(!panes.guide.classList.contains('active')||mode!=='single') return;
+    if(e.key==='ArrowRight') step(1);
+    else if(e.key==='ArrowLeft') step(-1);
+    else if(e.key==='Escape'&&document.fullscreenElement) document.exitFullscreen&&document.exitFullscreen();
+  });
+
+  show('cont');
+</script>
+</body>
+</html>

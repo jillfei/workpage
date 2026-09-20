@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>撰写 Skill 完整教程 · 从思路到封装</title>
+<style>
+  :root{
+    --bg:#0c0c0c;
+    --bg2:#131315;
+    --card:#18181b;
+    --card2:#1e1e22;
+    --line:#2a2a30;
+    --txt:#eaeaea;
+    --muted:#9a9aa3;
+    --accent:#7aa2f7;
+    --accent2:#5f6bff;
+    --green:#9ece6a;
+    --orange:#e0af68;
+    --red:#f7768e;
+    --purple:#bb9af7;
+    --cyan:#7dcfff;
+    --radius:14px;
+    --font:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    --mono:"JetBrains Mono","SFMono-Regular",Consolas,"Courier New",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:var(--font);
+    line-height:1.75;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(1200px 600px at 80% -10%,rgba(95,107,255,.12),transparent 60%),
+                     radial-gradient(900px 500px at 0% 0%,rgba(122,162,247,.08),transparent 55%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 28px 80px}
+
+  /* ===== Hero ===== */
+  .hero{padding:72px 0 44px;position:relative}
+  .tag{display:inline-block;font-size:13px;letter-spacing:2px;color:var(--accent);
+       border:1px solid var(--accent);padding:4px 14px;border-radius:999px;margin-bottom:26px;
+       background:rgba(122,162,247,.08);font-weight:600}
+  .hero h1{font-size:44px;line-height:1.25;font-weight:800;letter-spacing:-1px;margin-bottom:18px}
+  .hero h1 .hl{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p.lead{font-size:18px;color:var(--muted);max-width:680px}
+  .hero .meta{margin-top:22px;display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .hero .meta span{border:1px solid var(--line);background:var(--card);padding:6px 12px;border-radius:8px}
+
+  .toc{margin:30px 0 10px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 26px}
+  .toc h3{font-size:15px;letter-spacing:1px;color:var(--accent);margin-bottom:12px}
+  .toc ol{margin-left:20px;color:var(--muted)}
+  .toc ol li{margin:6px 0}
+  .toc a{color:var(--txt);text-decoration:none}
+  .toc a:hover{color:var(--accent)}
+
+  /* ===== Sections ===== */
+  section{margin-top:64px}
+  .sec-num{font-family:var(--mono);font-size:13px;color:var(--accent2);font-weight:700;letter-spacing:1px}
+  h2{font-size:30px;font-weight:800;letter-spacing:-0.5px;margin-top:8px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+  h2 .bar{width:6px;height:30px;background:linear-gradient(180deg,var(--accent),var(--accent2));border-radius:3px}
+  .sub{color:var(--muted);margin-bottom:28px;font-size:16px}
+  h3{font-size:21px;font-weight:700;margin:34px 0 12px}
+  h4{font-size:16px;font-weight:600;color:var(--cyan);margin:20px 0 8px}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0 10px 22px}
+  li{margin:6px 0}
+  strong{color:#fff;font-weight:600}
+  code{font-family:var(--mono);background:var(--card2);border:1px solid var(--line);padding:2px 7px;border-radius:6px;font-size:.88em;color:var(--cyan)}
+  pre{background:#0f0f12;border:1px solid var(--line);border-radius:var(--radius);padding:22px;overflow-x:auto;margin:16px 0;font-size:13.5px}
+  pre code{border:none;background:none;padding:0;color:#d6d6e0;line-height:1.7}
+  pre .c{color:#6b6b76;font-style:italic}
+  pre .k{color:var(--accent)}
+  pre .s{color:var(--green)}
+
+  /* ===== Cards ===== */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 26px;margin:18px 0}
+  .card-title{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;margin-bottom:10px}
+  .card-title .dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+  /* ===== Structure diagram ===== */
+  .struct{margin:26px 0;display:grid;gap:14px}
+  .struct .layer{display:grid;grid-template-columns:132px 1fr;gap:16px;align-items:start}
+  .struct .layer .name{display:flex;flex-direction:column;justify-content:center}
+  .struct .layer .name b{font-size:17px}
+  .struct .layer .name small{color:var(--muted);font-size:12px;margin-top:2px}
+  .struct .items{display:flex;flex-direction:column;gap:8px}
+  .struct .item{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+  .struct .item b{display:block;font-family:var(--mono);font-size:13px}
+  .struct .item p{font-size:13px;color:var(--muted);margin:3px 0 0}
+  .box{background:var(--bg2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:16px 20px;margin:16px 0}
+  .box.green{border-left-color:var(--green)}
+  .box.orange{border-left-color:var(--orange)}
+  .box.purple{border-left-color:var(--purple)}
+  .box.red{border-left-color:var(--red)}
+  .box h4{margin-top:0}
+
+  /* ===== Flow ===== */
+  .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:20px 0}
+  .flow .step{background:var(--card2);border:1px solid var(--line);padding:9px 16px;border-radius:999px;font-size:14px}
+  .flow .step b{color:var(--accent)}
+  .flow .arrow{color:var(--muted);font-size:16px}
+
+  /* ===== Steps timeline ===== */
+  .phase{margin:30px 0}
+  .phase-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .phase-head .pill{font-size:14px;font-weight:700;padding:6px 16px;border-radius:999px;color:#0c0c0c;flex-shrink:0}
+  .phase-head h3{margin:0;font-size:24px}
+  .timeline{border-left:2px solid var(--line);margin-left:10px;padding-left:26px}
+  .tl-item{position:relative;margin-bottom:28px}
+  .tl-item::before{content:"";position:absolute;left:-33px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(122,162,247,.15)}
+  .tl-item .num{font-family:var(--mono);font-size:12px;color:var(--accent2);font-weight:700}
+  .tl-item h4{margin:2px 0 6px}
+  .tl-item p{color:var(--muted);font-size:15px}
+
+  /* ===== Table ===== */
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:14.5px}
+  th{background:var(--card2);text-align:left;padding:11px 14px;color:var(--accent);font-weight:600;border:1px solid var(--line)}
+  td{padding:11px 14px;border:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+  td code{white-space:nowrap}
+
+  /* ===== Checklist ===== */
+  .check{list-style:none;margin-left:0}
+  .check li{position:relative;padding-left:30px;margin:9px 0}
+  .check li::before{content:"✓";position:absolute;left:0;top:0;color:var(--green);font-weight:700;background:rgba(158,206,106,.12);width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px}
+
+  .qa{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);margin:14px 0;overflow:hidden}
+  .qa summary{cursor:pointer;padding:18px 24px;font-weight:700;font-size:17px;display:flex;align-items:center;gap:12px;background:var(--card);list-style:none}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary .q{color:var(--accent);font-family:var(--mono);font-weight:700}
+  .qa summary::after{content:"+";margin-left:auto;font-size:20px;color:var(--muted);transition:transform .2s}
+  .qa[open] summary::after{content:"−"}
+  .qa .body{padding:4px 24px 22px;color:var(--muted)}
+
+  .foot{margin-top:80px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;text-align:center}
+  /* ===== Figure / images ===== */
+  figure{margin:24px 0}
+  figure img{width:100%;border-radius:10px;border:1px solid var(--line);background:#0f0f12;display:block}
+  figure figcaption{text-align:center;color:var(--muted);font-size:13px;margin-top:10px}
+  figure figcaption b{color:var(--accent)}
+  .cover{width:100%;border-radius:14px;border:1px solid var(--line);margin-top:6px}
+  .pill-ac{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+  .pill-green{background:var(--green)}
+  .pill-orange{background:var(--orange)}
+  .pill-purple{background:var(--purple)}
+  @media(max-width:640px){
+    .hero h1{font-size:34px}
+    h2{font-size:25px}
+    .struct .layer{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Hero -->
+  <header class="hero">
+    <span class="tag">教程 · SKILL 设计</span>
+    <h1>撰写 Skill 完整教程<br><span class="hl">从一条思路到一次封装</span></h1>
+    <p class="lead">本文以「短剧剧本转视频分镜提示词」Skill 的真实制作过程为蓝本，梳理出一套通用的 Skill 设计与撰写方法论：四层结构、三阶段制作、一份可直接套用的总提示词，以及省 token 的后期修改技巧。</p>
+    <div class="meta">
+      <span>结构：SKILL.md + scripts/ + references/ + assets/</span>
+      <span>方法：前期定标准 · 中期做模块 · 后期测封装</span>
+    </div>
+    </header>
+
+  <!-- 1 思路 -->
+  <section id="s1">
+    <div class="sec-num">PART 01</div>
+    <h2><span class="bar"></span>先抓主线：制作 Skill 前的思路</h2>
+    <p class="sub">做复杂 Skill 最容易掉进的坑，是一开始就陷入技术细节。正确顺序是：先抓一条主线，再一步步拆分。</p>
+
+    <div class="box">
+      <h4>主线三问（先想清楚这三件事）</h4>
+      <ul>
+        <li><strong>用来做什么？</strong> 定位这个 Skill 的职责边界。</li>
+        <li><strong>输入什么？</strong> 用户会丢进来什么格式、什么内容。</li>
+        <li><strong>交付输出什么？</strong> 最终要产出哪些文件、字段、格式。</li>
+      </ul>
+    </div>
+
+    <p>把主线定好后，再把中间步骤拆开——例如<code>解析 → 生成 → 检查 → 导出</code>，然后要求统一格式，最后再让 AI 去输出。即便一开始描述得很"粗"，只要方向对，后续让 AI 逐步细化即可。</p>
+
+    <h4>轻松慵懒版顺序（不容易跑偏）</h4>
+    <p>不用一上来写得很细，可以只告诉 AI：<em>"我输入什么，想获得什么输出，中间流程大致是什么，有哪些模板可以调用"</em>，先把骨架搭出来，等跑通了再按需补充。这样<strong>不会一开始陷入技术细节，也不容易做着做着偏题</strong>。</p>
+
+    <p>过程中有任何不清楚的地方，都可以直接问 AI——从大方向到细节都行。AI 往往会写得很详细，我们只需要<strong>提取关键要素</strong>，不够清晰就让 AI 继续优化提示词，直到逻辑完整。</p>
+  </section>
+
+  <!-- 2 结构 -->
+  <section id="s2">
+    <div class="sec-num">PART 02</div>
+    <h2><span class="bar"></span>Skill 的四层结构</h2>
+    <p class="sub">一份成熟的 Skill 不只是一个 Markdown 文件，而是由"入口 + 执行 + 规范 + 模板"四层协作组成，职责清晰、互不干扰。</p>
+
+    <figure>
+      <img src="assets/standard.png" alt="Skill 四层文件结构说明图">
+      <figcaption><b>图 1</b> · Skill 四层结构：入口（SKILL.md）、执行（scripts/）、规范（references/）、模板（assets/）</figcaption>
+    </figure>
+
+    <div class="struct">
+      <div class="layer">
+        <div class="name"><b>SKILL.md</b><small>入口层 · 大脑</small></div>
+        <div class="items">
+          <div class="item"><b>定位与入口</b><p>定义这个 Skill 做什么、怎么触发、整体流程、输入要求、输出目标。</p></div>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="name"><b>scripts/</b><small>执行层 · 双手</small></div>
+        <div class="items">
+          <div class="item"><b>自动化脚本</b><p>把流程真正跑起来：解析、提取、生成、优化、导出。负责执行并产出结果。</p></div>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="name"><b>references/</b><small>规范层 · 规则</small></div>
+        <div class="items">
+          <div class="item"><b>知识规范文档</b><p>术语、模板、规则和方法（剧本规范、镜头术语、情绪词库、一致性指南……）。保证结果统一、可解释、可复用。</p></div>
+        </div>
+      </div>
+      <div class="layer">
+        <div class="name"><b>assets/</b><small>模板层 · 资产</small></div>
+        <div class="items">
+          <div class="item"><b>可复用模板文件</b><p>分镜 CSV、角色提示词模板、HTML 导出模板、速查表等。提高交付速度、统一排版，避免每次从零开始。</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box green">
+      <h4>为什么一定要拆成这么多层？</h4>
+      <p><strong>职责不同：</strong>脚本负责执行并产出结果；参考文档负责解释规则和标准；模板负责规范格式和交付外观。<strong>改哪里就动哪里：</strong>规则变了只改 <code>references/</code>，逻辑变了只改 <code>scripts/</code>，维护和排错成本都大幅下降。</p>
+    </div>
+
+    <h4>SKILL.md 的格式要点</h4>
+    <p>文件名必须是 <code>SKILL.md</code>（一个 Skill 至少要有一个 SKILL.md 作为入口）。它由<strong>YAML 头部 + Markdown 正文 + 关键要素</strong>组成。YAML 头部里的 <code>name</code> 和 <code>description</code> 尤其重要——<code>description</code> 里要写清触发词，决定这个 Skill 什么时候被调用。</p>
+
+    <figure>
+      <img src="assets/flow_exec.png" alt="SKILL.md 格式规范说明图">
+      <figcaption><b>图 2</b> · SKILL.md 格式规范：文件结构 + YAML 头部 + Markdown 正文 + 关键要素</figcaption>
+    </figure>
+
+    <div class="box purple">
+      <h4>触发描述的写法</h4>
+      <pre><code><span class="c"># YAML 头部示例：把触发场景一股脑写进 description</span>
+---
+<span class="k">name:</span> script-to-video-prompts
+<span class="k">description:</span> <span class="s">短剧剧本转视频提示词生成器。将用户上传的短剧剧本文档智能拆解为
+可直接用于AI视频生成的完整中文提示词体系。输出包括角色设定提示词、
+场景设定提示词、逐镜头分镜提示词。支持批量处理、多格式导出、一致性校验。
+当用户说"剧本转视频提示词"、"拆解剧本生成分镜"、"短剧转视频"、
+"批量生成分镜提示词"、"剧本可视化"时触发。</span>
+---</code></pre>
+    </div>
+  </section>
+
+  <!-- 3 三阶段 -->
+  <section id="s3">
+    <div class="sec-num">PART 03</div>
+    <h2><span class="bar"></span>三阶段制作法</h2>
+    <p class="sub">制作过程可划分为三个阶段：前期定标准，中期优化功能模块，后期测试优化与封装。虽分步骤，但实际可让 AI 一次性执行，再根据效果迭代。</p>
+
+    <!-- 前期 -->
+    <div class="phase">
+      <div class="phase-head">
+        <span class="pill pill-ac">阶段一</span>
+        <h3>前期 · 制定标准</h3>
+      </div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="num">STEP 1</div>
+          <h4>明确总流程</h4>
+          <p>先确定这个 Skill 的操作主流程。例如：<em>剧本解析 → 角色提取 → 场景分析 → 分镜生成 → 提示词优化 → 一致性检查 → 导出</em>。没有明确指定的话，后面所有实现都默认照此规范。</p>
+          <div class="flow">
+            <span class="step"><b>解析</b></span><span class="arrow">→</span>
+            <span class="step"><b>提取</b></span><span class="arrow">→</span>
+            <span class="step"><b>分析</b></span><span class="arrow">→</span>
+            <span class="step"><b>生成</b></span><span class="arrow">→</span>
+            <span class="step"><b>优化</b></span><span class="arrow">→</span>
+            <span class="step"><b>检查</b></span><span class="arrow">→</span>
+            <span class="step"><b>导出</b></span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="num">STEP 2</div>
+          <h4>确定输入格式</h4>
+          <p>支持哪些输入（如 <code>txt/md/docx/pdf/fdx</code>）。定义默认输入是什么；同时给出"推荐输入"（如参考图、画幅要求、时长限制），并提示输入不足时效果可能不可控。</p>
+        </div>
+        <div class="tl-item">
+          <div class="num">STEP 3</div>
+          <h4>明确最终产出</h4>
+          <p>写清楚要产出哪些东西：角色设定、场景设定、分镜提示词、一致性报告、导出文件格式等。<strong>这一步的作用是防止越做越偏</strong>。</p>
+        </div>
+        <div class="tl-item">
+          <div class="num">STEP 4</div>
+          <h4>设计统一结构</h4>
+          <p>关键一步！确定每一步的输入输出长什么样。先定好每个输出项的字段，再让 AI 按此输出，后面就不会乱。例：分镜表按"第 X 幕第 X 场景"组织，每个场景的提示词表包含镜头编号、景别、画面描述、构图、运镜、光线、色调、氛围、时长、镜头角度、提示词。把模板放进 <code>assets/</code>，让所有脚本都读写同一个模板。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 中期 -->
+    <div class="phase">
+      <div class="phase-head">
+        <span class="pill pill-green">阶段二</span>
+        <h3>中期 · 优化功能模块</h3>
+      </div>
+      <div class="box green">
+        <h4>先准备 references 与 assets（建议单独生成、单独优化）</h4>
+        <ul>
+          <li><strong>references/：术语与模板。</strong>把提示词规则输出为独立文档（剧本格式规范、镜头术语、情绪词库、提示词模板、一致性指南等），方便单独修改，也让其他人明白"为什么这么做"。</li>
+          <li><strong>assets/：可复用模板。</strong>分镜 CSV 模板、角色提示词模板、HTML 模板、速查表等，新项目直接复用，不用重做排版和字段。</li>
+        </ul>
+      </div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="num">STEP 5-6</div>
+          <h4>生成 references / assets 内容</h4>
+          <p>先输出规范文档和模板文件放到对应文件夹，再把路径给到后续脚本调用。</p>
+        </div>
+        <div class="tl-item">
+          <div class="num">STEP 7-12</div>
+          <h4>让 AI 生成各功能脚本</h4>
+          <p>这一段的脚本都可以交给 AI 写：</p>
+          <table>
+            <tr><th>模块</th><th>职责</th><th>要点</th></tr>
+            <tr><td>7 · 解析</td><td>把原始剧本变成结构化数据</td><td>识别场景标题、角色名、对白、动作、转场</td></tr>
+            <tr><td>8 · 角色提取</td><td>从解析结果提角色档案</td><td>性别、年龄段、体型、发型、关键词，并给出可直接生图的提示词</td></tr>
+            <tr><td>9 · 场景分析</td><td>提炼场景视觉基础</td><td>地点、室内外、时间段、光线、氛围，生成基础视觉提示词，作为全片视觉基础</td></tr>
+            <tr><td>10 · 分镜生成</td><td>按场景自动拆镜头</td><td>至少含建立镜头、角色出场、对话镜头；每镜有编号、景别、运镜、动作、时长、转场、提示词</td></tr>
+            <tr><td>11 · 提示词优化</td><td>统一处理镜头提示词</td><td>术语标准化、去重复、补质量词（高质量、电影感、清晰对焦等）</td></tr>
+            <tr><td>12 · 一致性检查</td><td>交叉比对偏差</td><td>检查角色跨镜头漂移、场景跳变、光线突变，输出"问题+修复建议+复用规范提示词"</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="box orange">
+        <h4>省心技巧：让 AI 生成脚本的两种提示词写法</h4>
+        <p><strong>写法 A（详细版）：</strong></p>
+        <pre><code>帮我生成脚本，用于把原始剧本内容（支持 <span class="s">txt/md/docx/pdf/fdx</span>）解析成结构化
+JSON，要求自动识别并分类：场景标题（INT/EXT 或"第X场/场景X"）、角色名、对白、动作、
+转场，并输出中文字段：<span class="s">标题、场景列表、全角色、全地点、总时长秒数、元数据</span>。
+每个场景至少包……（补充具体字段）</code></pre>
+        <p><strong>写法 B（极简版，不满意再让 AI 优化）：</strong></p>
+        <pre><code>生成一个通用剧本解析脚本，能读取常见文本格式并智能分析内容，自动识别场景、角色、
+对白、动作和转场，输出清晰的结构化 JSON；要求优先保证稳定可用，即使输入不规范
+也能自动补默认场景并正常返回结果。</code></pre>
+        <p style="margin-top:10px">现在的 AI 工具已经足够"机灵"，只要要求它<em>"生成一个独立的脚本"</em>，它大多会自动完成，多数时候不需要单独输入很长的提示词。</p>
+      </div>
+    </div>
+
+    <!-- 后期 -->
+    <div class="phase">
+      <div class="phase-head">
+        <span class="pill pill-orange">阶段三</span>
+        <h3>后期 · 测试优化与封装</h3>
+      </div>
+
+      <figure>
+        <img src="assets/test_pack.png" alt="后期测试优化与封装思路截图">
+        <figcaption><b>图 3</b> · 后期阶段：导出格式确认 → 上传剧本测试 → 完成 Skill 封装</figcaption>
+      </figure>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="num">STEP 13</div>
+          <h4>确认导出格式</h4>
+          <p>确认默认导出格式，建议至少支持 <code>JSON + CSV + Markdown</code>，让不同职能都能直接看和用。</p>
+        </div>
+        <div class="tl-item">
+          <div class="num">STEP 14</div>
+          <h4>上传素材测试全流程</h4>
+          <p>用 2-3 份不同类型的输入（可由 AI 生成或自己提供）跑通全流程。重点检查：字段是否缺失、镜头是否正确、提示词是否符合自己的要求。发现问题就让 AI <strong>只针对对应模块修改</strong>。</p>
+        </div>
+        <div class="tl-item">
+          <div class="num">STEP 15</div>
+          <h4>完成 Skill 封装</h4>
+          <p>整理为清晰目录：最简单的可以只一个 <code>SKILL.md</code>，复杂一些就 <code>SKILL.md + scripts/ + references/ + assets/</code>。这一步可直接让 AI 封装，自己再确认目录结构即可。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 结构图 -->
+    <div class="box purple">
+      <h4>成品目录结构（真实示例）</h4>
+      <figure style="margin:8px 0 0">
+        <img src="assets/filetree.png" alt="Skill 成品目录树截图">
+        <figcaption><b>图 4</b> · 这是一个真实 Skill 的完整目录树：SKILL.md + scripts/ + references/ + assets/</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 4 提示词范例 -->
+  <section id="s4">
+    <div class="sec-num">PART 04</div>
+    <h2><span class="bar"></span>一份可直接套用的总提示词</h2>
+    <p class="sub">把上面所有步骤梳理成一段完整提示词，一次抛给 AI，让它按规格生成整个 Skill。以下是原文中的完整范例（可直接替换成你自己的需求，也可以在 AI 生成后再分步细化优化）。</p>
+
+    <figure>
+      <img src="assets/prompt_example.png" alt="完整总提示词示例截图">
+      <figcaption><b>图 5</b> · 一次生成整个 Skill 的总提示词（原文示例）</figcaption>
+    </figure>
+
+    <pre><code><span class="c"># 角色设定：你是一个 Skill 开发助手</span>
+你是一个 Skill 开发助手，帮我从零构建一个「<span class="s">剧本转视频分镜提示词</span>」Skill。
+请按以下规格和顺序执行，<span class="k">不可跳步，不可合并步骤</span>。
+
+【第一步：工作流程定义】
+这个 Skill 的工作流程是：先解析剧本结构，识别出幕、场景、对白和动作描述；然后提取
+所有角色，为每个角色生成设定；接着分析所有场景，为每个场景生成设定；再把每个场景
+拆解成具体镜头，生成分镜提示词表；之后对每条提示词做优化，确保它足够具体、包含必要
+的视觉参数、并且与角色和场景设定一致；然后做一致性检查，交叉比对角色、场景与分镜
+之间的偏差；最后按用户要求的格式导出。不可以跳步，不可以合并步骤。
+
+【第二步：输入规格定义】
+支持接收 txt、md、docx、pdf 和 fdx 格式的剧本文件。最低可运行的输入是一个剧本文档，
+哪怕只是一段话甚至一句核心概念也能启动流程，但必须在开始前告诉用户：当前输入信息
+有限，后续生成内容的风格一致性和走向可能不完全可控，建议补充更多信息。推荐的输入是
+剧本加上角色参考图、风格参考图、目标画幅比例、目标时长、以及希望的视觉风格关键词。
+用户提供的参考图永远优先于自己的推断。
+
+【第三步：最终产出定义】
+最终产出：一份角色设定文档，包含每个角色的外貌、服装、气质关键词和可用于 AI 生图的
+完整提示词；一份场景设定文档，包含每个场景的空间描述、光线类型与方向、主色调和氛围词；
+一份完整的分镜提示词表，按照幕、场景、镜头三级结构组织；一份一致性检查报告，标注角色
+和场景在不同镜头之间的视觉偏差；最后是以上所有内容的导出文件，支持 CSV、Markdown、
+Excel 和 HTML 格式。
+
+【第四步：统一结构规范】
+分镜提示词表按第 X 幕第 X 场景组织，每个场景的提示词表包含以下字段：镜头编号、景别、
+画面描述、构图、运镜、光线、色调、氛围、时长、镜头角度、提示词。先生成这个统一的表格
+模板，后面所有脚本都读写这个模板并按此格式输出。
+
+【第五步：references 内容】
+生成以下规范文档：剧本格式规范、镜头术语表、情绪词库、提示词模板、一致性检查指南。
+每个文档独立成文件，方便后期单独修改。
+
+【第六步：assets 内容】
+基于第四步的结构规范，生成以下可复用模板文件：分镜 CSV 模板、角色提示词模板、
+HTML 导出模板、速查表。
+
+【第七步：剧本解析脚本】
+写一个脚本，能读剧本文件，分出场景、角色、对白和动作，最后输出为 JSON 格式。
+代码清晰精炼、注释清楚。
+
+【第八步：角色提取脚本】
+从解析结果里提取角色档案，包含性别、年龄段、体型、发型、关键词。为每个角色输出
+一段可直接用于 AI 生图的提示词描述。
+
+【第九步：场景分析脚本】
+从每个场景里提取地点、室内外、时间段、光线、氛围，为每个场景生成一条基础视觉提示词。
+
+【第十步：分镜生成脚本】
+按场景自动拆成镜头，至少包含建立镜头、角色出场、对话镜头，每个镜头严格按照
+第四步定义的字段输出。
+
+【第十一步：提示词优化脚本】
+对所有镜头提示词做统一处理：术语标准化、去重复、补质量词、输出质量打分。
+参考 references/ 中的提示词模板和镜头术语表。
+
+【第十二步：一致性检查脚本】
+检查角色跨镜头是否漂移、场景是否跳变、光线是否变化突兀，输出「问题 + 修复建议 +
+复用规范提示词」报告。
+
+【第十三步：导出脚本】
+将所有产出内容导出为 JSON、CSV、Markdown 三种格式，HTML 格式基于 assets/ 中的
+HTML 模板生成。
+
+【第十四步：测试】
+用 2-3 份不同类型的剧本跑全流程，重点检查：字段是否缺失、镜头是否正确生成、提示词
+是否符合 references/ 中的规范。发现问题后定位到对应脚本，只修改该脚本，不动其他文件。
+告诉我每份剧本的测试结果和发现的问题。
+
+【第十五步：封装 SKILL.md】
+基于以上所有内容，生成完整的 SKILL.md 文件，包含：定位说明、触发方式、完整七步流程
+说明、输入要求、输出目标、文件目录结构。
+
+---
+所有文件生成完毕后，输出完整目录结构，以及如何用一份测试剧本跑通全流程的指南。</code></pre>
+
+    <div class="box orange">
+      <h4>提示词设计要点</h4>
+      <ul>
+        <li><strong>不可跳步、不可合并步骤</strong>：强制 AI 按流程顺序执行，保证过程可控。</li>
+        <li><strong>明确每一步输入输出</strong>：特别是第四步"统一结构规范"，是防止输出混乱的关键。</li>
+        <li><strong>先声明边界</strong>：如"参考图优先于推断"，避免 AI 违背用户意图。</li>
+        <li><strong>测试与定位修改</strong>：要求"只改对应脚本，不动其他文件"，便于精准迭代。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5 测试封装 -->
+  <section id="s5">
+    <div class="sec-num">PART 05</div>
+    <h2><span class="bar"></span>生成后的测试与封装</h2>
+    <p class="sub">总提示词跑完后，并不意味着结束。你需要做几件事把它打磨到可交付状态。</p>
+
+    <figure>
+      <img src="assets/structure.png" alt="Skill 实际运行剧本的终端截图">
+      <figcaption><b>图 6</b> · 实际运行效果：把一部剧本喂给 Skill，自动产出角色设定卡、场景设定表、分镜提示词表</figcaption>
+    </figure>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--green)"></span>用 2-3 份真实素材跑通全流程</div>
+      <p>素材可以由 AI 生成，也可以自己提供。重点观察三个指标：</p>
+      <ul>
+        <li><strong>字段是否缺失</strong> —— 输出的表格 / JSON 是否符合第四步定义的结构。</li>
+        <li><strong>镜头是否正确</strong> —— 拆镜是否完整、逻辑是否通顺。</li>
+        <li><strong>提示词是否贴合规范</strong> —— 是否符合 <code>references/</code> 里的术语与模板。</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--accent)"></span>定位到对应模块做精准修改</div>
+      <p>发现哪一类问题，就只改哪一类文件：</p>
+      <ul>
+        <li>规则 / 标准问题 → 改 <code>references/</code></li>
+        <li>模板 / 格式问题 → 改 <code>assets/</code></li>
+        <li>执行逻辑问题 → 改对应的 <code>scripts/</code></li>
+        <li>触发或使用方式变了 → 改 <code>SKILL.md</code></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--orange)"></span>确认目录 + 写使用指南</div>
+      <p>让 AI 输出完整目录结构，并补一份"如何用测试素材跑通全流程"的分步指南，方便后来者（包括未来的自己）快速上手。</p>
+    </div>
+
+    <figure>
+      <img src="assets/coze_use.png" alt="Skill 在 Coze 平台的使用案例截图">
+      <figcaption><b>图 7</b> · 封装完成后，即可上传到支持 Skill 的平台（如 Coze）直接使用</figcaption>
+    </figure>
+  </section>
+
+  <!-- 6 后期修改 -->
+  <section id="s6">
+    <div class="sec-num">PART 06</div>
+    <h2><span class="bar"></span>后期修改：省 token 又精准</h2>
+    <p class="sub">很多 Skill 做成后还想要改。怎么要求 AI 排查和修改，既省钱又准确高效？</p>
+
+    <div class="box green">
+      <h4>核心原则：每次只让 AI 干一件小事，并说清"改哪、别乱改、怎么验收"</h4>
+      <pre><code><span class="k">只检查并修改</span><span class="s"> scripts/scene_analyzer.py </span><span class="c">（复制文件路径）</span>里的光线规则，
+别动其他文件；先找问题点，再最小改动；最后只告诉我改了几行、会影响什么、怎么验证。</code></pre>
+      <p style="margin-top:8px">这样 AI 不会到处读文件、不会大改代码，token 花得少，结果也更稳。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--purple)"></span>小白判断法：什么时候改 SKILL.md？</div>
+      <ul>
+        <li><strong>用户使用方式变了</strong>（触发方式 / 输入输出 / 流程改变了）→ 改 <code>SKILL.md</code>。</li>
+        <li><strong>只是内部实现变了</strong>（脚本逻辑优化、参考文档补充）→ 不用改 <code>SKILL.md</code>。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7 Q&A -->
+  <section id="s7">
+    <div class="sec-num">PART 07</div>
+    <h2><span class="bar"></span>常见问题解答</h2>
+    <p class="sub">把制作过程中最容易困惑的几个问题集中回答。</p>
+
+    <details class="qa">
+      <summary><span class="q">Q1</span>最开始怎么理清制作一个 Skill 的思路？</summary>
+      <div class="body">
+        <p>先抓一条主线：想清楚"用来做什么、输入什么、交付输出什么"，再把中间步骤拆分（解析、生成、检查、导出），然后要求统一格式，再让 AI 输出。</p>
+        <p>轻松慵懒版：直接告诉 AI "输入什么 → 获得什么输出 → 中间流程怎样 → 有哪些模板可用"，先让它搭骨架，跑通了再按需补充，这样不容易跑偏。任何不清楚的地方都可以问 AI。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary><span class="q">Q2</span>为什么自动化脚本要单独拆出来？</summary>
+      <div class="body">
+        <p>因为脚本、说明文档、模板资源的职责完全不同：脚本负责<strong>执行流程并产出结果</strong>，参考文档负责<strong>解释规则和标准</strong>，模板负责<strong>规范格式和交付外观</strong>。分开后，改规则只动 references，改逻辑只动 scripts，排错和维护都更轻松。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary><span class="q">Q3</span>为什么要分很多个子脚本，而不是一个大脚本？</summary>
+      <div class="body">
+        <p>把脚本单独放 <code>scripts/</code>，可以方便<strong>直接调用、测试、替换和部署</strong>，不会被文档内容干扰；当规则变化时只改 <code>references/</code>，逻辑变化时只改 <code>scripts/</code>，维护成本和排错成本都明显降低。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary><span class="q">Q4</span>后期修改怎么又省 token 又高效？</summary>
+      <div class="body">
+        <p>最简单的方法是：<strong>每次只让 AI 做一件小事</strong>，并明确告诉它"只改哪里、不要乱改、改完怎么验收"，例如"只检查并修改 <code>scripts/scene_analyzer.py</code> 里的光线规则，别动其他文件"。这样 AI 不会到处读文件，token 花得少，结果也更稳。至于要不要改 SKILL.md，用"用户使用方式变没变"来判断。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary><span class="q">Q5</span>一个 Skill 最少需要哪些文件？</summary>
+      <div class="body">
+        <p>最少只需要一个 <code>SKILL.md</code>，就能作为 Skill 使用。但如果想让它更强、更稳、更可复用，建议扩展到 <code>SKILL.md + scripts/ + references/ + assets/</code> 四件套。复杂 Skill 里，<code>scripts/</code>、<code>references/</code>、<code>assets/</code> 中的脚本和文档都可以让 AI 来写。</p>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary><span class="q">Q6</span>references 和 assets 里的内容应该怎么准备？</summary>
+      <div class="body">
+        <p>建议<strong>单独生成、单独优化</strong>，输出成文件放进对应文件夹后，再把路径给到后续脚本调用。references 存放规则与术语文档，assets 存放可复用模板。这样每次新项目都能直接复用，不用重做排版和字段。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 8 checklist -->
+  <section id="s8">
+    <div class="sec-num">PART 08</div>
+    <h2><span class="bar"></span>交付自查清单</h2>
+    <p class="sub">在说"做好了"之前，按这份清单过一遍，能帮你规避绝大多数坑。</p>
+
+    <ul class="check">
+      <li>想清楚了主线三问：做什么 / 输入什么 / 输出什么</li>
+      <li>定义了总流程，且每一步输入输出格式统一</li>
+      <li><code>SKILL.md</code> 的 YAML 头部包含足够触发词</li>
+      <li>复杂逻辑拆成独立脚本放入 <code>scripts/</code></li>
+      <li>规则与术语写进 <code>references/</code>，模板放入 <code>assets/</code></li>
+      <li>用 2-3 份真实素材跑通全流程，字段、镜头、提示词均达标</li>
+      <li>发现问题只改对应模块，不改动无关文件</li>
+      <li>导出格式满足使用方需求（建议 JSON + CSV + Markdown）</li>
+      <li>最终目录结构清晰，含一份跑通流程的使用指南</li>
+    </ul>
+  </section>
+
+  <footer class="foot">
+    <figure style="margin-bottom:18px">
+      <img src="assets/ending.png" alt="原文结尾配图" style="max-width:620px;margin:0 auto">
+      <figcaption><b>图 8</b> · 更多 Skill 内容可参考原文作者的完整分享</figcaption>
+    </figure>
+    本教程依据《视频分镜提示词 Skill，详细制作过程分享！》(阿真 Irene) 的制作方法论整理而成<br>
+    可自由套用到任意类型的 Skill 制作与撰写。
+  </footer>
+
+</div>
+</body>
+</html>
