@@ -7,6 +7,17 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* 隐藏所有滚动条，保留滚动功能 */
+    * {
+      scrollbar-width: none;        /* Firefox */
+      -ms-overflow-style: none;     /* IE/旧版 Edge */
+    }
+    *::-webkit-scrollbar {          /* Chrome/Safari/新 Edge */
+      width: 0;
+      height: 0;
+      display: none;
+    }
+
     html, body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       background: #ffffff;
@@ -25,6 +36,7 @@
       flex-direction: column;
       flex: 1;
       overflow: hidden;
+      position: relative;
     }
 
     /* ========== Input Area ========== */
@@ -1828,6 +1840,182 @@
       font-size: 13px;
       color: #999;
     }
+
+    /* Task Panel —— 会话右上角常驻浮层 */
+    .task-panel-wrapper {
+      position: absolute;
+      top: 16px;
+      right: 24px;
+      z-index: 1000;
+      width: 280px;
+    }
+    .task-panel-wrapper.hidden {
+      display: none;
+    }
+    .top-nav-btn.task-panel-toggle-btn.active {
+      background: #f0f0f0;
+      color: #1a1a1a;
+    }
+    .task-panel {
+      width: 100%;
+      max-height: 420px;
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .task-panel-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+      border-bottom: 1px solid #f0f0f0;
+      flex-shrink: 0;
+      cursor: pointer;
+      user-select: none;
+    }
+    .task-panel-header svg.task-panel-header-icon {
+      width: 15px;
+      height: 15px;
+      color: #666;
+      flex-shrink: 0;
+    }
+    .task-panel-header-title {
+      flex: 1;
+    }
+    .task-panel-header-chevron {
+      width: 14px;
+      height: 14px;
+      color: #999;
+      transition: transform 0.2s;
+    }
+    .task-panel.collapsed .task-panel-header-chevron {
+      transform: rotate(-90deg);
+    }
+    .task-panel.collapsed .task-panel-list {
+      display: none;
+    }
+    .task-panel-list {
+      overflow-y: auto;
+      padding: 6px;
+    }
+    .task-panel-item {
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+      line-height: 1.5;
+    }
+    .task-panel-item:hover {
+      background: #f5f5f5;
+    }
+    .task-panel-item-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+    }
+    .task-status-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .task-status-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+    .task-status-icon.done {
+      color: #22c55e;
+    }
+    .task-status-icon.running {
+      color: #4a6cf7;
+      animation: taskSpin 1s linear infinite;
+    }
+    .task-status-icon.pending {
+      color: #c8c8c8;
+    }
+    @keyframes taskSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .task-panel-item-text {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .task-panel-item.done .task-panel-item-text {
+      color: #999;
+      text-decoration: line-through;
+    }
+    .task-panel-item-chevron {
+      width: 14px;
+      height: 14px;
+      color: #999;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .task-panel-item.expanded .task-panel-item-chevron {
+      transform: rotate(90deg);
+    }
+    .task-panel-item-detail {
+      display: none;
+      padding: 0 12px 10px 38px;
+      font-size: 12.5px;
+      color: #777;
+      line-height: 1.6;
+    }
+    .task-panel-item.expanded .task-panel-item-detail {
+      display: block;
+    }
+    .task-panel-item-detail-label {
+      color: #999;
+    }
+    .task-panel-empty {
+      padding: 20px 16px;
+      text-align: center;
+      font-size: 13px;
+      color: #999;
+    }
+    /* Task Tooltip */
+    .task-tooltip {
+      position: fixed;
+      background: #1a1a1a;
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      max-width: 320px;
+      white-space: normal;
+      word-break: break-all;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+      z-index: 10000;
+    }
+    .task-tooltip.show {
+      opacity: 1;
+    }
+    .task-tooltip::before {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 20px;
+      border: 5px solid transparent;
+      border-top-color: #1a1a1a;
+    }
     .chat-message.user.history-highlight {
       animation: historyHighlightPulse 1.5s ease;
     }
@@ -3431,6 +3619,10 @@
           </button>
         </div>
       </div>
+      <button class="top-nav-btn task-panel-toggle-btn" title="任务列表" onclick="toggleTaskPanel()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        <span class="top-nav-btn-tooltip">任务列表</span>
+      </button>
       <div class="history-dropdown-wrapper">
         <button class="top-nav-btn" title="历史记录" onclick="toggleHistoryDropdown()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -3457,6 +3649,17 @@
 
   <!-- ====== Main Wrapper ====== -->
   <div class="main-wrapper" id="mainWrapper">
+    <!-- ====== Task Panel (常驻浮层) ====== -->
+    <div class="task-panel-wrapper">
+      <div class="task-panel" id="taskPanel">
+        <div class="task-panel-header" onclick="toggleTaskPanelCollapse(event)">
+          <svg class="task-panel-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+          <span class="task-panel-header-title">任务列表</span>
+          <svg class="task-panel-header-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="task-panel-list" id="taskPanelList"></div>
+      </div>
+    </div>
     <!-- ====== Chat Area ====== -->
     <section class="chat-area">
     <!-- User Message -->
@@ -5041,6 +5244,127 @@
         dropdown.classList.remove('show');
       }
     });
+
+    // ===== Task Panel =====
+    const taskListData = [
+      { text: '抓取 WorkBuddy 文档 6 个页面正文', status: 'done', expanded: true },
+      { text: '下载文档中的全部图片', status: 'running', expanded: true },
+      { text: '生成各章节 MD 文件及总索引 README', status: 'pending', expanded: false },
+      { text: '校验 MD 与图片完整性', status: 'pending', expanded: false },
+      { text: '打包发布为产物', status: 'pending', expanded: false }
+    ];
+
+    const TASK_STATUS_LABELS = {
+      done: '已完成',
+      running: '进行中',
+      pending: '待处理'
+    };
+
+    const TASK_STATUS_ICONS = {
+      done: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+      running: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>',
+      pending: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/></svg>'
+    };
+
+    function toggleTaskPanelCollapse(e) {
+      if (e) e.stopPropagation();
+      document.getElementById('taskPanel').classList.toggle('collapsed');
+    }
+
+    function toggleTaskPanel() {
+      const wrapper = document.querySelector('.task-panel-wrapper');
+      const btn = document.querySelector('.task-panel-toggle-btn');
+      if (!wrapper) return;
+      const hidden = wrapper.classList.toggle('hidden');
+      if (btn) btn.classList.toggle('active', !hidden);
+    }
+
+    // 全局唯一的任务 tooltip 元素
+    let taskTooltipEl = null;
+    function getTaskTooltip() {
+      if (!taskTooltipEl) {
+        taskTooltipEl = document.createElement('div');
+        taskTooltipEl.className = 'task-tooltip';
+        document.body.appendChild(taskTooltipEl);
+      }
+      return taskTooltipEl;
+    }
+
+    function showTaskTooltip(targetEl, text) {
+      // 仅在文本被截断时显示
+      if (targetEl.scrollWidth <= targetEl.clientWidth) return;
+      const tip = getTaskTooltip();
+      tip.textContent = text;
+      const rect = targetEl.getBoundingClientRect();
+      tip.style.visibility = 'hidden';
+      tip.classList.add('show');
+      // 先渲染再测量高度
+      const tipRect = tip.getBoundingClientRect();
+      let top = rect.top - tipRect.height - 8;
+      if (top < 8) top = rect.bottom + 8; // 上方空间不够则放到下方
+      let left = rect.left;
+      const maxLeft = window.innerWidth - tipRect.width - 8;
+      if (left > maxLeft) left = maxLeft;
+      if (left < 8) left = 8;
+      tip.style.top = top + 'px';
+      tip.style.left = left + 'px';
+      tip.style.visibility = '';
+    }
+
+    function hideTaskTooltip() {
+      if (taskTooltipEl) taskTooltipEl.classList.remove('show');
+    }
+
+    function renderTaskPanel() {
+      const list = document.getElementById('taskPanelList');
+      if (!list) return;
+      if (!taskListData.length) {
+        list.innerHTML = '<div class="task-panel-empty">暂无任务</div>';
+        return;
+      }
+      list.innerHTML = taskListData.map((t, i) => `
+        <div class="task-panel-item ${t.status} ${t.expanded ? 'expanded' : ''}" data-task-index="${i}">
+          <div class="task-panel-item-row">
+            <span class="task-status-icon ${t.status}">${TASK_STATUS_ICONS[t.status] || ''}</span>
+            <span class="task-panel-item-text" data-task-text="${escapeHtml(t.text)}">${escapeHtml(t.text)}</span>
+            <svg class="task-panel-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="task-panel-item-detail">
+            <span class="task-panel-item-detail-label">当前状态：</span>${TASK_STATUS_LABELS[t.status] || t.status}
+          </div>
+        </div>
+      `).join('');
+
+      // 点击切换展开/收起
+      list.querySelectorAll('.task-panel-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const idx = Number(item.getAttribute('data-task-index'));
+          taskListData[idx].expanded = !taskListData[idx].expanded;
+          item.classList.toggle('expanded', taskListData[idx].expanded);
+        });
+      });
+
+      // 给文本元素绑定 hover
+      list.querySelectorAll('.task-panel-item-text').forEach(el => {
+        el.addEventListener('mouseenter', () => showTaskTooltip(el, el.getAttribute('data-task-text')));
+        el.addEventListener('mouseleave', hideTaskTooltip);
+      });
+    }
+
+    // 页面加载完成后渲染任务面板
+    function initTaskPanel() {
+      renderTaskPanel();
+      const btn = document.querySelector('.task-panel-toggle-btn');
+      const wrapper = document.querySelector('.task-panel-wrapper');
+      if (btn && wrapper && !wrapper.classList.contains('hidden')) {
+        btn.classList.add('active');
+      }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTaskPanel);
+    } else {
+      initTaskPanel();
+    }
 
     // Chat Search Logic
     let chatSearchOriginalHTML = '';
