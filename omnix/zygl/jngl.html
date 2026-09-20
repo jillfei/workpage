@@ -31,6 +31,7 @@
         button, a, a{
             cursor: pointer;
         }
+		.displaynone{display:none;}
         .page-wrap {
             display: flex;
             flex-direction: column;
@@ -1647,10 +1648,12 @@
                         </span>
                         <span>回收站</span>
                     </button>
-                    <button onclick="openContributionConfigModal()" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+					<div class="displaynone">
+                    <button onclick="openContributionConfigModal()" class="flex  items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm ">
                         <iconify-icon icon="mdi:cog-outline"></iconify-icon>
                         <span>贡献配置</span>
                     </button>
+					</div>
                     <button onclick="openModal('importModal')" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                         <iconify-icon icon="mdi:tray-arrow-up"></iconify-icon>
                         <span>导入技能</span>
@@ -1678,6 +1681,10 @@
                     <button onclick="showToast('导出成功','success')" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                         <iconify-icon icon="mdi:download-outline"></iconify-icon>
                         <span>导出技能</span>
+                    </button>
+                    <button onclick="openLogModal()" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                        <iconify-icon icon="mdi:format-list-bulleted"></iconify-icon>
+                        <span>操作日志</span>
                     </button>
                     <button id="btn-save-detail" onclick="showToast('保存成功','success')" class="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
                         <iconify-icon icon="mdi:content-save"></iconify-icon>
@@ -2043,10 +2050,10 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">归属部门 <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">归属部门</label>
                     <div class="dept-selector" id="create-dept-selector">
                         <div class="dept-selector-trigger" onclick="toggleDeptDropdown('create')">
-                            <span class="placeholder" id="create-dept-display">请选择归属部门</span>
+                            <span class="placeholder" id="create-dept-display">若不选择，默认全公司可用</span>
                             <iconify-icon icon="mdi:chevron-down" class="chevron"></iconify-icon>
                         </div>
                         <div class="dept-dropdown hidden" id="create-dept-dropdown"></div>
@@ -2123,10 +2130,10 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">归属部门 <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">归属部门</label>
                     <div class="dept-selector" id="edit-dept-selector">
                         <div class="dept-selector-trigger" onclick="toggleDeptDropdown('edit')">
-                            <span class="placeholder" id="edit-dept-display">请选择归属部门</span>
+                            <span class="placeholder" id="edit-dept-display">若不选择，默认全公司可用</span>
                             <iconify-icon icon="mdi:chevron-down" class="chevron"></iconify-icon>
                         </div>
                         <div class="dept-dropdown hidden" id="edit-dept-dropdown"></div>
@@ -2196,10 +2203,10 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">归属部门 <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">归属部门</label>
                     <div class="dept-selector" id="import-dept-selector">
                         <div class="dept-selector-trigger" onclick="toggleDeptDropdown('import')">
-                            <span class="placeholder" id="import-dept-display">请选择归属部门</span>
+                            <span class="placeholder" id="import-dept-display">若不选择，默认全公司可用</span>
                             <iconify-icon icon="mdi:chevron-down" class="chevron"></iconify-icon>
                         </div>
                         <div class="dept-dropdown hidden" id="import-dept-dropdown"></div>
@@ -2507,6 +2514,38 @@
                     <button onclick="closeModal('blacklistModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
                     <button onclick="saveListSelection('blacklist')" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700">保存</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════ 操作日志弹窗 ═════ -->
+    <div id="logModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('logModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[800px] mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center gap-2">
+                    <iconify-icon icon="mdi:format-list-bulleted" class="text-indigo-600" style="font-size:22px;"></iconify-icon>
+                    <h3 class="text-lg font-bold text-gray-900">操作日志</h3>
+                </div>
+                <button onclick="closeModal('logModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar px-6 py-4">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left font-semibold">操作类型</th>
+                            <th class="px-4 py-3 text-left font-semibold">操作人</th>
+                            <th class="px-4 py-3 text-left font-semibold">操作时间</th>
+                            <th class="px-4 py-3 text-left font-semibold">详情</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-table-body">
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex items-center justify-end px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('logModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">关闭</button>
             </div>
         </div>
     </div>
@@ -3667,7 +3706,6 @@
             if (!name) { showToast('请输入技能名称', 'error'); return; }
             if (skills.some(s => s.name === name)) { showToast('技能名称已存在', 'error'); return; }
             if (selectedCategories.length === 0) { showToast('', 'error'); return; }
-            if (department.length === 0) { showToast('请选择归属部门', 'error'); return; }
 
             const newSkill = {
                 id: Date.now(),
@@ -3753,7 +3791,6 @@
 
             if (!name) { showToast('请输入技能名称', 'error'); return; }
             if (selectedCategories.length === 0) { showToast('', 'error'); return; }
-            if (department.length === 0) { showToast('请选择归属部门', 'error'); return; }
 
             currentSkill.name = name;
             currentSkill.desc = desc;
@@ -3809,7 +3846,6 @@
                 .map(cb => cb.value);
             if (selectedCategories.length === 0) { showToast('请选择至少一个类别', 'error'); return; }
             const department = getDeptValue('import');
-            if (department.length === 0) { showToast('请选择归属部门', 'error'); return; }
 
             const mockName = '导入技能-' + Date.now().toString().slice(-4);
             const newSkill = {
@@ -4519,7 +4555,7 @@
             });
             if (display) {
                 if (selected.length === 0) {
-                    display.textContent = '请选择归属部门';
+                    display.textContent = '若不选择，默认全公司可用';
                     display.classList.add('placeholder');
                 } else {
                     display.textContent = selected.join('、');
@@ -4536,7 +4572,7 @@
             if (hidden) hidden.value = selected.join(',');
             if (display) {
                 if (selected.length === 0) {
-                    display.textContent = '请选择归属部门';
+                    display.textContent = '若不选择，默认全公司可用';
                     display.classList.add('placeholder');
                 } else {
                     display.textContent = selected.join('、');
@@ -5143,6 +5179,82 @@
             if (blacklistCount) {
                 blacklistCount.textContent = (currentSkill.blacklist || []).length;
             }
+        }
+
+        // ═══════════════════════════════════════════════
+        // 操作日志
+        // ═══════════════════════════════════════════════
+        const skillOperationLogs = {
+            1: [
+                { type: '创建', user: '孙礼飞', time: '2026-06-20 10:30', detail: '创建技能「代码审查助手」' },
+                { type: '编辑', user: '孙礼飞', time: '2026-06-22 14:15', detail: '修改技能描述' },
+                { type: '上传', user: '孙礼飞', time: '2026-06-25 09:40', detail: '上传文件 track_actions.py' },
+                { type: '上传', user: '孙礼飞', time: '2026-06-25 09:45', detail: '上传文件 analyze.py' },
+                { type: '发布', user: '孙礼飞', time: '2026-06-28 16:00', detail: '发布技能' },
+                { type: '编辑', user: '王博士', time: '2026-07-01 11:20', detail: '修改文件 SKILL.md' },
+                { type: '配置', user: '孙礼飞', time: '2026-07-03 08:50', detail: '更新白名单设置，新增 3 人' },
+                { type: '删除', user: '孙礼飞', time: '2026-07-04 15:30', detail: '删除文件 meeting_template.md' },
+                { type: '导出', user: '李工', time: '2026-07-05 10:00', detail: '导出技能文件' },
+                { type: '编辑', user: '孙礼飞', time: '2026-07-05 14:30', detail: '更新技能分类为「代码生成」' }
+            ],
+            2: [
+                { type: '创建', user: '孙礼飞', time: '2026-06-15 09:00', detail: '创建技能「数据分析看板」' },
+                { type: '上传', user: '孙礼飞', time: '2026-06-18 11:30', detail: '上传文件 dashboard.py' },
+                { type: '发布', user: '孙礼飞', time: '2026-06-20 14:00', detail: '发布技能' },
+                { type: '编辑', user: '孙礼飞', time: '2026-07-04 09:15', detail: '更新技能描述' }
+            ],
+            3: [
+                { type: '创建', user: '王博士', time: '2026-06-10 08:30', detail: '创建技能「文档翻译助手」' },
+                { type: '下架', user: '王博士', time: '2026-07-03 16:45', detail: '下架技能' }
+            ],
+            4: [
+                { type: '创建', user: '李工', time: '2026-06-05 10:00', detail: '创建技能「会议纪要生成器」' },
+                { type: '上传', user: '李工', time: '2026-06-08 14:20', detail: '上传文件 track_actions.py' },
+                { type: '发布', user: '李工', time: '2026-06-10 09:00', detail: '发布技能' },
+                { type: '编辑', user: '李工', time: '2026-07-02 11:20', detail: '更新技能描述' }
+            ],
+            5: [
+                { type: '创建', user: '孙礼飞', time: '2026-06-01 09:00', detail: '创建技能「智能客服机器人」' },
+                { type: '发布', user: '孙礼飞', time: '2026-06-05 16:00', detail: '发布技能' },
+                { type: '审核', user: '王博士', time: '2026-06-20 10:30', detail: '审核不通过：技能描述不够详细' },
+                { type: '下架', user: '孙礼飞', time: '2026-06-28 08:00', detail: '下架技能' }
+            ],
+            6: [
+                { type: '创建', user: '王博士', time: '2026-06-12 11:00', detail: '创建技能「自动化部署工具」' },
+                { type: '上传', user: '王博士', time: '2026-06-15 14:30', detail: '上传文件 deploy.sh, rollback.sh' },
+                { type: '下架', user: '王博士', time: '2026-07-01 13:10', detail: '下架技能' }
+            ]
+        };
+
+        function openLogModal() {
+            if (!currentSkill) return;
+            const logs = skillOperationLogs[currentSkill.id] || [];
+            const tbody = document.getElementById('log-table-body');
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-8 text-center text-gray-400">暂无操作日志</td></tr>';
+            } else {
+                const typeStyleMap = {
+                    '创建': 'background:#D1FAE5;color:#059669;',
+                    '编辑': 'background:#DBEAFE;color:#2563EB;',
+                    '上传': 'background:#E0E7FF;color:#4F46E5;',
+                    '发布': 'background:#D1FAE5;color:#059669;',
+                    '下架': 'background:#FEE2E2;color:#DC2626;',
+                    '删除': 'background:#FEE2E2;color:#DC2626;',
+                    '导出': 'background:#F3F4F6;color:#6B7280;',
+                    '配置': 'background:#FEF3C7;color:#D97706;',
+                    '审核': 'background:#FEF3C7;color:#D97706;'
+                };
+                tbody.innerHTML = logs.slice().reverse().map(log => {
+                    const style = typeStyleMap[log.type] || 'background:#F3F4F6;color:#6B7280;';
+                    return `<tr class="border-b border-gray-50 hover:bg-gray-50">
+                        <td class="px-4 py-3"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium" style="${style}">${log.type}</span></td>
+                        <td class="px-4 py-3 text-gray-700">${log.user}</td>
+                        <td class="px-4 py-3 text-gray-500">${log.time}</td>
+                        <td class="px-4 py-3 text-gray-600">${log.detail}</td>
+                    </tr>`;
+                }).join('');
+            }
+            openModal('logModal');
         }
 
         // ═══════════════════════════════════════════════
