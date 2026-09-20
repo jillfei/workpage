@@ -109,49 +109,6 @@
             background: #FEE2E2;
             color: #DC2626;
         }
-        .card-action-btn.disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        .card-dropdown-menu {
-            position: absolute;
-            right: 0;
-            top: 100%;
-            background: white;
-            border: 1px solid #E5E7EB;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            min-width: 160px;
-            z-index: 40;
-            padding: 4px;
-        }
-        .card-dropdown-menu.hidden {
-            display: none;
-        }
-        .card-dropdown-menu .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            font-size: 13px;
-            color: #374151;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        .card-dropdown-menu .dropdown-item:hover {
-            background: #F3F4F6;
-        }
-        .card-dropdown-menu .dropdown-item.disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        .card-dropdown-menu .dropdown-divider {
-            height: 1px;
-            background: #E5E7EB;
-            margin: 4px 0;
-        }
 
         .toggle-switch {
             position: relative;
@@ -1667,14 +1624,6 @@
                         <iconify-icon icon="mdi:arrow-left"></iconify-icon>
                         <span>返回</span>
                     </button>
-                    <button id="btn-audit-detail" onclick="if(currentSkill)openAuditModal(currentSkill.id)" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors text-sm" style="display:none;">
-                        <iconify-icon icon="mdi:shield-check-outline"></iconify-icon>
-                        <span>审核</span>
-                    </button>
-                    <button id="btn-debug-detail" onclick="if(currentSkill)window.location.href='../qyznt/zjgl.html?type=detail&id='+currentSkill.id+'&title='+encodeURIComponent(currentSkill.name)+'&desc='+encodeURIComponent(currentSkill.desc)" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-green-600 rounded-lg hover:bg-green-50 transition-colors text-sm">
-                        <iconify-icon icon="mdi:bug"></iconify-icon>
-                        <span>调试</span>
-                    </button>
                     <button onclick="showToast('导出成功','success')" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                         <iconify-icon icon="mdi:download-outline"></iconify-icon>
                         <span>导出技能</span>
@@ -2758,37 +2707,12 @@
                         <h3 class="font-semibold text-gray-900 truncate flex-1">${s.name}</h3>
                         ${auditTagHtml}
                         <div class="card-actions flex items-center gap-0.5 flex-shrink-0">
-                            <div class="relative">
-                                <span onclick="event.stopPropagation();toggleCardDropdown(this)" class="card-action-btn" title="更多操作">
-                                    <iconify-icon icon="mdi:dots-horizontal" class="text-base"></iconify-icon>
-                                </span>
-                                <div class="card-dropdown-menu hidden">
-                                    <div class="dropdown-item" onclick="event.stopPropagation();exportSkill(${s.id});closeAllCardDropdowns()">
-                                        <iconify-icon icon="mdi:download-outline"></iconify-icon>
-                                        <span>导出</span>
-                                    </div>
-                                    <div class="dropdown-item ${isLocked ? 'disabled' : ''}" onclick="event.stopPropagation();${isLocked ? '' : 'openEditModal(' + s.id + ');closeAllCardDropdowns()'}">
-                                        <iconify-icon icon="mdi:pencil-outline"></iconify-icon>
-                                        <span>编辑</span>
-                                    </div>
-                                    ${auditBtnHtml ? '<div class="dropdown-item" onclick="event.stopPropagation();openAuditModal(' + s.id + ');closeAllCardDropdowns()"><iconify-icon icon="mdi:shield-check-outline"></iconify-icon><span>审核</span></div>' : ''}
-                                    <div class="dropdown-item ${isLocked ? 'disabled' : ''}" onclick="event.stopPropagation();${isLocked ? '' : `openSingleListModal(${s.id}, 'whitelist');closeAllCardDropdowns()`}">
-                                        <iconify-icon icon="mdi:shield-check-outline"></iconify-icon>
-                                        <span>白名单设置</span>
-                                        <span class="ml-auto text-xs text-gray-400">（${whitelistCount})</span>
-                                    </div>
-                                    <div class="dropdown-item ${isLocked ? 'disabled' : ''}" onclick="event.stopPropagation();${isLocked ? '' : `openSingleListModal(${s.id}, 'blacklist');closeAllCardDropdowns()`}">
-                                        <iconify-icon icon="mdi:shield-check-outline"></iconify-icon>
-                                        <span>黑名单设置</span>
-                                        <span class="ml-auto text-xs text-gray-400">（${blacklistCount})</span>
-                                    </div>
-                                    <div class="dropdown-divider"></div>
-                                    <div class="dropdown-item" onclick="event.stopPropagation();window.location.href='../qyznt/zjgl.html?type=detail&id=${s.id}&title=${encodeURIComponent(s.name)}&desc=${encodeURIComponent(s.desc)}';closeAllCardDropdowns()">
-                                        <iconify-icon icon="mdi:bug"></iconify-icon>
-                                        <span>调试</span>
-                                    </div>
-                                </div>
-                            </div>
+                            <span onclick="event.stopPropagation();exportSkill(${s.id})" class="card-action-btn" title="导出">
+                                <iconify-icon icon="mdi:download-outline" class="text-base"></iconify-icon>
+                            </span>
+                            <span onclick="event.stopPropagation();${isLocked ? '' : 'openEditModal(' + s.id + ')'}" class="${editBtnClass}" title="编辑">
+                                <iconify-icon icon="mdi:pencil-outline" class="text-base"></iconify-icon>
+                            </span>
                             <span onclick="event.stopPropagation();${isLocked ? '' : 'openDeleteConfirm(' + s.id + ')'}" class="${deleteBtnClass}" title="删除">
                                 <iconify-icon icon="mdi:trash-can-outline" class="text-base"></iconify-icon>
                             </span>
@@ -2798,6 +2722,16 @@
                     <div class="flex items-center gap-2 mb-2.5 flex-wrap">
                         <span class="tag tag-category">${s.category}</span>
                         ${sourceTag}
+                        <div class="skill-card-list-badges ml-auto">
+                            <span class="skill-card-list-badge whitelist" onclick="event.stopPropagation();openSingleListModal(${s.id}, 'whitelist')" title="白名单设置">
+                                <iconify-icon icon="mdi:shield-check-outline" style="font-size:12px;"></iconify-icon>
+                                ${whitelistCount}
+                            </span>
+                            <span class="skill-card-list-badge blacklist" onclick="event.stopPropagation();openSingleListModal(${s.id}, 'blacklist')" title="黑名单设置">
+                                <iconify-icon icon="mdi:shield-cancel-outline" style="font-size:12px;"></iconify-icon>
+                                ${blacklistCount}
+                            </span>
+                        </div>
                     </div>
                     <p class="text-xs text-gray-500 mb-3 leading-relaxed line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height: calc(14px * 1.5 * 2); ">${s.desc}</p>
                     <div class="flex items-center justify-between pt-3 border-t border-gray-100">
@@ -2806,6 +2740,8 @@
                             <span class="flex items-center gap-1 flex-shrink-0"><iconify-icon icon="mdi:clock-outline"></iconify-icon>更新: ${s.updatedAt.split(' ')[0]}</span>
                         </div>
                         <div class="flex items-center gap-2">
+                            ${auditBtnHtml}
+                            <a href="../qyznt/zjgl.html?type=detail&id=${s.id}&title=${encodeURIComponent(s.name)}&desc=${encodeURIComponent(s.desc)}" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:500;background:#D1FAE5;color:#059669;border:1px solid #A7F3D0;text-decoration:none;cursor:pointer;transition:all 0.15s;white-space:nowrap;" onmouseover="this.style.background='#059669';this.style.color='#fff';this.style.borderColor='#059669';" onmouseout="this.style.background='#D1FAE5';this.style.color='#059669';this.style.borderColor='#A7F3D0';" title="调试"><iconify-icon icon="mdi:bug" style="font-size:14px;"></iconify-icon>调试</a>
                             <label class="${toggleClass}" onclick="event.stopPropagation()" title="${isLocked ? '审核中/不通过，不可操作' : (enabled ? '点击下架' : '点击发布')}">
                                 <input type="checkbox" ${enabled ? 'checked' : ''} onchange="toggleSkill(${s.id}, this.checked)" ${isLocked ? 'disabled' : ''}/>
                                 <span class="toggle-slider"></span>
@@ -3481,11 +3417,6 @@
             if (fileBtn) fileBtn.style.display = detailMode === 'edit' ? '' : 'none';
             const uploadOverrideBtn = document.getElementById('btn-upload-override');
             if (uploadOverrideBtn) uploadOverrideBtn.style.display = detailMode === 'edit' ? '' : 'none';
-
-            const auditDetailBtn = document.getElementById('btn-audit-detail');
-            if (auditDetailBtn) {
-                auditDetailBtn.style.display = (isPersonal && isAuditing) ? '' : 'none';
-            }
 
             document.getElementById('file-tree').innerHTML = renderFileTree(currentSkill.files);
             updateDetailListCounts();
@@ -4311,25 +4242,6 @@
 
         function filterSkills() { currentPage = 1; renderSkillGrid(); }
 
-        function toggleCardDropdown(btn) {
-            const dropdown = btn.nextElementSibling;
-            const isOpen = !dropdown.classList.contains('hidden');
-            closeAllCardDropdowns();
-            if (!isOpen) {
-                dropdown.classList.remove('hidden');
-            }
-        }
-
-        function closeAllCardDropdowns() {
-            document.querySelectorAll('.card-dropdown-menu').forEach(d => d.classList.add('hidden'));
-        }
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.card-dropdown-menu') && !e.target.closest('[title="更多操作"]')) {
-                closeAllCardDropdowns();
-            }
-        });
-
         // ═══════════════════════════════════════════════
         // 回收站角标更新
         // ═══════════════════════════════════════════════
@@ -4439,9 +4351,6 @@
             auditTargetId = null;
             closeModal('auditModal');
             renderSkillGrid();
-            if (currentSkill && currentSkill.id === skill.id) {
-                openDetail(skill.id, detailMode);
-            }
             showToast(action === 'approved' ? '审核通过' : '已驳回', 'success');
         }
 

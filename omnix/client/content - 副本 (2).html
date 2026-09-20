@@ -1,0 +1,2951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OmniX - 开始使用</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: #ffffff;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      color: #1a1a1a;
+    }
+	.displaynone{
+		display: none;
+	}
+
+    /* ========== Welcome Hero ========== */
+    .welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 200px 40px 30px 40px;
+      text-align: center;
+    }
+    .welcome-inner {
+      max-width: 1200px;
+      width: 100%;
+      display: flex;
+      align-items: flex-end;
+      gap: 24px;
+      flex-direction: row-reverse;
+    }
+    .welcome-text {
+      flex: 1;
+      min-width: 0;
+    }
+    .welcome-title {
+      font-size: 50px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #111;
+      margin-bottom: 10px;
+	  text-align: left;
+    }
+    .welcome-title .highlight {
+      background: linear-gradient(135deg, #4a6cf7, #6c63ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .welcome-subtitle {
+      font-size: 24px;
+      color: #888;
+      line-height: 1.7;
+	  text-align: left;
+    }
+
+    /* Mascot */
+    .mascot-wrapper {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .mascot-sparkle {
+      position: absolute;
+      top: -4px;
+      right: calc(100% + 12px);
+      font-size: 22px;
+      animation: sparkle 2s ease-in-out infinite;
+    }
+    @keyframes sparkle {
+      0%,100% { opacity: 0.3; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+    .mascot-svg {
+      width: 200px;
+      height: 200px;
+    }
+
+    /* ========== Input Area ========== */
+    .input-area {
+      padding: 0 24px 60px;
+      display: flex;
+      justify-content: center;
+    }
+    .input-card {
+      width: 100%;
+      max-width: 1200px;
+      border-radius: 14px;
+      border: 1.5px solid #e5e5e5;
+      background: #fafafa;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      overflow: visible;
+    }
+
+    /* Textarea */
+    .input-textarea-wrap {
+      padding: 18px 20px 4px;
+    }
+    .input-textarea {
+      width: 100%;
+      min-height: 52px;
+      max-height: 180px;
+      border: none;
+      outline: none;
+      resize: none;
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: #222;
+      background: transparent;
+      font-family: inherit;
+    }
+    .input-textarea::placeholder {
+      color: #bbb;
+    }
+    .textarea-tags-area {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 0 0 4px;
+      min-height: 0;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0px 18px 8px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .toolbar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      border-radius: 7px;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      color: #555;
+      transition: all 0.15s;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .toolbar-btn:hover {
+      background: #eaeaea;
+      border-color: #ddd;
+    }
+    .toolbar-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke-width: 1.8;
+    }
+    .connector-summary {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      margin-left: -2px;
+      cursor: pointer;
+    }
+    .connector-summary-icon {
+      width: 23px;
+      height: 23px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: -5px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: #f5f5f5;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      font-size: 14px;
+      line-height: 1;
+    }
+    .connector-summary-icon:first-child { margin-left: 0; }
+
+    /* Knowledge base dropdown */
+    .kb-dropdown-wrapper,
+    .select-dropdown-wrapper {
+      position: relative;
+    }
+    .kb-dropdown,
+    .select-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 240px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border: 1px solid #e8e8e8;
+      padding: 8px 0;
+      display: none;
+      z-index: 100;
+    }
+    .kb-dropdown.show,
+    .select-dropdown.show { display: block; }
+    .kb-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+    .kb-dropdown-item:hover { background: #f5f5f5; }
+    .kb-dropdown-item.selected { background: #f0f4ff; }
+    .kb-dropdown-item.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .kb-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      background: #e8e8e8;
+    }
+    .kb-name {
+      font-size: 13px;
+      color: #333;
+      flex: 1;
+    }
+    .kb-dropdown-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 6px 0;
+    }
+    .kb-manage-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      color: #666;
+      font-size: 13px;
+    }
+    .kb-manage-item:hover { background: #f5f5f5; }
+    .kb-manage-item svg { width: 16px; height: 16px; }
+
+    /* Select dropdown items */
+    .select-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+      position: relative;
+    }
+    .select-dropdown-item:hover { background: #f5f5f5; }
+    .select-dropdown-item.selected { background: #f0f4ff; }
+    .select-dropdown-item.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .select-dropdown-item svg { width: 16px; height: 16px; color: #555; flex-shrink: 0; }
+    .select-dropdown-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 6px 0;
+    }
+    .select-dropdown-section-title {
+      padding: 6px 14px 4px;
+      font-size: 12px;
+      color: #999;
+      font-weight: 500;
+    }
+    .select-dropdown-skill-item {
+      position: relative;
+    }
+    .select-dropdown-skill-item::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: -8px;
+      width: 8px;
+      height: 100%;
+    }
+    .select-dropdown-skill-item > .skill-dropdown {
+      top: -9px;
+      bottom: auto;
+      left: calc(100% + 8px);
+    }
+    .select-dropdown-skill-item:hover > .skill-dropdown,
+    .select-dropdown-skill-item > .skill-dropdown:hover {
+      display: block;
+    }
+    .select-dropdown-connector-item {
+      position: relative;
+    }
+    .select-dropdown-connector-item::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: -8px;
+      width: 8px;
+      height: 100%;
+    }
+    .connector-dropdown {
+      position: absolute;
+      top: -9px;
+      left: calc(100% + 8px);
+      width: 350px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+      border: 1px solid #e8e8e8;
+      padding: 10px 0;
+      display: none;
+      z-index: 100;
+    }
+    .select-dropdown-connector-item:hover > .connector-dropdown,
+    .select-dropdown-connector-item > .connector-dropdown:hover,
+    .select-dropdown-connector-item.connector-open > .connector-dropdown {
+      display: block;
+    }
+    .select-dropdown.connector-direct {
+      width: 0;
+      height: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .select-dropdown.connector-direct > .select-dropdown-item:not(.select-dropdown-connector-item) {
+      display: none;
+    }
+    .select-dropdown.connector-direct > .select-dropdown-connector-item {
+      position: static;
+      width: 0;
+      height: 0;
+      padding: 0;
+      gap: 0;
+      background: transparent;
+      font-size: 0;
+    }
+    .select-dropdown.connector-direct > .select-dropdown-connector-item > span,
+    .select-dropdown.connector-direct > .select-dropdown-connector-item > svg {
+      display: none;
+    }
+    .select-dropdown.connector-direct .connector-dropdown {
+      top: auto;
+      bottom: 0;
+      left: 32px;
+    }
+    .connector-search-wrap { padding: 2px 9px 10px; }
+    .connector-search {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 10px 8px 32px;
+      border: 0;
+      border-radius: 8px;
+      outline: none;
+      color: #333;
+      font-size: 13px;
+      background: #f1f1f1 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 10px center no-repeat;
+    }
+    .connector-search::placeholder { color: #999; }
+    .connector-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .connector-item:hover { background: #f7f7f7; }
+    .connector-item.selected { background: #f0f4ff; }
+    .connector-item.disabled { cursor: default; }
+    .connector-item.disabled .connector-icon,
+    .connector-item.disabled .connector-info { opacity: 0.45; }
+    .connector-item.selected .connector-title::after {
+      content: ' ✓';
+      color: #4a6cf7;
+      font-weight: 600;
+    }
+    .connector-icon {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: 7px;
+      font-size: 17px;
+      background: #f5f5f5;
+    }
+    .connector-info { flex: 1; min-width: 0; }
+    .connector-title { font-size: 13px; line-height: 18px; color: #222; font-weight: 600; }
+    .connector-desc {
+      max-width: 275px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: 12px;
+      line-height: 17px;
+      color: #999;
+    }
+    .connector-divider { height: 1px; margin: 6px 10px 4px; background: #e8e8e8; }
+    .connector-switch {
+      position: relative;
+      width: 26px;
+      height: 16px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: #c9cdd4;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .connector-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .connector-switch.enabled { background: #12bfa0; }
+    .connector-switch.enabled::after { transform: translateX(10px); }
+    .connector-manage {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 14px;
+      color: #333;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .connector-manage:hover { background: #f7f7f7; }
+    .connector-manage svg { width: 16px; height: 16px; color: #555; }
+
+    /* Project dropdown */
+    .project-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 280px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border: 1px solid #e8e8e8;
+      padding: 8px 0;
+      display: none;
+      z-index: 100;
+    }
+    .project-dropdown.show { display: block; }
+    .project-search-wrap {
+      padding: 4px 10px 6px;
+    }
+    .project-search {
+      width: 100%;
+      padding: 7px 10px 7px 32px;
+      border-radius: 7px;
+      border: 1px solid #e0e0e0;
+      background: #f5f5f5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 10px center no-repeat;
+      font-size: 13px;
+      outline: none;
+      color: #333;
+    }
+    .project-search:focus { border-color: #4a6cf7; background-color: #fff; }
+    .project-search::placeholder { color: #bbb; }
+    .project-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+      position: relative;
+    }
+    .project-dropdown-item:hover { background: #f5f5f5; }
+    .project-dropdown-item.selected { background: #f0f4ff; }
+    .project-dropdown-item.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .project-dropdown-item svg { width: 16px; height: 16px; color: #555; flex-shrink: 0; }
+    .project-dropdown-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 6px 0;
+    }
+
+    /* Project tags (added projects) */
+    .project-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px 4px 8px;
+      background: #f0f4ff;
+      border-radius: 7px;
+      font-size: 12px;
+      color: #4a6cf7;
+	  border: 1px #4a6cf7;
+	  line-height: 17px;
+	  border:1px solid #d0d8ff;
+    }
+    .project-tag svg { width: 14px; height: 14px; color: #4a6cf7; flex-shrink: 0; }
+    .project-tag-remove {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      color: #999;
+      font-size: 10px;
+    }
+    .project-tag:hover .project-tag-remove { opacity: 1; }
+    .project-tag-remove:hover { background: #e0e0e0; color: #666; }
+
+    /* Skill dropdown */
+    .skill-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 340px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+      border: 1px solid #e8e8e8;
+      padding: 10px 0;
+      display: none;
+      z-index: 100;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .skill-dropdown.show { display: block; }
+    .skill-search-wrap {
+      padding: 2px 12px 8px;
+    }
+    .skill-search {
+      width: 100%;
+      padding: 8px 10px 8px 34px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      background: #f5f5f5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 10px center no-repeat;
+      font-size: 13px;
+      outline: none;
+      color: #333;
+    }
+    .skill-search:focus { border-color: #4a6cf7; background-color: #fff; }
+    .skill-search::placeholder { color: #bbb; }
+    .skill-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .skill-item:hover { background: #f5f5f5; }
+    .skill-item.selected { background: #f0f4ff; }
+    .skill-item.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .skill-item { position: relative; }
+    .skill-icon-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+    .skill-info { flex: 1; min-width: 0; }
+    .skill-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 2px;
+    }
+    .skill-desc {
+      font-size: 12px;
+      color: #999;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .skill-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 6px 0;
+    }
+    .skill-action-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #555;
+    }
+    .skill-action-item:hover { background: #f5f5f5; }
+    .skill-action-item svg { width: 16px; height: 16px; color: #777; flex-shrink: 0; }
+
+    /* Skill tags in textarea area */
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px 3px 6px;
+      background: #f0f4ff;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #4a6cf7;
+      border: 1px solid #d0d8ff;
+      line-height: 1.4;
+    }
+    .skill-tag-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+    .skill-tag-remove {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      color: #999;
+      font-size: 9px;
+    }
+    .skill-tag:hover .skill-tag-remove { opacity: 1; }
+    .skill-tag-remove:hover { background: #e0e0e0; color: #666; }
+
+    /* File/Image tags in textarea area */
+    .file-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px 3px 6px;
+      background: #f0f4ff;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #4a6cf7;
+      border: 1px solid #d0d8ff;
+      line-height: 1.4;
+    }
+    .file-tag-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .file-tag-icon svg { width: 14px; height: 14px; }
+    .file-tag-name {
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .file-tag-remove {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      color: #999;
+      font-size: 9px;
+    }
+    .file-tag:hover .file-tag-remove { opacity: 1; }
+    .file-tag-remove:hover { background: #e0e0e0; color: #666; }
+
+    /* MCP dropdown */
+    .mcp-dropdown-wrapper {
+      position: relative;
+    }
+    .mcp-panel {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 360px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+      border: 1px solid #e8e8e8;
+      display: none;
+      z-index: 100;
+      max-height: 400px;
+      overflow: hidden;
+      flex-direction: column;
+    }
+    .mcp-panel.show { display: flex; }
+    .mcp-tabs {
+      display: flex;
+      border-bottom: 1px solid #e8e8e8;
+      padding: 0 12px;
+      flex-shrink: 0;
+    }
+    .mcp-tab {
+      flex: 1;
+      padding: 12px 8px;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 500;
+      color: #666;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.15s ease;
+    }
+    .mcp-tab:hover { color: #333; }
+    .mcp-tab.active { color: #333; font-weight: 600; }
+    .mcp-tab.active::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 2px;
+      background: #333;
+      border-radius: 2px 2px 0 0;
+    }
+    .mcp-scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .mcp-search {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e8e8e8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .mcp-search-icon { width: 16px; height: 16px; color: #999; flex-shrink: 0; }
+    .mcp-search input {
+      width: 100%;
+      padding: 4px 0;
+      border: none;
+      font-size: 13px;
+      color: #333;
+      background: transparent;
+      outline: none;
+    }
+    .mcp-search input::placeholder { color: #bbb; }
+    .mcp-tab-panel { display: none; flex-direction: column; flex: 1; }
+    .mcp-tab-panel.active { display: flex; }
+    .mcp-list { padding: 8px 0; display: flex; flex-direction: column; gap: 2px; }
+    .mcp-group { overflow: hidden; }
+    .mcp-group-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      text-align: left;
+      transition: background 0.15s ease;
+      width: 100%;
+      border-radius: 0;
+    }
+    .mcp-group-header:hover { background: #f5f5f5; }
+    .mcp-group-header.all-selected { background: #f0f0f0; }
+    .mcp-expand-icon {
+      width: 16px; height: 16px; color: #999; flex-shrink: 0;
+      transition: transform 0.2s ease;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mcp-group.expanded .mcp-expand-icon { transform: rotate(90deg); }
+    .mcp-group-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 12px; font-weight: 600; color: #fff;
+    }
+    .mcp-group-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
+    .mcp-group-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .mcp-group-name { font-size: 13px; font-weight: 600; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mcp-group-count { font-size: 11px; color: #999; }
+    .mcp-group-check { width: 18px; height: 18px; color: #4a6cf7; flex-shrink: 0; opacity: 0; transition: opacity 0.15s ease; }
+    .mcp-group-header.all-selected .mcp-group-check { opacity: 1; }
+    .mcp-group-header.partial-selected .mcp-group-check { opacity: 1; color: #999; }
+    .mcp-children { display: none; flex-direction: column; gap: 2px; padding: 2px 0 4px 0; }
+    .mcp-group.expanded .mcp-children { display: flex; }
+    .mcp-child-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px 8px 44px; cursor: pointer; border: none;
+      background: transparent; text-align: left;
+      transition: background 0.15s ease; width: 100%; border-radius: 0;
+    }
+    .mcp-child-item:hover { background: #f5f5f5; }
+    .mcp-child-item.selected { background: #f0f0f0; }
+    .mcp-child-name { flex: 1; font-size: 12px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mcp-child-check { width: 16px; height: 16px; color: #4a6cf7; flex-shrink: 0; opacity: 0; transition: opacity 0.15s ease; }
+    .mcp-child-item.selected .mcp-child-check { opacity: 1; }
+    .mcp-empty { padding: 24px 12px; text-align: center; font-size: 13px; color: #999; }
+
+    /* Expert dropdown */
+    .zj-dropdown-wrapper {
+      position: relative;
+    }
+    .zj-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 260px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+      border: 1px solid #e8e8e8;
+      padding: 0;
+      display: none;
+      z-index: 100;
+      max-height: 500px;
+      overflow: hidden;
+    }
+    .zj-dropdown.show { display: block; }
+
+    .zj-more {
+      flex: 1;
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+	  text-align: left;
+    }
+	.zj-more:hover { background: #f5f5f5; }
+    .zj-tab {
+	font-size: 11px;
+    color: #999;
+    padding: 6px 14px 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    }
+
+    .zj-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+    .zj-item:hover { background: #f5f5f5; }
+    .zj-item.selected { background: #f0f4ff; }
+    .zj-item.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .zj-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 12px;
+      background: #e8e8e8;
+	  padding-bottom:4px;
+    }
+    .zj-info { flex: 1; min-width: 0; }
+    .zj-title {
+      font-size: 13px;
+      color: #333;
+    }
+    .zj-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 0;
+    }
+    .zj-action-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #555;
+    }
+    .zj-action-item:hover { background: #f5f5f5; }
+    .zj-action-item svg { width: 16px; height: 16px; color: #777; flex-shrink: 0; }
+
+    /* Expert tags */
+    .zj-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px 3px 6px;
+      background: #f0f4ff;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #4a6cf7;
+      border: 1px solid #d0d8ff;
+      line-height: 1.7;
+    }
+    .zj-tag-avatar {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+      background: #4a6cf7;
+      color: #fff;
+    }
+    .zj-tag-remove {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      color: #999;
+      font-size: 9px;
+    }
+    .zj-tag:hover .zj-tag-remove { opacity: 1; }
+    .zj-tag-remove:hover { background: #e0e0e0; color: #666; }
+
+    /* Permission dropdown */
+    .perm-dropdown-wrapper {
+      position: relative;
+    }
+    .perm-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 400px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border: 1px solid #e8e8e8;
+      padding: 6px 0;
+      display: none;
+      z-index: 100;
+    }
+    .perm-dropdown.show { display: block; }
+    .perm-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+      position: relative;
+    }
+    .perm-item:hover { background: #f5f5f5; }
+    .perm-item.selected { background: #f0f4ff; color: #4a6cf7; }
+    .perm-item.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .perm-item-icon { width: 15px; height: 15px; color: #666; flex-shrink: 0; }
+    .perm-item.selected .perm-item-icon { color: #4a6cf7; }
+    .perm-item-content { display: flex; flex-direction: column; gap: 2px; }
+    .perm-item-label { font-size: 13px; color: #333; }
+    .perm-item.selected .perm-item-label { color: #4a6cf7; }
+    .perm-item-desc { font-size: 11px; color: #999; }
+    .perm-item.selected .perm-item-desc { color: #8a9fd4; }
+
+    /* ========== Permission Warning Modal ========== */
+    .perm-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .perm-modal-overlay.show { display: flex; }
+    .perm-modal {
+      background: #fff;
+      border-radius: 14px;
+      width: 440px;
+      max-width: 90vw;
+      padding: 28px 30px 24px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+      position: relative;
+    }
+    .perm-modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .perm-modal-close:hover { background: #f0f0f0; color: #333; }
+    .perm-modal-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .perm-modal-header svg { width: 24px; height: 24px; color: #e53e3e; flex-shrink: 0; }
+    .perm-modal-header h3 { font-size: 17px; font-weight: 600; color: #1a1a1a; }
+    .perm-modal-body {
+      font-size: 13.5px;
+      color: #666;
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+    .perm-modal-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 22px;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+    }
+    .perm-modal-checkbox input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #e53e3e;
+      cursor: pointer;
+    }
+    .perm-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .perm-modal-btn {
+      padding: 8px 22px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      background: #fff;
+      color: #333;
+      transition: all 0.15s;
+    }
+    .perm-modal-btn:hover { background: #f5f5f5; }
+    .perm-modal-btn.confirm {
+      background: #ff5555;
+      color: #fff;
+      border-color: #ff5555;
+    }
+    .perm-modal-btn.confirm:hover:not(:disabled) { background: #eb2d2d; border-color: #eb2d2d; }
+    .perm-modal-btn.confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Selected knowledge base tags */
+
+    .kb-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px 4px 6px;
+      background: #f0f4ff;
+      border-radius: 16px;
+      font-size: 12px;
+      color: #4a6cf7;
+      position: relative;
+    }
+    .kb-tag-avatar {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      background: #4a6cf7;
+      color: #fff;
+    }
+    .kb-tag-remove {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      color: #999;
+      font-size: 10px;
+    }
+    .kb-tag:hover .kb-tag-remove { opacity: 1; }
+    .kb-tag-remove:hover { background: #e0e0e0; color: #666; }
+
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Model selector pill */
+    .model-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 7px;
+      border: 1px solid #e0e0e0;
+      background: #f0f0f0;
+      font-size: 12.5px;
+      color: #444;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .model-pill:hover { border-color: #ccc; background: #e8e8e8; }
+    .model-icon { width: 14px; height: 14px; }
+    .model-dropdown-wrapper { position: relative; }
+    .model-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      right: 0;
+      width: 300px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border: 1px solid #e8e8e8;
+      padding: 6px 0;
+      display: none;
+      z-index: 100;
+    }
+    .model-dropdown.show { display: block; }
+    .model-dropdown-header {
+      font-size: 11px;
+      color: #999;
+      padding: 6px 14px 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .model-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+      position: relative;
+    }
+    .model-option:hover { background: #f5f5f5; }
+    .model-option.selected { background: #f0f4ff; color: #4a6cf7; }
+    .model-option.selected::after {
+      content: '✓';
+      position: absolute;
+      right: 14px;
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .model-option-icon { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .model-option-icon svg { width: 16px; height: 16px; }
+    .model-option-content { display: flex; flex-direction: column; gap: 1px; }
+    .model-option-label { font-size: 13px; color: #333; font-weight: 500; }
+	.model-option-label-svg{display: block;width: 12px;float: right;margin-left: 2px;}
+    .model-option.selected .model-option-label { color: #4a6cf7; }
+    .model-option-desc { font-size: 11px; color: #999; width:200px;}
+    .model-option.selected .model-option-desc { color: #8a9fd4; }
+    .model-dropdown-divider { height: 1px; background: #f0f0f0; margin: 4px 0; }
+
+    .quality-dropdown-wrapper { position: relative; }
+    .quality-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 7px;
+      border: 1px solid #e0e0e0;
+      background: #f0f0f0;
+      font-size: 12.5px;
+      color: #444;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .quality-pill:hover { border-color: #ccc; background: #e8e8e8; }
+    .quality-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      right: 0;
+      width: 140px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border: 1px solid #e8e8e8;
+      padding: 6px 0;
+      display: none;
+      z-index: 100;
+    }
+    .quality-dropdown.show { display: block; }
+    .quality-option {
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+      position: relative;
+    }
+    .quality-option:hover { background: #f5f5f5; }
+    .quality-option.selected { background: #f0f4ff; color: #4a6cf7; }
+    .quality-option.selected::after {
+      content: '\2713';
+      position: absolute;
+      right: 14px;
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    /* Send button */
+    .send-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 9px;
+      border: none;
+      background: #ccc;
+      cursor: not-allowed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .send-btn.active {
+      background: #666;
+      cursor: pointer;
+    }
+    .send-btn.active:hover { background: #444; }
+    .send-btn svg {
+      width: 17px;
+      height: 17px;
+      color: #fff;
+      transform: rotate(-45deg);
+    }
+
+    /* File attachment row */
+    .file-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0px 18px 8px;
+	  height: 35px;
+    }
+    .file-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 7px;
+      border: 1px solid #e0e0e0;
+      background: #f5f5f5;
+      cursor: pointer;
+      font-size: 13px;
+      color: #555;
+      user-select: none;
+      transition: all 0.15s;
+    }
+    .file-trigger:hover { background: #ebebeb; border-color: #d0d0d0; }
+    .file-trigger svg { width: 14px; height: 14px; }
+
+    /* Bottom status icons */
+    .bottom-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 4px 0 32px;
+    }
+    .status-icon {
+      width: 17px;
+      height: 17px;
+      color: #999;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .status-icon:hover { color: #666; }
+    .status-icon.delete-icon:hover { color: #e74c3c; }
+
+    /* ========== New Folder Modal ========== */
+    .folder-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .folder-modal-overlay.show { display: flex; }
+    .folder-modal {
+      background: #fff;
+      border-radius: 14px;
+      width: 400px;
+      max-width: 90vw;
+      padding: 24px 28px 20px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+      position: relative;
+    }
+    .folder-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .folder-modal-close:hover { background: #f0f0f0; color: #333; }
+    .folder-modal-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .folder-modal-header svg { width: 22px; height: 22px; color: #4a6cf7; flex-shrink: 0; }
+    .folder-modal-header h3 { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+    .folder-modal-body {
+      margin-bottom: 18px;
+    }
+    .folder-modal-label {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .folder-modal-input {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      font-size: 14px;
+      outline: none;
+      color: #333;
+      transition: border-color 0.15s;
+    }
+    .folder-modal-input:focus { border-color: #4a6cf7; }
+    .folder-modal-input::placeholder { color: #bbb; }
+    .folder-modal-error {
+      font-size: 12px;
+      color: #e53e3e;
+      margin-top: 6px;
+      display: none;
+    }
+    .folder-modal-error.show { display: block; }
+    .folder-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .folder-modal-btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      background: #fff;
+      color: #333;
+      transition: all 0.15s;
+    }
+    .folder-modal-btn:hover { background: #f5f5f5; }
+    .folder-modal-btn.confirm {
+      background: #4a6cf7;
+      color: #fff;
+      border-color: #4a6cf7;
+    }
+    .folder-modal-btn.confirm:hover { background: #3a5ce7; border-color: #3a5ce7; }
+
+  </style>
+</head>
+<body>
+
+  <!-- ====== Welcome Section ====== -->
+  <section class="welcome">
+    <div class="welcome-inner">
+      <!-- Mascot -->
+      <div class="mascot-wrapper">
+        <span class="mascot-sparkle">✨</span>
+        <svg class="mascot-svg" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Body -->
+          <ellipse cx="100" cy="115" rx="60" ry="58" fill="#4A6CF7"/>
+          <!-- Ears / Horns -->
+          <path d="M56 72 L48 50 Q46 42 54 45 L62 64 Z" fill="#4A6CF7"/>
+          <path d="M144 72 L152 50 Q154 42 146 45 L138 64 Z" fill="#4A6CF7"/>
+          <circle cx="51" cy="48" r="6" fill="#4A6CF7"/>
+          <circle cx="149" cy="48" r="6" fill="#4A6CF7"/>
+          <!-- Eyes (sunglasses) -->
+          <rect x="68" y="88" width="28" height="18" rx="4" fill="#222"/>
+          <rect x="104" y="88" width="28" height="18" rx="4" fill="#222"/>
+          <line x1="96" y1="96" x2="104" y2="96" stroke="#222" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- Sunglasses reflection -->
+          <line x1="73" y1="93" x2="82" y2="93" stroke="#555" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+          <line x1="109" y1="93" x2="118" y2="93" stroke="#555" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+          <!-- Mouth / fangs -->
+          <path d="M85 118 Q100 130 115 118" stroke="#333" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <path d="M90 120 L86 128 L94 122 Z" fill="#fff" stroke="#333" stroke-width="1"/>
+          <path d="M110 120 L114 128 L106 122 Z" fill="#fff" stroke="#333" stroke-width="1"/>
+          <!-- Arm waving -->
+          <ellipse cx="155" cy="125" rx="14" ry="20" fill="#4A6CF7" transform="rotate(20 155 125)"/>
+          <!-- Hand -->
+          <circle cx="166" cy="114" r="8" fill="#4A6CF7"/>
+          <!-- Legs -->
+          <ellipse cx="78" cy="168" rx="16" ry="12" fill="#3B5DE7"/>
+          <ellipse cx="122" cy="168" rx="16" ry="12" fill="#3B5DE7"/>
+        </svg>
+      </div>
+	
+	  <div class="welcome-text">
+        <h1 class="welcome-title">开始使用 <span class="highlight">OmniX</span></h1>
+        <p class="welcome-subtitle">开启您的 AI 智能体协作之旅，让工作从执行走向智能</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Input Area ====== -->
+  <section class="input-area">
+    <div class="input-card">
+
+      <!-- Textarea with skill tags -->
+      <div class="input-textarea-wrap">
+        <div class="textarea-tags-area" id="textareaTagsArea"></div>
+        <input type="file" id="fileInput" multiple accept="image/*,*/*" style="display:none" onchange="handleFileSelect(event)" />
+        <input type="file" id="folderInput" webkitdirectory directory style="display:none" onchange="handleFolderSelect(event)" />
+        <textarea
+          class="input-textarea"
+          placeholder="描述任务或提问 / @指令 @附件/链接"
+          rows="1"
+        ></textarea>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="select-dropdown-wrapper">
+            <button class="toolbar-btn" title="选择" onclick="toggleSelectDropdown()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <div class="select-dropdown" id="selectDropdown">
+              <div class="select-dropdown-item" onclick="handleSelectAction('upload-file')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+                上传照片和文件
+              </div>
+              <div class="select-dropdown-item select-dropdown-skill-item">
+                <span style="font-size:16px">🔨</span>
+                技能
+                <svg style="width:10px;height:10px;color:#aaa;margin-left:auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg>
+                <div class="skill-dropdown" id="skillDropdown">
+              <div class="skill-search-wrap">
+                <input type="text" class="skill-search" placeholder="搜索技能" id="skillSearch" oninput="filterSkills()" />
+              </div>
+              <div id="skillList">
+                <div class="skill-item" data-name="skill-creator" data-desc="创建或更新可复用技能，根据用途生成技能结构与说明。" data-color="#7c3aed" data-icon="🔨" onclick="addSkill(this)">
+                  <div class="skill-icon-wrap" style="background:#f3e8ff;color:#7c3aed">🔨</div>
+                  <div class="skill-info">
+                    <div class="skill-title">skill-creator</div>
+                    <div class="skill-desc">创建或更新可复用技能，根据用途生成技能结构与说明。</div>
+                  </div>
+                </div>
+                <div class="skill-item" data-name="腾讯文档" data-desc="腾讯文档 (docs.qq.com) -在线云文档平台，是创…" data-color="#4a6cf7" data-icon="📄" onclick="addSkill(this)">
+                  <div class="skill-icon-wrap" style="background:#4a6cf7;color:#fff">📄</div>
+                  <div class="skill-info">
+                    <div class="skill-title">腾讯文档 TENCENT DOCS</div>
+                    <div class="skill-desc">腾讯文档 (docs.qq.com) -在线云文档平台，是创…</div>
+                  </div>
+                </div>
+                <div class="skill-item" data-name="ima-skills" data-desc="ima skills，支持对笔记、知识库的读取、写入和检…" data-color="#3b82f6" data-icon="⚡" onclick="addSkill(this)">
+                  <div class="skill-icon-wrap" style="background:#3b82f6;color:#fff">⚡</div>
+                  <div class="skill-info">
+                    <div class="skill-title">ima-skills</div>
+                    <div class="skill-desc">ima skills，支持对笔记、知识库的读取、写入和检…</div>
+                  </div>
+                </div>
+                <div class="skill-item" data-name="PM Master" data-desc="需求分析、PRD编写、产品需求文档、详细设计、…" data-color="#8b5cf6" data-icon="📋" onclick="addSkill(this)">
+                  <div class="skill-icon-wrap" style="background:#8b5cf6;color:#fff">📋</div>
+                  <div class="skill-info">
+                    <div class="skill-title">产品经理综合技能（PM Master）</div>
+                    <div class="skill-desc">需求分析、PRD编写、产品需求文档、详细设计、…</div>
+                  </div>
+                </div>
+                <div class="skill-item" data-name="企微CLI" data-desc="企业微信 CLI一键安装助手。当用户提到「安装企…" data-color="#f97316" data-icon="" onclick="addSkill(this)">
+                  <div class="skill-icon-wrap" style="background:#f97316;color:#fff">🔧</div>
+                  <div class="skill-info">
+                    <div class="skill-title">企微CLI一键安装助手</div>
+                    <div class="skill-desc">企业微信 CLI一键安装助手。当用户提到「安装企…</div>
+                  </div>
+                </div>
+                <div class="skill-item" data-name="全栈开发伴侣" data-desc="ima skills，支持对笔记、知识库的读取、写入和检…" data-color="#eab308" data-icon="" onclick="addSkill(this)">
+                  <div class="skill-icon-wrap" style="background:#eab308;color:#fff"></div>
+                  <div class="skill-info">
+                    <div class="skill-title">全栈开发伴侣</div>
+                    <div class="skill-desc">ima skills，支持对笔记、知识库的读取、写入和检…</div>
+                  </div>
+                </div>
+              </div>
+              <div class="skill-divider"></div>
+              <div class="skill-action-item" onclick="parentClick('./skill/list.html')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                管理技能
+              </div>
+                </div>
+              </div>
+              <div class="select-dropdown-item select-dropdown-connector-item">
+                <span style="font-size:16px">🔌</span>
+                连接器
+                <svg style="width:10px;height:10px;color:#aaa;margin-left:auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg>
+                <div class="connector-dropdown" id="connectorDropdown">
+                  <div class="connector-search-wrap">
+                    <input type="text" class="connector-search" placeholder="搜索连接器" oninput="filterConnectors(this.value)" />
+                  </div>
+                  <div id="connectorList">
+                    <div class="connector-item" data-name="图片生成" data-desc="图片生成工具，提供文生图、图生图 AI 绘图能力" onclick="selectConnector(this)">
+                      <div class="connector-icon">🎨</div>
+                      <div class="connector-info">
+                        <div class="connector-title">图片生成</div>
+                        <div class="connector-desc">图片生成工具，提供文生图、图生图 AI 绘图能力，支持多种创作场景</div>
+                      </div>
+                      <button type="button" class="connector-switch enabled" aria-label="禁用图片生成" aria-pressed="true" onclick="toggleConnector(event, this)"></button>
+                    </div>
+                    <div class="connector-item disabled" data-name="网页抓取" data-desc="提供网页内容抓取功能，将 HTML 转换为 Markdown" onclick="selectConnector(this)">
+                      <div class="connector-icon">📊</div>
+                      <div class="connector-info">
+                        <div class="connector-title">网页抓取</div>
+                        <div class="connector-desc">提供网页内容抓取功能，将 HTML 转换为 Markdown 格式，方便阅读和处理</div>
+                      </div>
+                      <button type="button" class="connector-switch" aria-label="启用网页抓取" aria-pressed="false" onclick="toggleConnector(event, this)"></button>
+                    </div>
+                    <div class="connector-item" data-name="联网搜索" data-desc="面向 AI 应用的搜索引擎，提供实时信息" onclick="selectConnector(this)">
+                      <div class="connector-icon">🔎</div>
+                      <div class="connector-info">
+                        <div class="connector-title">联网搜索</div>
+                        <div class="connector-desc">这是一款面向 AI 应用的搜索引擎，提供来自数十亿网页的实时信息</div>
+                      </div>
+                      <button type="button" class="connector-switch enabled" aria-label="禁用联网搜索" aria-pressed="true" onclick="toggleConnector(event, this)"></button>
+                    </div>
+                  </div>
+                  <div class="connector-divider"></div>
+                  <div class="connector-manage" onclick="parentClick('./connector/list.html')">
+                    <span style="font-size:16px">⚙</span>
+                    管理连接器
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="connector-summary" id="connectorSummary" aria-label="已启用连接器" onclick="openConnectorDropdown(event)"></div>
+          <div class="mcp-dropdown-wrapper displaynone">
+            <button class="toolbar-btn" title="MCP" onclick="toggleMcpDropdown()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              MCP
+              <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="mcp-panel" id="mcpPanel">
+              <div class="mcp-tabs">
+                <button type="button" class="mcp-tab active" data-tab="market" onclick="switchMcpTab('market', this)">MCP市场</button>
+                <button type="button" class="mcp-tab" data-tab="custom" onclick="switchMcpTab('custom', this)">自定义MCP</button>
+              </div>
+              <div class="mcp-scroll-area">
+                <div class="mcp-search">
+                  <svg class="mcp-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                  <input type="text" id="mcpSearchInput" placeholder="搜索MCP" oninput="filterMcpItems(this.value)" />
+                </div>
+                <div class="mcp-tab-panel active" id="mcpPanelMarket">
+                  <div class="mcp-list" id="mcpList"></div>
+                </div>
+                <div class="mcp-tab-panel" id="mcpPanelCustom">
+                  <div class="mcp-list" id="mcpCustomList"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+		  <div style="align-items:center;gap:4px;flex-wrap:wrap;">
+		    <div class="zj-dropdown-wrapper displaynone">
+		      <button class="toolbar-btn" id="zjBtn" title="专家·专家团" onclick="toggleZjDropdown()">
+		        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M10 15h4"/><path d="M2 15l2-5"/><path d="M22 15l-2-5"/></svg>
+		        专家·专家团
+		        <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+		      </button>
+		      <div class="zj-dropdown" id="zjDropdown">
+		        <div class="zj-list-wrap">
+				  <div class="zj-more" data-tab="expert" onclick="parentClick('./zjgc/list.html')">‌↗ 召唤更多专家·专家团</div>
+				  
+				  <div class="zj-divider"></div>
+		          
+				  <div id="zjExpertList">
+		            <div class="zj-tab">专家</div>
+		            <div class="zj-item" data-name="高级开发工程师" data-desc="10年以上全栈经验，精通多种语言和框架，是团队的技术中坚" data-avatar="" data-color="#4a6cf7" onclick="selectZjItem(this)">
+		              <div class="zj-avatar" style="background:#4a6cf7;color:#fff">💻</div>
+		              <div class="zj-info">
+		                <div class="zj-title">高级开发工程师</div>
+		              </div>
+		            </div>
+		            <div class="zj-item" data-name="产品经理" data-desc="负责产品规划、需求分析和项目管理，推动产品迭代优化" data-avatar="" data-color="#8b5cf6" onclick="selectZjItem(this)">
+		              <div class="zj-avatar" style="background:#8b5cf6;color:#fff"></div>
+		              <div class="zj-info">
+		                <div class="zj-title">产品经理</div>
+		              </div>
+		            </div>
+		            <div class="zj-item" data-name="UI/UX设计师" data-desc="专注用户体验和界面设计，打造美观易用的产品界面" data-avatar="" data-color="#ec4899" onclick="selectZjItem(this)">
+		              <div class="zj-avatar" style="background:#ec4899;color:#fff"></div>
+		              <div class="zj-info">
+		                <div class="zj-title">UI/UX设计师</div>
+		              </div>
+		            </div>
+		          </div>
+				  
+				  <div class="zj-divider"></div>
+				    
+		          <div id="zjTeamList" style="">
+					<div class="zj-tab">专家团</div>
+		            <div class="zj-item" data-name="全栈开发团队" data-desc="覆盖前端、后端、移动端和DevOps的全栈开发团队" data-avatar="👥" data-color="#4a6cf7" onclick="selectZjItem(this)">
+		              <div class="zj-avatar" style="background:#4a6cf7;color:#fff">👥</div>
+		              <div class="zj-info">
+		                <div class="zj-title">全栈开发团队</div>
+		              </div>
+		            </div>
+		            <div class="zj-item" data-name="产品策划团队" data-desc="包含产品经理、UI设计师和用研专家的综合团队" data-avatar="" data-color="#8b5cf6" onclick="selectZjItem(this)">
+		              <div class="zj-avatar" style="background:#8b5cf6;color:#fff">👥</div>
+		              <div class="zj-info">
+		                <div class="zj-title">产品策划团队</div>
+		              </div>
+		            </div>
+		            <div class="zj-item" data-name="数据分析团队" data-desc="数据分析师、BI工程师和业务顾问组成的专业团队" data-avatar="" data-color="#10b981" onclick="selectZjItem(this)">
+		              <div class="zj-avatar" style="background:#10b981;color:#fff">👥</div>
+		              <div class="zj-info">
+		                <div class="zj-title">数据分析团队</div>
+		              </div>
+		            </div>
+		          </div>
+		        </div>
+		      </div>
+		    </div>
+		    <div id="zjTagsArea" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
+		  </div>
+          <div class="kb-dropdown-wrapper displaynone">
+            <button class="toolbar-btn" id="kbBtn" title="本地知识库" onclick="toggleKbDropdown()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              本地知识库
+              <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="kb-dropdown" id="kbDropdown">
+              <div class="kb-dropdown-item" data-id="1" onclick="selectKb(this)">
+                <div class="kb-avatar" style="background:#4a6cf7">👨‍💻</div>
+                <span class="kb-name">需求文档存档库</span>
+              </div>
+              <div class="kb-dropdown-item" data-id="2" onclick="selectKb(this)">
+                <div class="kb-avatar" style="background:#8b5cf6">👩‍</div>
+                <span class="kb-name">办公技巧私库</span>
+              </div>
+              <div class="kb-dropdown-item" data-id="3" onclick="selectKb(this)">
+                <div class="kb-avatar" style="background:#10b981">👨</div>
+                <span class="kb-name">会议纪要知识库</span>
+              </div>
+              <div class="kb-dropdown-item" data-id="4" onclick="selectKb(this)">
+                <div class="kb-avatar" style="background:#f59e0b">💼</div>
+                <span class="kb-name">周报知识库</span>
+              </div>
+              <div class="kb-dropdown-item" data-id="5" onclick="selectKb(this)">
+                <div class="kb-avatar" style="background:#ec4899">👩‍</div>
+                <span class="kb-name">行业调研资料库</span>
+              </div>
+              <div class="kb-dropdown-divider"></div>
+              <div class="kb-manage-item" onclick="parentClick('./zsk/list.html')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                管理知识库
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-right">
+          <div class="model-dropdown-wrapper">
+            <div class="model-pill" onclick="toggleModelDropdown()">
+              <svg class="model-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+              <span id="modelPillText">gpt-5.5</span>
+              <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="model-dropdown" id="modelDropdown">
+              <div class="model-dropdown-header">企业模型</div>
+              <div class="model-option selected" data-model="gpt-5.5" data-desc="最新旗舰模型，推理能力最强" onclick="selectModel(this)">
+                <div class="model-option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#4a6cf7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg></div>
+                <div class="model-option-content">
+                  <span class="model-option-label">gpt-5.5 
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+					</span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+					</span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="8" y1="20" x2="16" y2="20"/></svg>
+					</span>
+				  </span>
+                  <span class="model-option-desc">最新旗舰模型，推理能力最强</span>
+                </div>
+              </div>
+              <div class="model-option" data-model="gpt-5" data-desc="高性能通用模型，适合大多数任务" onclick="selectModel(this)">
+                <div class="model-option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg></div>
+                <div class="model-option-content">
+                  <span class="model-option-label">gpt-5
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+					</span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+					</span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="8" y1="20" x2="16" y2="20"/></svg>
+					</span>
+				  </span>
+                  <span class="model-option-desc">高性能通用模型，适合大多数任务</span>
+                </div>
+              </div>
+              <div class="model-option" data-model="gpt-4o" data-desc="多模态模型，支持图文理解" onclick="selectModel(this)">
+                <div class="model-option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg></div>
+                <div class="model-option-content">
+                  <span class="model-option-label">gpt-4o
+				  
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+					</span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="8" y1="20" x2="16" y2="20"/></svg>
+					</span>
+				  </span>
+                  <span class="model-option-desc">多模态模型，支持图文理解</span>
+                </div>
+              </div>
+              <div class="model-dropdown-divider"></div>
+              <div class="model-dropdown-header">个人模型</div>
+              <div class="model-option" data-model="claude-sonnet-4" data-desc="Anthropic 最新模型，代码能力强" onclick="selectModel(this)">
+                <div class="model-option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+                <div class="model-option-content">
+                  <span class="model-option-label">claude-sonnet-4
+				  
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+					</span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="8" y1="20" x2="16" y2="20"/></svg>
+					</span>
+				  </span>
+                  <span class="model-option-desc">Anthropic 最新模型，代码能力强</span>
+                </div>
+              </div>
+              <div class="model-option" data-model="deepseek-r1" data-desc="国产开源模型，性价比高" onclick="selectModel(this)">
+                <div class="model-option-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                <div class="model-option-content">
+                  <span class="model-option-label">deepseek-r1
+				  
+				  <span class="model-option-label-svg">
+				  	<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+				  </span>
+					<span class="model-option-label-svg">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="8" y1="20" x2="16" y2="20"/></svg>
+					</span>
+				  </span>
+                  <span class="model-option-desc">国产开源模型，性价比高</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="quality-dropdown-wrapper">
+            <div class="quality-pill" onclick="toggleQualityDropdown()">
+              <span id="qualityPillText">极高</span>
+              <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="quality-dropdown" id="qualityDropdown">
+              <div class="quality-option" data-value="轻度" onclick="selectQuality(this)">轻度</div>
+              <div class="quality-option" data-value="中" onclick="selectQuality(this)">中</div>
+              <div class="quality-option" data-value="高" onclick="selectQuality(this)">高</div>
+              <div class="quality-option selected" data-value="极高" onclick="selectQuality(this)">极高</div>
+            </div>
+          </div>
+         <button onclick="parentClick('./session/agents.html')" class="send-btn active" title="发送" style="color: #fff; font-size: 20px;">➚
+         </button>
+                  
+        </div>
+      </div>
+
+      <!-- File attachment trigger -->
+      <div class="file-row" style="position:relative;">
+        <div class="project-dropdown-wrapper" style="position:relative;display:inline-block;">
+          <div class="file-trigger" id="addProjectBtn" onclick="toggleProjectDropdown()">
+		    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+		    添加项目
+            <svg style="width:10px;height:10px;color:#aaa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="project-dropdown" id="projectDropdown">
+            <div class="project-search-wrap">
+              <input type="text" class="project-search" placeholder="搜索项目" id="projectSearch" oninput="filterProjects()" />
+            </div>
+            <div id="projectList">
+              <div class="project-dropdown-item" data-name="OmniX" onclick="addProject(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                OmniX
+              </div>
+              <div class="project-dropdown-item" data-name="海报设计" onclick="addProject(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                海报设计
+              </div>
+              <div class="project-dropdown-item" data-name="PPT 生成" onclick="addProject(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                PPT 生成
+              </div>
+            </div>
+            <div class="project-dropdown-divider"></div>
+            <div class="project-dropdown-item" onclick="handleProjectAction('new-folder')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+              新建空白文件夹
+            </div>
+            <div class="project-dropdown-item" onclick="handleProjectAction('use-folder')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              使用现有文件夹
+            </div>
+          </div>
+        </div>
+        <div class="perm-dropdown-wrapper">
+          <button class="toolbar-btn" id="permBtn" title="默认权限" onclick="togglePermDropdown()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span id="permBtnText">默认权限</span>
+            <svg style="width:10px;height:10px;color:#aaa;margin-left:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="perm-dropdown" id="permDropdown">
+            <div class="perm-item" data-value="default" onclick="selectPerm(this)">
+              <svg class="perm-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <div class="perm-item-content">
+                <span class="perm-item-label">只读</span>
+                <span class="perm-item-desc">仅对文件内容读取，无编辑及其他权限</span>
+              </div>
+            </div>
+            <div class="perm-item selected" data-value="read" onclick="selectPerm(this)">
+              <svg class="perm-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+              <div class="perm-item-content">
+                <span class="perm-item-label">默认权限</span>
+                <span class="perm-item-desc">支持对路径内全部文件的读写</span>
+              </div>
+            </div>
+            <div class="perm-item" data-value="edit" onclick="selectPerm(this)">
+              <svg class="perm-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <div class="perm-item-content">
+                <span class="perm-item-label">完全访问</span>
+                <span class="perm-item-desc">可不受限制地访问互联网和您电脑上的任何文件</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="projectTagsArea" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:-6px;"></div>
+      </div>
+
+    </div>
+  </section>
+
+
+
+  <!-- New Folder Modal -->
+  <div class="folder-modal-overlay" id="folderModal">
+    <div class="folder-modal">
+      <button class="folder-modal-close" onclick="closeFolderModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="folder-modal-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+        <h3>新建空白文件夹</h3>
+      </div>
+      <div class="folder-modal-body">
+        <label class="folder-modal-label">文件夹名称</label>
+        <input type="text" class="folder-modal-input" id="folderNameInput" placeholder="请输入文件夹名称" onkeydown="if(event.key==='Enter')confirmNewFolder()" />
+        <div class="folder-modal-error" id="folderNameError">请输入文件夹名称</div>
+      </div>
+      <div class="folder-modal-actions">
+        <button class="folder-modal-btn" onclick="closeFolderModal()">取消</button>
+        <button class="folder-modal-btn confirm" onclick="confirmNewFolder()">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Use Existing Folder Modal -->
+  <div class="folder-modal-overlay" id="useFolderModal">
+    <div class="folder-modal">
+      <button class="folder-modal-close" onclick="closeUseFolderModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="folder-modal-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <h3>使用现有文件夹</h3>
+      </div>
+      <div class="folder-modal-body">
+        <label class="folder-modal-label">选择文件夹</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" class="folder-modal-input" id="useFolderPathInput" placeholder="请选择文件夹" readonly style="flex:1;cursor:pointer;" onclick="document.getElementById('folderInput').click()" />
+          <button class="folder-modal-btn" onclick="document.getElementById('folderInput').click()" style="white-space:nowrap;">浏览...</button>
+        </div>
+        <div class="folder-modal-error" id="useFolderError">请选择一个文件夹</div>
+      </div>
+      <div class="folder-modal-actions">
+        <button class="folder-modal-btn" onclick="closeUseFolderModal()">取消</button>
+        <button class="folder-modal-btn confirm" onclick="confirmUseFolder()">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auto-resize textarea logic -->
+  <!-- Permission Warning Modal -->
+  <div class="perm-modal-overlay" id="permModal">
+    <div class="perm-modal">
+      <button class="perm-modal-close" onclick="closePermModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="perm-modal-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <h3>确认允许完全访问？</h3>
+      </div>
+      <div class="perm-modal-body">
+        当您开启"完全访问"权限，AI 的确认询问会减少，并能自动完成更多操作，其中涉及敏感动作、文件变更和外部执行。此功能只建议在您信任该任务时使用。
+      </div>
+      <label class="perm-modal-checkbox">
+        <input type="checkbox" id="permRiskCheck" onchange="togglePermConfirmBtn()">
+        我已了解风险，并愿意继续
+      </label>
+      <div class="perm-modal-actions">
+        <button class="perm-modal-btn" onclick="closePermModal()">取消</button>
+        <button class="perm-modal-btn confirm" id="permConfirmBtn" disabled onclick="confirmFullAccess()">允许完全访问</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ta = document.querySelector('.input-textarea');
+    ta.addEventListener('input', () => {
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 180) + 'px';
+    });
+
+    // Knowledge base logic
+    const selectedKbs = new Map();
+
+    function toggleKbDropdown() {
+      const dropdown = document.getElementById('kbDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    function selectKb(item) {
+      const id = item.dataset.id;
+      const name = item.querySelector('.kb-name').textContent;
+      const avatar = item.querySelector('.kb-avatar');
+
+      if (item.classList.contains('selected')) {
+        item.classList.remove('selected');
+        selectedKbs.delete(id);
+        removeKbTagFromTextarea(id);
+      } else {
+        item.classList.add('selected');
+        selectedKbs.set(id, {
+          name: name,
+          avatar: avatar.innerHTML,
+          avatarBg: avatar.style.background
+        });
+        addKbTagToTextarea(id, name, avatar.innerHTML, avatar.style.background);
+      }
+    }
+
+    function removeKb(id) {
+      selectedKbs.delete(id);
+      const item = document.querySelector(`.kb-dropdown-item[data-id="${id}"]`);
+      if (item) item.classList.remove('selected');
+      removeKbTagFromTextarea(id);
+    }
+
+    function addKbTagToTextarea(id, name, avatarHtml, avatarBg) {
+      const area = document.getElementById('textareaTagsArea');
+      const tag = document.createElement('div');
+      tag.className = 'skill-tag';
+      tag.dataset.kbId = id;
+      tag.innerHTML = `
+        <div class="skill-tag-icon" style="background:${avatarBg};color:#fff">${avatarHtml}</div>
+        <span>${name}</span>
+        <div class="skill-tag-remove" onclick="removeKb('${id}')">✕</div>
+      `;
+      area.appendChild(tag);
+    }
+
+    function removeKbTagFromTextarea(id) {
+      const area = document.getElementById('textareaTagsArea');
+      const tag = area.querySelector(`.skill-tag[data-kb-id="${id}"]`);
+      if (tag) tag.remove();
+    }
+
+    function parentClick(url='') {
+		if(url){
+			if (window.parent && window.parent !== window) {
+			  window.parent.postMessage({ type: 'navigate', src: url }, '*');
+			} else {
+			  window.location.href = url;
+			}
+		}
+    }
+
+    // Select dropdown logic
+    const addedSelectPlugins = new Set();
+
+    function toggleSelectDropdown() {
+      const dropdown = document.getElementById('selectDropdown');
+      document.querySelector('.select-dropdown-connector-item').classList.remove('connector-open');
+      dropdown.classList.remove('connector-direct');
+      dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        document.querySelectorAll('#selectDropdown .select-dropdown-item[data-name]').forEach(el => {
+          el.classList.toggle('selected', addedSelectPlugins.has(el.dataset.name));
+        });
+      }
+    }
+
+    function toggleSelectPlugin(item) {
+      const name = item.dataset.name;
+      if (addedSelectPlugins.has(name)) {
+        addedSelectPlugins.delete(name);
+        item.classList.remove('selected');
+      } else {
+        addedSelectPlugins.add(name);
+        item.classList.add('selected');
+      }
+      renderSelectPluginTags();
+    }
+
+    function removeSelectPlugin(name) {
+      addedSelectPlugins.delete(name);
+      const el = document.querySelector(`#selectDropdown .select-dropdown-item[data-name="${name}"]`);
+      if (el) el.classList.remove('selected');
+      renderSelectPluginTags();
+    }
+
+    function renderSelectPluginTags() {
+      const area = document.getElementById('textareaTagsArea');
+      area.querySelectorAll('.skill-tag[data-plugin]').forEach(el => el.remove());
+      addedSelectPlugins.forEach(name => {
+        const tag = document.createElement('div');
+        tag.className = 'skill-tag';
+        tag.dataset.plugin = name;
+        tag.innerHTML = `
+          <div class="skill-tag-icon" style="background:#4a6cf7;color:#fff">🔌</div>
+          <span>${name}</span>
+          <div class="skill-tag-remove" onclick="removeSelectPlugin('${name}')">✕</div>
+        `;
+        area.appendChild(tag);
+      });
+    }
+
+    function handleSelectAction(action) {
+      document.getElementById('selectDropdown').classList.remove('show');
+      if (action === 'upload-file') {
+        document.getElementById('fileInput').click();
+        return;
+      }
+      console.log('Select action:', action);
+    }
+
+    // Project dropdown logic
+    const addedProjects = new Set();
+
+    function toggleProjectDropdown() {
+      const dropdown = document.getElementById('projectDropdown');
+      dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        document.querySelectorAll('#projectList .project-dropdown-item').forEach(el => {
+          el.classList.toggle('selected', addedProjects.has(el.dataset.name));
+        });
+        setTimeout(() => document.getElementById('projectSearch').focus(), 50);
+      }
+    }
+
+    function addProject(item) {
+      const name = item.dataset.name;
+      if (addedProjects.has(name)) {
+        addedProjects.delete(name);
+        item.classList.remove('selected');
+      } else {
+        addedProjects.clear();
+        document.querySelectorAll('#projectList .project-dropdown-item').forEach(el => el.classList.remove('selected'));
+        addedProjects.add(name);
+        item.classList.add('selected');
+      }
+      document.getElementById('projectDropdown').classList.remove('show');
+      renderProjectTags();
+    }
+
+    function removeProject(name) {
+      addedProjects.delete(name);
+      renderProjectTags();
+    }
+
+    function renderProjectTags() {
+      const area = document.getElementById('projectTagsArea');
+      const btn = document.getElementById('addProjectBtn');
+      area.innerHTML = '';
+      addedProjects.forEach(name => {
+        const tag = document.createElement('div');
+        tag.className = 'project-tag';
+        tag.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          <span onclick="toggleProjectDropdown()" style="cursor: pointer;">${name}</span>
+          <div class="project-tag-remove" onclick="removeProject('${name}')">✕</div>
+        `;
+        area.appendChild(tag);
+      });
+      btn.style.display = addedProjects.size > 0 ? 'none' : 'inline-flex';
+    }
+
+    function filterProjects() {
+      const query = document.getElementById('projectSearch').value.toLowerCase();
+      document.querySelectorAll('#projectList .project-dropdown-item').forEach(item => {
+        item.style.display = item.dataset.name.toLowerCase().includes(query) ? '' : 'none';
+      });
+    }
+
+    function handleProjectAction(action) {
+      document.getElementById('projectDropdown').classList.remove('show');
+      if (action === 'new-folder') {
+        openFolderModal();
+      } else if (action === 'use-folder') {
+        document.getElementById('folderInput').click();
+      } else {
+        console.log('Project action:', action);
+      }
+    }
+
+    function handleFolderSelect(event) {
+      const files = event.target.files;
+      if (files.length > 0) {
+        const relativePath = files[0].webkitRelativePath;
+        const folderName = relativePath.split('/')[0];
+        addedProjects.clear();
+        document.querySelectorAll('#projectList .project-dropdown-item').forEach(el => el.classList.remove('selected'));
+        let existingItem = null;
+        document.querySelectorAll('#projectList .project-dropdown-item').forEach(el => {
+          if (el.dataset.name === folderName) existingItem = el;
+        });
+        if (!existingItem) {
+          const newItem = document.createElement('div');
+          newItem.className = 'project-dropdown-item selected';
+          newItem.dataset.name = folderName;
+          newItem.onclick = function() { addProject(this); };
+          newItem.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>' + folderName;
+          document.getElementById('projectList').appendChild(newItem);
+        } else {
+          existingItem.classList.add('selected');
+        }
+        addedProjects.add(folderName);
+        renderProjectTags();
+      }
+      event.target.value = '';
+    }
+
+    function openFolderModal() {
+      const modal = document.getElementById('folderModal');
+      const input = document.getElementById('folderNameInput');
+      const error = document.getElementById('folderNameError');
+      input.value = '';
+      error.classList.remove('show');
+      modal.classList.add('show');
+      setTimeout(() => input.focus(), 100);
+    }
+
+    function closeFolderModal() {
+      document.getElementById('folderModal').classList.remove('show');
+    }
+
+    function confirmNewFolder() {
+      const input = document.getElementById('folderNameInput');
+      const error = document.getElementById('folderNameError');
+      const name = input.value.trim();
+      if (!name) {
+        error.classList.add('show');
+        input.focus();
+        return;
+      }
+      error.classList.remove('show');
+      closeFolderModal();
+      addedProjects.clear();
+      document.querySelectorAll('#projectList .project-dropdown-item').forEach(el => el.classList.remove('selected'));
+      let existingItem = null;
+      document.querySelectorAll('#projectList .project-dropdown-item').forEach(el => {
+        if (el.dataset.name === name) existingItem = el;
+      });
+      if (!existingItem) {
+        const newItem = document.createElement('div');
+        newItem.className = 'project-dropdown-item selected';
+        newItem.dataset.name = name;
+        newItem.onclick = function() { addProject(this); };
+        newItem.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>' + name;
+        document.getElementById('projectList').appendChild(newItem);
+      } else {
+        existingItem.classList.add('selected');
+      }
+      addedProjects.add(name);
+      renderProjectTags();
+    }
+
+    // Skill dropdown logic
+    const addedSkills = new Set();
+    const addedConnectors = new Set();
+
+    function addSkill(item) {
+      const name = item.dataset.name;
+      if (addedSkills.has(name)) {
+        removeSkill(name);
+        return;
+      }
+      addedSkills.add(name);
+      item.classList.add('selected');
+      renderSkillTags();
+    }
+
+    function removeSkill(name) {
+      addedSkills.delete(name);
+      const el = document.querySelector(`.skill-item[data-name="${name}"]`);
+      if (el) el.classList.remove('selected');
+      renderSkillTags();
+    }
+
+    function renderSkillTags() {
+      const area = document.getElementById('textareaTagsArea');
+      area.querySelectorAll('.skill-tag:not([data-kb-id]):not([data-connector])').forEach(el => el.remove());
+      addedSkills.forEach(name => {
+        const el = document.querySelector(`#skillList .skill-item[data-name="${name}"]`);
+        const color = el ? el.dataset.color : '#4a6cf7';
+        const icon = el ? el.dataset.icon : '⚡';
+        const tag = document.createElement('div');
+        tag.className = 'skill-tag';
+        tag.innerHTML = `
+          <div class="skill-tag-icon" style="background:${color};color:#fff">${icon}</div>
+          <span>${name}</span>
+          <div class="skill-tag-remove" onclick="removeSkill('${name}')">✕</div>
+        `;
+        area.appendChild(tag);
+      });
+    }
+
+    function filterSkills() {
+      const query = document.getElementById('skillSearch').value.toLowerCase();
+      document.querySelectorAll('#skillList .skill-item').forEach(item => {
+        const name = item.dataset.name.toLowerCase();
+        const desc = item.dataset.desc.toLowerCase();
+        item.style.display = (name.includes(query) || desc.includes(query)) ? '' : 'none';
+      });
+    }
+
+    function handleSkillAction(action) {
+      document.getElementById('skillDropdown').classList.remove('show');
+      console.log('Skill action:', action);
+    }
+
+    function filterConnectors(query) {
+      const keyword = query.toLowerCase();
+      document.querySelectorAll('#connectorList .connector-item').forEach(item => {
+        const name = item.dataset.name.toLowerCase();
+        const desc = item.dataset.desc.toLowerCase();
+        item.style.display = (name.includes(keyword) || desc.includes(keyword)) ? '' : 'none';
+      });
+    }
+
+    function openConnectorDropdown(event) {
+      event.stopPropagation();
+      const dropdown = document.getElementById('selectDropdown');
+      dropdown.classList.add('show', 'connector-direct');
+      document.querySelector('.select-dropdown-connector-item').classList.add('connector-open');
+    }
+
+    function toggleConnector(event, button) {
+      event.stopPropagation();
+      const enabled = button.classList.toggle('enabled');
+      const item = button.closest('.connector-item');
+      const name = item.dataset.name;
+      item.classList.toggle('disabled', !enabled);
+      if (!enabled && addedConnectors.has(name)) removeConnector(name);
+      renderConnectorSummary();
+      button.setAttribute('aria-pressed', String(enabled));
+      button.setAttribute('aria-label', `${enabled ? '禁用' : '启用'}${name}`);
+    }
+
+    function selectConnector(item) {
+      if (!item.querySelector('.connector-switch').classList.contains('enabled')) return;
+      const name = item.dataset.name;
+      if (addedConnectors.has(name)) {
+        removeConnector(name);
+        return;
+      }
+      addedConnectors.add(name);
+      item.classList.add('selected');
+      renderConnectorTags();
+    }
+
+    function removeConnector(name) {
+      addedConnectors.delete(name);
+      const item = document.querySelector(`#connectorList .connector-item[data-name="${name}"]`);
+      if (item) item.classList.remove('selected');
+      renderConnectorTags();
+    }
+
+    function renderConnectorTags() {
+      const area = document.getElementById('textareaTagsArea');
+      area.querySelectorAll('.skill-tag[data-connector]').forEach(el => el.remove());
+      addedConnectors.forEach(name => {
+        const tag = document.createElement('div');
+        tag.className = 'skill-tag';
+        tag.dataset.connector = name;
+        tag.innerHTML = `
+          <div class="skill-tag-icon" style="background:#12bfa0;color:#fff">🔌</div>
+          <span>${name}</span>
+          <div class="skill-tag-remove" onclick="removeConnector('${name}')">✕</div>
+        `;
+        area.appendChild(tag);
+      });
+    }
+
+    function renderConnectorSummary() {
+      const summary = document.getElementById('connectorSummary');
+      if (!summary) return;
+      summary.innerHTML = '';
+      document.querySelectorAll('#connectorList .connector-item').forEach(item => {
+        const toggle = item.querySelector('.connector-switch');
+        if (!toggle || !toggle.classList.contains('enabled')) return;
+        const icon = document.createElement('span');
+        icon.className = 'connector-summary-icon';
+        icon.title = item.dataset.name;
+        icon.textContent = item.querySelector('.connector-icon').textContent.trim();
+        summary.appendChild(icon);
+      });
+    }
+
+    renderConnectorSummary();
+
+    // MCP dropdown logic
+    const mcpData = [
+      {
+        id: 'tencent-docs', name: '腾讯文档', color: '#7c3aed',
+        iconSvg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
+        children: [
+          { id: 'tencent-docs-read', name: '读取文档' },
+          { id: 'tencent-docs-write', name: '写入文档' },
+          { id: 'tencent-docs-search', name: '搜索文档' },
+          { id: 'tencent-docs-share', name: '分享文档' }
+        ]
+      },
+      {
+        id: 'ima-skills', name: 'ima-skills', color: '#2563eb',
+        iconSvg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
+        children: [
+          { id: 'ima-notes-read', name: '读取笔记' },
+          { id: 'ima-notes-write', name: '写入笔记' },
+          { id: 'ima-kb-search', name: '知识库检索' }
+        ]
+      },
+      {
+        id: 'pm-master', name: '产品经理综合技能', color: '#7c3aed',
+        iconSvg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',
+        children: [
+          { id: 'pm-prd', name: 'PRD编写' },
+          { id: 'pm-requirement', name: '需求分析' },
+          { id: 'pm-design', name: '详细设计' },
+          { id: 'pm-review', name: '需求评审' }
+        ]
+      },
+      {
+        id: 'wecom-cli', name: '企微CLI一键安装助手', color: '#ea580c',
+        iconSvg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+        children: [
+          { id: 'wecom-install', name: '安装企微CLI' },
+          { id: 'wecom-config', name: '配置企微' },
+          { id: 'wecom-send', name: '发送消息' }
+        ]
+      },
+      {
+        id: 'github-mcp', name: 'GitHub MCP', color: '#181717',
+        iconSvg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>',
+        children: [
+          { id: 'github-repo', name: '仓库管理' },
+          { id: 'github-pr', name: 'Pull Request' },
+          { id: 'github-issue', name: 'Issue管理' },
+          { id: 'github-search', name: '代码搜索' }
+        ]
+      },
+      {
+        id: 'sentry-mcp', name: 'Sentry MCP', color: '#362d59',
+        iconSvg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+        children: [
+          { id: 'sentry-issues', name: '查看问题' },
+          { id: 'sentry-events', name: '查看事件' },
+          { id: 'sentry-release', name: '发布管理' }
+        ]
+      }
+    ];
+
+    const customMcpData = [
+      {
+        id: 'custom-api', name: '自定义API服务', color: '#059669',
+        iconSvg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>',
+        children: [
+          { id: 'custom-api-get', name: 'GET请求' },
+          { id: 'custom-api-post', name: 'POST请求' },
+          { id: 'custom-api-put', name: 'PUT请求' },
+          { id: 'custom-api-delete', name: 'DELETE请求' }
+        ]
+      },
+      {
+        id: 'custom-db', name: '数据库连接', color: '#dc2626',
+        iconSvg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>',
+        children: [
+          { id: 'custom-db-query', name: '执行查询' },
+          { id: 'custom-db-insert', name: '插入数据' },
+          { id: 'custom-db-update', name: '更新数据' }
+        ]
+      }
+    ];
+
+    const selectedMcpItems = new Map();
+    const expandedMcpIds = new Set();
+    let currentMcpTab = 'market';
+
+    function toggleMcpDropdown() {
+      const panel = document.getElementById('mcpPanel');
+      panel.classList.toggle('show');
+      if (panel.classList.contains('show')) {
+        renderMcpList();
+        setTimeout(() => document.getElementById('mcpSearchInput').focus(), 50);
+      }
+    }
+
+    function switchMcpTab(tab, el) {
+      currentMcpTab = tab;
+      document.querySelectorAll('.mcp-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      document.querySelectorAll('.mcp-tab-panel').forEach(p => p.classList.remove('active'));
+      if (tab === 'market') document.getElementById('mcpPanelMarket').classList.add('active');
+      else document.getElementById('mcpPanelCustom').classList.add('active');
+      document.getElementById('mcpSearchInput').value = '';
+      filterMcpItems('');
+    }
+
+    function renderMcpGroup(mcp, container) {
+      const group = document.createElement('div');
+      group.className = 'mcp-group';
+      group.dataset.id = mcp.id;
+      if (expandedMcpIds.has(mcp.id)) group.classList.add('expanded');
+
+      const selectedCount = mcp.children.filter(c => selectedMcpItems.has(c.id)).length;
+      const allSelected = selectedCount === mcp.children.length;
+      const partialSelected = selectedCount > 0 && !allSelected;
+
+      const header = document.createElement('button');
+      header.type = 'button';
+      header.className = 'mcp-group-header';
+      if (allSelected) header.classList.add('all-selected');
+      if (partialSelected) header.classList.add('partial-selected');
+
+      const checkSvg = partialSelected
+        ? '<svg class="mcp-group-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+        : '<svg class="mcp-group-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+      header.innerHTML = `
+        <span class="mcp-expand-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </span>
+        <div class="mcp-group-icon" style="background:${mcp.color};">${mcp.iconSvg}</div>
+        <div class="mcp-group-info">
+          <div class="mcp-group-name">${mcp.name}</div>
+          <div class="mcp-group-count">${selectedCount}/${mcp.children.length} 项已选</div>
+        </div>
+        ${checkSvg}
+      `;
+
+      const childrenWrap = document.createElement('div');
+      childrenWrap.className = 'mcp-children';
+      mcp.children.forEach(child => {
+        const childItem = document.createElement('button');
+        childItem.type = 'button';
+        childItem.className = 'mcp-child-item';
+        childItem.dataset.childId = child.id;
+        childItem.dataset.parentId = mcp.id;
+        if (selectedMcpItems.has(child.id)) childItem.classList.add('selected');
+        childItem.innerHTML = `
+          <span class="mcp-child-name">${child.name}</span>
+          <svg class="mcp-child-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        `;
+        childrenWrap.appendChild(childItem);
+      });
+
+      group.appendChild(header);
+      group.appendChild(childrenWrap);
+      container.appendChild(group);
+    }
+
+    function renderMcpList() {
+      const mcpList = document.getElementById('mcpList');
+      const mcpCustomList = document.getElementById('mcpCustomList');
+      if (mcpList) {
+        mcpList.innerHTML = '';
+        mcpData.forEach(mcp => renderMcpGroup(mcp, mcpList));
+      }
+      if (mcpCustomList) {
+        mcpCustomList.innerHTML = '';
+        customMcpData.forEach(mcp => renderMcpGroup(mcp, mcpCustomList));
+      }
+      bindMcpEvents();
+    }
+
+    function bindMcpEvents() {
+      const allLists = [document.getElementById('mcpList'), document.getElementById('mcpCustomList')];
+      const allData = [...mcpData, ...customMcpData];
+
+      allLists.forEach(list => {
+        if (!list) return;
+        list.querySelectorAll('.mcp-group-header').forEach(header => {
+          header.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const group = header.closest('.mcp-group');
+            const mcpId = group.dataset.id;
+            const mcp = allData.find(m => m.id === mcpId);
+            if (!mcp) return;
+
+            const expandIcon = header.querySelector('.mcp-expand-icon');
+            const rect = expandIcon.getBoundingClientRect();
+            const isExpandClick = e.clientX >= rect.left && e.clientX <= rect.right;
+
+            if (isExpandClick) {
+              if (expandedMcpIds.has(mcpId)) expandedMcpIds.delete(mcpId);
+              else { expandedMcpIds.clear(); expandedMcpIds.add(mcpId); }
+              renderMcpList();
+              renderMcpTags();
+            } else {
+              const allSelected = mcp.children.every(c => selectedMcpItems.has(c.id));
+              if (allSelected) {
+                mcp.children.forEach(c => selectedMcpItems.delete(c.id));
+              } else {
+                mcp.children.forEach(c => {
+                  selectedMcpItems.set(c.id, { name: c.name, parentId: mcp.id, parentName: mcp.name, parentColor: mcp.color, parentIconSvg: mcp.iconSvg });
+                });
+              }
+              renderMcpList();
+              renderMcpTags();
+            }
+          });
+        });
+
+        list.querySelectorAll('.mcp-child-item').forEach(childItem => {
+          childItem.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const childId = childItem.dataset.childId;
+            const parentId = childItem.dataset.parentId;
+            const mcp = allData.find(m => m.id === parentId);
+            const child = mcp ? mcp.children.find(c => c.id === childId) : null;
+            if (!child || !mcp) return;
+
+            if (selectedMcpItems.has(childId)) selectedMcpItems.delete(childId);
+            else selectedMcpItems.set(childId, { name: child.name, parentId: mcp.id, parentName: mcp.name, parentColor: mcp.color, parentIconSvg: mcp.iconSvg });
+            renderMcpList();
+            renderMcpTags();
+          });
+        });
+      });
+    }
+
+    function renderMcpTags() {
+      const area = document.getElementById('textareaTagsArea');
+      area.querySelectorAll('.skill-tag[data-mcp-parent]').forEach(el => el.remove());
+
+      const grouped = new Map();
+      selectedMcpItems.forEach((item, id) => {
+        if (!grouped.has(item.parentId)) {
+          grouped.set(item.parentId, { parentName: item.parentName, parentColor: item.parentColor, parentIconSvg: item.parentIconSvg, children: [] });
+        }
+        grouped.get(item.parentId).children.push({ id, name: item.name });
+      });
+
+      const allData = [...mcpData, ...customMcpData];
+      grouped.forEach((group, parentId) => {
+        const mcpItem = allData.find(m => m.id === parentId);
+        if (!mcpItem) return;
+        const allSelected = group.children.length === mcpItem.children.length;
+        const label = allSelected ? mcpItem.name : `${mcpItem.name} (${group.children.length})`;
+
+        const tag = document.createElement('div');
+        tag.className = 'skill-tag';
+        tag.dataset.mcpParent = parentId;
+        tag.innerHTML = `
+          <div class="skill-tag-icon" style="background:${mcpItem.color};color:#fff">${mcpItem.iconSvg}</div>
+          <span>${label}</span>
+          <div class="skill-tag-remove" onclick="removeMcpGroup('${parentId}')">✕</div>
+        `;
+        area.appendChild(tag);
+      });
+    }
+
+    function removeMcpGroup(parentId) {
+      const allData = [...mcpData, ...customMcpData];
+      const mcpItem = allData.find(m => m.id === parentId);
+      if (!mcpItem) return;
+      mcpItem.children.forEach(c => selectedMcpItems.delete(c.id));
+      renderMcpList();
+      renderMcpTags();
+    }
+
+    function filterMcpItems(query) {
+      const q = (query || '').trim().toLowerCase();
+      const allData = [...mcpData, ...customMcpData];
+
+      const filterList = (listId, data) => {
+        const list = document.getElementById(listId);
+        if (!list) return;
+        let visibleCount = 0;
+        list.querySelectorAll('.mcp-group').forEach(group => {
+          const mcpId = group.dataset.id;
+          const mcp = data.find(m => m.id === mcpId);
+          if (!mcp) return;
+          const nameMatch = mcp.name.toLowerCase().includes(q);
+          let hasVisibleChild = false;
+          group.querySelectorAll('.mcp-child-item').forEach(childItem => {
+            const childId = childItem.dataset.childId;
+            const child = mcp.children.find(c => c.id === childId);
+            if (!child) return;
+            const childMatch = !q || child.name.toLowerCase().includes(q);
+            childItem.style.display = childMatch ? 'flex' : 'none';
+            if (childMatch) hasVisibleChild = true;
+          });
+          const showGroup = !q || nameMatch || hasVisibleChild;
+          group.style.display = showGroup ? 'block' : 'none';
+          if (showGroup) visibleCount++;
+          if (q && hasVisibleChild) group.classList.add('expanded');
+        });
+        let emptyEl = list.querySelector('.mcp-empty');
+        if (visibleCount === 0) {
+          if (!emptyEl) {
+            emptyEl = document.createElement('div');
+            emptyEl.className = 'mcp-empty';
+            emptyEl.textContent = '未找到匹配的MCP';
+            list.appendChild(emptyEl);
+          }
+        } else if (emptyEl) {
+          emptyEl.remove();
+        }
+      };
+
+      if (currentMcpTab === 'market') filterList('mcpList', mcpData);
+      else filterList('mcpCustomList', customMcpData);
+    }
+
+    const uploadedFiles = [];
+
+    function handleFileSelect(event) {
+      const files = Array.from(event.target.files);
+      files.forEach(file => {
+        uploadedFiles.push(file);
+      });
+      renderFileTags();
+      event.target.value = '';
+    }
+
+    function removeFile(index) {
+      uploadedFiles.splice(index, 1);
+      renderFileTags();
+    }
+
+    function renderFileTags() {
+      const area = document.getElementById('textareaTagsArea');
+      area.querySelectorAll('.file-tag').forEach(el => el.remove());
+      uploadedFiles.forEach((file, index) => {
+        const tag = document.createElement('div');
+        tag.className = 'file-tag';
+        const isImage = file.type.startsWith('image/');
+        const iconSvg = isImage
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+        tag.innerHTML = '<span class="file-tag-icon">' + iconSvg + '</span><span class="file-tag-name">' + file.name + '</span><span class="file-tag-remove" onclick="removeFile(' + index + ')">\u2715</span>';
+        area.appendChild(tag);
+      });
+    }
+
+    // Expert dropdown logic
+    let currentZjTab = 'expert';
+    let selectedZj = null;
+
+    function toggleZjDropdown() {
+      const dropdown = document.getElementById('zjDropdown');
+      dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        updateZjSelectedState();
+        setTimeout(() => document.getElementById('zjSearch').focus(), 50);
+      }
+    }
+
+    function selectZjItem(item) {
+      const name = item.dataset.name;
+      selectedZj = {
+        name: name,
+        avatar: item.dataset.avatar,
+        color: item.dataset.color
+      };
+      document.getElementById('zjDropdown').classList.remove('show');
+      renderZjTags();
+    }
+
+    function removeZj() {
+      selectedZj = null;
+      renderZjTags();
+    }
+
+    function renderZjTags() {
+      const area = document.getElementById('zjTagsArea');
+      const btn = document.getElementById('zjBtn');
+      area.innerHTML = '';
+      if (selectedZj) {
+        const tag = document.createElement('div');
+        tag.className = 'zj-tag';
+        tag.innerHTML = `
+          <div class="zj-tag-avatar" style="background:${selectedZj.color};color:#fff">${selectedZj.avatar}</div>
+          <span onclick="toggleZjDropdown()" style="cursor: pointer;">${selectedZj.name}</span>
+          <div class="zj-tag-remove" onclick="removeZj()">✕</div>
+        `;
+        area.appendChild(tag);
+        btn.style.display = 'none';
+      } else {
+        btn.style.display = 'inline-flex';
+      }
+    }
+
+    function updateZjSelectedState() {
+      document.querySelectorAll('.zj-item').forEach(item => {
+        item.classList.toggle('selected', selectedZj && item.dataset.name === selectedZj.name);
+      });
+    }
+
+    function handleZjAction(action) {
+      document.getElementById('zjDropdown').classList.remove('show');
+      console.log('Expert action:', action);
+    }
+
+    // Permission dropdown logic
+    let currentPerm = 'default';
+
+    function togglePermDropdown() {
+      const dropdown = document.getElementById('permDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    function selectPerm(item) {
+      const val = item.dataset.value;
+      document.getElementById('permDropdown').classList.remove('show');
+      if (val === 'edit') {
+        document.getElementById('permModal').classList.add('show');
+        document.getElementById('permRiskCheck').checked = false;
+        document.getElementById('permConfirmBtn').disabled = true;
+        return;
+      }
+      currentPerm = val;
+      document.querySelectorAll('.perm-item').forEach(el => el.classList.remove('selected'));
+      item.classList.add('selected');
+      document.getElementById('permBtnText').textContent = item.querySelector('.perm-item-label').textContent.trim();
+    }
+
+    function closePermModal() {
+      document.getElementById('permModal').classList.remove('show');
+    }
+
+    function togglePermConfirmBtn() {
+      document.getElementById('permConfirmBtn').disabled = !document.getElementById('permRiskCheck').checked;
+    }
+
+    function confirmFullAccess() {
+      currentPerm = 'edit';
+      document.querySelectorAll('.perm-item').forEach(el => el.classList.remove('selected'));
+      const editItem = document.querySelector('.perm-item[data-value="edit"]');
+      editItem.classList.add('selected');
+      document.getElementById('permBtnText').textContent = '完全访问';
+      closePermModal();
+    }
+
+    // Model dropdown logic
+    function toggleModelDropdown() {
+      document.getElementById('modelDropdown').classList.toggle('show');
+    }
+
+    function selectModel(item) {
+      document.querySelectorAll('.model-option').forEach(el => el.classList.remove('selected'));
+      item.classList.add('selected');
+      document.getElementById('modelPillText').textContent = item.dataset.model;
+      document.getElementById('modelDropdown').classList.remove('show');
+    }
+
+    function toggleQualityDropdown() {
+      document.getElementById('qualityDropdown').classList.toggle('show');
+    }
+
+    function selectQuality(item) {
+      document.querySelectorAll('.quality-option').forEach(el => el.classList.remove('selected'));
+      item.classList.add('selected');
+      document.getElementById('qualityPillText').textContent = item.dataset.value;
+      document.getElementById('qualityDropdown').classList.remove('show');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const kbWrapper = document.querySelector('.kb-dropdown-wrapper');
+      if (!kbWrapper.contains(e.target)) {
+        document.getElementById('kbDropdown').classList.remove('show');
+      }
+      const selectWrapper = document.querySelector('.select-dropdown-wrapper');
+      const connectorSummary = document.getElementById('connectorSummary');
+      if (!selectWrapper.contains(e.target) && !connectorSummary.contains(e.target)) {
+        document.getElementById('selectDropdown').classList.remove('show');
+        document.getElementById('selectDropdown').classList.remove('connector-direct');
+        document.querySelector('.select-dropdown-connector-item').classList.remove('connector-open');
+      }
+      const projectWrapper = document.querySelector('.project-dropdown-wrapper');
+      const projectTagsArea = document.getElementById('projectTagsArea');
+      if (!projectWrapper.contains(e.target) && !projectTagsArea.contains(e.target)) {
+        document.getElementById('projectDropdown').classList.remove('show');
+      }
+      const mcpWrapper = document.querySelector('.mcp-dropdown-wrapper');
+      if (!mcpWrapper.contains(e.target)) {
+        document.getElementById('mcpPanel').classList.remove('show');
+      }
+      const zjWrapper = document.querySelector('.zj-dropdown-wrapper');
+      const zjTagsArea = document.getElementById('zjTagsArea');
+      if (!zjWrapper.contains(e.target) && !zjTagsArea.contains(e.target)) {
+        document.getElementById('zjDropdown').classList.remove('show');
+      }
+      const permWrapper = document.querySelector('.perm-dropdown-wrapper');
+      if (!permWrapper.contains(e.target)) {
+        document.getElementById('permDropdown').classList.remove('show');
+      }
+      const modelWrapper = document.querySelector('.model-dropdown-wrapper');
+      if (!modelWrapper.contains(e.target)) {
+        document.getElementById('modelDropdown').classList.remove('show');
+      }
+      const qualityWrapper = document.querySelector('.quality-dropdown-wrapper');
+      if (!qualityWrapper.contains(e.target)) {
+        document.getElementById('qualityDropdown').classList.remove('show');
+      }
+    });
+  </script>
+
+  <style> .prd-fab-wrapper { position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; align-items: center; justify-content: center; }  .prd-fab-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #ffffff; box-shadow: 0 8px 28px rgba(79, 70, 229, 0.45); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; text-decoration: none; cursor: pointer; border: none; outline: none; position: relative; } .prd-fab-btn:hover { transform: scale(1.10); box-shadow: 0 12px 40px rgba(79, 70, 229, 0.60); } .prd-fab-btn:active { transform: scale(0.92); } .prd-fab-btn svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08)); } .prd-fab-tooltip { position: absolute; right: 50px; background: #1e293b; color: #f1f5f9; padding: 6px 16px; border-radius: 8px; font-family: -apple-system, 'Inter', 'Microsoft YaHei', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.3px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateX(4px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); } .prd-fab-tooltip::after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); border-left: 6px solid #1e293b; border-top: 6px solid transparent; border-bottom: 6px solid transparent; } .prd-fab-btn:hover .prd-fab-tooltip { opacity: 1; transform: translateX(0); }  @media (max-width: 640px) { .prd-fab-wrapper { bottom: 20px; right: 20px; } .prd-fab-btn { width: 48px; height: 48px; } .prd-fab-btn svg { width: 22px; height: 22px; } .prd-fab-tooltip { right: 60px; font-size: 12px; padding: 4px 12px; } .prd-fab-tooltip::after { right: -5px; border-width: 5px; } }  @media (prefers-color-scheme: dark) { .prd-fab-tooltip { background: #0f172a; color: #e2e8f0; } .prd-fab-tooltip::after { border-left-color: #0f172a; } }</style>
+  <div class="prd-fab-wrapper"> <a class="prd-fab-btn" href="./client_index_prd.html" target="_blank" rel="noopener noreferrer" aria-label="查看 PRD 文档">  <svg viewBox="0 0 24 24"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /> <polyline points="14 2 14 8 20 8" /> <line x1="8" y1="13" x2="16" y2="13" /> <line x1="8" y1="17" x2="16" y2="17" /> </svg> <span class="prd-fab-tooltip">PRD 文档</span></a></div>
+  
+</body>
+</html>
