@@ -255,6 +255,21 @@
     }
     .btn-try:hover { background: #fafafa; }
 
+    /* 无权限标记 */
+    .no-permission-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      background: #f4f4f5;
+      border: 1px solid #e4e4e7;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #a1a1aa;
+      white-space: nowrap;
+    }
+
     /* 默认隐藏操作按钮，hover 卡片时淡入显示（保留占位避免布局抖动） */
     .btn-install, .btn-try {
       opacity: 0;
@@ -467,6 +482,94 @@
       font-size: 12px; color: #92400e; line-height: 1.6;
     }
 
+    /* 归属部门选择器 */
+    .dept-section {
+      text-align: left;
+      margin-top: 16px;
+    }
+    .dept-label {
+      font-size: 14px; font-weight: 600; color: #18181b;
+      margin-bottom: 8px;
+    }
+    .dept-select-wrap {
+      position: relative;
+    }
+    .dept-select-input {
+      width: 100%;
+      padding: 10px 36px 10px 14px;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #a1a1aa;
+      background: #fff;
+      cursor: pointer;
+      outline: none;
+      transition: border-color .15s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .dept-select-input.filled {
+      color: #18181b;
+    }
+    .dept-select-input:focus {
+      border-color: #6366f1;
+    }
+    .dept-select-arrow {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a1a1aa;
+      pointer-events: none;
+      transition: transform .2s;
+    }
+    .dept-select-wrap.open .dept-select-arrow {
+      transform: translateY(-50%) rotate(180deg);
+    }
+    .dept-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: #fff;
+      border: 1px solid #e4e4e7;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.10);
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 20;
+      padding: 6px 0;
+    }
+    .dept-dropdown.hidden { display: none; }
+    .dept-tree-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      font-size: 14px;
+      color: #3f3f46;
+      cursor: pointer;
+      transition: background .12s;
+    }
+    .dept-tree-item:hover { background: #f4f4f5; }
+    .dept-tree-item.selected { background: #f5f3ff; color: #7c3aed; font-weight: 500; }
+    .dept-tree-item .dept-icon {
+      width: 18px; height: 18px; flex-shrink: 0;
+      color: #a1a1aa; display: flex; align-items: center; justify-content: center;
+    }
+    .dept-tree-item.selected .dept-icon { color: #7c3aed; }
+    .dept-tree-item .dept-name { flex: 1; }
+    .dept-tree-item .dept-sub {
+      padding-left: 26px;
+    }
+    .dept-tree-item .dept-sub .dept-icon { margin-left: 18px; }
+    .dept-hint {
+      font-size: 12px;
+      color: #a1a1aa;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
     /* 顶部成功提示 Toast */
     #toast {
       position: fixed;
@@ -536,31 +639,6 @@
       list-style: disc; padding-left: 18px;
       font-size: 13px; color: #71717a; line-height: 1.7;
     }
-    .auto-install-check {
-      display: flex; align-items: center; gap: 8px;
-      margin-top: 14px; cursor: pointer;
-      font-size: 13px; color: #3f3f46;
-      user-select: none;
-    }
-    .auto-install-check input { display: none; }
-    .auto-install-check .check-box {
-      width: 16px; height: 16px; border-radius: 4px;
-      border: 1.5px solid #d4d4d8; background: #fff;
-      display: flex; align-items: center; justify-content: center;
-      transition: background .15s, border-color .15s;
-      flex-shrink: 0;
-    }
-    .auto-install-check input:checked + .check-box {
-      background: #6366f1; border-color: #6366f1;
-    }
-    .auto-install-check input:checked + .check-box::after {
-      content: '';
-      width: 4px; height: 8px;
-      border: solid #fff; border-width: 0 2px 2px 0;
-      transform: rotate(45deg) translate(-1px, -1px);
-    }
-    .auto-install-check .check-label { line-height: 1.4; }
-
     /* ---------- URL Install Modal ---------- */
     .modal.wide { width: 520px; }
     .modal-subtitle {
@@ -778,11 +856,6 @@
         <p class="upload-text">拖拽文件 或 点击上传</p>
       </div>
       <div class="file-requirements">
-        <label class="auto-install-check">
-          <input type="checkbox" id="auto-install-check">
-          <span class="check-box"></span>
-          <span class="check-label">非高风险自动安装</span>
-        </label>
         <h3>文件要求</h3>
         <ul>
           <li>文件或者 .zip 需要包含 SKILL.md 文件</li>
@@ -857,7 +930,18 @@
         </div>
         <p class="cm-title">将此技能贡献为企业技能</p>
         <p class="cm-text">贡献后，该技能审核通过后会成为企业技能，您也会成为该企业技能的贡献者。</p>
-        <div class="cm-warn">
+        <div class="dept-section">
+          <p class="dept-label">归属部门</p>
+          <div class="dept-select-wrap" id="dept-select-wrap">
+            <div class="dept-select-input" id="dept-select-input" role="button" tabindex="0">请选择归属部门</div>
+            <span class="dept-select-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+            <div class="dept-dropdown hidden" id="dept-dropdown"></div>
+          </div>
+          <p class="dept-hint">若不选择，默认全公司可用</p>
+        </div>
+        <div class="cm-warn" style="margin-top:12px">
           <span class="cm-warn-icon">!</span>
           <span class="cm-warn-text">审核通过后会以提交版本作为企业技能覆盖个人自定义，请勿修改。</span>
         </div>
@@ -893,28 +977,28 @@
         stars: 140, downloads: "1,280万", featured: false },
       { id: 2, name: "ima-skills", icon: "ima", grad: "linear-gradient(135deg,#60a5fa,#2563eb)",
         desc: "ima skills，支持对笔记、知识库的读取、写入和检索等操作，可以帮你随时记录，收入ima智能管理，随时调用，龙虾输出精准懂你。",
-        stars: 140, downloads: "1,280万", featured: false },
+        stars: 140, downloads: "980万", featured: false },
       { id: 3, name: "产品经理综合技能（PM Master）", icon: "pm", grad: "linear-gradient(135deg,#8b5cf6,#7c3aed)",
         desc: "需求分析、PRD编写、产品需求文档、详细设计、BRD、MRD、PRD模板、用户故事、用户访谈、需求挖掘、痛点分析、功能设计。",
-        stars: 140, downloads: "1,280万", featured: false },
+        stars: 140, downloads: "880万", featured: false },
       { id: 4, name: "论文学术预审委员会", icon: "academic", grad: "linear-gradient(135deg,#818cf8,#4f46e5)",
         desc: "由五位资深审稿人组成的“学术预审委员会”，根据用户需求调度对应的审稿人角色进行论文审查。支持全面审稿（依次调度全部五个角色）和指定角色审稿。",
-        stars: 140, downloads: "280万", featured: false },
+        stars: 140, downloads: "780万", featured: false },
       { id: 5, name: "股票价值投资分析系统", icon: "stock", grad: "linear-gradient(135deg,#fbbf24,#f59e0b)",
         desc: "A股和港股价值投资分析系统。基于价值投资经典方法论，提供完整的投资分析框架：护城河分析、财务指标分析、估值模型、财报解读。",
-        stars: 140, downloads: "1,280万", featured: false },
+        stars: 140, downloads: "660万", featured: false },
       { id: 6, name: "视频生成", icon: "video", grad: "linear-gradient(135deg,#374151,#111827)",
         desc: "使用火山引擎 SD 1.5pro API 生成视频。支持文本到视频和图生视频，异步处理任务。",
-        stars: 140, downloads: "1,280万", featured: false },
+        stars: 140, downloads: "550万", featured: false },
       { id: 7, name: "Knowledge Explainer", icon: "knowledge", grad: "linear-gradient(135deg,#fb923c,#f87171)",
         desc: "知识点原子化拆解与专业讲解技能。",
-        stars: 140, downloads: "1,280万", featured: false },
+        stars: 140, downloads: "440万", featured: false },
       { id: 8, name: "塔勒布·反脆弱", icon: "antifragile", grad: "linear-gradient(135deg,#3b82f6,#4f46e5)",
         desc: "基于纳西姆·塔勒布的反脆弱理论，构建在不确定性中获益的能力。包含7个核心心智模型和10条决策启发式，帮助你在混乱中生存、在压力中成长。",
-        stars: 140, downloads: "1,280万", featured: false },
+        stars: 140, downloads: "330万", featured: false },
       { id: 9, name: "MBTI性格测评", icon: "mbti", grad: "linear-gradient(135deg,#4b5563,#1f2937)",
         desc: "基于 MBTI 93题完整版的专业人格测评 Skill，支持翻页式自助测验和对话式引导双模式，生成包含四维度分析、雷达图、认知功能栈和深度解读。",
-        stars: 140, downloads: "1,280万", featured: false },
+        stars: 140, downloads: "220万", featured: false },
       { id: 10, name: "架构图与流程图绘制专家", icon: "diagram", grad: "linear-gradient(135deg,#1f2937,#000000)",
         desc: "专业架构图与流程图绘制 skill。绘制系统架构图、微服务架构、网络拓扑图、业务流程图、数据流图、时序图、状态机、ER图等。支持 show_me 插件渲染。",
         stars: 140, downloads: "1,280万", featured: true },
@@ -938,7 +1022,19 @@
         stars: 120, downloads: "860万", featured: false, reviewStatus: "approved", contributor: "孙礼飞" },
       { id: 17, name: "数据库优化大师", icon: "knowledge", grad: "linear-gradient(135deg,#f87171,#dc2626)",
         desc: "SQL 语句分析与优化建议，索引优化方案生成，数据库性能瓶颈诊断与调优。",
-        stars: 65, downloads: "320万", featured: false, reviewStatus: "rejected", rejectReason: "技能描述信息不完整，请补充详细的功能说明" }
+        stars: 65, downloads: "320万", featured: false, reviewStatus: "rejected", rejectReason: "技能描述信息不完整，请补充详细的功能说明" },
+      { id: 18, name: "智能客服助手", icon: "wecom", grad: "linear-gradient(135deg,#06b6d4,#0891b2)",
+        desc: "基于大语言模型的智能客服系统，支持多轮对话、意图识别、知识库问答，可快速接入企业微信、钉钉等平台。",
+        stars: 95, downloads: "680万", featured: false, noPermission: true },
+      { id: 19, name: "财务数据分析", icon: "stock", grad: "linear-gradient(135deg,#10b981,#059669)",
+        desc: "企业财务数据智能分析工具，支持报表生成、趋势预测、异常检测，提供可视化数据看板。",
+        stars: 78, downloads: "420万", featured: false },
+      { id: 20, name: "HR招聘管理", icon: "pm", grad: "linear-gradient(135deg,#f59e0b,#d97706)",
+        desc: "一站式招聘管理解决方案，涵盖简历解析、候选人筛选、面试安排、Offer发放等全流程自动化。",
+        stars: 62, downloads: "310万", featured: false, noPermission: true },
+      { id: 21, name: "项目管理看板", icon: "diagram", grad: "linear-gradient(135deg,#8b5cf6,#7c3aed)",
+        desc: "敏捷项目管理工具，支持任务分配、进度跟踪、甘特图生成、团队协作，提升项目管理效率。",
+        stars: 110, downloads: "750万", featured: false }
     ];
 
     SKILLS.forEach((s, i) => {
@@ -964,7 +1060,7 @@
 
     const TAB_DATA = {
       market: byId([1, 2, 3, 4, 6, 7, 8]),
-      enterprise: byId([5, 11, 13, 10]),
+      enterprise: byId([5, 11, 13, 10, 18, 19, 20, 21]),
       builtin: byId([12, 14]),
       installed: byId([1, 9, 10, 15, 16, 17])
     };
@@ -981,7 +1077,11 @@
 
     // 预制空链接 + 参数：技能卡片点击后于当前窗口打开的详情页地址
     function buildSkillUrl(s) {
-      const params = new URLSearchParams({ id: s.id, name: s.name, source: s.source, from: currentTab });
+      const p = { id: s.id, name: s.name, source: s.source, from: currentTab };
+      if (s.reviewStatus) p.reviewStatus = s.reviewStatus;
+      if (s.contributor) p.contributor = s.contributor;
+      if (s.rejectReason) p.rejectReason = s.rejectReason;
+      const params = new URLSearchParams(p);
       return "detail.html?" + params.toString();
     }
 
@@ -1064,7 +1164,9 @@
           ? '<span class="src-badge" data-src="' + s.source + '"><span class="dot"></span>' + s.source + '</span>'
           : '';
         let actionHtml, menuHtml = '';
-        if (s.installed) {
+        if (s.noPermission) {
+          actionHtml = '<span class="no-permission-badge">无权限</span>';
+        } else if (s.installed) {
           actionHtml = '<button class="btn-installed" data-name="' + s.name + '">' +
             '<span class="bi-installed">' + TRY_SVG + '去试试</span>' +
             '<span class="bi-try">' + TRY_SVG + '去试试</span>' +
@@ -1104,7 +1206,7 @@
           footContent = sourcePart + '<div class="push-right">' + actionHtml + '</div>';
         }
 
-        const cardClass = 'card' + (s.installed && !s.enabled ? ' disabled' : '');
+        const cardClass = 'card' + ((s.installed && !s.enabled) || s.noPermission ? ' disabled' : '');
 
         if (currentView === "card") {
           return '<div class="' + cardClass + '" data-id="' + s.id + '" data-href="' + buildSkillUrl(s) + '">' + iconHtml + menuHtml +
@@ -1252,6 +1354,7 @@
       // 卡片点击（非操作按钮 / 非三点菜单）：当前窗口打开技能详情页
       const card = e.target.closest(".card");
       if (card && !e.target.closest(".card-menu")) {
+        if (card.classList.contains("disabled")) return;
         const href = card.getAttribute("data-href");
         if (href) window.location.href = href;
       }
@@ -1279,16 +1382,12 @@
 
     function openModal() {
       uploadZone.innerHTML = UPLOAD_ZONE_DEFAULT;
-      const chk = document.getElementById("auto-install-check");
-      if (chk) chk.checked = false;
       modal.classList.remove("hidden");
       dropdown.classList.add("hidden");
     }
     function closeModal() {
       modal.classList.add("hidden");
       uploadZone.innerHTML = UPLOAD_ZONE_DEFAULT;
-      const chk = document.getElementById("auto-install-check");
-      if (chk) chk.checked = false;
     }
     btnImport.addEventListener("click", openModal);
     modalClose.addEventListener("click", closeModal);
@@ -1337,25 +1436,20 @@
     function handleFile(file) {
       if (!file) return;
       const name = file.name.replace(/\.(zip|md)$/i, "");
-      const autoInstall = document.getElementById("auto-install-check").checked;
       uploadZone.innerHTML =
         '<svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 109 9"/></svg>' +
         '<p class="upload-text" style="margin-top:12px">正在校验 SKILL.md...</p>';
       setTimeout(() => {
         closeModal();
-        if (autoInstall) {
-          showToast("技能 " + name + " 安装成功");
-        } else {
-          previewSkillName.textContent = name;
-          previewName.textContent = name;
-          previewPath.textContent = "~/.skills/" + name;
-          previewFiles.innerHTML = MOCK_FILES.map(f =>
-            '<li class="file-item"><span>' + f.name + '</span><span style="color:#a1a1aa">' + f.size + '</span></li>'
-          ).join("");
-          previewInstall.disabled = false;
-          previewInstall.innerHTML = "确认安装";
-          urlPreviewModal.classList.remove("hidden");
-        }
+        previewSkillName.textContent = name;
+        previewName.textContent = name;
+        previewPath.textContent = "~/.skills/" + name;
+        previewFiles.innerHTML = MOCK_FILES.map(f =>
+          '<li class="file-item"><span>' + f.name + '</span><span style="color:#a1a1aa">' + f.size + '</span></li>'
+        ).join("");
+        previewInstall.disabled = false;
+        previewInstall.innerHTML = "确认安装";
+        urlPreviewModal.classList.remove("hidden");
       }, 1500);
     }
 
@@ -1466,6 +1560,61 @@ function parentClick(url='') {
 
     // ---- Contribute modal ----
     let contributeTargetId = null;
+    let selectedDept = null;
+
+    const DEPT_TREE = [
+      { name: "思维特", children: [
+        { name: "营销中心" },
+        { name: "研发中心" },
+        { name: "交付中心" }
+      ]}
+    ];
+
+    function renderDeptTree() {
+      const dd = document.getElementById("dept-dropdown");
+      let html = '';
+      DEPT_TREE.forEach(parent => {
+        html += '<div class="dept-tree-item" data-dept="' + parent.name + '">' +
+          '<span class="dept-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg></span>' +
+          '<span class="dept-name">' + parent.name + '</span></div>';
+        if (parent.children) {
+          parent.children.forEach(child => {
+            html += '<div class="dept-tree-item dept-sub" data-dept="' + child.name + '">' +
+              '<span class="dept-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg></span>' +
+              '<span class="dept-name">' + child.name + '</span></div>';
+          });
+        }
+      });
+      dd.innerHTML = html;
+    }
+
+    function toggleDeptDropdown() {
+      const wrap = document.getElementById("dept-select-wrap");
+      const dd = document.getElementById("dept-dropdown");
+      const isOpen = !dd.classList.contains("hidden");
+      if (isOpen) {
+        dd.classList.add("hidden");
+        wrap.classList.remove("open");
+      } else {
+        renderDeptTree();
+        dd.classList.remove("hidden");
+        wrap.classList.add("open");
+        // highlight selected
+        dd.querySelectorAll(".dept-tree-item").forEach(item => {
+          if (item.dataset.dept === selectedDept) item.classList.add("selected");
+        });
+      }
+    }
+
+    function selectDept(name) {
+      selectedDept = name;
+      const input = document.getElementById("dept-select-input");
+      input.textContent = name;
+      input.classList.add("filled");
+      document.getElementById("dept-dropdown").classList.add("hidden");
+      document.getElementById("dept-select-wrap").classList.remove("open");
+    }
+
     const contributeModal = document.getElementById("contribute-modal");
     const contributeCloseBtn = document.getElementById("contribute-close");
     const contributeCancelBtn = document.getElementById("contribute-cancel");
@@ -1474,15 +1623,46 @@ function parentClick(url='') {
     function closeContributeModal() {
       contributeModal.classList.add("hidden");
       contributeTargetId = null;
+      selectedDept = null;
+      const input = document.getElementById("dept-select-input");
+      input.textContent = "请选择归属部门";
+      input.classList.remove("filled");
+      document.getElementById("dept-dropdown").classList.add("hidden");
+      document.getElementById("dept-select-wrap").classList.remove("open");
     }
     contributeCloseBtn.addEventListener("click", closeContributeModal);
     contributeCancelBtn.addEventListener("click", closeContributeModal);
     contributeModal.addEventListener("click", e => { if (e.target === contributeModal) closeContributeModal(); });
 
+    document.getElementById("dept-select-input").addEventListener("click", e => {
+      e.stopPropagation();
+      toggleDeptDropdown();
+    });
+    document.getElementById("dept-select-input").addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDeptDropdown(); }
+    });
+    document.getElementById("dept-dropdown").addEventListener("click", e => {
+      const item = e.target.closest(".dept-tree-item");
+      if (item) {
+        e.stopPropagation();
+        selectDept(item.dataset.dept);
+      }
+    });
+    document.addEventListener("click", e => {
+      if (!document.getElementById("dept-select-wrap").contains(e.target)) {
+        document.getElementById("dept-dropdown").classList.add("hidden");
+        document.getElementById("dept-select-wrap").classList.remove("open");
+      }
+    });
+
     contributeConfirmBtn.addEventListener("click", () => {
       if (contributeTargetId == null) return;
       const skill = (TAB_DATA[currentTab] || []).find(x => x.id === contributeTargetId);
-      if (skill) { skill.reviewStatus = 'reviewing'; skill.rejectReason = ''; }
+      if (skill) {
+        skill.reviewStatus = 'reviewing';
+        skill.rejectReason = '';
+        if (selectedDept) skill.dept = selectedDept;
+      }
       closeContributeModal();
       render();
       showToast("已提交贡献申请，等待审核");
