@@ -1,0 +1,2315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>技能管理</title>
+    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js">
+    </script>
+    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js">
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+        .page-wrap {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #d1d5db;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-draft {
+            background: #F3F4F6;
+            color: #6B7280;
+        }
+        .tag-published {
+            background: #D1FAE5;
+            color: #059669;
+        }
+        .tag-disabled {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        .tag-category {
+            background: #EEF2FF;
+            color: #4F46E5;
+        }
+
+        /* ── 三栏布局专用 ── */
+        .panel-container {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            background: #fff;
+            position: relative;
+            min-width: 20%;
+        }
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+            min-height: 44px;
+            background: #fafbfc;
+        }
+        .panel-header .panel-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .panel-body {
+            flex: 1;
+            min-height: 0;
+            background: #f9fafb;
+            position: relative;
+        }
+        .panel-body iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+        /* 分割线 */
+        .divider {
+            flex-shrink: 0;
+            width: 4px;
+            background: transparent;
+            cursor: col-resize;
+            position: relative;
+            transition: background 0.15s;
+            z-index: 10;
+            user-select: none;
+        }
+        .divider:hover,
+        .divider.active {
+            background: #4F46E5;
+        }
+        .divider::after {
+            content: '';
+            position: absolute;
+            inset: 0 -4px;
+        }
+
+        /* 右侧面板关闭状态 */
+        .panel-right-closed .panel-right {
+            display: none !important;
+        }
+        .panel-right-closed .divider-right {
+            display: none !important;
+        }
+
+        /* 右侧全屏 */
+        .panel-right-fullscreen .panel-left {
+            display: none !important;
+        }
+        .panel-right-fullscreen .panel-center {
+            display: none !important;
+        }
+        .panel-right-fullscreen .divider-left {
+            display: none !important;
+        }
+        .panel-right-fullscreen .divider-right {
+            display: none !important;
+        }
+        .panel-right-fullscreen .panel-right {
+            flex: 1 !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+        }
+
+        /* 中间区域按钮组 */
+        .center-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .center-actions .btn-sm {
+            padding: 3px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+        .center-actions .btn-sm:hover {
+            background: #f3f4f6;
+        }
+        .center-actions .btn-sm.primary {
+            border-color: #4F46E5;
+            color: #4F46E5;
+            background: #EEF2FF;
+        }
+        .center-actions .btn-sm.primary:hover {
+            background: #4F46E5;
+            color: #fff;
+        }
+        .center-actions .btn-sm.active {
+            border-color: #4F46E5;
+            background: #4F46E5;
+            color: #fff;
+        }
+
+        /* 右侧按钮 */
+        .right-actions {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .right-actions .btn-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            color: #9CA3AF;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: none;
+            background: transparent;
+        }
+        .right-actions .btn-icon:hover {
+            background: #f3f4f6;
+            color: #4F46E5;
+        }
+        .right-actions .btn-icon.danger:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* Toast 等原有样式保留 */
+        .toast {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            z-index: 100;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideIn 0.3s ease;
+        }
+        .toast.hidden {
+            display: none;
+        }
+        .toast-success {
+            background: #D1FAE5;
+            color: #059669;
+            border: 1px solid #A7F3D0;
+        }
+        .toast-error {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.hidden {
+            display: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 22px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: #D1D5DB;
+            border-radius: 9999px;
+            transition: all 0.25s;
+        }
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            left: 3px;
+            top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.25s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+        .toggle-switch input:checked+.toggle-slider {
+            background: #059669;
+        }
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(18px);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .status-dot.published {
+            background: #059669;
+        }
+        .status-dot.draft {
+            background: #9CA3AF;
+        }
+        .status-dot.disabled {
+            background: #DC2626;
+        }
+
+        .skill-card {
+            transition: all 0.2s;
+        }
+        .skill-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        .card-actions {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .skill-card:hover .card-actions {
+            opacity: 1;
+        }
+        .card-action-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            color: #9CA3AF;
+            transition: all 0.15s;
+            cursor: pointer;
+        }
+        .card-action-btn:hover {
+            background: #F3F4F6;
+            color: #4F46E5;
+        }
+        .card-action-btn.danger:hover {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .filter-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 140px;
+            z-index: 30;
+            padding: 4px;
+        }
+        .filter-dropdown.hidden {
+            display: none;
+        }
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #374151;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .filter-option:hover {
+            background: #F3F4F6;
+        }
+        .filter-option.active {
+            background: #EEF2FF;
+            color: #4F46E5;
+            font-weight: 500;
+        }
+        .filter-option .check-icon {
+            opacity: 0;
+            margin-left: auto;
+        }
+        .filter-option.active .check-icon {
+            opacity: 1;
+        }
+
+        .category-checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .category-checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.15s;
+        }
+        .category-checkbox-group label:hover {
+            background: #f3f4f6;
+        }
+        .category-checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4f46e5;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .category-checkbox-group input[type="checkbox"]:checked {
+            border-color: #4f46e5;
+        }
+
+        .icon-preview-wrap {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .icon-preview-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+        .icon-preview-box.has-icon {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+        .icon-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .icon-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .icon-actions .btn-icon-action {
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .icon-actions .btn-icon-action:hover {
+            background: #f3f4f6;
+        }
+        .icon-actions .btn-icon-action.primary {
+            border-color: #4f46e5;
+            color: #4f46e5;
+        }
+        .icon-actions .btn-icon-action.primary:hover {
+            background: #eef2ff;
+        }
+        .icon-actions .btn-icon-action.danger {
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+        .icon-actions .btn-icon-action.danger:hover {
+            background: #fee2e2;
+        }
+
+        .upload-progress {
+            display: none;
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .upload-progress .bar {
+            height: 100%;
+            width: 0%;
+            background: #4f46e5;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .upload-progress.active {
+            display: block;
+        }
+
+        .upload-area {
+            border: 2px dashed #D1D5DB;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: #4F46E5;
+            background: #EEF2FF;
+        }
+
+        .recycle-badge-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+        .recycle-badge {
+            position: absolute;
+            top: -16px;
+            right: -70px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            background: #EF4444;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 18px;
+            text-align: center;
+            border-radius: 9999px;
+            pointer-events: none;
+            box-shadow: 0 0 0 2px #fff;
+        }
+        .recycle-badge.hidden {
+            display: none;
+        }
+        .recycle-checkbox {
+            width: 17px;
+            height: 17px;
+            accent-color: #4f46e5;
+            border-radius: 4px;
+            border: 1.5px solid #d1d5db;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: all 0.15s;
+        }
+        .recycle-checkbox:hover {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+        .recycle-checkbox:checked {
+            border-color: #4f46e5;
+            background-color: #4f46e5;
+        }
+        .recycle-card {
+            transition: all 0.2s;
+        }
+        .recycle-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        .recycle-hover-actions {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            display: flex;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 2;
+        }
+        .recycle-card:hover .recycle-hover-actions {
+            opacity: 1;
+        }
+        .recycle-hover-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .recycle-hover-btn.restore {
+            background: #EEF2FF;
+            color: #4F46E5;
+            border-color: #C7D2FE;
+        }
+        .recycle-hover-btn.restore:hover {
+            background: #4F46E5;
+            color: #fff;
+            border-color: #4F46E5;
+        }
+        .recycle-hover-btn.delete {
+            background: #FEF2F2;
+            color: #DC2626;
+            border-color: #FECACA;
+        }
+        .recycle-hover-btn.delete:hover {
+            background: #DC2626;
+            color: #fff;
+            border-color: #DC2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+
+        <!-- ═════ 顶部栏 ═════ -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
+            <div class="flex items-center space-x-2 text-sm text-gray-500" id="breadcrumb-area">
+                <span>资源管理</span>
+                <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                <span class="text-gray-900 font-medium">技能管理</span>
+            </div>
+            <div class="flex items-center space-x-3" id="header-actions">
+                <div id="header-list-actions" class="flex items-center space-x-3">
+                    <button onclick="showView('recycle')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                        <span class="recycle-badge-wrap">
+                            <iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
+                            <span id="recycle-badge" class="recycle-badge hidden">0</span>
+                        </span>
+                        <span>回收站</span>
+                    </button>
+                    <button onclick="openModal('importModal')" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                        <iconify-icon icon="mdi:tray-arrow-up"></iconify-icon>
+                        <span>导入技能</span>
+                    </button>
+                    <button onclick="openModal('createModal')" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                        <iconify-icon icon="mdi:plus"></iconify-icon>
+                        <span>新建技能</span>
+                    </button>
+                </div>
+                <div id="header-detail-actions" class="hidden flex items-center space-x-3">
+                    <button onclick="showView('list')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                        <iconify-icon icon="mdi:arrow-left"></iconify-icon>
+                        <span>返回</span>
+                    </button>
+                    <button onclick="showToast('导出成功','success')" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                        <iconify-icon icon="mdi:download-outline"></iconify-icon>
+                        <span>导出技能</span>
+                    </button>
+                    <button id="btn-save-detail" onclick="showToast('保存成功','success')" class="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
+                        <iconify-icon icon="mdi:content-save"></iconify-icon>
+                        <span>保存</span>
+                    </button>
+                    <button id="btn-publish-detail" onclick="publishSkill()" class="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
+                        <iconify-icon icon="mdi:rocket-launch-outline"></iconify-icon>
+                        <span>保存并发布</span>
+                    </button>
+                </div>
+                <div id="header-recycle-actions" class="hidden flex items-center space-x-3">
+                    <button onclick="showView('list')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                        <iconify-icon icon="mdi:arrow-left"></iconify-icon>
+                        <span>返回列表</span>
+                    </button>
+                    <button onclick="batchRestore()" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                        <iconify-icon icon="mdi:restore"></iconify-icon>
+                        <span>恢复选中</span>
+                    </button>
+                    <button onclick="batchPermanentDelete()" class="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
+                        <iconify-icon icon="mdi:trash-can"></iconify-icon>
+                        <span>彻底删除</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ═════ 内容滚动区 ═════ -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+            <!-- ─── 列表视图 ─── -->
+            <div id="view-list">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="relative flex-1 max-w-md">
+                        <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                        <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm" placeholder="搜索技能名称..." type="text" id="search-input" oninput="filterSkills()" />
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="relative">
+                            <button class="flex items-center space-x-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50" onclick="toggleCategoryFilter(event)">
+                                <span id="category-filter-label">全部分类</span>
+                                <iconify-icon class="text-gray-400" icon="mdi:chevron-down"></iconify-icon>
+                            </button>
+                            <div id="category-filter-dropdown" class="filter-dropdown hidden">
+                                <div class="filter-option active" onclick="selectCategoryFilter('', this)"><span>全部分类</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectCategoryFilter('代码生成', this)"><span>代码生成</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectCategoryFilter('数据分析', this)"><span>数据分析</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectCategoryFilter('文档处理', this)"><span>文档处理</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectCategoryFilter('自动化流程', this)"><span>自动化流程</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectCategoryFilter('知识检索', this)"><span>知识检索</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectCategoryFilter('创意写作', this)"><span>创意写作</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="flex items-center space-x-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50" onclick="toggleStatusFilter(event)">
+                                <span id="status-filter-label">全部状态</span>
+                                <iconify-icon class="text-gray-400" icon="mdi:chevron-down"></iconify-icon>
+                            </button>
+                            <div id="status-filter-dropdown" class="filter-dropdown hidden">
+                                <div class="filter-option active" onclick="selectStatusFilter('', this)"><span>全部状态</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectStatusFilter('enabled', this)"><span class="status-dot published"></span><span>发布</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option" onclick="selectStatusFilter('disabled', this)"><span class="status-dot disabled"></span><span>下架</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                            </div>
+                        </div>
+                        <button onclick="openModal('categoryModal')" class="flex items-center justify-center w-9 h-9 bg-white border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50" title="类别管理">
+                            <iconify-icon icon="mdi:cog-outline"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="skill-grid"></div>
+                <div id="empty-state" class="hidden flex-col items-center justify-center py-20 text-center">
+                    <iconify-icon icon="mdi:package-variant" class="text-6xl text-gray-300 mb-4"></iconify-icon>
+                    <p class="text-gray-500 text-lg mb-2">暂无技能</p>
+                    <p class="text-gray-400 text-sm mb-6">点击「新建技能」或「导入技能」开始创建</p>
+                    <button onclick="openModal('createModal')" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">新建技能</button>
+                </div>
+            </div>
+
+            <!-- ─── 详情视图（三栏布局） ─── -->
+            <div id="view-detail" class="hidden h-full flex flex-col">
+                <!-- 顶部技能信息卡片 -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6 mb-4 flex-shrink-0">
+                    <div class="flex items-start gap-4">
+                        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl flex-shrink-0" id="detail-icon"></div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-1">
+                                <h2 class="text-xl font-bold text-gray-900" id="detail-name">代码审查助手</h2>
+                                <button id="detail-edit-btn" onclick="openEditModal()" class="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-blue-600 transition-colors" title="编辑技能">
+                                    <iconify-icon icon="mdi:pencil-outline" class="text-lg"></iconify-icon>
+                                </button>
+                                <span class="tag tag-published" id="detail-status-tag"><span class="status-dot published"></span>已发布</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-3" id="detail-desc">自动审查代码质量，提供改进建议，支持多种编程语言。</p>
+                            <div class="flex items-center gap-4 text-xs text-gray-400">
+                                <span class="flex items-center gap-1"><iconify-icon icon="mdi:tag-outline"></iconify-icon> <span id="detail-category">代码生成</span></span>
+                                <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon> 更新于 2026-07-05 14:30</span>
+                                <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline"></iconify-icon> 孙礼飞</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── 三栏内容区域 ─── -->
+                <div class="panel-container" id="panel-container">
+                    <!-- 左面板：专家配置 -->
+                    <div class="panel panel-left" id="panel-left" style="flex:0 0 25%;min-width:20%;">
+                        <div class="panel-header">
+                            <span class="panel-title"><iconify-icon icon="mdi:account-tie" class="text-blue-500"></iconify-icon>专家配置</span>
+                        </div>
+                        <div class="panel-body">
+                            <iframe id="left-iframe" src="about:blank" title="专家配置"></iframe>
+                        </div>
+                    </div>
+
+                    <!-- 分割线 左-中 -->
+                    <div class="divider divider-left" id="divider-left" data-target="left"></div>
+
+                    <!-- 中面板：会话 -->
+                    <div class="panel panel-center" id="panel-center" style="flex:1;min-width:20%;">
+                        <div class="panel-header">
+                            <span class="panel-title"><iconify-icon icon="mdi:chat" class="text-indigo-500"></iconify-icon>会话</span>
+                            <div class="center-actions">
+                                <button class="btn-sm primary" onclick="showToast('新建会话','success')">
+                                    <iconify-icon icon="mdi:plus" style="font-size:14px"></iconify-icon> 新会话
+                                </button>
+                                <button class="btn-sm" onclick="showToast('查看历史','success')">历史</button>
+                                <button class="btn-sm" id="btn-products" onclick="switchRightIframe('products')">产物</button>
+                                <button class="btn-sm" id="btn-ai" onclick="switchRightIframe('ai')">AI 智能调优</button>
+                                <button class="btn-sm" id="btn-logs" onclick="switchRightIframe('logs')">运行日志</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <iframe id="center-iframe" src="about:blank" title="会话区域"></iframe>
+                        </div>
+                    </div>
+
+                    <!-- 分割线 中-右 -->
+                    <div class="divider divider-right" id="divider-right" data-target="right"></div>
+
+                    <!-- 右面板：详情 -->
+                    <div class="panel panel-right" id="panel-right" style="flex:0 0 30%;min-width:20%;">
+                        <div class="panel-header">
+                            <span class="panel-title"><iconify-icon icon="mdi:information-outline" class="text-gray-500"></iconify-icon>详情</span>
+                            <div class="right-actions">
+                                <button class="btn-icon" id="btn-fullscreen" onclick="toggleRightFullscreen()" title="全屏">
+                                    <iconify-icon icon="mdi:fullscreen" style="font-size:18px"></iconify-icon>
+                                </button>
+                                <button class="btn-icon danger" id="btn-close-panel" onclick="toggleRightPanel()" title="关闭">
+                                    <iconify-icon icon="mdi:close" style="font-size:18px"></iconify-icon>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="panel-body" id="right-panel-body">
+                            <iframe id="right-iframe" src="about:blank" title="详情面板"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── 回收站视图 ─── -->
+            <div id="view-recycle" class="hidden">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="relative flex-1 max-w-md">
+                        <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                        <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm" placeholder="搜索已删除技能..." type="text" id="recycle-search-input" oninput="filterRecycleSkills()" />
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex items-center justify-between flex-wrap gap-3">
+                    <div class="flex items-center gap-4 text-sm text-gray-600 flex-wrap">
+                        <iconify-icon icon="mdi:trash-can-outline" class="text-red-500"></iconify-icon>
+                        <span>共 <strong id="recycle-count" class="text-gray-900">0</strong> 个已删除技能</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400">
+                        <label class="recycle-header-label" title="全选/取消全选">
+                            <input type="checkbox" id="recycle-select-all" onchange="toggleAllRecycle()" />
+                            <span>全选</span>
+                            <span>已选 <strong id="recycle-selected-count" class="recycle-selected-count">0</strong> 项</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="recycle-grid"></div>
+                <div id="recycle-empty" class="hidden flex-col items-center justify-center py-20 text-center">
+                    <iconify-icon icon="mdi:trash-can-outline" class="text-6xl text-gray-300 mb-4"></iconify-icon>
+                    <p class="text-gray-500 text-lg">回收站为空</p>
+                    <p class="text-gray-400 text-sm">没有已删除的技能</p>
+                </div>
+            </div>
+
+        </div><!-- end 内容滚动区 -->
+    </div><!-- end page-wrap -->
+
+    <!-- ═════ 弹窗（保持原样） ═════ -->
+    <div id="createModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('createModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">新建技能</h3>
+                <button onclick="closeModal('createModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="create-name" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入术语名称" maxlength="50" />
+                    <p class="text-xs text-gray-400 mt-1">同一类别下不可重名，最大 50 字符</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别 </label>
+                    <div class="category-checkbox-group" id="create-category-group">
+                        <label><input type="checkbox" value="代码生成" checked class="create-category-cb" /> 代码生成</label>
+                        <label><input type="checkbox" value="数据分析" class="create-category-cb" /> 数据分析</label>
+                        <label><input type="checkbox" value="文档处理" class="create-category-cb" /> 文档处理</label>
+                        <label><input type="checkbox" value="自动化流程" class="create-category-cb" /> 自动化流程</label>
+                        <label><input type="checkbox" value="知识检索" class="create-category-cb" /> 知识检索</label>
+                        <label><input type="checkbox" value="创意写作" class="create-category-cb" /> 创意写作</label>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">图标 <span class="text-gray-400 font-normal">(可选)</span></label>
+                    <div class="icon-preview-wrap">
+                        <div class="icon-preview-box" id="create-icon-preview">
+                            <span id="create-icon-preview-text">🤖</span>
+                        </div>
+                        <div class="icon-actions">
+                            <button class="btn-icon-action primary" onclick="openCustomIconPicker('create')">
+                                <iconify-icon icon="mdi:emoticon-outline" class="text-base"></iconify-icon> 选择图标
+                            </button>
+                            <button class="btn-icon-action" onclick="document.getElementById('create-icon-upload').click()">
+                                <iconify-icon icon="mdi:upload-outline" class="text-base"></iconify-icon> 上传图标
+                            </button>
+                            <button class="btn-icon-action danger" onclick="clearCreateIcon()">
+                                <iconify-icon icon="mdi:close-circle-outline" class="text-base"></iconify-icon> 清除
+                            </button>
+                        </div>
+                        <input type="file" id="create-icon-upload" accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp" class="hidden" onchange="handleCreateIconUpload(event)" />
+                        <div class="upload-progress" id="create-icon-progress">
+                            <div class="bar" id="create-icon-progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">描述 <span class="text-red-500">*</span></label>
+                    <textarea id="create-desc" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm resize-none" rows="3" placeholder="请描述技能的功能和用途..." maxlength="200" oninput="updateCreateCharCount(this, 200)"></textarea>
+                    <p class="text-xs text-gray-400 mt-1"><span id="create-char-count">0</span>/200</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('createModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="createSkill()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('editModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">编辑技能</h3>
+                <button onclick="closeModal('editModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="edit-name" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入术语名称" maxlength="50" />
+                    <p class="text-xs text-gray-400 mt-1">同一类别下不可重名，最大 50 字符</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别 </label>
+                    <div class="category-checkbox-group" id="edit-category-group">
+                        <label><input type="checkbox" value="代码生成" class="edit-category-cb" /> 代码生成</label>
+                        <label><input type="checkbox" value="数据分析" class="edit-category-cb" /> 数据分析</label>
+                        <label><input type="checkbox" value="文档处理" class="edit-category-cb" /> 文档处理</label>
+                        <label><input type="checkbox" value="自动化流程" class="edit-category-cb" /> 自动化流程</label>
+                        <label><input type="checkbox" value="知识检索" class="edit-category-cb" /> 知识检索</label>
+                        <label><input type="checkbox" value="创意写作" class="edit-category-cb" /> 创意写作</label>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">图标 <span class="text-gray-400 font-normal">(可选)</span></label>
+                    <div class="icon-preview-wrap">
+                        <div class="icon-preview-box" id="edit-icon-preview">
+                            <span id="edit-icon-preview-text">🤖</span>
+                        </div>
+                        <div class="icon-actions">
+                            <button class="btn-icon-action primary" onclick="openCustomIconPicker('edit')">
+                                <iconify-icon icon="mdi:emoticon-outline" class="text-base"></iconify-icon> 选择图标
+                            </button>
+                            <button class="btn-icon-action" onclick="document.getElementById('edit-icon-upload').click()">
+                                <iconify-icon icon="mdi:upload-outline" class="text-base"></iconify-icon> 上传图标
+                            </button>
+                            <button class="btn-icon-action danger" onclick="clearEditIcon()">
+                                <iconify-icon icon="mdi:close-circle-outline" class="text-base"></iconify-icon> 清除
+                            </button>
+                        </div>
+                        <input type="file" id="edit-icon-upload" accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp" class="hidden" onchange="handleEditIconUpload(event)" />
+                        <div class="upload-progress" id="edit-icon-progress">
+                            <div class="bar" id="edit-icon-progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">描述 <span class="text-red-500">*</span></label>
+                    <textarea id="edit-desc" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm resize-none" rows="3" placeholder="请描述技能的功能和用途..." maxlength="200" oninput="updateEditCharCount(this, 200)"></textarea>
+                    <p class="text-xs text-gray-400 mt-1"><span id="edit-char-count">0</span>/200</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('editModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="saveEdit()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="importModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('importModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">导入技能</h3>
+                <button onclick="closeModal('importModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别 <span class="text-red-500">*</span></label>
+                    <div class="category-checkbox-group" id="import-category-group">
+                        <label><input type="checkbox" value="代码生成" checked class="import-category-cb" /> 代码生成</label>
+                        <label><input type="checkbox" value="数据分析" class="import-category-cb" /> 数据分析</label>
+                        <label><input type="checkbox" value="文档处理" class="import-category-cb" /> 文档处理</label>
+                        <label><input type="checkbox" value="自动化流程" class="import-category-cb" /> 自动化流程</label>
+                        <label><input type="checkbox" value="知识检索" class="import-category-cb" /> 知识检索</label>
+                        <label><input type="checkbox" value="创意写作" class="import-category-cb" /> 创意写作</label>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">上传 ZIP 文件 <span class="text-red-500">*</span></label>
+                    <div class="upload-area" id="import-upload-area" onclick="document.getElementById('import-file-input').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="event.preventDefault();this.classList.remove('dragover');handleImportDrop(event)">
+                        <iconify-icon icon="mdi:cloud-upload-outline" class="text-4xl text-gray-400 mb-3"></iconify-icon>
+                        <p class="text-sm text-gray-600 font-medium mb-1">拖拽文件到此处，或点击选择文件</p>
+                        <p class="text-xs text-gray-400">仅支持 .zip 格式，文件大小不超过 20MB;</p>
+                    </div>
+                    <div class="mt-6 flex items-start space-x-3 text-sm text-gray-500 bg-gray-50 p-4 rounded-lg">
+                        <iconify-icon class="text-lg text-blue-500 flex-shrink-0" icon="mdi:information-outline"></iconify-icon>
+                        <p>
+                            1、技能可在<a href="https://modelscope.cn/skills" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">魔塔</a>、 <a href="https://skill.xfyun.cn/" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">SkillHub</a>、  <a href="https://skills.aliyun.com/" target="_blank" class="text-blue-600 hover:text-blue-700 hover:underline">阿里云</a>等市场获取。<br/>
+                            2、.zip需要包含skill.md文件。<br/>
+                            3、skill.md 文件需要包含YAML格式的技能名称和描述。<br/>
+                            4、系统将自动进行安全性扫描。
+                        </p>
+                    </div>
+                    <input type="file" id="import-file-input" accept=".zip" class="hidden" onchange="handleImportFileSelect(this)" />
+                    <div id="import-file-info" class="hidden mt-3 flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-3 py-2">
+                        <iconify-icon icon="mdi:file-zip-outline" class="text-blue-500"></iconify-icon>
+                        <span id="import-file-name" class="flex-1 truncate"></span>
+                        <button onclick="clearImportFile()" class="text-gray-400 hover:text-gray-600"><iconify-icon icon="mdi:close"></iconify-icon></button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('importModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="importSkill()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">导入</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="categoryModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('categoryModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[80vh] overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">类别管理</h3>
+                <button onclick="closeModal('categoryModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                            <th class="px-6 py-3 text-left font-semibold">类别名称</th>
+                            <th class="px-6 py-3 text-left font-semibold">排序号</th>
+                            <th class="px-6 py-3 text-left font-semibold">状态</th>
+                            <th class="px-6 py-3 text-left font-semibold">关联技能数</th>
+                            <th class="px-6 py-3 text-right font-semibold">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="category-table-body"></tbody>
+                </table>
+            </div>
+            <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100">
+                <button onclick="addCategory()" class="flex items-center gap-2 px-4 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100">
+                    <iconify-icon icon="mdi:plus"></iconify-icon>
+                    <span>新增类别</span>
+                </button>
+                <button onclick="closeModal('categoryModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="categoryFormModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('categoryFormModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900" id="category-form-title">新增类别</h3>
+                <button onclick="closeModal('categoryFormModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                <input type="hidden" id="category-edit-id" value="">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">类别名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="category-name-input" placeholder="请输入类别名称" maxlength="20" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">排序号</label>
+                    <input type="number" id="category-sort-input" placeholder="数字越小越靠前" min="1" max="999" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="category-status" value="published" checked class="accent-indigo-600">
+                            <span class="text-sm text-gray-700">启用</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="category-status" value="disabled" class="accent-indigo-600">
+                            <span class="text-sm text-gray-700">禁用</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('categoryFormModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="saveCategory()" class="px-5 py-2 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteConfirmModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('deleteConfirmModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+            <div class="px-6 py-8 text-center">
+                <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                    <iconify-icon icon="mdi:alert-circle-outline" class="text-3xl text-red-500"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2" id="delete-confirm-title">确认删除</h3>
+                <p class="text-sm text-gray-500" id="delete-confirm-msg">确认删除技能「代码审查助手」？删除后可在回收站恢复。</p>
+            </div>
+            <div class="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('deleteConfirmModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="confirmDelete()" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="permanentDeleteModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('permanentDeleteModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+            <div class="px-6 py-8 text-center">
+                <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                    <iconify-icon icon="mdi:alert-outline" class="text-3xl text-red-600"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">⚠️ 彻底删除</h3>
+                <p class="text-sm text-gray-500" id="permanent-delete-msg">此操作不可恢复，技能及其所有文件将被永久删除。</p>
+            </div>
+            <div class="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('permanentDeleteModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="confirmPermanentDelete()" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700">确认彻底删除</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script>
+        // ═══════════════════════════════════════════════
+        // 数据模型（保持原样）
+        // ═══════════════════════════════════════════════
+        let skills = [
+            { id: 1, name: '代码审查助手', icon: '🐳', category: '代码生成', desc: '自动审查代码质量，提供改进建议，支持多种编程语言。', status: 'published',
+                enabled: true, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-07-05 14:30', files: [] },
+            { id: 2, name: '数据分析看板', icon: '📊', category: '数据分析', desc: '自动连接数据源，生成可视化分析看板，支持自定义指标和维度。', status: 'published',
+                enabled: true, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-07-04 09:15', files: [] },
+            { id: 3, name: '文档翻译助手', icon: '📝', category: '文档处理', desc: '支持多语言文档翻译，保持原文格式，可处理 PDF、Word 等格式。', status: 'disabled',
+                enabled: false, createdBy: '王博士', updatedBy: '王博士', updatedAt: '2026-07-03 16:45', files: [] },
+            { id: 4, name: '会议纪要生成器', icon: '⚙️', category: '文档处理', desc: '从会议录音转写文字中自动生成结构化会议纪要，提取行动项并分配负责人。',
+                status: 'published', enabled: true, createdBy: '李工', updatedBy: '李工', updatedAt: '2026-07-02 11:20', files: [] },
+            { id: 5, name: '智能客服机器人', icon: '🔍', category: '知识检索', desc: '基于企业知识库的智能问答系统，支持多轮对话和知识图谱检索。', status: 'disabled',
+                enabled: false, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-06-28 08:00', files: [] },
+            { id: 6, name: '自动化部署工具', icon: '🔧', category: '自动化流程', desc: '一键式应用部署与回滚，支持多环境管理和灰度发布策略。', status: 'disabled',
+                enabled: false, createdBy: '王博士', updatedBy: '王博士', updatedAt: '2026-07-01 13:10', files: [] }
+        ];
+
+        let deletedSkills = [
+            { id: 101, name: 'Webhook服务', icon: '🔧', category: '知识检索', desc: 'Webhook事件的接收、处理和转发服务', status: 'published',
+                deletedBy: '孙礼飞', deletedAt: '2026-01-22' },
+            { id: 102, name: '文件转换工具', icon: '📝', category: '文档处理', desc: '多格式文件互转与批量处理工具，支持DOC/PDF/TXT/JPG/PNG/MP4等千种格式',
+                status: 'published', deletedBy: '孙礼飞', deletedAt: '2026-01-22' },
+            { id: 103, name: '定时任务调度', icon: '⚙', category: '数据分析', desc: '灵活的定时任务编排与调度引擎，支持秒级/周期/日历等多种触发规则',
+                status: 'published', deletedBy: '孙礼飞', deletedAt: '2026-01-22' }
+        ];
+
+        let currentView = 'list';
+        let currentSkill = null;
+        let deleteTargetId = null;
+        let selectedCategoryFilter = '';
+        let selectedStatusFilter = '';
+        let selectedRecycleIds = new Set();
+        let detailMode = 'view';
+
+        // 图标状态
+        let createIconData = '🤖';
+        let createIconType = 'emoji';
+        let editIconData = '🤖';
+        let editIconType = 'emoji';
+
+        // ─── 三栏布局状态 ───
+        let rightPanelVisible = true;
+        let rightPanelFullscreen = false;
+        let currentRightIframe = 'about:blank';
+
+        // ─── 分割线拖动状态 ───
+        let isDragging = false;
+        let dragTarget = null;
+        let startX = 0;
+        let startLeftPct = 25;
+        let startRightPct = 30;
+        const MIN_PCT = 20;
+        const MAX_PCT = 60;
+
+        // ═══════════════════════════════════════════════
+        // 视图切换
+        // ═══════════════════════════════════════════════
+        function showView(view) {
+            currentView = view;
+            document.getElementById('view-list').classList.toggle('hidden', view !== 'list');
+            document.getElementById('view-detail').classList.toggle('hidden', view !== 'detail');
+            document.getElementById('view-recycle').classList.toggle('hidden', view !== 'recycle');
+
+            document.getElementById('header-list-actions').classList.toggle('hidden', view !== 'list');
+            document.getElementById('header-detail-actions').classList.toggle('hidden', view !== 'detail');
+            document.getElementById('header-recycle-actions').classList.toggle('hidden', view !== 'recycle');
+
+            const bc = document.getElementById('breadcrumb-area');
+            if (view === 'list') {
+                bc.innerHTML =
+                    '<span>资源管理</span><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">技能管理</span>';
+            } else if (view === 'detail') {
+                bc.innerHTML =
+                    '<a href="#" onclick="showView(\'list\')" class="hover:text-blue-600">技能管理</a><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium" id="bc-detail-name">' +
+                    (currentSkill ? currentSkill.name : '') + '</span>';
+            } else if (view === 'recycle') {
+                bc.innerHTML =
+                    '<a href="#" onclick="showView(\'list\')" class="hover:text-blue-600">技能管理</a><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">回收站</span>';
+                selectedRecycleIds.clear();
+            }
+
+            if (view === 'list') renderSkillGrid();
+            if (view === 'recycle') renderRecycleGrid();
+        }
+
+        // ═══════════════════════════════════════════════
+        // 渲染技能卡片（保持原样）
+        // ═══════════════════════════════════════════════
+        function renderSkillGrid() {
+            const grid = document.getElementById('skill-grid');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const filtered = skills.filter(s =>
+                s.name.toLowerCase().includes(search) &&
+                (!selectedCategoryFilter || s.category === selectedCategoryFilter) &&
+                (!selectedStatusFilter || (selectedStatusFilter === 'enabled' ? s.enabled !== false : s.enabled === false))
+            );
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('empty-state').classList.add('flex');
+                return;
+            }
+
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('empty-state').classList.remove('flex');
+
+            grid.innerHTML = filtered.map(s => {
+                const enabled = s.enabled !== false;
+                const iconHtml = (typeof s.icon === 'string' && s.icon.startsWith('data:image')) ?
+                    `<img src="${s.icon}" class="w-full h-full object-cover rounded-lg" alt="icon" />` :
+                    s.icon;
+                return `
+                <div class="skill-card bg-white rounded-xl border border-gray-200 p-5 cursor-pointer relative" onclick="openDetail(${s.id})">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${iconHtml}</div>
+                        <h3 class="font-semibold text-gray-900 truncate flex-1">${s.name}</h3>
+                        <div class="card-actions flex items-center gap-0.5 flex-shrink-0">
+                            <span onclick="event.stopPropagation();exportSkill(${s.id})" class="card-action-btn" title="导出">
+                                <iconify-icon icon="mdi:download-outline" class="text-base"></iconify-icon>
+                            </span>
+                            <span onclick="event.stopPropagation();openDetail(${s.id}, 'edit')" class="card-action-btn" title="编辑">
+                                <iconify-icon icon="mdi:pencil-outline" class="text-base"></iconify-icon>
+                            </span>
+                            <span onclick="event.stopPropagation();openDeleteConfirm(${s.id})" class="card-action-btn danger" title="删除">
+                                <iconify-icon icon="mdi:trash-can-outline" class="text-base"></iconify-icon>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mb-2.5 flex-wrap">
+                        <span class="tag tag-category">${s.category}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-3 leading-relaxed line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height: calc(14px * 1.5 * 2); ">${s.desc}</p>
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div class="flex items-center gap-3 text-xs text-gray-400 min-w-0">
+                            <span class="flex items-center gap-1 truncate"><iconify-icon icon="mdi:account-outline"></iconify-icon>${s.createdBy}</span>
+                            <span class="flex items-center gap-1 flex-shrink-0"><iconify-icon icon="mdi:clock-outline"></iconify-icon>更新: ${s.updatedAt.split(' ')[0]}</span>
+                        </div>
+                        <label class="toggle-switch" onclick="event.stopPropagation()" title="${enabled ? '点击下架' : '点击发布'}">
+                            <input type="checkbox" ${enabled ? 'checked' : ''} onchange="toggleSkill(${s.id}, this.checked)"/>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleSkill(id, enabled) {
+            const skill = skills.find(s => s.id === id);
+            if (!skill) return;
+            skill.enabled = enabled;
+            skill.status = enabled ? 'published' : 'disabled';
+            showToast(`「${skill.name}」${enabled ? '已发布' : '已下架'}`, 'success');
+            setTimeout(() => renderSkillGrid(), 600);
+        }
+
+        // ═══════════════════════════════════════════════
+        // 回收站渲染（保持原样）
+        // ═══════════════════════════════════════════════
+        function renderRecycleGrid() {
+            const grid = document.getElementById('recycle-grid');
+            const search = document.getElementById('recycle-search-input')?.value?.toLowerCase() || '';
+            const filtered = deletedSkills.filter(s => s.name.toLowerCase().includes(search));
+
+            document.getElementById('recycle-count').textContent = filtered.length;
+            updateRecycleBadge();
+
+            const validIds = new Set(filtered.map(s => s.id));
+            for (const id of selectedRecycleIds) {
+                if (!validIds.has(id)) selectedRecycleIds.delete(id);
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                document.getElementById('recycle-empty').classList.remove('hidden');
+                document.getElementById('recycle-empty').classList.add('flex');
+                const selectAll = document.getElementById('recycle-select-all');
+                if (selectAll) selectAll.checked = false;
+                updateRecycleSelectionUI();
+                return;
+            }
+
+            document.getElementById('recycle-empty').classList.add('hidden');
+            document.getElementById('recycle-empty').classList.remove('flex');
+
+            grid.innerHTML = filtered.map(s => {
+                const iconHtml = (typeof s.icon === 'string' && s.icon.startsWith('data:image')) ?
+                    `<img src="${s.icon}" class="w-full h-full object-cover rounded-lg" alt="icon" />` :
+                    s.icon;
+                const checked = selectedRecycleIds.has(s.id) ? 'checked' : '';
+                return `
+                <div class="recycle-card bg-white rounded-xl border border-gray-200 p-5 relative">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${iconHtml}</div>
+                        <h3 class="font-semibold text-gray-900 truncate flex-1">${s.name}</h3>
+                        <input type="checkbox" class="recycle-checkbox" data-id="${s.id}" ${checked} onchange="updateRecycleSelection()" />
+                    </div>
+                    <div class="flex items-center gap-2 mb-2.5 flex-wrap">
+                        <span class="tag tag-category">${s.category}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-3 leading-relaxed line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height: calc(14px * 1.5 * 2);">${s.desc}</p>
+                    <div class="flex items-center gap-3 pt-3 border-t border-gray-100 text-xs text-gray-400">
+                        <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline"></iconify-icon>${s.deletedBy}</span>
+                        <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon>删除: ${s.deletedAt.split(' ')[0]}</span>
+                    </div>
+                    <div class="recycle-hover-actions">
+                        <button class="recycle-hover-btn restore" onclick="event.stopPropagation();restoreSkill(${s.id})" title="恢复技能">
+                            <iconify-icon icon="mdi:restore" style="font-size:14px"></iconify-icon>恢复
+                        </button>
+                        <button class="recycle-hover-btn delete" onclick="event.stopPropagation();openPermanentDelete(${s.id})" title="彻底删除">
+                            <iconify-icon icon="mdi:trash-can-outline" style="font-size:14px"></iconify-icon>彻底删除
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+
+            updateRecycleSelectionUI();
+            updateSelectAllState();
+        }
+
+        function updateRecycleSelection() {
+            const checkboxes = document.querySelectorAll('.recycle-checkbox');
+            checkboxes.forEach(cb => {
+                const id = parseInt(cb.dataset.id);
+                if (cb.checked) selectedRecycleIds.add(id);
+                else selectedRecycleIds.delete(id);
+            });
+            updateRecycleSelectionUI();
+            updateSelectAllState();
+        }
+
+        function updateRecycleSelectionUI() {
+            document.getElementById('recycle-selected-count').textContent = selectedRecycleIds.size;
+        }
+
+        function updateSelectAllState() {
+            const checkboxes = document.querySelectorAll('.recycle-checkbox');
+            const selectAll = document.getElementById('recycle-select-all');
+            if (!selectAll) return;
+            if (checkboxes.length === 0) { selectAll.checked = false; return; }
+            selectAll.checked = Array.from(checkboxes).every(cb => cb.checked);
+        }
+
+        function toggleAllRecycle() {
+            const checked = document.getElementById('recycle-select-all').checked;
+            document.querySelectorAll('.recycle-checkbox').forEach(cb => {
+                cb.checked = checked;
+                const id = parseInt(cb.dataset.id);
+                if (checked) selectedRecycleIds.add(id);
+                else selectedRecycleIds.delete(id);
+            });
+            updateRecycleSelectionUI();
+        }
+
+        function filterRecycleSkills() { renderRecycleGrid(); }
+
+        function batchRestore() {
+            if (selectedRecycleIds.size === 0) { showToast('请先选择要恢复的技能', 'error'); return; }
+            const ids = Array.from(selectedRecycleIds);
+            let count = 0;
+            ids.forEach(id => {
+                const idx = deletedSkills.findIndex(s => s.id === id);
+                if (idx > -1) {
+                    const restored = deletedSkills.splice(idx, 1)[0];
+                    delete restored.deletedBy;
+                    delete restored.deletedAt;
+                    skills.push(restored);
+                    count++;
+                }
+            });
+            selectedRecycleIds.clear();
+            renderRecycleGrid();
+            showToast(`已恢复 ${count} 个技能`, 'success');
+        }
+
+        function batchPermanentDelete() {
+            if (selectedRecycleIds.size === 0) { showToast('请先选择要彻底删除的技能', 'error'); return; }
+            document.getElementById('permanent-delete-msg').textContent =
+                `此操作不可恢复，将彻底删除选中的 ${selectedRecycleIds.size} 个技能及其所有文件。`;
+            deleteTargetId = 'batch';
+            openModal('permanentDeleteModal');
+        }
+
+        function restoreSkill(id) {
+            const idx = deletedSkills.findIndex(s => s.id === id);
+            if (idx > -1) {
+                const restored = deletedSkills.splice(idx, 1)[0];
+                delete restored.deletedBy;
+                delete restored.deletedAt;
+                skills.push(restored);
+                selectedRecycleIds.delete(id);
+            }
+            renderRecycleGrid();
+            showToast('恢复成功', 'success');
+        }
+
+        function openPermanentDelete(id) {
+            deleteTargetId = id;
+            const skill = deletedSkills.find(s => s.id === id);
+            document.getElementById('permanent-delete-msg').textContent =
+                `此操作不可恢复，将永久删除技能「${skill ? skill.name : ''}」及其所有文件。`;
+            openModal('permanentDeleteModal');
+        }
+
+        function confirmPermanentDelete() {
+            if (deleteTargetId === 'batch') {
+                const ids = Array.from(selectedRecycleIds);
+                let count = 0;
+                ids.forEach(id => {
+                    const idx = deletedSkills.findIndex(s => s.id === id);
+                    if (idx > -1) { deletedSkills.splice(idx, 1);
+                        count++; }
+                });
+                selectedRecycleIds.clear();
+                deleteTargetId = null;
+                closeModal('permanentDeleteModal');
+                renderRecycleGrid();
+                if (count > 0) showToast(`已彻底删除 ${count} 个技能`, 'success');
+            } else if (deleteTargetId) {
+                const idx = deletedSkills.findIndex(s => s.id === deleteTargetId);
+                if (idx > -1) deletedSkills.splice(idx, 1);
+                selectedRecycleIds.delete(deleteTargetId);
+                deleteTargetId = null;
+                closeModal('permanentDeleteModal');
+                renderRecycleGrid();
+                showToast('已彻底删除', 'success');
+            } else {
+                closeModal('permanentDeleteModal');
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        // 详情操作（打开三栏布局）
+        // ═══════════════════════════════════════════════
+        function openDetail(id, mode) {
+            detailMode = mode || 'view';
+            currentSkill = skills.find(s => s.id === id);
+            if (!currentSkill) return;
+
+            // 更新顶部信息
+            const iconEl = document.getElementById('detail-icon');
+            if (typeof currentSkill.icon === 'string' && currentSkill.icon.startsWith('data:image')) {
+                iconEl.innerHTML = `<img src="${currentSkill.icon}" class="w-full h-full object-cover rounded-xl" alt="icon" />`;
+            } else {
+                iconEl.textContent = currentSkill.icon || '🤖';
+            }
+            document.getElementById('detail-name').textContent = currentSkill.name;
+            document.getElementById('detail-desc').textContent = currentSkill.desc;
+            document.getElementById('detail-category').textContent = currentSkill.category;
+
+            const statusMap = { published: { label: '已发布', cls: 'tag-published', dot: 'published' },
+                draft: { label: '草稿', cls: 'tag-draft', dot: 'draft' }, disabled: { label: '下架',
+                    cls: 'tag-disabled', dot: 'disabled' } };
+            const st = statusMap[currentSkill.status] || statusMap.draft;
+            const tagEl = document.getElementById('detail-status-tag');
+            tagEl.className = `tag ${st.cls}`;
+            tagEl.innerHTML = `<span class="status-dot ${st.dot}"></span>${st.label}`;
+
+            const btnPublish = document.getElementById('btn-publish-detail');
+            if (currentSkill.status === 'draft') {
+                btnPublish.innerHTML = '<iconify-icon icon="mdi:rocket-launch-outline"></iconify-icon><span>发布</span>';
+                btnPublish.className =
+                    'flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm';
+            } else if (currentSkill.status === 'published') {
+                btnPublish.innerHTML = '';
+                btnPublish.className = 'display:none';
+            } else {
+                btnPublish.innerHTML = '<iconify-icon icon="mdi:rocket-launch-outline"></iconify-icon><span>保存并发布</span>';
+                btnPublish.className =
+                    'flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm';
+            }
+
+            const editBtn = document.getElementById('detail-edit-btn');
+            const saveBtn = document.getElementById('btn-save-detail');
+            const publishBtn = document.getElementById('btn-publish-detail');
+            if (editBtn) editBtn.style.display = detailMode === 'edit' ? '' : 'none';
+            if (saveBtn) saveBtn.style.display = detailMode === 'edit' ? '' : 'none';
+            if (publishBtn) publishBtn.style.display = detailMode === 'edit' ? '' : 'none';
+
+            // 重置面板状态
+            rightPanelVisible = true;
+            rightPanelFullscreen = false;
+            document.getElementById('panel-container').classList.remove('panel-right-closed', 'panel-right-fullscreen');
+
+            // 重置右侧iframe
+            currentRightIframe = 'about:blank';
+            document.getElementById('right-iframe').src = 'about:blank';
+
+            // 恢复默认宽度
+            setPanelWidths(25, 30);
+
+            showView('detail');
+        }
+
+        function publishSkill() {
+            if (!currentSkill) return;
+            if (currentSkill.status === 'draft') {
+                currentSkill.status = 'published';
+                currentSkill.enabled = true;
+                showToast('发布成功', 'success');
+            } else if (currentSkill.status === 'published') {
+                currentSkill.status = 'disabled';
+                currentSkill.enabled = false;
+                showToast('已下架', 'success');
+            } else {
+                currentSkill.status = 'published';
+                currentSkill.enabled = true;
+                showToast('发布成功', 'success');
+            }
+            openDetail(currentSkill.id, 'edit');
+        }
+
+        // ═══════════════════════════════════════════════
+        // 三栏布局：面板宽度控制
+        // ═══════════════════════════════════════════════
+        function setPanelWidths(leftPct, rightPct) {
+            const container = document.getElementById('panel-container');
+            if (container.classList.contains('panel-right-closed') || container.classList.contains(
+                'panel-right-fullscreen')) return;
+
+            const left = document.getElementById('panel-left');
+            const right = document.getElementById('panel-right');
+            const center = document.getElementById('panel-center');
+
+            leftPct = Math.max(MIN_PCT, Math.min(MAX_PCT, leftPct));
+            rightPct = Math.max(MIN_PCT, Math.min(MAX_PCT, rightPct));
+
+            // 确保中间区域至少 MIN_PCT
+            if (leftPct + rightPct > 100 - MIN_PCT) {
+                const excess = (leftPct + rightPct) - (100 - MIN_PCT);
+                if (leftPct > rightPct) {
+                    leftPct = Math.max(MIN_PCT, leftPct - excess);
+                } else {
+                    rightPct = Math.max(MIN_PCT, rightPct - excess);
+                }
+            }
+
+            left.style.flex = `0 0 ${leftPct}%`;
+            right.style.flex = `0 0 ${rightPct}%`;
+            center.style.flex = `1 1 ${100 - leftPct - rightPct}%`;
+
+            startLeftPct = leftPct;
+            startRightPct = rightPct;
+        }
+
+        function getPanelWidths() {
+            const left = document.getElementById('panel-left');
+            const right = document.getElementById('panel-right');
+            const leftPct = parseFloat(left.style.flex) || 25;
+            const rightPct = parseFloat(right.style.flex) || 30;
+            return { leftPct, rightPct };
+        }
+
+        // ═══════════════════════════════════════════════
+        // 分割线拖动
+        // ═══════════════════════════════════════════════
+        function initDividers() {
+            const container = document.getElementById('panel-container');
+            const leftDiv = document.getElementById('divider-left');
+            const rightDiv = document.getElementById('divider-right');
+
+            function startDrag(e, target) {
+                if (container.classList.contains('panel-right-closed') || container.classList.contains(
+                    'panel-right-fullscreen')) return;
+                isDragging = true;
+                dragTarget = target;
+                startX = e.clientX || e.touches?.[0]?.clientX || 0;
+                const widths = getPanelWidths();
+                startLeftPct = widths.leftPct;
+                startRightPct = widths.rightPct;
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+                const div = target === 'left' ? leftDiv : rightDiv;
+                div.classList.add('active');
+                e.preventDefault();
+            }
+
+            function onMove(e) {
+                if (!isDragging) return;
+                const clientX = e.clientX || e.touches?.[0]?.clientX || 0;
+                const containerRect = container.getBoundingClientRect();
+                const delta = (clientX - startX) / containerRect.width * 100;
+
+                let newLeft = startLeftPct;
+                let newRight = startRightPct;
+
+                if (dragTarget === 'left') {
+                    newLeft = Math.max(MIN_PCT, Math.min(MAX_PCT, startLeftPct + delta));
+                } else if (dragTarget === 'right') {
+                    newRight = Math.max(MIN_PCT, Math.min(MAX_PCT, startRightPct - delta));
+                }
+
+                setPanelWidths(newLeft, newRight);
+                e.preventDefault();
+            }
+
+            function endDrag() {
+                if (isDragging) {
+                    isDragging = false;
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                    leftDiv.classList.remove('active');
+                    rightDiv.classList.remove('active');
+                }
+            }
+
+            // 鼠标事件
+            leftDiv.addEventListener('mousedown', (e) => startDrag(e, 'left'));
+            rightDiv.addEventListener('mousedown', (e) => startDrag(e, 'right'));
+
+            // 触摸事件
+            leftDiv.addEventListener('touchstart', (e) => startDrag(e, 'left'), { passive: false });
+            rightDiv.addEventListener('touchstart', (e) => startDrag(e, 'right'), { passive: false });
+
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('touchmove', onMove, { passive: false });
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+
+        // ═══════════════════════════════════════════════
+        // 右侧面板控制
+        // ═══════════════════════════════════════════════
+        function toggleRightPanel() {
+            const container = document.getElementById('panel-container');
+            if (rightPanelFullscreen) {
+                toggleRightFullscreen();
+                return;
+            }
+            rightPanelVisible = !rightPanelVisible;
+            container.classList.toggle('panel-right-closed', !rightPanelVisible);
+            const btn = document.getElementById('btn-close-panel');
+            if (rightPanelVisible) {
+                btn.innerHTML = '<iconify-icon icon="mdi:close" style="font-size:18px"></iconify-icon>';
+                btn.title = '关闭';
+                // 恢复宽度
+                setPanelWidths(startLeftPct || 25, startRightPct || 30);
+            } else {
+                btn.innerHTML = '<iconify-icon icon="mdi:arrow-expand-left" style="font-size:18px"></iconify-icon>';
+                btn.title = '展开';
+                // 中面板占满
+                document.getElementById('panel-center').style.flex = '1';
+                document.getElementById('panel-left').style.flex = `0 0 ${startLeftPct || 25}%`;
+            }
+        }
+
+        function toggleRightFullscreen() {
+            const container = document.getElementById('panel-container');
+            rightPanelFullscreen = !rightPanelFullscreen;
+            container.classList.toggle('panel-right-fullscreen', rightPanelFullscreen);
+            const btn = document.getElementById('btn-fullscreen');
+            if (rightPanelFullscreen) {
+                btn.innerHTML = '<iconify-icon icon="mdi:fullscreen-exit" style="font-size:18px"></iconify-icon>';
+                btn.title = '退出全屏';
+                // 确保右侧面板可见
+                rightPanelVisible = true;
+                container.classList.remove('panel-right-closed');
+                document.getElementById('btn-close-panel').innerHTML =
+                    '<iconify-icon icon="mdi:close" style="font-size:18px"></iconify-icon>';
+            } else {
+                btn.innerHTML = '<iconify-icon icon="mdi:fullscreen" style="font-size:18px"></iconify-icon>';
+                btn.title = '全屏';
+                // 恢复
+                if (!rightPanelVisible) {
+                    container.classList.add('panel-right-closed');
+                }
+                setPanelWidths(startLeftPct || 25, startRightPct || 30);
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        // 右侧 iframe 切换
+        // ═══════════════════════════════════════════════
+        function switchRightIframe(type) {
+            // 如果右侧面板关闭，自动打开
+            if (!rightPanelVisible) {
+                rightPanelVisible = true;
+                document.getElementById('panel-container').classList.remove('panel-right-closed');
+                document.getElementById('btn-close-panel').innerHTML =
+                    '<iconify-icon icon="mdi:close" style="font-size:18px"></iconify-icon>';
+                setPanelWidths(startLeftPct || 25, startRightPct || 30);
+            }
+
+            // 如果全屏模式，退出
+            if (rightPanelFullscreen) {
+                toggleRightFullscreen();
+            }
+
+            const iframe = document.getElementById('right-iframe');
+            const urlMap = {
+                products: 'about:blank',
+                ai: 'about:blank',
+                logs: 'about:blank'
+            };
+
+            // 用 data: URL 模拟不同内容
+            const contentMap = {
+                products: `
+                    <html><head><style>body{font-family:sans-serif;padding:24px;background:#f9fafb;color:#1f2937;}</style></head>
+                    <body><h2 style="color:#4F46E5;margin-bottom:12px;">📦 产物列表</h2>
+                    <ul style="list-style:none;padding:0;">
+                        <li style="padding:10px 14px;background:#fff;border-radius:8px;margin-bottom:8px;border:1px solid #e5e7eb;">🔹 代码审查报告_v2.1.pdf</li>
+                        <li style="padding:10px 14px;background:#fff;border-radius:8px;margin-bottom:8px;border:1px solid #e5e7eb;">🔹 性能分析图表.png</li>
+                        <li style="padding:10px 14px;background:#fff;border-radius:8px;margin-bottom:8px;border:1px solid #e5e7eb;">🔹 依赖关系图.svg</li>
+                        <li style="padding:10px 14px;background:#fff;border-radius:8px;margin-bottom:8px;border:1px solid #e5e7eb;">🔹 测试覆盖率报告.html</li>
+                    </ul></body></html>
+                `,
+                ai: `
+                    <html><head><style>body{font-family:sans-serif;padding:24px;background:#f9fafb;color:#1f2937;}</style></head>
+                    <body><h2 style="color:#7C3AED;margin-bottom:12px;">🧠 AI 智能调优</h2>
+                    <div style="background:#fff;border-radius:8px;padding:16px;border:1px solid #e5e7eb;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                            <span style="font-weight:600;">模型: GPT-4 Turbo</span>
+                            <span style="background:#D1FAE5;padding:2px 10px;border-radius:9999px;font-size:12px;color:#059669;">运行中</span>
+                        </div>
+                        <div style="background:#f3f4f6;border-radius:6px;height:8px;overflow:hidden;margin:8px 0;">
+                            <div style="width:67%;height:100%;background:linear-gradient(90deg,#7C3AED,#4F46E5);border-radius:6px;"></div>
+                        </div>
+                        <p style="font-size:13px;color:#6B7280;">调优进度 67% · 预计剩余 2 分钟</p>
+                    </div>
+                    <div style="background:#fff;border-radius:8px;padding:16px;border:1px solid #e5e7eb;">
+                        <p style="font-weight:600;margin-bottom:6px;">📊 参数建议</p>
+                        <ul style="font-size:13px;color:#4B5563;list-style:none;padding:0;">
+                            <li style="padding:4px 0;">• learning_rate: 0.0003 → <strong style="color:#7C3AED;">0.0005</strong></li>
+                            <li style="padding:4px 0;">• batch_size: 32 → <strong style="color:#7C3AED;">64</strong></li>
+                            <li style="padding:4px 0;">• epochs: 10 → <strong style="color:#7C3AED;">15</strong></li>
+                        </ul>
+                    </div></body></html>
+                `,
+                logs: `
+                    <html><head><style>body{font-family:monospace;padding:20px;background:#1E1E2E;color:#CDD6F4;font-size:13px;}</style></head>
+                    <body><h2 style="color:#A6E3A1;font-size:16px;margin-bottom:12px;">📋 运行日志</h2>
+                    <div style="background:#181825;border-radius:8px;padding:12px;border:1px solid #313244;max-height:400px;overflow-y:auto;">
+                        <div><span style="color:#89B4FA;">[2026-07-11 14:32:01]</span> <span style="color:#A6E3A1;">INFO</span> 技能加载完成</div>
+                        <div><span style="color:#89B4FA;">[2026-07-11 14:32:05]</span> <span style="color:#A6E3A1;">INFO</span> 连接数据源成功</div>
+                        <div><span style="color:#89B4FA;">[2026-07-11 14:32:12]</span> <span style="color:#F9E2AF;">WARN</span> 缓存命中率 78%</div>
+                        <div><span style="color:#89B4FA;">[2026-07-11 14:32:18]</span> <span style="color:#A6E3A1;">INFO</span> 开始执行分析任务 #1245</div>
+                        <div><span style="color:#89B4FA;">[2026-07-11 14:32:25]</span> <span style="color:#A6E3A1;">INFO</span> 分析完成，生成报告</div>
+                        <div><span style="color:#89B4FA;">[2026-07-11 14:32:30]</span> <span style="color:#A6E3A1;">INFO</span> 报告已保存至 /output/report.pdf</div>
+                        <div><span style="color:#89B4FA;">[2026-07-11 14:32:35]</span> <span style="color:#F38BA8;">ERROR</span> 指标 "response_time" 缺失</div>
+                        <div><span style="color:#89B4FA;">[2026-07-11 14:32:40]</span> <span style="color:#A6E3A1;">INFO</span> 自动修复尝试成功</div>
+                        <div><span style="color:#89B4FA;">[2026-07-11 14:32:45]</span> <span style="color:#A6E3A1;">INFO</span> 技能执行完成 ✓</div>
+                    </div></body></html>
+                `
+            };
+
+            // 更新按钮高亮
+            document.querySelectorAll('.center-actions .btn-sm').forEach(btn => btn.classList.remove('active'));
+            const btnMap = { products: 'btn-products', ai: 'btn-ai', logs: 'btn-logs' };
+            const activeBtn = document.getElementById(btnMap[type]);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const content = contentMap[type] || '<html><body style="padding:20px;font-family:sans-serif;color:#6B7280;">请选择查看内容</body></html>';
+            iframe.src = 'data:text/html;charset=utf-8,' + encodeURIComponent(content);
+            currentRightIframe = type;
+            showToast(`已切换到 ${type === 'products' ? '产物' : type === 'ai' ? 'AI 智能调优' : '运行日志'}`, 'success');
+        }
+
+        // ═══════════════════════════════════════════════
+        // 图标相关（保持原样）
+        // ═══════════════════════════════════════════════
+        function openCustomIconPicker(mode) {
+            showToast('请实现自定义图标选择面板（mode: ' + mode + '）', 'success');
+        }
+
+        function updateCreateIconPreview() {
+            const box = document.getElementById('create-icon-preview');
+            const text = document.getElementById('create-icon-preview-text');
+            const img = box.querySelector('img');
+            if (img) img.remove();
+            if (createIconType === 'emoji') {
+                text.textContent = createIconData || '🤖';
+                text.style.display = 'block';
+                box.classList.toggle('has-icon', !!createIconData);
+            } else if (createIconType === 'image') {
+                text.style.display = 'none';
+                const newImg = document.createElement('img');
+                newImg.src = createIconData;
+                newImg.alt = '自定义图标';
+                box.appendChild(newImg);
+                box.classList.add('has-icon');
+            }
+        }
+
+        function handleCreateIconUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const validTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/svg+xml', 'image/webp'];
+            if (!validTypes.includes(file.type)) { showToast('请上传 PNG、JPG、GIF、SVG 或 WebP 格式的图片', 'error'); return; }
+            if (file.size > 2 * 1024 * 1024) { showToast('图片大小不能超过 2MB', 'error'); return; }
+            const progress = document.getElementById('create-icon-progress');
+            const bar = document.getElementById('create-icon-progress-bar');
+            progress.classList.add('active');
+            bar.style.width = '30%';
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                bar.style.width = '100%';
+                setTimeout(() => { progress.classList.remove('active');
+                    bar.style.width = '0%'; }, 400);
+                createIconData = e.target.result;
+                createIconType = 'image';
+                updateCreateIconPreview();
+                showToast('图标上传成功', 'success');
+            };
+            reader.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const pct = Math.round((e.loaded / e.total) * 70) + 30;
+                    bar.style.width = Math.min(pct, 95) + '%';
+                }
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function clearCreateIcon() {
+            createIconData = '🤖';
+            createIconType = 'emoji';
+            updateCreateIconPreview();
+            showToast('已清除图标', 'success');
+        }
+
+        function updateEditIconPreview() {
+            const box = document.getElementById('edit-icon-preview');
+            const text = document.getElementById('edit-icon-preview-text');
+            const img = box.querySelector('img');
+            if (img) img.remove();
+            if (editIconType === 'emoji') {
+                text.textContent = editIconData || '🤖';
+                text.style.display = 'block';
+                box.classList.toggle('has-icon', !!editIconData);
+            } else if (editIconType === 'image') {
+                text.style.display = 'none';
+                const newImg = document.createElement('img');
+                newImg.src = editIconData;
+                newImg.alt = '自定义图标';
+                box.appendChild(newImg);
+                box.classList.add('has-icon');
+            }
+        }
+
+        function handleEditIconUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const validTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/svg+xml', 'image/webp'];
+            if (!validTypes.includes(file.type)) { showToast('请上传 PNG、JPG、GIF、SVG 或 WebP 格式的图片', 'error'); return; }
+            if (file.size > 2 * 1024 * 1024) { showToast('图片大小不能超过 2MB', 'error'); return; }
+            const progress = document.getElementById('edit-icon-progress');
+            const bar = document.getElementById('edit-icon-progress-bar');
+            progress.classList.add('active');
+            bar.style.width = '30%';
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                bar.style.width = '100%';
+                setTimeout(() => { progress.classList.remove('active');
+                    bar.style.width = '0%'; }, 400);
+                editIconData = e.target.result;
+                editIconType = 'image';
+                updateEditIconPreview();
+                showToast('图标上传成功', 'success');
+            };
+            reader.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const pct = Math.round((e.loaded / e.total) * 70) + 30;
+                    bar.style.width = Math.min(pct, 95) + '%';
+                }
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function clearEditIcon() {
+            editIconData = '🤖';
+            editIconType = 'emoji';
+            updateEditIconPreview();
+            showToast('已清除图标', 'success');
+        }
+
+        // ═══════════════════════════════════════════════
+        // 创建 / 编辑 / 导入（保持原样）
+        // ═══════════════════════════════════════════════
+        function updateCreateCharCount(el, max) {
+            document.getElementById('create-char-count').textContent = el.value.length;
+        }
+
+        function createSkill() {
+            const name = document.getElementById('create-name').value.trim();
+            const desc = document.getElementById('create-desc').value.trim();
+            const selectedCategories = Array.from(document.querySelectorAll('#create-category-group input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+            if (!name) { showToast('请输入技能名称', 'error'); return; }
+            if (skills.some(s => s.name === name)) { showToast('技能名称已存在', 'error'); return; }
+            if (selectedCategories.length === 0) { showToast('请至少选择一个类别', 'error'); return; }
+
+            const newSkill = {
+                id: Date.now(),
+                name: name,
+                icon: createIconData,
+                category: selectedCategories[0],
+                desc: desc || '暂无描述',
+                status: 'disabled',
+                enabled: false,
+                createdBy: '孙礼飞',
+                updatedBy: '孙礼飞',
+                updatedAt: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-'),
+                files: []
+            };
+            skills.unshift(newSkill);
+            closeModal('createModal');
+            renderSkillGrid();
+            showToast('创建成功', 'success');
+            document.getElementById('create-name').value = '';
+            document.getElementById('create-desc').value = '';
+            document.getElementById('create-char-count').textContent = '0';
+            createIconData = '🤖';
+            createIconType = 'emoji';
+            updateCreateIconPreview();
+            document.querySelectorAll('#create-category-group input[type="checkbox"]').forEach(cb => {
+                cb.checked = cb.value === '代码生成';
+            });
+            openDetail(newSkill.id, 'edit');
+        }
+
+        function updateEditCharCount(el, max) {
+            document.getElementById('edit-char-count').textContent = el.value.length;
+        }
+
+        function openEditModal() {
+            if (!currentSkill) return;
+            document.getElementById('edit-name').value = currentSkill.name;
+            document.getElementById('edit-desc').value = currentSkill.desc || '';
+            updateEditCharCount(document.getElementById('edit-desc'), 200);
+            if (typeof currentSkill.icon === 'string' && currentSkill.icon.startsWith('data:image')) {
+                editIconData = currentSkill.icon;
+                editIconType = 'image';
+            } else {
+                editIconData = currentSkill.icon || '🤖';
+                editIconType = 'emoji';
+            }
+            updateEditIconPreview();
+            const currentCategory = currentSkill.category || '';
+            document.querySelectorAll('#edit-category-group input[type="checkbox"]').forEach(cb => {
+                cb.checked = (cb.value === currentCategory);
+            });
+            openModal('editModal');
+        }
+
+        function saveEdit() {
+            if (!currentSkill) return;
+            const name = document.getElementById('edit-name').value.trim();
+            const desc = document.getElementById('edit-desc').value.trim();
+            const selectedCategories = Array.from(document.querySelectorAll('#edit-category-group input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+            if (!name) { showToast('请输入技能名称', 'error'); return; }
+            if (selectedCategories.length === 0) { showToast('请至少选择一个类别', 'error'); return; }
+            currentSkill.name = name;
+            currentSkill.desc = desc;
+            currentSkill.icon = editIconData;
+            currentSkill.category = selectedCategories[0];
+            currentSkill.updatedAt = new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit',
+                day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-');
+            closeModal('editModal');
+            openDetail(currentSkill.id, 'edit');
+            renderSkillGrid();
+            showToast('技能更新成功', 'success');
+        }
+
+        function importSkill() {
+            const fileInfo = document.getElementById('import-file-info');
+            if (fileInfo.classList.contains('hidden')) { showToast('请先选择 ZIP 文件', 'error'); return; }
+            const selectedCategories = Array.from(document.querySelectorAll('#import-category-group input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+            if (selectedCategories.length === 0) { showToast('请选择至少一个类别', 'error'); return; }
+            const mockName = '导入技能-' + Date.now().toString().slice(-4);
+            const newSkill = {
+                id: Date.now(),
+                name: mockName,
+                icon: '📦',
+                category: selectedCategories[0],
+                desc: '通过 ZIP 导入的技能',
+                status: 'draft',
+                enabled: false,
+                createdBy: '孙礼飞',
+                updatedBy: '孙礼飞',
+                updatedAt: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-'),
+                files: []
+            };
+            skills.unshift(newSkill);
+            closeModal('importModal');
+            renderSkillGrid();
+            showToast('导入成功', 'success');
+            clearImportFile();
+            document.querySelectorAll('#import-category-group input[type="checkbox"]').forEach(cb => {
+                cb.checked = cb.value === '代码生成';
+            });
+        }
+
+        function handleImportDrop(e) {
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.zip')) showImportFileInfo(file);
+            else showToast('请上传 .zip 格式文件', 'error');
+        }
+
+        function handleImportFileSelect(input) {
+            if (input.files[0]) showImportFileInfo(input.files[0]);
+        }
+
+        function showImportFileInfo(file) {
+            if (file.size > 20 * 1024 * 1024) { showToast('文件大小超过 20MB 限制', 'error'); return; }
+            document.getElementById('import-file-name').textContent = file.name + ' (' + (file.size / 1024).toFixed(1) +
+                ' KB)';
+            document.getElementById('import-file-info').classList.remove('hidden');
+        }
+
+        function clearImportFile() {
+            document.getElementById('import-file-info').classList.add('hidden');
+            const fi = document.getElementById('import-file-input');
+            if (fi) fi.value = '';
+        }
+
+        function openDeleteConfirm(id) {
+            deleteTargetId = id;
+            const skill = skills.find(s => s.id === id);
+            document.getElementById('delete-confirm-msg').textContent =
+                `确认删除技能「${skill ? skill.name : ''}」？删除后可在回收站恢复。`;
+            openModal('deleteConfirmModal');
+        }
+
+        function confirmDelete() {
+            if (deleteTargetId) {
+                const idx = skills.findIndex(s => s.id === deleteTargetId);
+                if (idx > -1) {
+                    const deleted = skills.splice(idx, 1)[0];
+                    deletedSkills.push({ ...deleted, deletedBy: '孙礼飞', deletedAt: new Date().toISOString().split('T')[0] });
+                }
+                deleteTargetId = null;
+            }
+            closeModal('deleteConfirmModal');
+            renderSkillGrid();
+            updateRecycleBadge();
+            showToast('删除成功', 'success');
+        }
+
+        function exportSkill(id) { showToast('导出成功', 'success'); }
+
+        // ═══════════════════════════════════════════════
+        // 类别管理（保持原样）
+        // ═══════════════════════════════════════════════
+        let categories = [
+            { id: 1, name: '代码生成', sort: 1, status: 'published' },
+            { id: 2, name: '数据分析', sort: 2, status: 'published' },
+            { id: 3, name: '文档处理', sort: 3, status: 'published' },
+            { id: 4, name: '自动化流程', sort: 4, status: 'published' },
+            { id: 5, name: '知识检索', sort: 5, status: 'disabled' },
+            { id: 6, name: '创意写作', sort: 6, status: 'published' }
+        ];
+        let categoryDeleteId = null;
+        let categoryNextId = 7;
+
+        function getCategorySkillCount(catName) {
+            return skills.filter(s => s.category === catName).length;
+        }
+
+        function renderCategoryTable() {
+            const tbody = document.getElementById('category-table-body');
+            if (!tbody) return;
+            const sorted = [...categories].sort((a, b) => a.sort - b.sort);
+            tbody.innerHTML = sorted.map((cat, idx) => {
+                const statusClass = cat.status === 'published' ? 'tag-published' : 'tag-draft';
+                const statusDot = cat.status === 'published' ? 'published' : 'draft';
+                const statusText = cat.status === 'published' ? '启用' : '禁用';
+                const skillCount = getCategorySkillCount(cat.name);
+                const isLast = idx === sorted.length - 1;
+                return `<tr class="${isLast ? '' : 'border-b border-gray-50'} hover:bg-gray-50">
+                    <td class="px-6 py-3 font-medium text-gray-900">${cat.name}</td>
+                    <td class="px-6 py-3 text-gray-500">${cat.sort}</td>
+                    <td class="px-6 py-3"><span class="tag ${statusClass}"><span class="status-dot ${statusDot}"></span>${statusText}</span></td>
+                    <td class="px-6 py-3 text-gray-500">${skillCount}</td>
+                    <td class="px-6 py-3 text-right">
+                        <button onclick="editCategory(${cat.id})" class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>
+                        <button onclick="deleteCategory(${cat.id})" class="text-red-500 hover:text-red-700 text-xs">删除</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function addCategory() {
+            document.getElementById('category-form-title').textContent = '新增类别';
+            document.getElementById('category-edit-id').value = '';
+            document.getElementById('category-name-input').value = '';
+            document.getElementById('category-sort-input').value = '';
+            document.querySelector('input[name="category-status"][value="published"]').checked = true;
+            openModal('categoryFormModal');
+            setTimeout(() => document.getElementById('category-name-input').focus(), 100);
+        }
+
+        function editCategory(id) {
+            const cat = categories.find(c => c.id === id);
+            if (!cat) return;
+            document.getElementById('category-form-title').textContent = '编辑类别';
+            document.getElementById('category-edit-id').value = id;
+            document.getElementById('category-name-input').value = cat.name;
+            document.getElementById('category-sort-input').value = cat.sort;
+            const radio = document.querySelector(`input[name="category-status"][value="${cat.status}"]`);
+            if (radio) radio.checked = true;
+            openModal('categoryFormModal');
+            setTimeout(() => document.getElementById('category-name-input').focus(), 100);
+        }
+
+        function saveCategory() {
+            const editId = document.getElementById('category-edit-id').value;
+            const name = document.getElementById('category-name-input').value.trim();
+            const sort = document.getElementById('category-sort-input').value;
+            const status = document.querySelector('input[name="category-status"]:checked').value;
+            if (!name) { showToast('请输入类别名称', 'error');
+                document.getElementById('category-name-input').focus(); return; }
+            const duplicate = categories.find(c => c.name === name && c.id !== Number(editId));
+            if (duplicate) { showToast('类别名称已存在', 'error');
+                document.getElementById('category-name-input').focus(); return; }
+            if (editId) {
+                const cat = categories.find(c => c.id === Number(editId));
+                if (cat) { cat.name = name;
+                    cat.sort = sort ? Number(sort) : cat.sort;
+                    cat.status = status; }
+                showToast('类别已更新', 'success');
+            } else {
+                const maxSort = categories.length > 0 ? Math.max(...categories.map(c => c.sort)) : 0;
+                categories.push({ id: categoryNextId++, name: name, sort: sort ? Number(sort) : maxSort + 1,
+                    status: status });
+                showToast('类别已添加', 'success');
+            }
+            closeModal('categoryFormModal');
+            renderCategoryTable();
+        }
+
+        function deleteCategory(id) {
+            const cat = categories.find(c => c.id === id);
+            if (!cat) return;
+            categoryDeleteId = id;
+            const skillCount = getCategorySkillCount(cat.name);
+            const msg = skillCount > 0 ?
+                `类别「${cat.name}」下还有 ${skillCount} 个关联技能，删除后这些技能将同步删除分类。确认删除？` :
+                `确认删除类别「${cat.name}」？`;
+            document.getElementById('delete-confirm-title').textContent = '确认删除类别';
+            document.getElementById('delete-confirm-msg').textContent = msg;
+            window._deleteAction = 'category';
+            openModal('deleteConfirmModal');
+        }
+
+        const _origConfirmDelete = confirmDelete;
+        confirmDelete = function() {
+            if (window._deleteAction === 'category') {
+                if (categoryDeleteId) {
+                    const idx = categories.findIndex(c => c.id === categoryDeleteId);
+                    if (idx > -1) categories.splice(idx, 1);
+                    categoryDeleteId = null;
+                }
+                window._deleteAction = null;
+                closeModal('deleteConfirmModal');
+                renderCategoryTable();
+                showToast('类别已删除', 'success');
+                return;
+            }
+            _origConfirmDelete();
+        }
+
+        // ═══════════════════════════════════════════════
+        // 筛选
+        // ═══════════════════════════════════════════════
+        function toggleCategoryFilter(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('category-filter-dropdown');
+            document.getElementById('status-filter-dropdown').classList.add('hidden');
+            dd.classList.toggle('hidden');
+        }
+
+        function toggleStatusFilter(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('status-filter-dropdown');
+            document.getElementById('category-filter-dropdown').classList.add('hidden');
+            dd.classList.toggle('hidden');
+        }
+
+        function selectCategoryFilter(cat, el) {
+            selectedCategoryFilter = cat;
+            document.getElementById('category-filter-label').textContent = cat || '全部分类';
+            document.querySelectorAll('#category-filter-dropdown .filter-option').forEach(opt => opt.classList.remove(
+            'active'));
+            el.classList.add('active');
+            document.getElementById('category-filter-dropdown').classList.add('hidden');
+            renderSkillGrid();
+        }
+
+        function selectStatusFilter(status, el) {
+            selectedStatusFilter = status;
+            const label = status === 'enabled' ? '发布' : (status === 'disabled' ? '下架' : '全部状态');
+            document.getElementById('status-filter-label').textContent = label;
+            document.querySelectorAll('#status-filter-dropdown .filter-option').forEach(opt => opt.classList.remove(
+            'active'));
+            el.classList.add('active');
+            document.getElementById('status-filter-dropdown').classList.add('hidden');
+            renderSkillGrid();
+        }
+
+        document.addEventListener('click', function(e) {
+            const catDd = document.getElementById('category-filter-dropdown');
+            const statusDd = document.getElementById('status-filter-dropdown');
+            if (catDd && !catDd.contains(e.target) && !e.target.closest('[onclick*="toggleCategoryFilter"]')) {
+                catDd.classList.add('hidden');
+            }
+            if (statusDd && !statusDd.contains(e.target) && !e.target.closest('[onclick*="toggleStatusFilter"]')) {
+                statusDd.classList.add('hidden');
+            }
+        });
+
+        function filterSkills() { renderSkillGrid(); }
+
+        function updateRecycleBadge() {
+            const badge = document.getElementById('recycle-badge');
+            if (!badge) return;
+            const count = deletedSkills.length;
+            badge.textContent = count;
+            badge.classList.toggle('hidden', count === 0);
+        }
+
+        // ═══════════════════════════════════════════════
+        // Modal / Toast
+        // ═══════════════════════════════════════════════
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function showToast(msg, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast toast-${type}`;
+            toast.classList.remove('hidden');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => { toast.classList.add('hidden'); }, 2500);
+        }
+
+        // ═══════════════════════════════════════════════
+        // 初始化
+        // ═══════════════════════════════════════════════
+        renderSkillGrid();
+        renderCategoryTable();
+        updateRecycleBadge();
+        updateCreateIconPreview();
+        updateEditIconPreview();
+        initDividers();
+
+        // 默认选中"产物"按钮高亮
+        document.getElementById('btn-products').classList.add('active');
+    </script>
+</body>
+</html>

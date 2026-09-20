@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OmniX 智能体 API Key 管理 · 原型</title>
+<style>
+:root{
+  --bg:#f5f7fa; --card:#fff; --text:#1f2937; --text-sec:#6b7280; --text-light:#9ca3af;
+  --accent:#2563eb; --accent-light:#dbeafe; --accent-dark:#1d4ed8;
+  --border:#e5e7eb; --border-light:#f0f2f5; --code-bg:#f3f4f6;
+  --success:#10b981; --success-light:#dcfce7; --warning:#f59e0b; --warning-light:#fef3c7;
+  --danger:#ef4444; --danger-light:#fee2e2; --gray:#9ca3af; --gray-light:#f3f4f6;
+  --radius:10px; --shadow:0 4px 20px rgba(0,0,0,.06); --shadow-lg:0 10px 40px rgba(0,0,0,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.app{display:flex;min-height:100vh}
+
+/* Main */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:20}
+.crumb{font-size:.9rem;color:var(--text-sec)}
+.crumb b{color:var(--text);font-weight:600}
+.user{display:flex;align-items:center;gap:10px;font-size:.9rem}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#6366f1);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.85rem}
+.content{padding:24px 28px;flex:1}
+
+/* Page head */
+.page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.page-title{font-size:1.35rem;font-weight:700}
+.page-desc{font-size:.85rem;color:var(--text-sec);margin-top:2px}
+
+.view{display:none}
+.view.active{display:block}
+
+/* Card / toolbar */
+.panel{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.toolbar{display:flex;align-items:center;gap:12px;padding:18px 20px;flex-wrap:wrap;border-bottom:1px solid var(--border-light)}
+.field{display:flex;align-items:center;gap:8px}
+.field label{font-size:.85rem;color:var(--text-sec);white-space:nowrap}
+.input,.select{height:34px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:.85rem;background:#fff;color:var(--text);outline:none;transition:.15s}
+.input:focus,.select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+.input{width:200px}.select{min-width:150px}
+.search-field{position:relative;display:inline-flex}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-light);font-size:15px;pointer-events:none;line-height:1}
+.search-input{padding-left:30px}
+.spacer{flex:1}
+
+/* Buttons */
+.btn{height:34px;padding:0 16px;border-radius:7px;border:1px solid var(--border);background:#fff;color:var(--text);font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--text-sec);padding:0 8px}
+.btn.ghost:hover{color:var(--accent);background:var(--accent-light)}
+.btn.danger{color:var(--danger);border-color:transparent}
+.btn.danger:hover{background:var(--danger-light);border-color:var(--danger-light)}
+.btn.sm{height:28px;padding:0 10px;font-size:.8rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--border-light);white-space:nowrap}
+th{background:#fafbfc;color:var(--text-sec);font-weight:600;font-size:.8rem}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:#fafbff}
+td .name{font-weight:600;color:var(--text)}
+.keycell{display:inline-flex;align-items:center;gap:8px;font-family:"SFMono-Regular",Consolas,monospace;font-size:.82rem;color:var(--text)}
+.copy-ic{cursor:pointer;color:var(--text-light);font-size:.9rem;transition:.15s}
+.copy-ic:hover{color:var(--accent)}
+.status{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:.78rem;font-weight:600}
+.status .d{width:6px;height:6px;border-radius:50%}
+.status.on{background:var(--success-light);color:#166534}.status.on .d{background:var(--success)}
+.status.off{background:var(--gray-light);color:#6b7280}.status.off .d{background:var(--gray)}
+.status.exp{background:var(--warning-light);color:#92400e}.status.exp .d{background:var(--warning)}
+.op{display:flex;gap:2px}
+
+/* Switch */
+.switch{position:relative;display:inline-block;width:36px;height:20px;vertical-align:middle;cursor:pointer}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:var(--gray);border-radius:20px;transition:.2s}
+.slider:before{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch input:checked+.slider{background:var(--accent)}
+.switch input:checked+.slider:before{transform:translateX(16px)}
+.switch input:disabled+.slider{opacity:.5;cursor:not-allowed}
+
+/* App hover tip (dark) */
+.app-cell{cursor:help}
+.app-tip{position:fixed;z-index:200;display:none;background:#1f2937;color:#f9fafb;padding:11px 13px;min-width:280px;max-width:360px;border-radius:10px;font-size:12px;line-height:1.6;box-shadow:0 10px 30px rgba(0,0,0,.4);pointer-events:none}
+.app-tip .tip-row{display:flex;gap:10px;align-items:baseline}
+.app-tip .tip-k{color:#9ca3af;width:46px;flex-shrink:0}
+.app-tip .tip-v{color:#fff;font-weight:600;word-break:break-all;font-family:"SFMono-Regular",Consolas,monospace}
+.app-tip .tip-sep{height:1px;background:rgba(255,255,255,.12);margin:8px 0}
+.app-tip .tip-title{color:#93c5fd;font-weight:700;margin-bottom:6px;font-size:11px;letter-spacing:.04em}
+
+.pager{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;font-size:.85rem;color:var(--text-sec)}
+.pages{display:flex;gap:6px;align-items:center}
+.page-btn{min-width:30px;height:30px;padding:0 8px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:.82rem;color:var(--text)}
+.page-btn:hover{border-color:var(--accent);color:var(--accent)}
+.page-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.page-btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* Drawer */
+.mask{position:fixed;inset:0;background:rgba(15,23,42,.45);opacity:0;visibility:hidden;transition:.2s;z-index:40}
+.mask.show{opacity:1;visibility:visible}
+.drawer{position:fixed;top:50%;left:50%;width:620px;max-width:90vw;height:auto;max-height:85vh;background:#fff;border-radius:14px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;z-index:50;opacity:0;visibility:hidden;transform:translate(-50%,-50%) scale(.95);transition:opacity .2s,transform .2s,visibility .2s}
+.drawer.show{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1)}
+.drawer-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.drawer-head h3{font-size:1.1rem;font-weight:700}
+.close-x{cursor:pointer;color:var(--text-light);font-size:1.3rem;line-height:1;padding:4px}
+.close-x:hover{color:var(--text)}
+.drawer-body{padding:24px;overflow-y:auto;flex:1}
+.drawer-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:12px}
+
+/* Form */
+.form-item{margin-bottom:22px}
+.form-item>label{display:block;font-size:.88rem;font-weight:600;margin-bottom:8px}
+.form-item>label .req{color:var(--danger);margin-left:3px}
+.form-item .tip{font-size:.78rem;color:var(--text-light);margin-top:6px}
+.input.block{width:100%}
+.radio-row{display:flex;gap:20px;align-items:center;margin-bottom:10px}
+.radio{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:.86rem;color:var(--text-sec)}
+.radio input{accent-color:var(--accent)}
+.err{color:var(--danger);font-size:.78rem;margin-top:6px;display:none}
+.err.show{display:block}
+.form-item.invalid .input{border-color:var(--danger)}
+
+/* Transfer */
+.transfer{display:flex;gap:14px;align-items:stretch}
+.tbox{flex:1;border:1px solid var(--border);border-radius:8px;display:flex;flex-direction:column;overflow:hidden;height:280px}
+.tbox-head{padding:9px 12px;background:#fafbfc;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.tbox-head .cnt{color:var(--text-light);font-weight:500}
+.tbox-search{padding:8px 10px;border-bottom:1px solid var(--border-light)}
+.tbox-search input{width:100%;height:30px;border:1px solid var(--border);border-radius:6px;padding:0 10px;font-size:.8rem;outline:none}
+.tlist{flex:1;overflow-y:auto}
+.titem{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;cursor:pointer;font-size:.83rem;border-bottom:1px solid var(--border-light)}
+.titem:hover{background:#fafbff}
+.titem input{accent-color:var(--accent);margin-top:3px}
+.titem .tinfo{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.titem .tname{color:var(--text);font-weight:500}
+.titem .tid{color:var(--text-light);font-size:.75rem;font-family:monospace;word-break:break-all}
+.transfer-mid{display:flex;flex-direction:column;justify-content:center;gap:10px}
+.t-arrow{width:34px;height:34px;border-radius:7px;border:1px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-sec)}
+.t-arrow:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.t-arrow:disabled{opacity:.4;cursor:not-allowed}
+.empty{padding:30px;text-align:center;color:var(--text-light);font-size:.82rem}
+
+/* Modal */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:60;opacity:0;visibility:hidden;transition:.2s}
+.modal.show{opacity:1;visibility:visible}
+.modal-card{background:#fff;border-radius:14px;box-shadow:var(--shadow-lg);width:480px;max-width:92vw;transform:scale(.96);transition:.2s}
+.modal.show .modal-card{transform:scale(1)}
+.modal-body{padding:28px 28px 20px}
+.modal-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:16px}
+.modal-icon.warn{background:var(--warning-light);color:var(--warning)}
+.modal-icon.danger{background:var(--danger-light);color:var(--danger)}
+.modal-icon.ok{background:var(--success-light);color:var(--success)}
+.modal h3{font-size:1.15rem;margin-bottom:10px}
+.modal p{color:var(--text-sec);font-size:.88rem}
+.modal-foot{padding:14px 28px 24px;display:flex;justify-content:flex-end;gap:12px}
+.key-reveal{background:#0f172a;color:#e2e8f0;font-family:monospace;padding:14px 16px;border-radius:8px;font-size:.9rem;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0;word-break:break-all}
+.key-reveal .k{overflow-x:auto}
+.confirm-input{width:100%;height:36px;border:1px solid var(--border);border-radius:7px;padding:0 12px;font-size:.85rem;margin-top:12px;outline:none}
+.confirm-input:focus{border-color:var(--danger);box-shadow:0 0 0 3px var(--danger-light)}
+
+/* Logs stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.stat .v{font-size:1.7rem;font-weight:700;line-height:1.2}
+.stat .l{font-size:.82rem;color:var(--text-sec);margin-top:4px}
+.stat .v.blue{color:var(--accent)}.stat .v.green{color:var(--success)}.stat .v.orange{color:var(--warning)}.stat .v.red{color:var(--danger)}
+
+/* log code/method */
+.log-code{font-weight:700;font-family:monospace}
+.l2{color:var(--success)}.l4{color:var(--danger)}.l5{color:var(--warning)}
+.log-method{font-weight:700;font-size:.74rem;padding:2px 8px;border-radius:5px}
+.lm.post{background:var(--success-light);color:#166534}
+.lm.get{background:var(--accent-light);color:var(--accent-dark)}
+.filter-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);color:var(--accent-dark);padding:3px 10px;border-radius:20px;font-size:.78rem;font-weight:600}
+.filter-tag .x{cursor:pointer;opacity:.7}
+.filter-tag .x:hover{opacity:1}
+
+/* Log detail */
+.detail-grid{display:grid;grid-template-columns:100px 1fr;gap:10px 14px;margin:8px 0 16px;font-size:.86rem}
+.detail-grid .k{color:var(--text-sec)}
+.detail-grid .v{color:var(--text);word-break:break-all}
+.code-block{background:#0f172a;color:#e2e8f0;font-family:monospace;font-size:.8rem;padding:14px;border-radius:8px;white-space:pre-wrap;margin-top:8px;max-height:180px;overflow:auto}
+.detail-sec{font-size:.82rem;font-weight:600;color:var(--text);margin:16px 0 4px}
+
+/* Toast */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:#0f172a;color:#fff;padding:11px 20px;border-radius:9px;font-size:.86rem;box-shadow:var(--shadow-lg);z-index:100;opacity:0;transition:.28s;display:flex;align-items:center;gap:8px}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast .ti{color:var(--success)}
+
+.mini-note{font-size:.78rem;color:var(--text-light)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="crumb" id="crumb" style="font-size:18px;font-weight:600"><b id="crumbCur">API KEY管理</b></div>
+    </div>
+
+    <div class="content">
+      <!-- ========== VIEW: API KEY ========== -->
+      <div class="view active" id="view-keys">
+        <div class="panel">
+          <div class="toolbar">
+            <div class="field search-field">
+              <span class="search-icon">⌕</span>
+              <input class="input search-input" id="searchInput" placeholder="输入密钥名称搜索" oninput="applySearch()">
+            </div>
+            <div class="field">
+              <select class="select" id="creatorFilter" onchange="applySearch()">
+                <option value="all">全部创建人</option>
+                <option value="me">我创建的</option>
+              </select>
+            </div>
+            <div class="spacer"></div>
+            <span class="mini-note" id="totalNote"></span>
+            <button class="btn primary" onclick="openDrawer()">＋ 新增密钥</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>密钥名称</th>
+                  <th>API Key</th>
+                  <th>授权智能体</th>
+                  <th>创建人</th>
+                  <th>创建时间</th>
+                  <th>过期时间</th>
+                  <th>状态</th>
+                  <th style="text-align:center">禁/启用</th>
+                  <th style="text-align:right">操作</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+          <div class="pager">
+            <span id="pagerInfo"></span>
+            <div class="pages" id="pages"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== VIEW: LOGS ========== -->
+      <div class="view" id="view-logs">
+        <div class="page-head">
+          <div>
+            <div class="page-title">调用日志</div>
+            <div class="page-desc">查看所有 API Key 的外部调用明细，支持按密钥、应用、状态码筛选</div>
+          </div>
+          <button class="btn" onclick="exportLogs()">导出 CSV</button>
+        </div>
+
+        <div class="stats" id="logStats"></div>
+
+        <div class="panel">
+          <div class="toolbar">
+            <div class="field">
+              <label>密钥</label>
+              <select class="select" id="lf-key" onchange="renderLogs()"></select>
+            </div>
+            <div class="field">
+              <label>应用</label>
+              <select class="select" id="lf-app" onchange="renderLogs()"></select>
+            </div>
+            <div class="field">
+              <label>状态码</label>
+              <select class="select" id="lf-code" onchange="renderLogs()">
+                <option value="all">全部</option>
+                <option value="2">2xx 成功</option>
+                <option value="4">4xx 客户端错误</option>
+                <option value="5">5xx 服务端错误</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>时间</label>
+              <select class="select" id="lf-range" onchange="renderLogs()">
+                <option value="all">全部</option>
+                <option value="7">近 7 天</option>
+                <option value="1">今天</option>
+              </select>
+            </div>
+            <div class="field">
+              <input class="input" id="lf-search" placeholder="搜索路径 / 应用" oninput="renderLogs()">
+            </div>
+            <button class="btn" onclick="resetLogFilters()">重置</button>
+            <div class="spacer"></div>
+            <div id="logFilterTag"></div>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>时间</th>
+                  <th>密钥名称</th>
+                  <th>应用</th>
+                  <th>方法</th>
+                  <th>路径</th>
+                  <th>状态码</th>
+                  <th>耗时</th>
+                  <th>Token</th>
+                </tr>
+              </thead>
+              <tbody id="logBody"></tbody>
+            </table>
+          </div>
+          <div class="pager">
+            <span id="logInfo"></span>
+            <div class="pages" id="logPages"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Drawer: create/edit -->
+<div class="mask" id="mask" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3 id="drawerTitle">新增 API Key</h3>
+    <span class="close-x" onclick="closeDrawer()">×</span>
+  </div>
+  <div class="drawer-body">
+    <div class="form-item" id="fi-name">
+      <label>密钥名称<span class="req">*</span></label>
+      <input class="input block" id="f-name" maxlength="64" placeholder="请输入密钥名称，最多 64 字符">
+      <div class="err" id="err-name">请输入密钥名称</div>
+    </div>
+    <div class="form-item" id="fi-exp">
+      <label>过期时间<span class="req">*</span></label>
+      <div class="radio-row">
+        <label class="radio"><input type="radio" name="expMode" value="date" checked onchange="toggleExp()"> 指定日期</label>
+        <label class="radio"><input type="radio" name="expMode" value="never" onchange="toggleExp()"> 永不过期</label>
+      </div>
+      <input class="input block" type="datetime-local" id="f-exp">
+      <div class="err" id="err-exp">过期时间必须晚于当前时间</div>
+    </div>
+    <div class="form-item" id="fi-apps">
+      <label>选择授权智能体<span class="req">*</span></label>
+      <div class="tip" style="margin-bottom:10px">该密钥仅可调用右侧已授权的智能体（最小权限原则）</div>
+      <div class="transfer">
+        <div class="tbox">
+          <div class="tbox-head">可选智能体 <span class="cnt" id="leftCnt"></span></div>
+          <div class="tbox-search"><input id="leftSearch" placeholder="搜索智能体名称" oninput="renderTransfer()"></div>
+          <div class="tlist" id="leftList"></div>
+        </div>
+        <div class="transfer-mid">
+          <button class="t-arrow" id="toRight" onclick="moveRight()">›</button>
+          <button class="t-arrow" id="toLeft" onclick="moveLeft()">‹</button>
+        </div>
+        <div class="tbox">
+          <div class="tbox-head">已授权 <span class="cnt" id="rightCnt"></span></div>
+          <div class="tbox-search"><input id="rightSearch" placeholder="搜索已授权智能体" oninput="renderTransfer()"></div>
+          <div class="tlist" id="rightList"></div>
+        </div>
+      </div>
+      <div class="err" id="err-apps">请至少选择一个授权智能体</div>
+    </div>
+  </div>
+  <div class="drawer-foot">
+    <button class="btn" onclick="closeDrawer()">取消</button>
+    <button class="btn primary" onclick="submitForm()">确定</button>
+  </div>
+</div>
+
+<!-- Modal: reveal key -->
+<div class="modal" id="revealModal">
+  <div class="modal-card">
+    <div class="modal-body">
+      <div class="modal-icon ok">✓</div>
+      <h3>API Key 创建成功</h3>
+      <p>请立即复制并妥善保存。<strong>出于安全考虑，完整密钥仅展示这一次</strong>，关闭后将无法再次查看。</p>
+      <div class="key-reveal">
+        <span class="k" id="revealKey"></span>
+        <span class="copy-ic" style="color:#93c5fd;font-size:1rem" onclick="copyReveal()">⧉ 复制</span>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn primary" onclick="closeReveal()">我已保存，关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: confirm (disable/enable) -->
+<div class="modal" id="confirmModal">
+  <div class="modal-card">
+    <div class="modal-body">
+      <div class="modal-icon warn" id="cf-icon">!</div>
+      <h3 id="cf-title">确认操作</h3>
+      <p id="cf-desc"></p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeConfirm()">取消</button>
+      <button class="btn primary" id="cf-ok" onclick="confirmAction()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: delete strong confirm -->
+<div class="modal" id="delModal">
+  <div class="modal-card">
+    <div class="modal-body">
+      <div class="modal-icon danger">🗑</div>
+      <h3>删除 API Key</h3>
+      <p>删除后，使用该密钥的所有外部调用将<strong>立即失效</strong>且不可恢复。请输入密钥名称 <b id="del-name-hint"></b> 以确认删除。</p>
+      <input class="confirm-input" id="del-input" placeholder="请输入密钥名称" oninput="checkDel()">
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeDel()">取消</button>
+      <button class="btn primary" id="del-ok" style="background:var(--danger);border-color:var(--danger)" disabled onclick="doDelete()">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: log detail -->
+<div class="modal" id="logDetailModal">
+  <div class="modal-card" style="width:560px">
+    <div class="modal-body">
+      <div class="drawer-head" style="padding:0 0 14px;border-bottom:1px solid var(--border);margin-bottom:16px">
+        <h3 style="margin:0">调用详情</h3>
+        <span class="close-x" onclick="closeLogDetail()">×</span>
+      </div>
+      <div class="detail-grid" id="logDetailGrid"></div>
+      <div class="detail-sec">请求体（摘要）</div>
+      <div class="code-block" id="logReq"></div>
+      <div class="detail-sec">响应体（摘要）</div>
+      <div class="code-block" id="logResp"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="ti">✓</span><span id="toastMsg"></span></div>
+
+<script>
+/* ---------- Mock apps ---------- */
+const APPS = [
+  {id:'ZJT-13256602185-260713125934-01', name:'营销方案生成 Agent'},
+  {id:'KFB-13800138000-260612083012-02', name:'智能客服助手'},
+  {id:'ZJT-13912345678-260512143022-03', name:'合同审查 Agent'},
+  {id:'SJB-15098765432-260423101122-04', name:'数据分析助手'},
+  {id:'YFB-17612345678-260331162345-05', name:'代码评审 Agent'},
+  {id:'ZJT-18800001111-260215092156-06', name:'知识库问答'},
+  {id:'YFB-13566669999-260109113045-07', name:'会议纪要生成'},
+  {id:'SJB-13611112222-251228161512-08', name:'翻译工作流'},
+  {id:'ZJT-13722223333-251115174523-09', name:'舆情监测 Agent'},
+  {id:'YFB-15833334444-251002185634-10', name:'招聘筛选助手'},
+];
+
+/* ---------- Mock API keys ---------- */
+let keys = [
+  {id:'k1', name:'CRM-营销系统', prefix:'ak-6ccff17c', suffix:'a124', full:'ak-6ccff17c8d9e0f1a2b3c4d5e6f7a124', status:1, expires:'2026-10-12 23:59', creator:'张楠', created:'2026-07-12 14:30', apps:['ZJT-13256602185-260713125934-01']},
+  {id:'k2', name:'官网客服接入', prefix:'ak-2a1b9f8e', suffix:'c930', full:'ak-2a1b9f8e7d6c5b4a3f2e1d0c9b8c930', status:1, expires:'', creator:'张楠', created:'2026-06-28 09:15', apps:['KFB-13800138000-260612083012-02','ZJT-18800001111-260215092156-06']},
+  {id:'k3', name:'法务合同批处理', prefix:'ak-9f0e1d2c', suffix:'e771', full:'ak-9f0e1d2c3b4a5968778695a4b3e771', status:0, expires:'2026-09-01 18:00', creator:'李维', created:'2026-06-20 16:42', apps:['ZJT-13912345678-260512143022-03']},
+  {id:'k4', name:'BI-数据看板', prefix:'ak-3c4d5e6f', suffix:'b208', full:'ak-3c4d5e6f7a8b9c0d1e2f3a4b5b208', status:2, expires:'2026-07-01 00:00', creator:'王芳', created:'2026-04-15 11:20', apps:['SJB-15098765432-260423101122-04','ZJT-13722223333-251115174523-09']},
+  {id:'k5', name:'内部代码平台', prefix:'ak-7a8b9c0d', suffix:'f345', full:'ak-7a8b9c0d1e2f3a4b5c6d7e8f9f345', status:1, expires:'2026-12-31 23:59', creator:'张楠', created:'2026-05-30 10:05', apps:['YFB-17612345678-260331162345-05']},
+  {id:'k6', name:'翻译中台', prefix:'ak-5e6f7a8b', suffix:'d612', full:'ak-5e6f7a8b9c0d1e2f3a4b5c6d7d612', status:1, expires:'2026-11-15 12:00', creator:'李维', created:'2026-05-18 15:33', apps:['SJB-13611112222-251228161512-08','YFB-13566669999-260109113045-07']},
+  {id:'k7', name:'招聘官网机器人', prefix:'ak-8b9c0d1e', suffix:'a447', full:'ak-8b9c0d1e2f3a4b5c6d7e8f9a447', status:1, expires:'2026-08-20 23:59', creator:'张楠', created:'2026-07-10 11:08', apps:['YFB-15833334444-251002185634-10','ZJT-18800001111-260215092156-06']},
+  {id:'k8', name:'舆情日报推送', prefix:'ak-1f2a3b4c', suffix:'e553', full:'ak-1f2a3b4c5d6e7f8a9b0c1d2e553', status:0, expires:'2026-09-30 18:00', creator:'王芳', created:'2026-06-11 09:50', apps:['ZJT-13722223333-251115174523-09']},
+  {id:'k9', name:'问卷智能分析', prefix:'ak-4d5e6f7a', suffix:'b819', full:'ak-4d5e6f7a8b9c0d1e2f3a4b5b819', status:1, expires:'', creator:'李维', created:'2026-07-05 16:22', apps:['SJB-15098765432-260423101122-04']},
+  {id:'k10', name:'合同批量抽取', prefix:'ak-9c8b7a6d', suffix:'f260', full:'ak-9c8b7a6d5e4f3a2b1c0d9e8f260', status:2, expires:'2026-06-30 00:00', creator:'张楠', created:'2026-03-22 14:10', apps:['ZJT-13912345678-260512143022-03','YFB-15833334444-251002185634-10']},
+  {id:'k11', name:'智能翻译插件', prefix:'ak-2e3f4a5b', suffix:'c671', full:'ak-2e3f4a5b6c7d8e9f0a1b2c3c671', status:1, expires:'2026-12-01 23:59', creator:'王芳', created:'2026-04-28 10:35', apps:['SJB-13611112222-251228161512-08']},
+  {id:'k12', name:'财报问答助手', prefix:'ak-6a7b8c9d', suffix:'d384', full:'ak-6a7b8c9d0e1f2a3b4c5d6e7d384', status:1, expires:'2027-01-15 12:00', creator:'张楠', created:'2026-07-01 13:47', apps:['ZJT-13256602185-260713125934-01','YFB-17612345678-260331162345-05','YFB-13566669999-260109113045-07']},
+];
+
+/* ---------- Mock logs ---------- */
+const LOG_PATHS = ['/v1/chat/completions','/v1/files','/v1/agents/run','/v1/chat/completions','/v1/embeddings','/v1/files/upload'];
+const LOG_REGIONS = ['华东-上海','华北-北京','华南-广州','亚太-新加坡'];
+function rndHex(n){return Array.from({length:n},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');}
+function pad(n){return String(n).padStart(2,'0');}
+function fmtDT(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;}
+let logs = [];
+(function genLogs(){
+  const now = new Date('2026-07-14T09:00:00');
+  keys.forEach((k, ki)=>{
+    if(k.status===2) return; // expired key: no recent logs
+    const n = 14 + Math.floor(Math.random()*16);
+    for(let i=0;i<n;i++){
+      const daysAgo = Math.floor(Math.random()*14);
+      const d = new Date(now - daysAgo*864e5 - Math.floor(Math.random()*864e5));
+      const isErr = Math.random()<0.18;
+      const code = isErr ? (Math.random()<0.6?429:(Math.random()<0.5?403:500)) : 200;
+      const path = LOG_PATHS[Math.floor(Math.random()*LOG_PATHS.length)];
+      const appId = k.apps[Math.floor(Math.random()*k.apps.length)];
+      const app = APPS.find(a=>a.id===appId);
+      logs.push({
+        id:'log-'+k.id+'-'+i,
+        time:fmtDT(d),
+        ts:d.getTime(),
+        keyId:k.id, keyName:k.name,
+        appId, appName:app?app.name:appId,
+        method:'POST',
+        path,
+        code,
+        duration:+(Math.random()*2.2+0.2).toFixed(2),
+        ip:`203.0.113.${10+((ki*7+i)%240)}`,
+        tokens:Math.floor(Math.random()*4200+80),
+        region:LOG_REGIONS[(ki+i)%LOG_REGIONS.length],
+        req:{model:'omni-pro',stream:true,messages:[{role:'user',content:'…（用户消息摘要）'}],max_tokens:2048},
+        resp: code===200
+          ? {id:'chatcmpl-'+rndHex(12),choices:[{finish_reason:'stop',message:{role:'assistant',content:'…（生成结果摘要）'}}],usage:{prompt_tokens:Math.floor(Math.random()*800+50),completion_tokens:Math.floor(Math.random()*1500+100)}}
+          : {error:{code:code,message: code===429?'rate limit exceeded':code===403?'forbidden: app not authorized':code===500?'internal server error':'error'}}
+      });
+    }
+  });
+  logs.sort((a,b)=>b.ts-a.ts);
+})();
+
+/* ---------- State ---------- */
+let filtered = [...keys];
+let page = 1, pageSize = 10;
+let editId = null;
+let leftSel = [], rightSel = [], rightApps = [];
+let confirmCtx = null, delCtx = null;
+
+/* ---------- Utils ---------- */
+function fmtStatus(k){
+  if(!k.expires) return '<span class="status on"><span class="d"></span>未过期</span>';
+  if(new Date(k.expires) < new Date()) return '<span class="status exp"><span class="d"></span>已过期</span>';
+  return '<span class="status on"><span class="d"></span>未过期</span>';
+}
+function maskKey(k){ return k.prefix+'••••••••'+k.suffix; }
+function appNames(ids){ return ids.map(id=>{const a=APPS.find(x=>x.id===id);return a?a.name:id;}); }
+/* ---------- App hover tip (dark) ---------- */
+function showAppTip(keyId, e){
+  const k=keys.find(x=>x.id===keyId); if(!k) return;
+  const objs=k.apps.map(id=>APPS.find(x=>x.id===id)).filter(Boolean);
+  if(!objs.length) return;
+  const html=objs.map(a=>
+    `<div class="tip-row"><span class="tip-k">专家名</span><span class="tip-v">${a.name}</span></div>`+
+    `<div class="tip-row"><span class="tip-k">专家ID</span><span class="tip-v">${a.id}</span></div>`
+  ).join('<div class="tip-sep"></div>');
+  const tip=document.getElementById('appTip');
+  tip.innerHTML=html; tip.style.display='block';
+  moveAppTip(e);
+}
+function moveAppTip(e){
+  const tip=document.getElementById('appTip');
+  if(tip.style.display!=='block') return;
+  const pad=14;
+  let x=e.clientX+pad, y=e.clientY+pad;
+  const r=tip.getBoundingClientRect();
+  if(x+r.width>window.innerWidth-8) x=e.clientX-r.width-pad;
+  if(y+r.height>window.innerHeight-8) y=e.clientY-r.height-pad;
+  if(x<8)x=8; if(y<8)y=8;
+  tip.style.left=x+'px'; tip.style.top=y+'px';
+}
+function hideAppTip(){const tip=document.getElementById('appTip');tip.style.display='none';}
+
+function toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2200);}
+
+/* ---------- View switch ---------- */
+function switchView(v){
+  document.getElementById('view-keys').classList.toggle('active', v==='keys');
+  document.getElementById('view-logs').classList.toggle('active', v==='logs');
+  document.getElementById('crumbCur').textContent = v==='keys'?'API Key':'调用日志';
+  if(v==='logs'){ initLogFilters(); renderLogs(); }
+}
+
+/* ---------- Render key table ---------- */
+function render(){
+  const tb=document.getElementById('tbody');
+  const start=(page-1)*pageSize;
+  const rows=filtered.slice(start,start+pageSize);
+  if(rows.length===0){
+    tb.innerHTML='<tr><td colspan="9"><div class="empty">暂无数据</div></td></tr>';
+  }else{
+    tb.innerHTML=rows.map(k=>{
+      const appObjs=k.apps.map(id=>APPS.find(x=>x.id===id)).filter(Boolean);
+      const appNamesArr=appObjs.map(a=>a.name);
+      const appLabel=appNamesArr.length>1?`${appNamesArr[0]} 等 ${appNamesArr.length} 个`:(appNamesArr[0]||'-');
+      const checked=k.status===1?'checked':'';
+      return `<tr>
+        <td><span class="name">${k.name}</span></td>
+        <td><span class="keycell">${maskKey(k)}<span class="copy-ic" title="复制完整 Key" onclick="copyKey(event,'${k.id}')">⧉</span></span></td>
+        <td class="app-cell" onmouseenter="showAppTip('${k.id}',event)" onmousemove="moveAppTip(event)" onmouseleave="hideAppTip()">${appLabel}</td>
+        <td>${k.creator}</td>
+        <td>${k.created}</td>
+        <td>${k.expires||'<span style="color:var(--text-light)">永不过期</span>'}</td>
+        <td>${fmtStatus(k)}</td>
+        <td style="text-align:center">
+          <label class="switch" title="${k.status===1?'点击禁用':'点击启用'}" onclick="toggleSwitch('${k.id}',event)">
+            <input type="checkbox" ${checked} onclick="event.preventDefault();event.stopPropagation()">
+            <span class="slider"></span>
+          </label>
+        </td>
+        <td><div class="op" style="justify-content:flex-end">
+          <button class="btn ghost sm" onclick="openDrawer('${k.id}')">编辑</button>
+          <button class="btn ghost sm danger" onclick="askDelete('${k.id}')">删除</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+  const total=filtered.length;
+  const pageCount=Math.max(1,Math.ceil(total/pageSize));
+  if(page>pageCount)page=pageCount;
+  document.getElementById('pagerInfo').textContent=`共 ${total} 条 · 每页 ${pageSize} 条`;
+  document.getElementById('totalNote').textContent=`当前共 ${keys.length} 个 API Key`;
+  let ph=`<button class="page-btn" ${page===1?'disabled':''} onclick="go(${page-1})">‹</button>`;
+  for(let i=1;i<=pageCount;i++) ph+=`<button class="page-btn ${i===page?'active':''}" onclick="go(${i})">${i}</button>`;
+  ph+=`<button class="page-btn" ${page===pageCount?'disabled':''} onclick="go(${page+1})">›</button>`;
+  document.getElementById('pages').innerHTML=ph;
+}
+function go(p){page=p;render();}
+function onSearch(){}
+function applySearch(){
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  const cf=document.getElementById('creatorFilter').value;
+  const me='张楠'; // 当前登录用户
+  filtered=keys.filter(k=>
+    k.name.toLowerCase().includes(q) &&
+    (cf==='all' || k.creator===me)
+  );
+  page=1;render();
+}
+function resetSearch(){
+  document.getElementById('searchInput').value='';
+  document.getElementById('creatorFilter').value='all';
+  filtered=[...keys];page=1;render();
+}
+
+/* ---------- Copy ---------- */
+function copyKey(ev,id){ev.stopPropagation();const k=keys.find(x=>x.id===id);navigator.clipboard?.writeText(k.full).catch(()=>{});toast('完整 API Key 已复制到剪贴板');}
+
+/* ---------- Drawer create/edit ---------- */
+function openDrawer(id){
+  editId=id||null;
+  document.getElementById('drawerTitle').textContent=id?'编辑 API Key':'新增 API Key';
+  clearErr();
+  if(id){
+    const k=keys.find(x=>x.id===id);
+    document.getElementById('f-name').value=k.name;
+    if(k.expires){document.querySelector('input[name=expMode][value=date]').checked=true;document.getElementById('f-exp').value=k.expires.replace(' ','T');}
+    else{document.querySelector('input[name=expMode][value=never]').checked=true;}
+    rightApps=[...k.apps];
+  }else{
+    const ts=new Date();
+    document.getElementById('f-name').value=`APIKey-${ts.getFullYear()}${pad(ts.getMonth()+1)}${pad(ts.getDate())}${pad(ts.getHours())}${pad(ts.getMinutes())}`;
+    document.querySelector('input[name=expMode][value=date]').checked=true;
+    const d=new Date(Date.now()+90*864e5);
+    document.getElementById('f-exp').value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T23:59`;
+    rightApps=[];
+  }
+  leftSel=[];rightSel=[];
+  toggleExp();renderTransfer();
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('drawer').classList.add('show');
+}
+function closeDrawer(){document.getElementById('mask').classList.remove('show');document.getElementById('drawer').classList.remove('show');}
+function toggleExp(){const mode=document.querySelector('input[name=expMode]:checked').value;document.getElementById('f-exp').style.display=mode==='date'?'block':'none';}
+
+/* ---------- Transfer ---------- */
+function renderTransfer(){
+  const lq=document.getElementById('leftSearch').value.trim().toLowerCase();
+  const rq=document.getElementById('rightSearch').value.trim().toLowerCase();
+  const left=APPS.filter(a=>!rightApps.includes(a.id)&&a.name.toLowerCase().includes(lq));
+  const right=APPS.filter(a=>rightApps.includes(a.id)&&a.name.toLowerCase().includes(rq));
+  document.getElementById('leftList').innerHTML=left.length?left.map(a=>`
+    <label class="titem"><input type="checkbox" ${leftSel.includes(a.id)?'checked':''} onchange="tSel('L','${a.id}')"><div class="tinfo"><span class="tname">${a.name}</span><span class="tid">${a.id}</span></div></label>`).join(''):'<div class="empty">无可选智能体</div>';
+  document.getElementById('rightList').innerHTML=right.length?right.map(a=>`
+    <label class="titem"><input type="checkbox" ${rightSel.includes(a.id)?'checked':''} onchange="tSel('R','${a.id}')"><div class="tinfo"><span class="tname">${a.name}</span><span class="tid">${a.id}</span></div></label>`).join(''):'<div class="empty">尚未授权任何智能体</div>';
+  document.getElementById('leftCnt').textContent=`${APPS.length-rightApps.length} 个`;
+  document.getElementById('rightCnt').textContent=`${rightApps.length} 个`;
+  document.getElementById('toRight').disabled=leftSel.length===0;
+  document.getElementById('toLeft').disabled=rightSel.length===0;
+}
+function tSel(side,id){const arr=side==='L'?leftSel:rightSel;const i=arr.indexOf(id);i>-1?arr.splice(i,1):arr.push(id);renderTransfer();}
+function moveRight(){rightApps.push(...leftSel);leftSel=[];renderTransfer();}
+function moveLeft(){rightApps=rightApps.filter(id=>!rightSel.includes(id));rightSel=[];renderTransfer();}
+
+/* ---------- Validate + submit ---------- */
+function clearErr(){['name','exp','apps'].forEach(k=>{document.getElementById('fi-'+k).classList.remove('invalid');document.getElementById('err-'+k).classList.remove('show');});}
+function submitForm(){
+  clearErr();let ok=true;
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){document.getElementById('fi-name').classList.add('invalid');document.getElementById('err-name').classList.add('show');ok=false;}
+  const mode=document.querySelector('input[name=expMode]:checked').value;
+  let expires='';
+  if(mode==='date'){
+    const v=document.getElementById('f-exp').value;
+    if(!v||new Date(v)<=new Date()){document.getElementById('fi-exp').classList.add('invalid');document.getElementById('err-exp').classList.add('show');ok=false;}
+    else expires=v.replace('T',' ');
+  }
+  if(rightApps.length===0){document.getElementById('err-apps').classList.add('show');ok=false;}
+  if(!ok)return;
+  if(editId){
+    const k=keys.find(x=>x.id===editId);
+    k.name=name;k.expires=expires;k.apps=[...rightApps];
+    if(k.status===2 && (mode==='never'||new Date(expires)>new Date())) k.status=1;
+    closeDrawer();applySearch();toast('API Key 已更新');
+  }else{
+    const prefix='ak-'+rndHex(8),suffix=rndHex(4),full=prefix+rndHex(20)+suffix;
+    const ts=new Date();
+    const created=`${ts.getFullYear()}-${pad(ts.getMonth()+1)}-${pad(ts.getDate())} ${pad(ts.getHours())}:${pad(ts.getMinutes())}`;
+    const nk={id:'k'+Date.now(),name,prefix,suffix,full,status:1,expires,creator:'张楠',created,apps:[...rightApps]};
+    keys.unshift(nk);
+    closeDrawer();resetSearch();
+    document.getElementById('revealKey').textContent=full;
+    window._revealFull=full;
+    document.getElementById('revealModal').classList.add('show');
+  }
+}
+function copyReveal(){navigator.clipboard?.writeText(window._revealFull).catch(()=>{});toast('完整 API Key 已复制到剪贴板');}
+function closeReveal(){document.getElementById('revealModal').classList.remove('show');}
+
+/* ---------- Enable / Disable ---------- */
+function askDisable(id){confirmCtx={id,type:'disable'};const k=keys.find(x=>x.id===id);
+  document.getElementById('cf-icon').className='modal-icon warn';document.getElementById('cf-icon').textContent='!';
+  document.getElementById('cf-title').textContent='禁用 API Key';
+  document.getElementById('cf-desc').innerHTML=`禁用后，密钥「<b>${k.name}</b>」的所有外部调用将<strong>立即返回 403</strong>。你可以随时重新启用。`;
+  document.getElementById('cf-ok').textContent='确认禁用';
+  document.getElementById('confirmModal').classList.add('show');}
+function askEnable(id){confirmCtx={id,type:'enable'};const k=keys.find(x=>x.id===id);
+  document.getElementById('cf-icon').className='modal-icon ok';document.getElementById('cf-icon').textContent='✓';
+  document.getElementById('cf-title').textContent='启用 API Key';
+  document.getElementById('cf-desc').innerHTML=`启用后，密钥「<b>${k.name}</b>」将恢复外部调用能力。`;
+  document.getElementById('cf-ok').textContent='确认启用';
+  document.getElementById('confirmModal').classList.add('show');}
+function confirmAction(){const k=keys.find(x=>x.id===confirmCtx.id);
+  if(confirmCtx.type==='disable'){k.status=0;toast('API Key 已禁用');}
+  else{k.status=1;toast('API Key 已启用');}
+  closeConfirm();render();}
+function closeConfirm(){document.getElementById('confirmModal').classList.remove('show');confirmCtx=null;}
+function toggleSwitch(id,event){
+  event.stopPropagation();
+  const k=keys.find(x=>x.id===id);
+  if(k.status===1){
+    k.status=0;toast(`API Key「${k.name}」已禁用`);
+  }else{
+    k.status=1;toast(`API Key「${k.name}」已启用`);
+  }
+  render();
+}
+
+/* ---------- Delete ---------- */
+function askDelete(id){delCtx=id;const k=keys.find(x=>x.id===id);
+  document.getElementById('del-name-hint').textContent='「'+k.name+'」';
+  document.getElementById('del-input').value='';
+  document.getElementById('del-ok').disabled=true;
+  document.getElementById('delModal').classList.add('show');}
+function checkDel(){const k=keys.find(x=>x.id===delCtx);document.getElementById('del-ok').disabled=document.getElementById('del-input').value.trim()!==k.name;}
+function doDelete(){keys=keys.filter(x=>x.id!==delCtx);closeDel();applySearch();toast('API Key 已删除');}
+function closeDel(){document.getElementById('delModal').classList.remove('show');delCtx=null;}
+
+/* ---------- Logs page ---------- */
+let logPage = 1, logPageSize = 8;
+let logPresetKey = ''; // 从列表跳转带入
+
+function initLogFilters(){
+  const keySel=document.getElementById('lf-key');
+  keySel.innerHTML='<option value="all">全部密钥</option>'+keys.filter(k=>k.status!==2).map(k=>`<option value="${k.id}">${k.name}</option>`).join('');
+  const appSel=document.getElementById('lf-app');
+  appSel.innerHTML='<option value="all">全部应用</option>'+APPS.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  if(logPresetKey){keySel.value=logPresetKey;}
+  // 时间默认近7天，模拟真实偏好
+  document.getElementById('lf-range').value='7';
+  document.getElementById('lf-code').value='all';
+  document.getElementById('lf-search').value='';
+}
+function getLogFiltered(){
+  const key=document.getElementById('lf-key').value;
+  const app=document.getElementById('lf-app').value;
+  const code=document.getElementById('lf-code').value;
+  const range=document.getElementById('lf-range').value;
+  const q=document.getElementById('lf-search').value.trim().toLowerCase();
+  const now=new Date('2026-07-14T09:00:00').getTime();
+  return logs.filter(l=>{
+    if(key!=='all' && l.keyId!==key) return false;
+    if(app!=='all' && l.appId!==app) return false;
+    if(code!=='all' && !String(l.code).startsWith(code)) return false;
+    if(range!=='all'){const days=+range*864e5;if(now-l.ts>days) return false;}
+    if(q && !(l.path.toLowerCase().includes(q)||l.appName.toLowerCase().includes(q))) return false;
+    return true;
+  });
+}
+function renderLogs(){
+  const list=getLogFiltered();
+  // stats
+  const total=list.length;
+  const errs=list.filter(l=>l.code>=400).length;
+  const succ=total-errs;
+  const avgDur=total? (list.reduce((s,l)=>s+l.duration,0)/total).toFixed(2):'0.00';
+  const successRate= total? (succ/total*100).toFixed(1):'0.0';
+  document.getElementById('logStats').innerHTML=`
+    <div class="stat"><div class="v blue">${total}</div><div class="l">调用总数</div></div>
+    <div class="stat"><div class="v green">${successRate}%</div><div class="l">成功率</div></div>
+    <div class="stat"><div class="v orange">${avgDur}s</div><div class="l">平均耗时</div></div>
+    <div class="stat"><div class="v red">${errs}</div><div class="l">错误次数</div></div>`;
+  // filter tag
+  const keySel=document.getElementById('lf-key');
+  const kt = keySel.value!=='all' ? keySel.options[keySel.selectedIndex].text : '';
+  document.getElementById('logFilterTag').innerHTML = kt ? `<span class="filter-tag">密钥：${kt}<span class="x" onclick="clearLogKeyPreset()">×</span></span>` : '';
+  // table
+  const tb=document.getElementById('logBody');
+  const start=(logPage-1)*logPageSize;
+  const rows=list.slice(start,start+logPageSize);
+  if(rows.length===0){tb.innerHTML='<tr><td colspan="8"><div class="empty">暂无符合条件的日志记录</div></td></tr>';}
+  else{
+    tb.innerHTML=rows.map(l=>{
+      const cls=l.code>=500?'l5':(l.code>=400?'l4':'l2');
+      return `<tr onclick='openLogDetail("${l.id}")'>
+        <td>${l.time}</td>
+        <td>${l.keyName}</td>
+        <td>${l.appName}</td>
+        <td><span class="log-method lm post">${l.method}</span></td>
+        <td><code style="background:var(--code-bg);padding:2px 6px;border-radius:4px;font-size:.82rem">${l.path}</code></td>
+        <td><span class="log-code ${cls}">${l.code}</span></td>
+        <td>${l.duration}s</td>
+        <td>${l.tokens}</td>
+      </tr>`;
+    }).join('');
+  }
+  const pageCount=Math.max(1,Math.ceil(total/logPageSize));
+  if(logPage>pageCount)logPage=pageCount;
+  document.getElementById('logInfo').textContent=`共 ${total} 条日志 · 每页 ${logPageSize} 条`;
+  let ph=`<button class="page-btn" ${logPage===1?'disabled':''} onclick="logGo(${logPage-1})">‹</button>`;
+  for(let i=1;i<=pageCount;i++) ph+=`<button class="page-btn ${i===logPage?'active':''}" onclick="logGo(${i})">${i}</button>`;
+  ph+=`<button class="page-btn" ${logPage===pageCount?'disabled':''} onclick="logGo(${logPage+1})">›</button>`;
+  document.getElementById('logPages').innerHTML=ph;
+}
+function logGo(p){logPage=p;renderLogs();}
+function resetLogFilters(){
+  logPresetKey='';
+  document.getElementById('lf-key').value='all';
+  document.getElementById('lf-app').value='all';
+  document.getElementById('lf-code').value='all';
+  document.getElementById('lf-range').value='all';
+  document.getElementById('lf-search').value='';
+  logPage=1;renderLogs();
+}
+function clearLogKeyPreset(){logPresetKey='';document.getElementById('lf-key').value='all';logPage=1;renderLogs();}
+function goLogs(id){
+  logPresetKey=id;
+  switchView('logs');
+}
+function exportLogs(){toast('已导出 CSV（原型示意）');}
+
+/* ---------- Log detail ---------- */
+function openLogDetail(id){
+  const l=logs.find(x=>x.id===id);
+  if(!l) return;
+  const cls=l.code>=500?'l5':(l.code>=400?'l4':'l2');
+  document.getElementById('logDetailGrid').innerHTML=`
+    <div class="k">时间</div><div class="v">${l.time}</div>
+    <div class="k">密钥</div><div class="v">${l.keyName}</div>
+    <div class="k">应用</div><div class="v">${l.appName}（${l.appId}）</div>
+    <div class="k">接口</div><div class="v">${l.method} ${l.path}</div>
+    <div class="k">状态码</div><div class="v"><span class="log-code ${cls}">${l.code}</span></div>
+    <div class="k">耗时</div><div class="v">${l.duration}s</div>
+    <div class="k">Token</div><div class="v">${l.tokens}</div>
+    <div class="k">来源 IP</div><div class="v">${l.ip}</div>
+    <div class="k">接入区域</div><div class="v">${l.region}</div>`;
+  document.getElementById('logReq').textContent=JSON.stringify(l.req,null,2);
+  document.getElementById('logResp').textContent=JSON.stringify(l.resp,null,2);
+  document.getElementById('logDetailModal').classList.add('show');
+}
+function closeLogDetail(){document.getElementById('logDetailModal').classList.remove('show');}
+
+render();
+</script>
+<div id="appTip" class="app-tip"></div>
+</body>
+</html>

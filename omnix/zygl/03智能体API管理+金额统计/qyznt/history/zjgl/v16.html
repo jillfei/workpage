@@ -4,19 +4,18 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>专家管理</title>
-    <script src="https://cdn.jsdmirror.com/npm/iconify-icon@3.0.2/dist/iconify-icon.min.js">
+    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js">
+    </script>
+    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js">
     </script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
         *,
         *::before,
         *::after {
             box-sizing: border-box;
-            border-width: 0;
-            border-style: solid;
-            border-color: #e5e7eb;
         }
-        table { border-collapse: collapse; }
         html,
         body {
             height: 100%;
@@ -29,10 +28,6 @@
             background: #f9fafb;
             color: #1f2937;
         }
-		
-		button, a {
-		    cursor: pointer;
-		}
         .page-wrap {
             display: flex;
             flex-direction: column;
@@ -80,10 +75,6 @@
         .tag-source-client {
             background: #DBEAFE;
             color: #2563EB;
-        }
-        .tag-warning {
-            background: #FEF3C7;
-            color: #D97706;
         }
 
         .skill-card {
@@ -191,7 +182,7 @@
         .toast {
             position: fixed;
             top: 10%;
-            left: 44%;
+            left: 50%;
             z-index: 100;
             padding: 12px 20px;
             border-radius: 8px;
@@ -444,84 +435,6 @@
             display: flex;
         }
 
-        /* 历史记录下拉：标签页 */
-        .history-tabs {
-            display: flex;
-            padding: 10px 16px 0;
-            border-bottom: 1px solid #F3F4F6;
-            gap: 24px;
-        }
-        .history-tab {
-            position: relative;
-            padding: 8px 0;
-            font-size: 14px;
-            font-weight: 500;
-            color: #6B7280;
-            cursor: pointer;
-            border: none;
-            background: none;
-            transition: color 0.15s;
-        }
-        .history-tab:hover {
-            color: #2563EB;
-        }
-        .history-tab.active {
-            color: #2563EB;
-        }
-        .history-tab.active::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: -1px;
-            height: 2px;
-            background: #2563EB;
-            border-radius: 2px 2px 0 0;
-        }
-
-        /* 保存记录项 */
-        .save-record-item {
-            position: relative;
-            cursor: pointer;
-            transition: background 0.15s, box-shadow 0.15s;
-        }
-        .save-record-item:hover {
-            background: #F0F9FF;
-            box-shadow: inset 0 0 0 1px #BAE6FD;
-        }
-        .save-record-item .restore-version-btn {
-            display: none;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 10px;
-            font-size: 12px;
-            font-weight: 500;
-            color: #2563EB;
-            background: #EFF6FF;
-            border: 1px solid #BFDBFE;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-        .save-record-item:hover .restore-version-btn {
-            display: inline-flex;
-        }
-        .save-record-item .restore-version-btn:hover {
-            background: #DBEAFE;
-        }
-        .save-record-current .save-record-title {
-            font-weight: 600;
-            color: #1F2937;
-        }
-        .save-record-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #3B82F6;
-            flex-shrink: 0;
-            margin-right: 10px;
-            margin-left: 2px;
-        }
 
         .upload-area {
             border: 2px dashed #D1D5DB;
@@ -570,9 +483,6 @@
         }
         .status-dot.disabled {
             background: #818181;
-        }
-        .status-dot.warning {
-            background: #D97706;
         }
 
         .recycle-card {
@@ -1066,213 +976,6 @@
         .ai-step-done iconify-icon {
             color: #10B981 !important;
         }
-
-        /* ═════ Tailwind CSS 工具类替代 ═════ */
-        .flex { display: flex; }
-        .inline-flex { display: inline-flex; }
-        .block { display: block; }
-        .grid { display: grid; }
-        .hidden { display: none; }
-        .flex-col { flex-direction: column; }
-        .flex-1 { flex: 1 1 0%; }
-        .flex-shrink-0 { flex-shrink: 0; }
-        .flex-wrap { flex-wrap: wrap; }
-        .items-center { align-items: center; }
-        .items-start { align-items: flex-start; }
-        .justify-between { justify-content: space-between; }
-        .justify-center { justify-content: center; }
-        .justify-end { justify-content: flex-end; }
-        .gap-0\.5 { gap: 0.125rem; }
-        .gap-1 { gap: 0.25rem; }
-        .gap-2 { gap: 0.5rem; }
-        .gap-3 { gap: 0.75rem; }
-        .gap-4 { gap: 1rem; }
-        .gap-6 { gap: 1.5rem; }
-        .space-x-1 > :not([hidden]) ~ :not([hidden]) { margin-left: 0.25rem; }
-        .space-x-2 > :not([hidden]) ~ :not([hidden]) { margin-left: 0.5rem; }
-        .space-x-3 > :not([hidden]) ~ :not([hidden]) { margin-left: 0.75rem; }
-        .space-x-4 > :not([hidden]) ~ :not([hidden]) { margin-left: 1rem; }
-        .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; }
-        .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem; }
-        .space-y-5 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.25rem; }
-        .w-full { width: 100%; }
-        .w-9 { width: 2.25rem; }
-        .w-11 { width: 2.75rem; }
-        .w-14 { width: 3.5rem; }
-        .h-full { height: 100%; }
-        .h-2 { height: 0.5rem; }
-        .h-9 { height: 2.25rem; }
-        .h-11 { height: 2.75rem; }
-        .h-14 { height: 3.5rem; }
-        .h-16 { height: 4rem; }
-        .min-w-0 { min-width: 0px; }
-        .max-w-md { max-width: 28rem; }
-        .max-w-sm { max-width: 24rem; }
-        .max-w-xs { max-width: 20rem; }
-        .max-w-lg { max-width: 32rem; }
-        .max-w-2xl { max-width: 42rem; }
-        .max-w-3xl { max-width: 48rem; }
-        .max-h-\[90vh\] { max-height: 90vh; }
-        .max-h-\[80vh\] { max-height: 80vh; }
-        .p-1 { padding: 0.25rem; }
-        .p-4 { padding: 1rem; }
-        .p-5 { padding: 1.25rem; }
-        .p-6 { padding: 1.5rem; }
-        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
-        .px-4 { padding-left: 1rem; padding-right: 1rem; }
-        .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
-        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
-        .px-8 { padding-left: 2rem; padding-right: 2rem; }
-        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-        .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
-        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
-        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
-        .py-5 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
-        .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
-        .py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
-        .py-20 { padding-top: 5rem; padding-bottom: 5rem; }
-        .pt-3 { padding-top: 0.75rem; }
-        .pl-10 { padding-left: 2.5rem; }
-        .pr-4 { padding-right: 1rem; }
-        .mb-1 { margin-bottom: 0.25rem; }
-        .mb-2 { margin-bottom: 0.5rem; }
-        .mb-2\.5 { margin-bottom: 0.625rem; }
-        .mb-3 { margin-bottom: 0.75rem; }
-        .mb-4 { margin-bottom: 1rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .mb-8 { margin-bottom: 2rem; }
-        .mt-0\.5 { margin-top: 0.125rem; }
-        .mt-1 { margin-top: 0.25rem; }
-        .mt-2 { margin-top: 0.5rem; }
-        .mt-3 { margin-top: 0.75rem; }
-        .mt-6 { margin-top: 1.5rem; }
-        .mr-3 { margin-right: 0.75rem; }
-        .ml-auto { margin-left: auto; }
-        .mx-4 { margin-left: 1rem; margin-right: 1rem; }
-        .mx-auto { margin-left: auto; margin-right: auto; }
-        .text-xs { font-size: 0.75rem; line-height: 1rem; }
-        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
-        .text-base { font-size: 1rem; line-height: 1.5rem; }
-        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
-        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
-        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
-        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
-        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
-        .text-5xl { font-size: 3rem; line-height: 1; }
-        .text-6xl { font-size: 3.75rem; line-height: 1; }
-        .font-normal { font-weight: 400; }
-        .font-medium { font-weight: 500; }
-        .font-semibold { font-weight: 600; }
-        .font-bold { font-weight: 700; }
-        .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .leading-relaxed { line-height: 1.625; }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .uppercase { text-transform: uppercase; }
-        .tracking-wider { letter-spacing: 0.05em; }
-        .text-left { text-align: left; }
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .text-white { color: #fff; }
-        .text-gray-300 { color: #d1d5db; }
-        .text-gray-400 { color: #9ca3af; }
-        .text-gray-500 { color: #6b7280; }
-        .text-gray-600 { color: #4b5563; }
-        .text-gray-700 { color: #374151; }
-        .text-gray-800 { color: #1f2937; }
-        .text-gray-900 { color: #111827; }
-        .text-blue-500 { color: #3b82f6; }
-        .text-blue-600 { color: #2563eb; }
-        .text-blue-800 { color: #1e40af; }
-        .text-red-500 { color: #ef4444; }
-        .text-red-600 { color: #dc2626; }
-        .text-red-700 { color: #b91c1c; }
-        .text-green-500 { color: #22c55e; }
-        .text-green-600 { color: #16a34a; }
-        .text-green-800 { color: #166534; }
-        .text-indigo-500 { color: #6366f1; }
-        .text-indigo-600 { color: #4f46e5; }
-        .bg-white { background-color: #fff; }
-        .bg-gray-50 { background-color: #f9fafb; }
-        .bg-gray-100 { background-color: #f3f4f6; }
-        .bg-blue-50 { background-color: #eff6ff; }
-        .bg-blue-600 { background-color: #2563eb; }
-        .bg-red-50 { background-color: #fef2f2; }
-        .bg-red-600 { background-color: #dc2626; }
-        .bg-green-50 { background-color: #f0fdf4; }
-        .bg-green-600 { background-color: #16a34a; }
-        .bg-indigo-50 { background-color: #eef2ff; }
-        .bg-indigo-600 { background-color: #4f46e5; }
-        .border-gray-50 { border-color: #f9fafb; }
-        .border-gray-100 { border-color: #f3f4f6; }
-        .border-gray-200 { border-color: #e5e7eb; }
-        .border-blue-100 { border-color: #dbeafe; }
-        .border-green-100 { border-color: #dcfce7; }
-        .border-indigo-300 { border-color: #a5b4fc; }
-        .border { border-width: 1px; }
-        .border-b { border-bottom-width: 1px; }
-        .border-t { border-top-width: 1px; }
-        .rounded { border-radius: 0.25rem; }
-        .rounded-lg { border-radius: 0.5rem; }
-        .rounded-xl { border-radius: 0.75rem; }
-        .rounded-2xl { border-radius: 1rem; }
-        .rounded-full { border-radius: 9999px; }
-        .rounded-b-2xl { border-bottom-left-radius: 1rem; border-bottom-right-radius: 1rem; }
-        .relative { position: relative; }
-        .absolute { position: absolute; }
-        .fixed { position: fixed; }
-        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
-        .inset-2 { top: 0.5rem; right: 0.5rem; bottom: 0.5rem; left: 0.5rem; }
-        .top-1\/2 { top: 50%; }
-        .-translate-y-1\/2 { transform: translateY(-50%); }
-        .left-3 { left: 0.75rem; }
-        .right-0 { right: 0; }
-        .overflow-hidden { overflow: hidden; }
-        .overflow-y-auto { overflow-y: auto; }
-        .shadow-2xl { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
-        .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
-        .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
-        .cursor-pointer { cursor: pointer; }
-        .pointer-events-none { pointer-events: none; }
-        .select-none { user-select: none; }
-        .resize-none { resize: none; }
-        .accent-indigo-600 { accent-color: #4f46e5; }
-        .object-cover { object-fit: cover; }
-        .opacity-0 { opacity: 0; }
-        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-        .bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-from), var(--tw-gradient-to)); }
-        .from-blue-500 { --tw-gradient-from: #3b82f6; --tw-gradient-to: rgb(59 130 246 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
-        .from-blue-50 { --tw-gradient-from: #eff6ff; --tw-gradient-to: rgb(239 246 255 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
-        .to-indigo-600 { --tw-gradient-to: #4f46e5; }
-        .to-indigo-50 { --tw-gradient-to: #eef2ff; }
-        .hover\:text-gray-900:hover { color: #111827; }
-        .hover\:text-gray-800:hover { color: #1f2937; }
-        .hover\:text-blue-600:hover { color: #2563eb; }
-        .hover\:text-blue-800:hover { color: #1e40af; }
-        .hover\:text-red-700:hover { color: #b91c1c; }
-        .hover\:bg-gray-50:hover { background-color: #f9fafb; }
-        .hover\:bg-gray-100:hover { background-color: #f3f4f6; }
-        .hover\:bg-blue-700:hover { background-color: #1d4ed8; }
-        .hover\:bg-blue-100:hover { background-color: #dbeafe; }
-        .hover\:bg-red-700:hover { background-color: #b91c1c; }
-        .hover\:bg-green-700:hover { background-color: #15803d; }
-        .hover\:bg-indigo-700:hover { background-color: #4338ca; }
-        .focus\:outline-none:focus { outline: none; }
-        .focus\:ring-2:focus { box-shadow: 0 0 0 2px var(--tw-ring-color, rgb(59 130 246 / 0.5)); }
-        .focus\:ring-blue-500\/20:focus { --tw-ring-color: rgb(59 130 246 / 0.2); }
-        .focus\:border-blue-500:focus { border-color: #3b82f6; }
-        .focus\:ring-indigo-500:focus { --tw-ring-color: #6366f1; }
-        .focus\:border-transparent:focus { border-color: transparent; }
-        .focus\:ring-green-500\/20:focus { --tw-ring-color: rgb(34 197 94 / 0.2); }
-        .focus\:border-green-500:focus { border-color: #22c55e; }
-        @media (min-width: 768px) {
-            .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        }
-        @media (min-width: 1024px) {
-            .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-        }
-        @media (min-width: 1280px) {
-            .xl\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-        }
     </style>
 </head>
 <body>
@@ -1315,14 +1018,14 @@
                                     <div style="font-size:11px;color:#9CA3AF;">描述需求，AI 自动生成专家</div>
                                 </div>
                             </div>
-                            <!--div style="height:1px;background:#F3F4F6;margin:4px 8px;"></div>
+                            <div style="height:1px;background:#F3F4F6;margin:4px 8px;"></div>
                             <div class="dropdown-item" onclick="closeCreateDropdown();openModal('importModal')" style="padding:8px 12px;cursor:pointer;border-radius:6px;gap:10px;align-items:center;">
                                 <iconify-icon icon="mdi:tray-arrow-up" class="text-lg text-green-600"></iconify-icon>
                                 <div>
                                     <div style="font-size:13px;font-weight:500;color:#374151;">导入专家</div>
                                     <div style="font-size:11px;color:#9CA3AF;">通过JSON配置文件导入专家</div>
                                 </div>
-                            </div-->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1331,7 +1034,7 @@
                         <iconify-icon icon="mdi:arrow-left"></iconify-icon>
                         <span>返回</span>
                     </button>
-                    <button style="display: none;" onclick="exportSkill(currentSkill ? currentSkill.id : null)" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                    <button onclick="exportSkill(currentSkill ? currentSkill.id : null)" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                         <iconify-icon icon="mdi:download-outline"></iconify-icon>
                         <span>导出专家</span>
                     </button>
@@ -1339,19 +1042,15 @@
                     <div class="relative" id="publish-history-wrap">
                         <button id="btn-publish-history" onclick="togglePublishHistoryDropdown(event)" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                             <iconify-icon icon="mdi:history"></iconify-icon>
-                            <span>发布记录</span>
+                            <span>历史记录</span>
                             <iconify-icon icon="mdi:chevron-down" class="text-base text-gray-400"></iconify-icon>
                         </button>
                         <div id="publishHistoryDropdown" class="history-dropdown hidden">
                             <div class="history-dropdown-header">
-                                <span class="history-dropdown-title">发布记录</span>
+                                <span class="history-dropdown-title">发布历史</span>
                                 <button class="history-dropdown-close" onclick="closePublishHistoryDropdown()">
                                     <iconify-icon icon="mdi:close" class="text-sm"></iconify-icon>
                                 </button>
-                            </div>
-                            <div class="history-tabs" style="display: none;">
-                                <button class="history-tab active" data-tab="save" onclick="switchHistoryTab('save')">保存记录</button>
-                                <button class="history-tab" data-tab="publish" onclick="switchHistoryTab('publish')">发布历史</button>
                             </div>
                             <div class="history-list custom-scrollbar" id="publishHistoryList">
                                 <!-- 由 renderPublishHistory() 动态渲染 -->
@@ -1364,7 +1063,7 @@
                     </button>
                     <button id="btn-publish-detail" onclick="openPublishModal('save-publish')" class="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
                         <iconify-icon icon="mdi:rocket-launch-outline"></iconify-icon>
-                        <span>发布</span>
+                        <span>保存并发布</span>
                     </button>
                     <button id="btn-publish-only" onclick="openPublishModal('publish')" style="display:none;" class="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
                         <iconify-icon icon="mdi:rocket-launch-outline"></iconify-icon>
@@ -1400,7 +1099,7 @@
                     </div>
                     <div class="flex items-center space-x-2 flex-wrap gap-2">
                         <!-- 来源筛选 -->
-                        <div class="relative" style="display:none">
+                        <div class="relative">
                             <button class="flex items-center space-x-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50" onclick="toggleSourceFilter(event)">
                                 <span id="source-filter-label">全部来源</span>
                                 <iconify-icon class="text-gray-400" icon="mdi:chevron-down"></iconify-icon>
@@ -1413,11 +1112,11 @@
                         </div>
                         <div class="relative">
                             <button class="flex items-center space-x-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50" onclick="toggleCategoryFilter(event)">
-                                <span id="category-filter-label">全部类别</span>
+                                <span id="category-filter-label">全部分类</span>
                                 <iconify-icon class="text-gray-400" icon="mdi:chevron-down"></iconify-icon>
                             </button>
                             <div id="category-filter-dropdown" class="filter-dropdown hidden">
-                                <div class="filter-option active" onclick="selectCategoryFilter('', this)"><span>全部类别</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
+                                <div class="filter-option active" onclick="selectCategoryFilter('', this)"><span>全部分类</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
                                 <div class="filter-option" onclick="selectCategoryFilter('代码生成', this)"><span>代码生成</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
                                 <div class="filter-option" onclick="selectCategoryFilter('数据分析', this)"><span>数据分析</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
                                 <div class="filter-option" onclick="selectCategoryFilter('文档处理', this)"><span>文档处理</span><iconify-icon icon="mdi:check" class="check-icon text-sm"></iconify-icon></div>
@@ -1480,13 +1179,6 @@
                                 <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline"></iconify-icon> <span id="detail-creator">孙礼飞</span></span>
                                 <span class="flex items-center gap-1"><iconify-icon icon="mdi:counter"></iconify-icon> 调用 <span id="detail-calls">128</span> 次</span>
                                 <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon> 更新于 <span id="detail-updated">2026-07-05 14:30</span></span>
-                                <span class="flex items-center gap-1 text-blue-600 hidden" id="detail-auto-save-wrap">
-                                    <iconify-icon icon="mdi:content-save-check-outline"></iconify-icon>
-                                    自动保存于 <span id="detail-auto-save">2026-07-13 11:19:42</span>
-                                </span>
-                                <span class="tag tag-warning hidden" id="detail-unpublished-tag">
-                                    <span class="status-dot warning"></span>有未发布的内容
-                                </span>
                             </div>
                         </div>
                     </div>
@@ -1512,14 +1204,14 @@
                         <div class="tri-panel-header">
                             <span class="panel-title">预览调试</span>
                             <div class="panel-actions" style="position:relative;">
-                                <!--button class="mid-btn active" data-tab="new-session" onclick="loadHistorySession('新会话', './zjgl/2-ai-chat.html')">
+                                <button class="mid-btn active" data-tab="new-session" onclick="switchMiddleTab(this, '新会话')">
                                     <iconify-icon icon="mdi:chat-plus-outline" class="text-sm"></iconify-icon>
                                     新会话
-                                </button-->
-                                <!--button class="mid-btn" data-tab="history" id="historyBtn" onclick="toggleHistoryDropdown(event)">
+                                </button>
+                                <button class="mid-btn" data-tab="history" id="historyBtn" onclick="toggleHistoryDropdown(event)">
                                     <iconify-icon icon="mdi:history" class="text-sm"></iconify-icon>
                                     历史
-                                </button-->
+                                </button>
                                 <!-- 历史下拉弹窗 -->
                                 <div class="history-dropdown hidden" id="historyDropdown">
                                     <div class="history-dropdown-header">
@@ -1528,34 +1220,54 @@
                                             <iconify-icon icon="mdi:close" class="text-sm"></iconify-icon>
                                         </button>
                                     </div>
-                                    <div class="history-session-label">当前会话</div>
+                                    <div class="history-session-label">会话 12</div>
                                     <div class="history-list custom-scrollbar">
-                                        <div class="history-item" onclick="loadHistorySession('识别身份证信息', './zjgl/2-ai-chat.html?h=0')">
-                                            <span class="history-item-title">识别身份证信息</span>
+                                        <div class="history-item" onclick="loadHistorySession('创建数据分析专家配置')">
+                                            <span class="history-item-title">创建数据分析专家配置</span>
                                             <span class="history-item-time">2026-07-08 14:30:25</span>
                                         </div>
-                                        <div class="history-item" onclick="loadHistorySession('表格里的数据怎么提取', './zjgl/2-ai-chat.html?h=1')">
-                                            <span class="history-item-title">表格里的数据怎么提取</span>
+                                        <div class="history-item" onclick="loadHistorySession('调整专家节点参数')">
+                                            <span class="history-item-title">调整专家节点参数</span>
                                             <span class="history-item-time">2026-07-08 13:15:42</span>
                                         </div>
-                                        <div class="history-item" onclick="loadHistorySession('查询一下产品的最新优惠活动', './zjgl/2-ai-chat.html?h=2')">
-                                            <span class="history-item-title">查询一下产品的最新优惠活动</span>
+                                        <div class="history-item" onclick="loadHistorySession('新增财务审计专家')">
+                                            <span class="history-item-title">新增财务审计专家</span>
                                             <span class="history-item-time">2026-07-08 11:20:18</span>
+                                        </div>
+                                        <div class="history-item" onclick="loadHistorySession('优化工作流连线逻辑')">
+                                            <span class="history-item-title">优化工作流连线逻辑</span>
+                                            <span class="history-item-time">2026-07-07 16:45:33</span>
+                                        </div>
+                                        <div class="history-item" onclick="loadHistorySession('配置 MCP 服务连接')">
+                                            <span class="history-item-title">配置 MCP 服务连接</span>
+                                            <span class="history-item-time">2026-07-07 14:22:07</span>
+                                        </div>
+                                        <div class="history-item" onclick="loadHistorySession('调试 BI 工程师节点')">
+                                            <span class="history-item-title">调试 BI 工程师节点</span>
+                                            <span class="history-item-time">2026-07-07 10:38:51</span>
+                                        </div>
+                                        <div class="history-item" onclick="loadHistorySession('生成月度财务报告')">
+                                            <span class="history-item-title">生成月度财务报告</span>
+                                            <span class="history-item-time">2026-07-06 17:12:44</span>
+                                        </div>
+                                        <div class="history-item" onclick="loadHistorySession('添加数据可视化组件')">
+                                            <span class="history-item-title">添加数据可视化组件</span>
+                                            <span class="history-item-time">2026-07-06 15:05:29</span>
                                         </div>
                                     </div>
                                 </div>
-                                <!--button class="mid-btn" data-tab="product" onclick="switchMiddleTab(this, '产物'); openRightPanel('product')">
+                                <button class="mid-btn" data-tab="product" onclick="switchMiddleTab(this, '产物'); openRightPanel('product')">
                                     <iconify-icon icon="mdi:file-document-outline" class="text-sm"></iconify-icon>
                                     产物
-                                </button-->
-                                <!--button id="btn-ai-tuning" class="mid-btn" data-tab="ai-tuning" onclick="switchMiddleTab(this, 'AI 智能调优'); openRightPanel('ai-tuning')">
+                                </button>
+                                <button id="btn-ai-tuning" class="mid-btn" data-tab="ai-tuning" onclick="switchMiddleTab(this, 'AI 智能调优'); openRightPanel('ai-tuning')">
                                     <iconify-icon icon="mdi:robot-outline" class="text-sm"></iconify-icon>
                                     AI 智能调优
-                                </button-->
-                                <!--button class="mid-btn" data-tab="run-log" onclick="switchMiddleTab(this, '运行日志'); openRightPanel('run-log')">
+                                </button>
+                                <button class="mid-btn" data-tab="run-log" onclick="switchMiddleTab(this, '运行日志'); openRightPanel('run-log')">
                                     <iconify-icon icon="mdi:console-line" class="text-sm"></iconify-icon>
                                     运行日志
-                                </button-->
+                                </button>
                             </div>
                         </div>
                         <div class="tri-panel-body">
@@ -1630,7 +1342,7 @@
 
     <!-- ═════ 新建专家弹窗 ═════ -->
     <div id="createModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('createModal')">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-bold text-gray-900">新建专家</h3>
                 <button onclick="closeModal('createModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
@@ -1642,7 +1354,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">名称 <span class="text-red-500">*</span></label>
                     <input type="text" id="create-name" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入专家名称" maxlength="50" />
-                    <p class="text-xs text-gray-400 mt-1">不可重名，最大 50 字符</p>
+                    <p class="text-xs text-gray-400 mt-1">同一类别下不可重名，最大 50 字符</p>
                 </div>
 
                 <div>
@@ -1666,6 +1378,10 @@
                             <span id="create-icon-preview-text">🤖</span>
                         </div>
                         <div class="icon-actions">
+                            <button class="btn-icon-action primary" onclick="openCustomIconPicker('create')">
+                                <iconify-icon icon="mdi:emoticon-outline" class="text-base"></iconify-icon>
+                                选择图标
+                            </button>
                             <button class="btn-icon-action" onclick="document.getElementById('create-icon-upload').click()">
                                 <iconify-icon icon="mdi:upload-outline" class="text-base"></iconify-icon>
                                 上传图标
@@ -1675,7 +1391,6 @@
                                 清除
                             </button>
                         </div>
-						<p class="text-xs text-gray-400">支持 JPG、PNG、GIF 格式，图片大小不超过 1MB，建议尺寸 128×128px</p>
                         <input type="file" id="create-icon-upload" accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp" class="hidden" onchange="handleCreateIconUpload(event)" />
                         <div class="upload-progress" id="create-icon-progress">
                             <div class="bar" id="create-icon-progress-bar"></div>
@@ -1687,6 +1402,21 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">描述 <span class="text-red-500">*</span></label>
                     <textarea id="create-desc" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm resize-none" rows="3" placeholder="请描述专家的功能和用途..." maxlength="200" oninput="updateCreateCharCount(this, 200)"></textarea>
                     <p class="text-xs text-gray-400 mt-1"><span id="create-char-count">0</span>/200</p>
+                </div>
+
+                <!-- 来源选择 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">来源 <span class="text-red-500">*</span></label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="create-source" value="管理端" checked class="accent-blue-600">
+                            <span class="text-sm text-gray-700">@ 管理端</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="create-source" value="客户端" class="accent-blue-600">
+                            <span class="text-sm text-gray-700">@ 客户端</span>
+                        </label>
+                    </div>
                 </div>
 
             </div>
@@ -1722,7 +1452,6 @@
                             <div>
                                 <p class="text-sm font-medium text-blue-800 mb-1">提示</p>
                                 <p class="text-xs text-blue-600 leading-relaxed">描述越详细，AI 生成的专家越精准。建议包含：专业领域、核心能力、应用场景、行业背景等信息。</p>
-                                <p class="text-xs text-blue-600 leading-relaxed">系统会使用默认模型自动生成专家。</p>
                             </div>
                         </div>
                     </div>
@@ -1768,7 +1497,7 @@
 
     <!-- ═════ 编辑专家弹窗 ═════ -->
     <div id="editModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('editModal')">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-bold text-gray-900">编辑专家</h3>
                 <button onclick="closeModal('editModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
@@ -1804,6 +1533,10 @@
                             <span id="edit-icon-preview-text">🤖</span>
                         </div>
                         <div class="icon-actions">
+                            <button class="btn-icon-action primary" onclick="openCustomIconPicker('edit')">
+                                <iconify-icon icon="mdi:emoticon-outline" class="text-base"></iconify-icon>
+                                选择图标
+                            </button>
                             <button class="btn-icon-action" onclick="document.getElementById('edit-icon-upload').click()">
                                 <iconify-icon icon="mdi:upload-outline" class="text-base"></iconify-icon>
                                 上传图标
@@ -1813,7 +1546,6 @@
                                 清除
                             </button>
                         </div>
-						<p class="text-xs text-gray-400">支持 JPG、PNG、GIF 格式，图片大小不超过 1MB，建议尺寸 128×128px</p>
                         <input type="file" id="edit-icon-upload" accept="image/png,image/jpeg,image/gif,image/svg+xml,image/webp" class="hidden" onchange="handleEditIconUpload(event)" />
                         <div class="upload-progress" id="edit-icon-progress">
                             <div class="bar" id="edit-icon-progress-bar"></div>
@@ -1858,7 +1590,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">上传 JSON 文件 <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">上传 ZIP 文件 <span class="text-red-500">*</span></label>
                     <div class="upload-area" id="import-upload-area" onclick="document.getElementById('import-file-input').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="event.preventDefault();this.classList.remove('dragover');handleImportDrop(event)">
                         <iconify-icon icon="mdi:cloud-upload-outline" class="text-4xl text-gray-400 mb-3"></iconify-icon>
                         <p class="text-sm text-gray-600 font-medium mb-1">拖拽文件到此处，或点击选择文件</p>
@@ -2027,12 +1759,12 @@
                 </button>
             </div>
             <div class="px-6 py-5 space-y-4">
-                <div style="display:none">
+                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">版本号 <span class="text-red-500">*</span></label>
                     <input id="publish-version-input" type="text" placeholder="例如：v2.1.0" maxlength="20"
                         class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 text-sm"
                         oninput="updatePublishVersion(this)" />
-                    <p class="text-xs text-gray-400 mt-1">格式建议：v主版本.次版本（如 v2.1），请手动填写本次发布的版本号</p>
+                    <p class="text-xs text-gray-400 mt-1">格式建议：v主版本.次版本.修订号（如 v2.1.0），请手动填写本次发布的版本号</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">发布描述 <span class="text-red-500">*</span></label>
@@ -2070,20 +1802,16 @@
         // 分页状态
         // ═══════════════════════════════════════════════
         let skillPage = 1;
-        let skillPageSize = 10;
+        let skillPageSize = 12;
         let recyclePage = 1;
-        let recyclePageSize = 10;
+        let recyclePageSize = 12;
 
         let skills = [
             { id: 1, name: '代码审查专家', icon: '🐳', category: '代码生成', desc: '自动审查代码质量，提供改进建议，支持多种编程语言。', status: 'published',
-                enabled: true, source: '管理端', calls: 128, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-07-13 11:19:42', publishHistory: [
-                    { version: 'v3', desc: '优化代码审查规则，新增对 TypeScript 5.x 的支持', operator: '孙礼飞', time: '2026-07-05 14:30' },
-                    { version: 'v2', desc: '修复多语言混合审查时的误报问题', operator: '孙礼飞', time: '2026-06-20 10:12' },
-                    { version: 'v1', desc: '初始版本：支持 JS/Python/Go 代码审查', operator: '孙礼飞', time: '2026-05-08 09:00' }
-                ], saveHistory: [
-                    { name: '代码审查专家', time: '2026-07-13 11:19:42', snapshot: { name: '代码审查专家', desc: '自动审查代码质量，提供改进建议，支持多种编程语言。', icon: '🐳', category: '代码生成' } },
-                    { name: '代码审查专家', time: '2026-07-13 11:16:15', snapshot: { name: '代码审查专家', desc: '自动审查代码质量，提供改进建议。', icon: '🐳', category: '代码生成' } },
-                    { name: '需求：创建专业代码审查专家', time: '2026-07-09 17:53:33', snapshot: { name: '需求：创建专业代码审查专家', desc: '负责代码审查、质量评估与改进建议。', icon: '🐳', category: '代码生成' } }
+                enabled: true, source: '管理端', calls: 128, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-07-05 14:30', publishHistory: [
+                    { version: 'v1.2.0', desc: '优化代码审查规则，新增对 TypeScript 5.x 的支持', operator: '孙礼飞', time: '2026-07-05 14:30' },
+                    { version: 'v1.1.0', desc: '修复多语言混合审查时的误报问题', operator: '孙礼飞', time: '2026-06-20 10:12' },
+                    { version: 'v1.0.0', desc: '初始版本：支持 JS/Python/Go 代码审查', operator: '孙礼飞', time: '2026-05-08 09:00' }
                 ], files: [
                     { name: 'SKILL.md', type: 'file', size: '2.4 KB', protected: true },
                     { name: 'scripts', type: 'folder', children: [
@@ -2097,8 +1825,8 @@
                 ] },
             { id: 2, name: '数据专家', icon: '📊', category: '数据分析', desc: '自动连接数据源，生成可视化分析看板，支持自定义指标和维度。', status: 'published',
                 enabled: true, source: '管理端', calls: 89, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-07-04 09:15', publishHistory: [
-                    { version: 'v2.0', desc: '重构可视化引擎，支持自定义图表组合', operator: '孙礼飞', time: '2026-07-04 09:15' },
-                    { version: 'v1.0', desc: '初始版本：基础数据看板能力', operator: '孙礼飞', time: '2026-05-15 14:00' }
+                    { version: 'v2.0.0', desc: '重构可视化引擎，支持自定义图表组合', operator: '孙礼飞', time: '2026-07-04 09:15' },
+                    { version: 'v1.0.0', desc: '初始版本：基础数据看板能力', operator: '孙礼飞', time: '2026-05-15 14:00' }
                 ], files: [
                     { name: 'SKILL.md', type: 'file', size: '1.8 KB', protected: true },
                     { name: 'scripts', type: 'folder', children: [
@@ -2106,17 +1834,17 @@
                         ] }
                 ] },
             { id: 3, name: '文档翻译专家', icon: '📝', category: '文档处理', desc: '支持多语言文档翻译，保持原文格式，可处理 PDF、Word 等格式。', status: 'disabled',
-                enabled: false, source: '管理端', calls: 45, createdBy: '王博士', updatedBy: '王博士', updatedAt: '2026-07-03 16:45', publishHistory: [
-                    { version: 'v1', desc: '初始版本：支持中英互译', operator: '王博士', time: '2026-06-10 11:30' }
+                enabled: false, source: '客户端', calls: 45, createdBy: '王博士', updatedBy: '王博士', updatedAt: '2026-07-03 16:45', publishHistory: [
+                    { version: 'v1.0.0', desc: '初始版本：支持中英互译', operator: '王博士', time: '2026-06-10 11:30' }
                 ], files: [
                     { name: 'SKILL.md', type: 'file', size: '1.5 KB', protected: true }
                 ] },
             { id: 4, name: '会议纪要生成专家', icon: '⚙️', category: '文档处理', desc: '从会议录音转写文字中自动生成结构化会议纪要，提取行动项并分配负责人。',
                 status: 'published', enabled: true, source: '管理端', calls: 234, createdBy: '李工', updatedBy: '李工', updatedAt: '2026-07-02 11:20', publishHistory: [
-                    { version: 'v4', desc: '新增行动项自动分配负责人能力', operator: '李工', time: '2026-07-02 11:20' },
-                    { version: 'v3', desc: '提升转写准确率，优化专有名词识别', operator: '李工', time: '2026-06-18 16:45' },
-                    { version: 'v2', desc: '支持多说话人区分', operator: '李工', time: '2026-06-01 09:30' },
-                    { version: 'v1', desc: '初始版本：基础会议纪要生成', operator: '李工', time: '2026-05-20 10:00' }
+                    { version: 'v1.3.0', desc: '新增行动项自动分配负责人能力', operator: '李工', time: '2026-07-02 11:20' },
+                    { version: 'v1.2.0', desc: '提升转写准确率，优化专有名词识别', operator: '李工', time: '2026-06-18 16:45' },
+                    { version: 'v1.1.0', desc: '支持多说话人区分', operator: '李工', time: '2026-06-01 09:30' },
+                    { version: 'v1.0.0', desc: '初始版本：基础会议纪要生成', operator: '李工', time: '2026-05-20 10:00' }
                 ], files: [
                     { name: 'SKILL.md', type: 'file', size: '3.1 KB', protected: true },
                     { name: 'scripts', type: 'folder', children: [
@@ -2124,16 +1852,16 @@
                         ] }
                 ] },
             { id: 5, name: '智能客服专家', icon: '🔍', category: '知识检索', desc: '基于企业知识库的智能问答系统，支持多轮对话和知识图谱检索。', status: 'disabled',
-                enabled: false, source: '管理端', calls: 312, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-06-28 08:00', publishHistory: [
-                    { version: 'v3', desc: '接入知识图谱检索能力', operator: '孙礼飞', time: '2026-06-25 15:00' },
-                    { version: 'v2', desc: '支持多轮对话上下文', operator: '孙礼飞', time: '2026-06-10 11:00' },
-                    { version: 'v1', desc: '初始版本：基于 FAQ 的问答', operator: '孙礼飞', time: '2026-05-12 14:00' }
+                enabled: false, source: '客户端', calls: 312, createdBy: '孙礼飞', updatedBy: '孙礼飞', updatedAt: '2026-06-28 08:00', publishHistory: [
+                    { version: 'v2.1.0', desc: '接入知识图谱检索能力', operator: '孙礼飞', time: '2026-06-25 15:00' },
+                    { version: 'v2.0.0', desc: '支持多轮对话上下文', operator: '孙礼飞', time: '2026-06-10 11:00' },
+                    { version: 'v1.0.0', desc: '初始版本：基于 FAQ 的问答', operator: '孙礼飞', time: '2026-05-12 14:00' }
                 ], files: [
                     { name: 'SKILL.md', type: 'file', size: '2.0 KB', protected: true }
                 ] },
             { id: 6, name: '自动化部署专家', icon: '🔧', category: '自动化流程', desc: '一键式应用部署与回滚，支持多环境管理和灰度发布策略。', status: 'disabled',
                 enabled: false, source: '管理端', calls: 67, createdBy: '王博士', updatedBy: '王博士', updatedAt: '2026-07-01 13:10', publishHistory: [
-                    { version: 'v1', desc: '初始版本：支持单环境部署与回滚', operator: '王博士', time: '2026-06-22 10:00' }
+                    { version: 'v1.0.0', desc: '初始版本：支持单环境部署与回滚', operator: '王博士', time: '2026-06-22 10:00' }
                 ], files: [
                     { name: 'SKILL.md', type: 'file', size: '1.2 KB', protected: true },
                     { name: 'scripts', type: 'folder', children: [
@@ -2147,7 +1875,7 @@
             { id: 101, name: 'Webhook服务专家', icon: '🔧', category: '知识检索', desc: 'Webhook事件的接收、处理和转发服务', status: 'published',
                 source: '管理端', calls: 56, deletedBy: '孙礼飞', deletedAt: '2026-01-22' },
             { id: 102, name: '文件转换专家', icon: '📝', category: '文档处理', desc: '多格式文件互转与批量处理工具，支持DOC/PDF/TXT/JPG/PNG/MP4等千种格式',
-                status: 'published', source: '管理端', calls: 178, deletedBy: '孙礼飞', deletedAt: '2026-01-22' },
+                status: 'published', source: '客户端', calls: 178, deletedBy: '孙礼飞', deletedAt: '2026-01-22' },
             { id: 103, name: '定时任务调度专家', icon: '⚙', category: '数据分析', desc: '灵活的定时任务编排与调度引擎，支持秒级/周期/日历等多种触发规则',
                 status: 'published', source: '管理端', calls: 92, deletedBy: '孙礼飞', deletedAt: '2026-01-22' }
         ];
@@ -2168,8 +1896,13 @@
         let editIconData = '🤖';
         let editIconType = 'emoji';
         let detailMode = 'view';
-        let activeHistoryTab = 'save'; // 'save' | 'publish'
 
+        // ═══════════════════════════════════════════════
+        // 用户自定义图标面板入口
+        // ═══════════════════════════════════════════════
+        function openCustomIconPicker(mode) {
+            showToast('请实现自定义图标选择面板（mode: ' + mode + '）', 'success');
+        }
 
 
         // ═══════════════════════════════════════════════
@@ -2246,7 +1979,7 @@
                         <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${iconHtml}</div>
                         <h3 class="font-semibold text-gray-900 truncate flex-1">${s.name}</h3>
                         <div class="card-actions flex items-center gap-0.5 flex-shrink-0">
-                            <span onclick="event.stopPropagation();exportSkill(${s.id})" class="card-action-btn" title="导出" style="display:none">
+                            <span onclick="event.stopPropagation();exportSkill(${s.id})" class="card-action-btn" title="导出">
                                 <iconify-icon icon="mdi:download-outline" class="text-base"></iconify-icon>
                             </span>
                             <span onclick="event.stopPropagation();openDetail(${s.id}, 'edit')" class="card-action-btn ${isClient ? 'disabled' : ''}" title="${isClient ? '客户端来源不可编辑' : '编辑'}">
@@ -2424,10 +2157,10 @@
                     <span style="color:#D1D5DB">|</span>
                     <span>\u6BCF\u9875
                         <select class="page-size-select">
-                            <option value="10" ${pageSize===10?'selected':''}>10</option>
+                            <option value="8" ${pageSize===8?'selected':''}>8</option>
+                            <option value="12" ${pageSize===12?'selected':''}>12</option>
                             <option value="20" ${pageSize===20?'selected':''}>20</option>
                             <option value="50" ${pageSize===50?'selected':''}>50</option>
-                            <option value="100" ${pageSize===100?'selected':''}>100</option>
                         </select>
                     \u6761</span>
                 </div>
@@ -2709,25 +2442,6 @@
             document.getElementById('detail-creator').textContent = currentSkill.createdBy;
             document.getElementById('detail-calls').textContent = currentSkill.calls || 0;
 
-            // 自动保存信息 & 未发布标签（仅在编辑页且存在保存记录时显示）
-            const autoSaveWrap = document.getElementById('detail-auto-save-wrap');
-            const autoSaveEl = document.getElementById('detail-auto-save');
-            const unpubTag = document.getElementById('detail-unpublished-tag');
-            if (autoSaveWrap && autoSaveEl && unpubTag) {
-                const latestSave = currentSkill.saveHistory && currentSkill.saveHistory.length > 0 ? currentSkill.saveHistory[0] : null;
-                if (detailMode === 'edit' && latestSave) {
-                    autoSaveEl.textContent = latestSave.time;
-                    autoSaveWrap.classList.remove('hidden');
-                    const lastPublish = currentSkill.publishHistory && currentSkill.publishHistory.length > 0 ? currentSkill.publishHistory[0].time : null;
-                    const hasUnpublished = lastPublish ? (latestSave.time > lastPublish) : true;
-                    if (hasUnpublished) unpubTag.classList.remove('hidden');
-                    else unpubTag.classList.add('hidden');
-                } else {
-                    autoSaveWrap.classList.add('hidden');
-                    unpubTag.classList.add('hidden');
-                }
-            }
-
             // 来源标签
             const sourceTag = document.getElementById('detail-source-tag');
             if (currentSkill.source === '管理端') {
@@ -2766,9 +2480,9 @@
                 if (btnPublishOnly) btnPublishOnly.style.display = 'none';
                 if (btnAiTuning) btnAiTuning.style.display = 'none';
             } else if (detailMode === 'edit') {
-                // 编辑页：按发布状态显示 发布/保存并发布，并显示 AI智能调优；已发布状态也保留保存按钮
+                // 编辑页：按发布状态显示 发布/保存并发布，并显示 AI智能调优
                 if (editBtn) editBtn.style.display = '';
-                if (btnSaveDetail) btnSaveDetail.style.display = '';
+                if (btnSaveDetail) btnSaveDetail.style.display = isPublished ? 'none' : '';
                 if (btnPublish) btnPublish.style.display = isPublished ? 'none' : '';
                 if (btnPublishOnly) btnPublishOnly.style.display = isPublished ? '' : 'none';
                 if (btnAiTuning) btnAiTuning.style.display = '';
@@ -2989,7 +2703,7 @@
             const animIcon = document.getElementById('ai-anim-icon');
             progressBar.style.width = '0%';
 
-            const totalDuration = 20000;
+            const totalDuration = 5000;
             const stepDuration = totalDuration / AI_STEPS.length;
             let currentStep = 0;
 
@@ -3573,7 +3287,7 @@
 
         function selectCategoryFilter(cat, el) {
             selectedCategoryFilter = cat;
-            document.getElementById('category-filter-label').textContent = cat || '全部类别';
+            document.getElementById('category-filter-label').textContent = cat || '全部分类';
             document.querySelectorAll('#category-filter-dropdown .filter-option').forEach(opt => opt.classList.remove('active'));
             el.classList.add('active');
             document.getElementById('category-filter-dropdown').classList.add('hidden');
@@ -3630,111 +3344,36 @@
         function renderPublishHistory() {
             var list = document.getElementById('publishHistoryList');
             if (!list) return;
-            var allowRestore = (typeof detailMode !== 'undefined' && detailMode === 'edit');
-
-            if (activeHistoryTab === 'save') {
-                // 保存记录标签页
-                var saveHistory = currentSkill && currentSkill.saveHistory ? currentSkill.saveHistory : [];
-                if (saveHistory.length === 0) {
-                    list.innerHTML = emptyHistoryHTML('暂无保存记录');
-                    return;
-                }
-                list.innerHTML = '<div style="padding:8px 0;">' + saveHistory.map(function(h, idx) {
-                    var isCurrent = idx === 0;
-                    var dot = isCurrent
-                        ? '<div class="save-record-dot"></div>'
-                        : '<div style="width:7px;height:7px;border-radius:50%;background:#D1D5DB;flex-shrink:0;margin-right:10px;margin-left:2px;"></div>';
-                    var currentCls = isCurrent ? 'save-record-current' : '';
-                    var titleStyle = isCurrent ? 'font-weight:600;color:#1F2937;' : 'color:#374151;';
-                    var restoreBtn = allowRestore && !isCurrent
-                        ? '<button class="restore-version-btn" onclick="event.stopPropagation();confirmRestoreSaveVersion(' + idx + ')" title="恢复此版本"><iconify-icon icon="mdi:restore" style="font-size:13px;"></iconify-icon>恢复此版本</button>'
-                        : '';
-                    var currentLabel = isCurrent ? '<span style="font-size:11px;color:#3B82F6;font-weight:500;">当前</span>' : '<span></span>';
-                    return '<div class="history-item save-record-item ' + currentCls + '" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px 12px;">' +
-                        '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
-                            '<div style="display:flex;align-items:center;min-width:0;flex:1;">' +
-                                dot +
-                                '<span class="save-record-title" style="font-size:13px;' + titleStyle + 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (h.name || '未命名') + '</span>' +
-                            '</div>' +
-                            '<span class="history-item-time" style="margin-left:0;">' + (h.time || '') + '</span>' +
-                        '</div>' +
-                        '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding-left:19px;">' +
-                            currentLabel +
-                            restoreBtn +
-                        '</div>' +
+            if (!currentSkill || !currentSkill.publishHistory || currentSkill.publishHistory.length === 0) {
+                list.innerHTML =
+                    '<div style="padding:32px 16px;text-align:center;color:#9CA3AF;">' +
+                    '<iconify-icon icon="mdi:history-off" style="font-size:36px;display:block;margin-bottom:8px;"></iconify-icon>' +
+                    '<p style="font-size:13px;">暂无发布历史</p>' +
                     '</div>';
-                }).join('') + '</div>';
-            } else {
-                // 发布历史标签页
-                if (!currentSkill || !currentSkill.publishHistory || currentSkill.publishHistory.length === 0) {
-                    list.innerHTML = emptyHistoryHTML('暂无发布历史');
-                    return;
-                }
-                list.innerHTML = currentSkill.publishHistory.map(function(h, idx) {
-                    var isLatest = idx === 0;
-                    var versionTag = isLatest
-                        ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:1px 8px;border-radius:9999px;font-size:11px;font-weight:600;background:#D1FAE5;color:#059669;margin-left:8px;">最新</span>'
-                        : '';
-                    var cls = 'history-item' + (allowRestore ? ' publish-history-item' : '');
-                    var interactAttrs = allowRestore
-                        ? ' title="点击可还原至该版本" onclick="confirmRestore(event, \'' + (h.version || 'v1.0.0') + '\')"'
-                        : '';
-                    var restoreHint = allowRestore
-                        ? '<div class="restore-hint"><iconify-icon icon="mdi:restore" style="font-size:13px;"></iconify-icon>点击可还原至该版本</div>'
-                        : '';
-                    return '<div class="' + cls + '"' + interactAttrs + ' style="flex-direction:column;align-items:stretch;gap:4px;padding:10px 12px;">' +
-                        '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
-                            '<div style="display:flex;align-items:center;min-width:0;flex:1;">' +
-                                '<iconify-icon icon="mdi:tag-outline" style="font-size:15px;color:#4F46E5;margin-right:6px;flex-shrink:0;"></iconify-icon>' +
-                                '<span style="font-size:13px;font-weight:600;color:#1F2937;">' + (h.version || 'v1.0.0') + '</span>' +
-                                versionTag +
-                            '</div>' +
-                            '<span class="history-item-time" style="margin-left:0;">' + (h.time || '') + '</span>' +
-                        '</div>' +
-                        '<div style="font-size:12px;color:#4B5563;line-height:1.5;padding-left:21px;">' + (h.desc || '无描述') + '</div>' +
-                        '<div style="font-size:11px;color:#9CA3AF;padding-left:21px;display:flex;align-items:center;gap:4px;">' +
-                            '<iconify-icon icon="mdi:account-circle-outline" style="font-size:13px;"></iconify-icon>' +
-                            '<span>' + (h.operator || '未知') + '</span>' +
-                        '</div>' +
-                        restoreHint +
-                    '</div>';
-                }).join('');
+                return;
             }
-        }
-
-        function emptyHistoryHTML(text) {
-            return '<div style="padding:32px 16px;text-align:center;color:#9CA3AF;">' +
-                '<iconify-icon icon="mdi:history-off" style="font-size:36px;display:block;margin-bottom:8px;"></iconify-icon>' +
-                '<p style="font-size:13px;">' + text + '</p>' +
+            list.innerHTML = currentSkill.publishHistory.map(function(h, idx) {
+                var isLatest = idx === 0;
+                var versionTag = isLatest
+                    ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:1px 8px;border-radius:9999px;font-size:11px;font-weight:600;background:#D1FAE5;color:#059669;margin-left:8px;">最新</span>'
+                    : '';
+                return '<div class="history-item publish-history-item" title="点击可还原至该版本" onclick="confirmRestore(event, \'' + (h.version || 'v1.0.0') + '\')" style="flex-direction:column;align-items:stretch;gap:4px;padding:10px 12px;">' +
+                    '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
+                        '<div style="display:flex;align-items:center;min-width:0;flex:1;">' +
+                            '<iconify-icon icon="mdi:tag-outline" style="font-size:15px;color:#4F46E5;margin-right:6px;flex-shrink:0;"></iconify-icon>' +
+                            '<span style="font-size:13px;font-weight:600;color:#1F2937;">' + (h.version || 'v1.0.0') + '</span>' +
+                            versionTag +
+                        '</div>' +
+                        '<span class="history-item-time" style="margin-left:0;">' + (h.time || '') + '</span>' +
+                    '</div>' +
+                    '<div style="font-size:12px;color:#4B5563;line-height:1.5;padding-left:21px;">' + (h.desc || '无描述') + '</div>' +
+                    '<div style="font-size:11px;color:#9CA3AF;padding-left:21px;display:flex;align-items:center;gap:4px;">' +
+                        '<iconify-icon icon="mdi:account-circle-outline" style="font-size:13px;"></iconify-icon>' +
+                        '<span>' + (h.operator || '未知') + '</span>' +
+                    '</div>' +
+                    '<div class="restore-hint"><iconify-icon icon="mdi:restore" style="font-size:13px;"></iconify-icon>点击可还原至该版本</div>' +
                 '</div>';
-        }
-
-        function switchHistoryTab(tab) {
-            activeHistoryTab = tab;
-            document.querySelectorAll('.history-tab').forEach(function(btn) {
-                if (btn.dataset.tab === tab) btn.classList.add('active');
-                else btn.classList.remove('active');
-            });
-            renderPublishHistory();
-        }
-
-        function confirmRestoreSaveVersion(idx) {
-            if (!currentSkill || !currentSkill.saveHistory || !currentSkill.saveHistory[idx]) return;
-            var save = currentSkill.saveHistory[idx];
-            var snapshot = save.snapshot;
-            if (snapshot) {
-                currentSkill.name = snapshot.name || currentSkill.name;
-                currentSkill.desc = snapshot.desc || currentSkill.desc;
-                currentSkill.icon = snapshot.icon || currentSkill.icon;
-                currentSkill.category = snapshot.category || currentSkill.category;
-            }
-            currentSkill.updatedAt = save.time;
-            // 将恢复的版本移到最前作为当前状态
-            currentSkill.saveHistory.unshift(currentSkill.saveHistory.splice(idx, 1)[0]);
-            showToast('已恢复至 ' + save.time + ' 保存的版本', 'success');
-            openDetail(currentSkill.id, detailMode);
-            renderSkillGrid();
-            renderPublishHistory();
+            }).join('');
         }
 
         function togglePublishHistoryDropdown(e) {
@@ -3754,7 +3393,6 @@
                 dropdown.style.position = 'absolute';
                 dropdown.style.right = (wrapRect.right - btnRect.right) + 'px';
                 dropdown.style.top = (btnRect.bottom - wrapRect.top + 4) + 'px';
-				switchHistoryTab('publish')
             } else {
                 closePublishHistoryDropdown();
             }
@@ -3805,9 +3443,9 @@
             var tipEl = document.getElementById('publish-modal-tip');
             var submitLabel = document.getElementById('publish-submit-label');
             if (_publishMode === 'save-publish') {
-                if (titleEl) titleEl.textContent = '发布专家';
+                if (titleEl) titleEl.textContent = '保存并发布专家';
                 if (tipEl) tipEl.textContent = '将先保存当前配置，再发布上线。发布描述会记录在版本历史中，便于后续追溯。';
-                if (submitLabel) submitLabel.textContent = '发布';
+                if (submitLabel) submitLabel.textContent = '保存并发布';
             } else {
                 if (titleEl) titleEl.textContent = '发布专家';
                 if (tipEl) tipEl.textContent = '发布后专家将上线可用，发布描述将记录在版本历史中，便于后续追溯。';
@@ -3848,7 +3486,13 @@
                 if (verInput) verInput.focus();
                 return;
             }
-
+            // 规范化：统一以 v 开头
+            if (!/^v/i.test(newVersion)) newVersion = 'v' + newVersion;
+            if (!/^v\d+(\.\d+){1,2}$/.test(newVersion)) {
+                showToast('版本号格式不正确（示例：v2.1.0）', 'error');
+                if (verInput) verInput.focus();
+                return;
+            }
 
             // 保存 -> 发布 或 直接发布
             var now = new Date();
@@ -3875,21 +3519,21 @@
             openDetail(currentSkill.id, detailMode);
             renderSkillGrid();
 
-            var actionLabel = _publishMode === 'save-publish' ? '发布' : '发布';
+            var actionLabel = _publishMode === 'save-publish' ? '保存并发布' : '发布';
             showToast(actionLabel + '成功（' + newVersion + '）', 'success');
         }
 
         function bumpVersion(lastVersion) {
             // 解析 vMAJOR.MINOR.PATCH，patch +1
-            if (!lastVersion) return 'v1';
+            if (!lastVersion) return 'v1.0.0';
             var m = /^v?(\d+)\.(\d+)\.(\d+)$/.exec(lastVersion.trim());
-            if (!m) return 'v1';
+            if (!m) return 'v1.0.0';
             var major = parseInt(m[1], 10);
             var minor = parseInt(m[2], 10);
             var patch = parseInt(m[3], 10) + 1;
             if (patch > 9) { patch = 0; minor += 1; }
             if (minor > 9) { minor = 0; major += 1; }
-            return 'v' + major;
+            return 'v' + major + '.' + minor + '.' + patch;
         }
 
         // ═══════════════════════════════════════════════
@@ -3941,25 +3585,9 @@
             }
             var now = new Date();
             var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
-            var timeStr = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) +
-                ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
-
-            // 记录保存历史（用于版本恢复）
-            if (!currentSkill.saveHistory) currentSkill.saveHistory = [];
-            currentSkill.saveHistory.unshift({
-                name: currentSkill.name,
-                time: timeStr,
-                snapshot: {
-                    name: currentSkill.name,
-                    desc: currentSkill.desc,
-                    icon: currentSkill.icon,
-                    category: currentSkill.category
-                }
-            });
-
-            currentSkill.updatedAt = timeStr;
+            currentSkill.updatedAt = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) +
+                ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
             renderSkillGrid();
-            openDetail(currentSkill.id, detailMode);
             showToast('保存成功', 'success');
         }
 
@@ -4002,27 +3630,6 @@
         updateRecycleBadge();
         updateCreateIconPreview();
         updateEditIconPreview();
-
-        (function() {
-            var params = new URLSearchParams(window.location.search);
-            if (params.get('type') === 'detail') {
-                var urlId = params.get('id');
-                var urlTitle = params.get('title');
-                var urlDesc = params.get('desc');
-                var targetSkill = null;
-                if (urlId) {
-                    targetSkill = skills.find(function(s) { return String(s.id) === String(urlId); });
-                }
-                if (!targetSkill && skills.length > 0) {
-                    targetSkill = skills[0];
-                }
-                if (targetSkill) {
-                    if (urlTitle) targetSkill.name = urlTitle;
-                    if (urlDesc) targetSkill.desc = urlDesc;
-                    openDetail(targetSkill.id);
-                }
-            }
-        })();
 
         /* ─── 三栏拖拽 & 面板交互 ─── */
         (function() {
@@ -4172,17 +3779,13 @@
                 btn.classList.remove('active');
             };
 
-            window.loadHistorySession = function(title, url) {
+            window.loadHistorySession = function(title) {
                 closeHistoryDropdown();
                 // 切换回新会话 tab 并加载历史内容
                 var newSessionBtn = document.querySelector('.mid-btn[data-tab="new-session"]');
                 switchMiddleTab(newSessionBtn, '新会话');
-                // 设置 iframeMiddle 的跳转链接
-                var iframe = document.getElementById('iframeMiddle');
-                if (iframe && url) {
-                    iframe.src = url;
-                }
-                console.log('加载历史会话:', title, url);
+                // TODO: 加载历史会话内容到 iframe
+                console.log('加载历史会话:', title);
             };
 
             // 点击外部关闭历史下拉
@@ -4214,13 +3817,5 @@
             };
         })();
     </script>
-	
-<style> .prd-fab-wrapper { position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; align-items: center; justify-content: center; }  .prd-fab-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #ffffff; box-shadow: 0 8px 28px rgba(79, 70, 229, 0.45); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; text-decoration: none; cursor: pointer; border: none; outline: none; position: relative; } .prd-fab-btn:hover { transform: scale(1.10); box-shadow: 0 12px 40px rgba(79, 70, 229, 0.60); } .prd-fab-btn:active { transform: scale(0.92); } .prd-fab-btn svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08)); } .prd-fab-tooltip { position: absolute; right: 50px; background: #1e293b; color: #f1f5f9; padding: 6px 16px; border-radius: 8px; font-family: -apple-system, 'Inter', 'Microsoft YaHei', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.3px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateX(4px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); } .prd-fab-tooltip::after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); border-left: 6px solid #1e293b; border-top: 6px solid transparent; border-bottom: 6px solid transparent; } .prd-fab-btn:hover .prd-fab-tooltip { opacity: 1; transform: translateX(0); }  @media (max-width: 640px) { .prd-fab-wrapper { bottom: 20px; right: 20px; } .prd-fab-btn { width: 48px; height: 48px; } .prd-fab-btn svg { width: 22px; height: 22px; } .prd-fab-tooltip { right: 60px; font-size: 12px; padding: 4px 12px; } .prd-fab-tooltip::after { right: -5px; border-width: 5px; } }  @media (prefers-color-scheme: dark) { .prd-fab-tooltip { background: #0f172a; color: #e2e8f0; } .prd-fab-tooltip::after { border-left-color: #0f172a; } }</style>
-<div class="prd-fab-wrapper"> <a class="prd-fab-btn" href="./zjgl_prd.html" target="_blank" rel="noopener noreferrer" aria-label="查看 PRD 文档">  <svg viewBox="0 0 24 24"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /> <polyline points="14 2 14 8 20 8" /> <line x1="8" y1="13" x2="16" y2="13" /> <line x1="8" y1="17" x2="16" y2="17" /> </svg> <span class="prd-fab-tooltip">PRD 文档</span></a></div>
-
-
 </body>
 </html>
-
-
-

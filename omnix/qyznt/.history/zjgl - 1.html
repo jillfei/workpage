@@ -4003,27 +4003,6 @@
         updateCreateIconPreview();
         updateEditIconPreview();
 
-        (function() {
-            var params = new URLSearchParams(window.location.search);
-            if (params.get('type') === 'detail') {
-                var urlId = params.get('id');
-                var urlTitle = params.get('title');
-                var urlDesc = params.get('desc');
-                var targetSkill = null;
-                if (urlId) {
-                    targetSkill = skills.find(function(s) { return String(s.id) === String(urlId); });
-                }
-                if (!targetSkill && skills.length > 0) {
-                    targetSkill = skills[0];
-                }
-                if (targetSkill) {
-                    if (urlTitle) targetSkill.name = urlTitle;
-                    if (urlDesc) targetSkill.desc = urlDesc;
-                    openDetail(targetSkill.id);
-                }
-            }
-        })();
-
         /* ─── 三栏拖拽 & 面板交互 ─── */
         (function() {
             const wrap = document.getElementById('triPanelWrap');

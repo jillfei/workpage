@@ -1,0 +1,2708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>专家团管理</title>
+    <script src="https://modao.cc/agent-py/static/source/js/tailwindcss.js">
+    </script>
+    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js">
+    </script>
+    <style>
+        /* ===== 全局重置 ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+        .page-wrap {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #d1d5db;
+        }
+
+        /* ===== 标签 ===== */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-enabled {
+            background: #D1FAE5;
+            color: #059669;
+        }
+        .tag-disabled {
+            background: #F3F4F6;
+            color: #6B7280;
+        }
+        .tag-deleted {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        .tag-category {
+            background: #EEF2FF;
+            color: #4F46E5;
+        }
+        .tag-category-disabled {
+            background: #F3F4F6;
+            color: #9CA3AF;
+        }
+        .tag-market {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+        .tag-source-admin {
+            background: #DBEAFE;
+            color: #1D4ED8;
+        }
+        .tag-source-client {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+        .tag-expertise {
+            background: #F3F4F6;
+            color: #1F2937;
+            font-size: 13px;
+            padding: 4px 14px;
+        }
+
+        /* ===== 卡片 ===== */
+        .entry-card {
+            transition: all 0.2s;
+        }
+        .entry-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+        .entry-card .card-hover-actions {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        .entry-card:hover .card-hover-actions {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .recycle-card-actions {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        .entry-card:hover .recycle-card-actions {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* ===== 开关 ===== */
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: #D1D5DB;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        .toggle-switch input:checked+.toggle-slider {
+            background: #059669;
+        }
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(20px);
+        }
+        .toggle-switch.toggle-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .toggle-switch.toggle-disabled .toggle-slider {
+            cursor: not-allowed;
+        }
+        .toggle-switch.toggle-disabled input:disabled+.toggle-slider {
+            background: #D1D5DB;
+        }
+        .toggle-switch.toggle-disabled input:disabled:checked+.toggle-slider {
+            background: #9CA3AF;
+        }
+
+        /* ===== Modal ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.hidden {
+            display: none;
+        }
+
+        .detail-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+        .detail-modal-overlay.hidden {
+            display: none;
+        }
+        .detail-modal-content {
+            background: #fff;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 720px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.25s ease;
+        }
+
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+            animation: fadeIn 0.25s ease;
+        }
+        .toast.hidden {
+            display: none;
+        }
+        .toast-success {
+            background: #D1FAE5;
+            color: #059669;
+            border: 1px solid #A7F3D0;
+        }
+        .toast-error {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+        }
+
+        /* ===== 动画 ===== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideDown {
+            from {
+                transform: translateY(-8px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* ===== 下拉菜单 ===== */
+        .dropdown-menu {
+            animation: slideDown 0.2s ease;
+            transform-origin: top center;
+			z-index: 60;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            transition: all 0.15s;
+            cursor: pointer;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .dropdown-item:hover {
+            background: #F3F4F6;
+        }
+        .dropdown-item .item-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .dropdown-item .item-icon.blue {
+            background: #EEF2FF;
+            color: #4F46E5;
+        }
+        .dropdown-item .item-icon.purple {
+            background: #F3E8FF;
+            color: #7C3AED;
+        }
+        .dropdown-item .item-icon.green {
+            background: #D1FAE5;
+            color: #059669;
+        }
+        .dropdown-item .item-text .title {
+            font-weight: 500;
+            color: #1F2937;
+        }
+        .dropdown-item .item-text .desc {
+            font-weight: 400;
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-top: 1px;
+        }
+
+        /* ===== 导入弹窗 ===== */
+        .import-drop-zone {
+            border: 2px dashed #D1D5DB;
+            border-radius: 12px;
+            padding: 32px 20px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            background: #FAFAFA;
+        }
+        .import-drop-zone:hover {
+            border-color: #A5B4FC;
+            background: #F8FAFF;
+        }
+        .import-drop-zone.dragover {
+            border-color: #4F46E5;
+            background: #EEF2FF;
+        }
+        .import-drop-zone .drop-icon {
+            font-size: 40px;
+            color: #9CA3AF;
+            margin-bottom: 8px;
+        }
+        .import-drop-zone .drop-text {
+            font-size: 14px;
+            color: #6B7280;
+        }
+        .import-drop-zone .drop-text .highlight {
+            color: #4F46E5;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .import-drop-zone .drop-hint {
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-top: 6px;
+        }
+        .import-drop-zone .file-info {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: #EEF2FF;
+            border-radius: 8px;
+            color: #1F2937;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .import-drop-zone .file-info .remove-file {
+            color: #EF4444;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
+        .import-drop-zone .file-info .remove-file:hover {
+            color: #DC2626;
+        }
+        .import-drop-zone.has-file .drop-icon,
+        .import-drop-zone.has-file .drop-text,
+        .import-drop-zone.has-file .drop-hint {
+            display: none;
+        }
+        .import-drop-zone.has-file .file-info {
+            display: flex;
+        }
+
+        .import-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 6px 0 2px 0;
+        }
+        .import-steps .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.6;
+        }
+        .import-steps .step .step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #EEF2FF;
+            color: #4F46E5;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .category-checkbox-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+            padding: 10px 0 4px 0;
+        }
+        .category-checkbox-grid label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #1F2937;
+            cursor: pointer;
+            user-select: none;
+            padding: 4px 0;
+        }
+        .category-checkbox-grid input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4F46E5;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .no-category-hint {
+            color: #9CA3AF;
+            font-size: 13px;
+            padding: 8px 0;
+        }
+
+        /* ===== 详情弹窗内部 ===== */
+        .detail-info-grid>div {
+            padding-bottom: 18px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .detail-info-grid>div:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .detail-info-grid .info-block-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .detail-info-grid .info-block-title iconify-icon {
+            color: #4F46E5;
+            font-size: 18px;
+        }
+        .detail-info-grid .info-block-content {
+            padding-left: 2px;
+        }
+
+        .team-member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0;
+        }
+        .team-member-item+.team-member-item {
+            border-top: 1px solid #f3f4f6;
+        }
+        .team-member-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #EEF2FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4F46E5;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .team-member-info .member-name {
+            font-weight: 600;
+            color: #1F2937;
+            font-size: 14px;
+        }
+        .team-member-info .member-desc {
+            color: #6B7280;
+            font-size: 13px;
+            margin-top: 1px;
+        }
+        .question-item {
+            color: #374151;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 6px 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+        .question-item:last-child {
+            border-bottom: none;
+        }
+        .question-item::before {
+            content: '"';
+            color: #9CA3AF;
+            font-size: 18px;
+            font-weight: 300;
+            margin-right: 4px;
+        }
+        .question-item::after {
+            content: '"';
+            color: #9CA3AF;
+            font-size: 18px;
+            font-weight: 300;
+            margin-left: 4px;
+        }
+        .detail-empty {
+            color: #9CA3AF;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .source-radio-group {
+            display: flex;
+            gap: 24px;
+            padding: 6px 0;
+        }
+        .source-radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #1F2937;
+            cursor: pointer;
+            user-select: none;
+        }
+        .source-radio-group input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4F46E5;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* ===== 回收站 ===== */
+        .recycle-badge {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            background: #EF4444;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 18px;
+            text-align: center;
+            border-radius: 9px;
+        }
+
+        /* ===== FAB ===== */
+        .prd-fab-wrapper {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .prd-fab-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: #ffffff;
+            box-shadow: 0 8px 28px rgba(79, 70, 229, 0.45);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            position: relative;
+        }
+        .prd-fab-btn:hover {
+            transform: scale(1.10);
+            box-shadow: 0 12px 40px rgba(79, 70, 229, 0.60);
+        }
+        .prd-fab-btn:active {
+            transform: scale(0.92);
+        }
+        .prd-fab-btn svg {
+            width: 28px;
+            height: 28px;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+        }
+        .prd-fab-tooltip {
+            position: absolute;
+            right: 72px;
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-family: -apple-system, 'Inter', 'Microsoft YaHei', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+        }
+        .prd-fab-tooltip::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left: 6px solid #1e293b;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+        .prd-fab-btn:hover .prd-fab-tooltip {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        @media (max-width: 640px) {
+            .prd-fab-wrapper {
+                bottom: 20px;
+                right: 20px;
+            }
+            .prd-fab-btn {
+                width: 48px;
+                height: 48px;
+            }
+            .prd-fab-btn svg {
+                width: 22px;
+                height: 22px;
+            }
+            .prd-fab-tooltip {
+                right: 60px;
+                font-size: 12px;
+                padding: 4px 12px;
+            }
+            .prd-fab-tooltip::after {
+                right: -5px;
+                border-width: 5px;
+            }
+        }
+        @media (prefers-color-scheme: dark) {
+            .prd-fab-tooltip {
+                background: #0f172a;
+                color: #e2e8f0;
+            }
+            .prd-fab-tooltip::after {
+                border-left-color: #0f172a;
+            }
+        }
+
+        /* ===== 导入弹窗类别网格（与图片一致） ===== */
+        .import-category-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 18px;
+            padding: 8px 0 2px 0;
+        }
+        .import-category-grid label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #1F2937;
+            cursor: pointer;
+            user-select: none;
+            padding: 6px 0;
+        }
+        .import-category-grid input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4F46E5;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+
+        <!-- ===== 顶部栏 ===== -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
+            <div class="flex items-center space-x-2 text-sm text-gray-500" id="breadcrumb-area">
+                <span>资源管理</span>
+                <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                <span class="text-gray-900 font-medium">专家团管理</span>
+            </div>
+            <div class="flex items-center space-x-3" id="header-actions">
+                <div id="header-list-actions" class="flex items-center space-x-3">
+                    <button onclick="showView('recycle')" class="relative flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                        <iconify-icon icon="mdi:trash-can-outline"></iconify-icon>
+                        <span>回收站</span>
+                        <span class="recycle-badge" id="recycle-badge" style="display:none;">0</span>
+                    </button>
+
+                    <!-- ===== 新增下拉按钮 ===== -->
+                    <div class="relative" id="add-dropdown-wrapper">
+                        <button onclick="toggleAddDropdown()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm" id="add-main-btn">
+                            <iconify-icon icon="mdi:plus"></iconify-icon>
+                            <span>新增专家团</span>
+                            <iconify-icon icon="mdi:chevron-down" class="text-sm ml-0.5 transition-transform" id="dropdown-chevron"></iconify-icon>
+                        </button>
+                        <!-- 下拉菜单 -->
+                        <div class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden dropdown-menu hidden" id="add-dropdown-menu">
+                            <div class="p-1.5">
+                                <div class="dropdown-item" onclick="handleDropdownAction('manual')">
+                                    <div class="item-icon blue"><iconify-icon icon="mdi:file-document-outline"></iconify-icon></div>
+                                    <div class="item-text">
+                                        <div class="title">手动创建</div>
+                                        <div class="desc">填写表单逐步配置专家信息</div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-item" onclick="handleDropdownAction('ai')">
+                                    <div class="item-icon purple"><iconify-icon icon="mdi:robot-outline"></iconify-icon></div>
+                                    <div class="item-text">
+                                        <div class="title">AI 智能创建</div>
+                                        <div class="desc">描述需求，AI 自动生成专家</div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-item" onclick="handleDropdownAction('import')">
+                                    <div class="item-icon green"><iconify-icon icon="mdi:file-upload-outline"></iconify-icon></div>
+                                    <div class="item-text">
+                                        <div class="title">导入专家</div>
+                                        <div class="desc">通过JSON配置文件导入专家</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="header-recycle-actions" class="hidden flex items-center space-x-3">
+                    <button onclick="showView('list')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                        <iconify-icon icon="mdi:arrow-left"></iconify-icon>
+                        <span>返回列表</span>
+                    </button>
+                    <button onclick="batchRestore()" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm" id="btn-batch-restore" disabled>
+                        <iconify-icon icon="mdi:restore"></iconify-icon>
+                        <span>恢复选中</span>
+                    </button>
+                    <button onclick="batchPermanentDelete()" class="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm" id="btn-batch-perm-delete" disabled>
+                        <iconify-icon icon="mdi:trash-can"></iconify-icon>
+                        <span>彻底删除</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== 内容滚动区 ===== -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+            <!-- 列表视图 -->
+            <div id="view-list">
+                <!-- 筛选栏 -->
+                <div class="flex items-center space-x-4 mb-6 flex-wrap gap-y-2">
+                    <div class="relative flex-1 max-w-md">
+                        <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                        <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+                        placeholder="搜索专家团名称或简介..." type="text" id="search-input" oninput="filterEntries()" />
+                    </div>
+                    <div class="relative">
+                        <select class="appearance-none pl-3 pr-8 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer" id="source-filter" onchange="filterEntries()">
+                            <option value="">全部来源</option>
+                            <option value="admin">管理端</option>
+                            <option value="client">客户端</option>
+                        </select>
+                        <iconify-icon class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" icon="mdi:chevron-down"></iconify-icon>
+                    </div>
+                    <div class="flex items-center space-x-2 flex-wrap gap-y-2">
+                        <div class="relative">
+                            <select class="appearance-none pl-3 pr-8 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer min-w-[130px]" id="category-filter" onchange="filterEntries()">
+                                <option value="">全部类别</option>
+                            </select>
+                            <iconify-icon class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" icon="mdi:chevron-down"></iconify-icon>
+                        </div>
+                        <div class="relative">
+                            <select class="appearance-none pl-3 pr-8 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer" id="status-filter" onchange="filterEntries()">
+                                <option value="">全部状态</option>
+                                <option value="enabled">发布</option>
+                                <option value="disabled">下架</option>
+                            </select>
+                            <iconify-icon class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" icon="mdi:chevron-down"></iconify-icon>
+                        </div>
+                        <button onclick="openModal('categoryModal')" class="flex items-center justify-center w-9 h-9 bg-white border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50" title="专家团管理类别">
+                            <iconify-icon icon="mdi:cog-outline"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 专家团卡片网格 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="entry-grid">
+                </div>
+
+                <!-- 空状态 -->
+                <div id="empty-state" class="hidden flex-col items-center justify-center py-20 text-center">
+                    <iconify-icon icon="mdi:book-open-page-variant-outline" class="text-6xl text-gray-300 mb-4"></iconify-icon>
+                    <p class="text-gray-500 text-lg mb-2">暂无专家团</p>
+                    <p class="text-gray-400 text-sm mb-6">点击「新增专家团」开始创建</p>
+                    <button onclick="toggleAddDropdown()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">新增专家团</button>
+                </div>
+            </div>
+
+            <!-- 回收站视图 -->
+            <div id="view-recycle" class="hidden">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="relative flex-1 max-w-md">
+                        <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                        <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+                        placeholder="搜索已删除专家团..." type="text" id="recycle-search" oninput="filterRecycle()" />
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 p-4 mb-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <iconify-icon icon="mdi:trash-can-outline" class="text-red-500"></iconify-icon>
+                        <span>共 <strong id="recycle-count" class="text-gray-900">0</strong> 个已删除专家团</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label class="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" id="recycle-select-all" onchange="toggleRecycleSelectAll()" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                            <span>全选</span>
+                        </label>
+                        <span class="text-xs text-gray-400" id="recycle-selected-count">已选 0 项</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="recycle-grid">
+                </div>
+
+                <div id="recycle-empty" class="hidden flex-col items-center justify-center py-20 text-center">
+                    <iconify-icon icon="mdi:trash-can-outline" class="text-6xl text-gray-300 mb-4"></iconify-icon>
+                    <p class="text-gray-500 text-lg">回收站为空</p>
+                    <p class="text-gray-400 text-sm">没有已删除的专家团</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== 新增/编辑专家团弹窗 ===== -->
+    <div id="addModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('addModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-2xl">
+                <h3 class="text-lg font-bold text-gray-900" id="modal-title">新增专家团</h3>
+                <button onclick="closeModal('addModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="entry-name" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入术语名称" maxlength="50" oninput="validateName()" />
+                    <p class="text-xs mt-1" id="name-hint"><span class="text-gray-400">同一类别下不可重名，最大 50 字符</span></p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别 <span class="text-gray-400 font-normal text-xs">(可多选)</span></label>
+                    <div id="category-checkbox-group" class="category-checkbox-grid">
+                        <!-- 由 JS 渲染 -->
+                    </div>
+                    <p class="text-xs mt-1 text-gray-400" id="category-hint"></p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">来源 <span class="text-red-500">*</span></label>
+                    <div class="source-radio-group" id="source-radio-group">
+                        <label>
+                            <input type="radio" name="entry-source" value="admin" checked />
+                            <span class="flex items-center gap-1"><span class="tag tag-source-admin">管理端</span></span>
+                        </label>
+                        <label>
+                            <input type="radio" name="entry-source" value="client" />
+                            <span class="flex items-center gap-1"><span class="tag tag-source-client">客户端</span></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">图标 <span class="text-gray-400 font-normal">(可选)</span></label>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-xl" id="icon-preview"></div>
+                        <button onclick="uploadIcon()" class="px-3 py-1.5 text-sm text-green-600 bg-green-50 rounded-lg hover:bg-green-100">上传图标</button>
+                        <button onclick="clearIcon()" class="px-3 py-1.5 text-sm text-gray-500 bg-gray-50 rounded-lg hover:bg-gray-100">清除</button>
+                        <input type="file" id="icon-file-input" accept="image/*" class="hidden" onchange="handleIconUpload(event)" />
+                    </div>
+                    <p class="text-xs text-gray-400">支持 JPG、PNG、GIF 格式，图片大小不超过 1MB，建议尺寸 128×128px</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">简介 <span class="text-red-500">*</span></label>
+                    <textarea id="entry-intro" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm resize-none" rows="3" placeholder="请简要描述该术语的含义..." maxlength="200" oninput="updateIntroCount(this)"></textarea>
+                    <p class="text-xs mt-1"><span id="intro-count" class="text-gray-400">0</span><span class="text-gray-400">/200</span></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">详情 <span class="text-red-500">*</span></label>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="rte-content" contenteditable="true" id="entry-detail"></div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">状态</label>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="entry-status" checked />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 sticky bottom-0 bg-white rounded-b-2xl">
+                <button onclick="closeModal('addModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="saveEntry()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 专家团管理类别弹窗 ===== -->
+    <div id="categoryModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('categoryModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[80vh] overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">专家团管理类别</h3>
+                <button onclick="closeModal('categoryModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                            <th class="px-6 py-3 text-left font-semibold">类别名称</th>
+                            <th class="px-6 py-3 text-left font-semibold">排序号</th>
+                            <th class="px-6 py-3 text-left font-semibold">状态</th>
+                            <th class="px-6 py-3 text-left font-semibold">关联专家团数</th>
+                            <th class="px-6 py-3 text-right font-semibold">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="category-table-body"></tbody>
+                </table>
+            </div>
+            <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100">
+                <button onclick="openAddCategory()" class="flex items-center gap-2 px-4 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100">
+                    <iconify-icon icon="mdi:plus"></iconify-icon><span>新增类别</span>
+                </button>
+                <button onclick="closeModal('categoryModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 新增类别弹窗 ===== -->
+    <div id="addCategoryModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('addCategoryModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900" id="category-modal-title">新增类别</h3>
+                <button onclick="closeModal('addCategoryModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别名称 <span class="text-red-500">*</span></label>
+                    <input type="text" id="cat-name" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入类别名称" maxlength="20" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">排序号</label>
+                    <input type="number" id="cat-sort" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="数字越小越靠前，默认 0" value="0" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">状态</label>
+                    <div class="flex items-center gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="cat-status" value="enabled" checked class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
+                            <span class="text-sm text-gray-700">发布</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="cat-status" value="disabled" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
+                            <span class="text-sm text-gray-700">下架</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('addCategoryModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="saveCategory()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 确认删除弹窗 ===== -->
+    <div id="deleteConfirmModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('deleteConfirmModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+            <div class="px-6 py-8 text-center">
+                <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                    <iconify-icon icon="mdi:alert-circle-outline" class="text-3xl text-red-500"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">确认删除</h3>
+                <p class="text-sm text-gray-500" id="delete-confirm-msg"></p>
+            </div>
+            <div class="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('deleteConfirmModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button id="delete-confirm-btn" onclick="confirmDelete()" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 彻底删除确认弹窗 ===== -->
+    <div id="permanentDeleteModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('permanentDeleteModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+            <div class="px-6 py-8 text-center">
+                <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                    <iconify-icon icon="mdi:alert-outline" class="text-3xl text-red-600"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">⚠️ 彻底删除</h3>
+                <p class="text-sm text-gray-500">此操作不可恢复，专家团将被永久删除。</p>
+            </div>
+            <div class="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('permanentDeleteModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="confirmPermanentDelete()" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700">确认彻底删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 详情弹窗 ===== -->
+    <div id="detailModal" class="detail-modal-overlay hidden" onclick="closeDetailModal()">
+        <div class="detail-modal-content" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between p-5 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden" id="detail-icon"></div>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h2 class="text-lg font-bold text-gray-900" id="detail-name"></h2>
+                            <span class="tag tag-enabled" id="detail-status-tag"><span class="status-dot enabled"></span>发布</span>
+                            <span id="detail-source-tag" class="tag tag-source-admin">管理端</span>
+                            <span id="detail-category-tags" class="flex gap-1 flex-wrap"></span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-0.5" id="detail-intro"></p>
+                    </div>
+                </div>
+                <button onclick="closeDetailModal()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="p-5">
+                <div class="flex items-center gap-4 text-xs text-gray-400 mb-5 flex-wrap">
+                    <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline"></iconify-icon> 创建人：<span id="detail-creator"></span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon> 创建时间：<span id="detail-created-at"></span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-edit-outline"></iconify-icon> 更新于 <span id="detail-updated-at"></span></span>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-5">
+                    <div class="detail-info-grid">
+                        <div>
+                            <div class="info-block-title">
+                                <iconify-icon icon="mdi:star-outline"></iconify-icon>
+                                擅长领域
+                            </div>
+                            <div class="info-block-content" id="detail-expertise">
+                                <span class="detail-empty">暂无</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="info-block-title">
+                                <iconify-icon icon="mdi:account-group-outline"></iconify-icon>
+                                团队成员
+                            </div>
+                            <div class="info-block-content" id="detail-team">
+                                <span class="detail-empty">暂无</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="info-block-title">
+                                <iconify-icon icon="mdi:message-question-outline"></iconify-icon>
+                                开场问题
+                            </div>
+                            <div class="info-block-content" id="detail-questions">
+                                <span class="detail-empty">暂无</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-100">
+                <button onclick="closeDetailModal()" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">关闭</button>
+                <button onclick="openEditFromDetail()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center gap-1.5" id="detail-edit-btn">
+                    <iconify-icon icon="mdi:pencil-outline" class="text-sm"></iconify-icon>
+                    编辑
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 🆕 导入专家弹窗 ===== -->
+    <div id="importModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('importModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-2xl">
+                <h3 class="text-lg font-bold text-gray-900">导入专家</h3>
+                <button onclick="closeModal('importModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-5">
+                <!-- 类别 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">类别</label>
+                    <div id="import-category-grid" class="import-category-grid">
+                        <!-- 由 JS 渲染 -->
+                    </div>
+                    <p class="text-xs mt-1 text-gray-400" id="import-category-hint"></p>
+                </div>
+
+                <!-- 上传区域 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">上传 ZIP 文件 <span class="text-red-500">*</span></label>
+                    <div class="import-drop-zone" id="import-drop-zone" onclick="document.getElementById('import-file-input').click()">
+                        <div class="drop-icon"><iconify-icon icon="mdi:file-upload-outline"></iconify-icon></div>
+                        <div class="drop-text">
+                            拖拽文件到此处，或 <span class="highlight">点击选择文件</span>
+                        </div>
+                        <div class="drop-hint">仅支持 OmniX 平台导出的 JSON 格式配置文件；</div>
+                        <div class="file-info" id="import-file-info">
+                            <iconify-icon icon="mdi:file-document-outline" class="text-blue-500 text-xl"></iconify-icon>
+                            <span id="import-file-name">config.json</span>
+                            <span class="remove-file" onclick="event.stopPropagation();clearImportFile()">✕</span>
+                        </div>
+                    </div>
+                    <input type="file" id="import-file-input" accept=".json,.zip" class="hidden" onchange="handleImportFile(event)" />
+                    <div class="import-steps mt-3">
+                        <div class="step">
+                            <span class="step-num">1</span>
+                            <span>专家可在 OmniX 平台导出。</span>
+                        </div>
+                        <div class="step">
+                            <span class="step-num">2</span>
+                            <span>系统将自动进行安全性扫描。</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 sticky bottom-0 bg-white rounded-b-2xl">
+                <button onclick="closeModal('importModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="doImport()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700" id="import-btn">导入</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Toast ===== -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- ===== FAB ===== -->
+    <div class="prd-fab-wrapper">
+        <a class="prd-fab-btn" href="../prd/v2.1 专家团管理模块-PRD.html" target="_blank" rel="noopener noreferrer" aria-label="查看 PRD 文档">
+            <svg viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="8" y1="13" x2="16" y2="13" />
+                <line x1="8" y1="17" x2="16" y2="17" />
+            </svg>
+            <span class="prd-fab-tooltip">PRD 文档</span>
+        </a>
+    </div>
+
+    <script>
+        // ============================================================
+        //  数据模型
+        // ============================================================
+        let categories = [
+            { id: 1, name: '技术术语', sort: 1, status: 'enabled' },
+            { id: 2, name: '业务概念', sort: 2, status: 'enabled' },
+            { id: 3, name: '行业标准', sort: 3, status: 'enabled' },
+            { id: 4, name: '缩写说明', sort: 4, status: 'enabled' },
+            { id: 5, name: '产品名词', sort: 5, status: 'disabled' }
+        ];
+
+        function calcCategoryCounts() {
+            categories.forEach(c => c.count = 0);
+            entries.forEach(e => {
+                if (e.categoryIds) {
+                    e.categoryIds.forEach(cid => {
+                        const cat = categories.find(c => c.id === cid);
+                        if (cat) cat.count = (cat.count || 0) + 1;
+                    });
+                }
+            });
+        }
+
+        let entries = [{
+            id: 1,
+            name: 'RBAC',
+            icon: '⚙️',
+            categoryIds: [1],
+            categories: ['技术术语'],
+            intro: '基于角色的访问控制模型，通过角色分配权限，实现细粒度的访问管理。',
+            detail: '<p><b>RBAC</b>（Role-Based Access Control）是一种广泛使用的权限管理模型。</p><ul><li>用户通过角色获得权限</li><li>支持角色继承和互斥</li><li>适用于企业级系统</li></ul>',
+            status: 'enabled',
+            source: 'admin',
+            createdBy: '王博士',
+            createdAt: '2026-07-01 10:00',
+            updatedBy: '王博士',
+            updatedAt: '2026-07-05 14:30',
+            usageCount: 1280,
+            expertise: ['权限管理', '安全架构', '身份认证'],
+            teamMembers: [
+                { name: '安全架构师', description: '负责系统安全设计与权限模型构建' },
+                { name: '开发工程师', description: '实现RBAC核心功能与API集成' },
+                { name: '运维专家', description: '保障系统稳定运行与安全审计' }
+            ],
+            openingQuestions: [
+                '如何设计一个细粒度的权限管理系统？',
+                'RBAC模型如何与现有系统集成？',
+                '如何实现权限的动态分配与回收？'
+            ]
+        }, {
+            id: 2,
+            name: 'ROI',
+            icon: '📊',
+            categoryIds: [4],
+            categories: ['缩写说明'],
+            intro: '投资回报率，衡量投资收益效率的核心财务指标。',
+            detail: '<p><b>ROI</b> = (收益 - 成本) / 成本 × 100%</p><p>是评估项目投资价值的常用指标。</p>',
+            status: 'enabled',
+            source: 'client',
+            createdBy: '李工',
+            createdAt: '2026-06-28 09:00',
+            updatedBy: '李工',
+            updatedAt: '2026-07-04 09:15',
+            usageCount: 856,
+            expertise: ['财务分析', '投资评估', '数据建模'],
+            teamMembers: [
+                { name: '财务分析师', description: '擅长财务数据建模与投资回报分析' },
+                { name: '数据科学家', description: '负责数据采集与预测模型构建' },
+                { name: '业务顾问', description: '提供业务洞察与决策建议' }
+            ],
+            openingQuestions: [
+                '如何计算一个项目的投资回报率？',
+                'ROI分析中如何考虑风险因素？',
+                '如何用ROI评估不同投资方案的优劣？'
+            ]
+        }, {
+            id: 3,
+            name: 'SaaS',
+            icon: '📦',
+            categoryIds: [3],
+            categories: ['行业标准'],
+            intro: '软件即服务，通过云端提供软件应用，用户按需订阅使用。',
+            detail: '',
+            status: 'disabled',
+            source: 'admin',
+            createdBy: '王博士',
+            createdAt: '2026-06-25 14:00',
+            updatedBy: '王博士',
+            updatedAt: '2026-07-03 16:42',
+            usageCount: 432,
+            expertise: [],
+            teamMembers: [],
+            openingQuestions: []
+        }, {
+            id: 4,
+            name: '微服务架构',
+            icon: '🔧',
+            categoryIds: [1],
+            categories: ['技术术语'],
+            intro: '将应用程序拆分为一组小型、独立部署的服务，每个服务运行在自己的进程中。',
+            detail: '<p>微服务架构的核心特点：</p><ul><li>服务独立部署</li><li>去中心化数据管理</li><li>容错设计</li><li>基础设施自动化</li></ul>',
+            status: 'enabled',
+            source: 'admin',
+            createdBy: '张工',
+            createdAt: '2026-07-02 11:00',
+            updatedBy: '张工',
+            updatedAt: '2026-07-05 08:20',
+            usageCount: 654,
+            expertise: ['分布式系统', 'API设计', '容器化', '服务治理'],
+            teamMembers: [
+                { name: '架构师', description: '负责微服务整体架构设计与技术选型' },
+                { name: '后端开发', description: '负责核心服务开发与接口设计' },
+                { name: 'DevOps工程师', description: '负责CI/CD流水线与容器编排' }
+            ],
+            openingQuestions: [
+                '如何将单体应用拆分为微服务架构？',
+                '微服务间如何进行服务发现与通信？',
+                '分布式事务在微服务中如何解决？'
+            ]
+        }, {
+            id: 5,
+            name: 'KPI',
+            icon: '📈',
+            categoryIds: [2, 4],
+            categories: ['业务概念', '缩写说明'],
+            intro: '关键绩效指标，用于衡量组织、部门或个人工作成效的量化指标。',
+            detail: '',
+            status: 'enabled',
+            source: 'client',
+            createdBy: '李工',
+            createdAt: '2026-06-30 16:30',
+            updatedBy: '李工',
+            updatedAt: '2026-07-02 10:00',
+            usageCount: 1024,
+            expertise: ['绩效管理', '数据分析', '业务指标'],
+            teamMembers: [
+                { name: '业务分析师', description: '负责KPI体系设计与业务指标拆解' },
+                { name: '数据工程师', description: '负责数据采集、清洗与可视化' }
+            ],
+            openingQuestions: [
+                '如何制定有效的KPI指标体系？',
+                'KPI与OKR的区别是什么？',
+                '如何通过KPI驱动业务增长？'
+            ]
+        }, {
+            id: 6,
+            name: 'API 网关',
+            icon: '🌐',
+            categoryIds: [1],
+            categories: ['技术术语'],
+            intro: '微服务架构中的统一入口，负责请求路由、认证、限流等功能。',
+            detail: '<p>API 网关是微服务架构的关键组件，主要职责包括：</p><ul><li>请求路由与转发</li><li>身份认证与授权</li><li>流量控制与限流</li><li>日志与监控</li></ul>',
+            status: 'enabled',
+            source: 'admin',
+            createdBy: '张工',
+            createdAt: '2026-07-03 09:00',
+            updatedBy: '张工',
+            updatedAt: '2026-07-04 15:30',
+            usageCount: 378,
+            expertise: [],
+            teamMembers: [],
+            openingQuestions: []
+        }, {
+            id: 7,
+            name: 'SLA',
+            icon: '📋',
+            categoryIds: [4],
+            categories: ['缩写说明'],
+            intro: '服务级别协议，定义服务提供商与客户之间的服务质量标准。',
+            detail: '',
+            status: 'enabled',
+            source: 'client',
+            createdBy: '王博士',
+            createdAt: '2026-06-20 08:00',
+            updatedBy: '王博士',
+            updatedAt: '2026-07-01 12:00',
+            usageCount: 567,
+            expertise: [],
+            teamMembers: [],
+            openingQuestions: []
+        }, {
+            id: 8,
+            name: '数字化转型',
+            icon: '💡',
+            categoryIds: [2],
+            categories: ['业务概念'],
+            intro: '利用数字技术重塑业务流程、组织文化和客户体验的战略过程。',
+            detail: '<p>数字化转型涵盖三个层面：</p><ol><li><b>技术层</b>：云计算、大数据、AI 等技术应用</li><li><b>业务层</b>：业务流程再造与优化</li><li><b>组织层</b>：文化变革与能力提升</li></ol>',
+            status: 'enabled',
+            source: 'admin',
+            createdBy: '李工',
+            createdAt: '2026-06-15 10:00',
+            updatedBy: '李工',
+            updatedAt: '2026-06-28 14:00',
+            usageCount: 2103,
+            expertise: ['战略规划', '组织变革', '技术赋能'],
+            teamMembers: [
+                { name: '战略顾问', description: '负责数字化转型战略规划与路径设计' },
+                { name: '技术专家', description: '负责技术选型与落地实施' },
+                { name: '变革管理师', description: '负责组织文化与流程变革' }
+            ],
+            openingQuestions: [
+                '企业数字化转型的关键成功因素有哪些？',
+                '如何评估数字化转型的成熟度？',
+                '传统企业如何迈出数字化转型的第一步？'
+            ]
+        }, {
+            id: 9,
+            name: '容器编排',
+            icon: '🐳',
+            categoryIds: [1],
+            categories: ['技术术语'],
+            intro: '自动化部署、扩展和管理容器化应用的技术，如 Kubernetes。',
+            detail: '',
+            status: 'enabled',
+            source: 'client',
+            createdBy: '张工',
+            createdAt: '2026-07-04 14:00',
+            updatedBy: '张工',
+            updatedAt: '2026-07-05 11:00',
+            usageCount: 445,
+            expertise: [],
+            teamMembers: [],
+            openingQuestions: []
+        }, {
+            id: 10,
+            name: 'DevOps',
+            icon: '🚀',
+            categoryIds: [1, 2],
+            categories: ['技术术语', '业务概念'],
+            intro: '开发与运维的深度融合，通过自动化流程提升软件交付效率。',
+            detail: '<p>DevOps 核心实践：</p><ul><li>持续集成/持续交付（CI/CD）</li><li>基础设施即代码</li><li>监控与日志聚合</li><li>协作文化</li></ul>',
+            status: 'enabled',
+            source: 'admin',
+            createdBy: '王博士',
+            createdAt: '2026-07-06 09:00',
+            updatedBy: '王博士',
+            updatedAt: '2026-07-06 14:20',
+            usageCount: 892,
+            expertise: ['CI/CD', '自动化运维', '协作文化'],
+            teamMembers: [
+                { name: 'DevOps 工程师', description: '负责CI/CD流水线与自动化运维' },
+                { name: '开发工程师', description: '负责代码质量与交付效率' },
+                { name: '运维工程师', description: '负责基础设施与监控告警' }
+            ],
+            openingQuestions: [
+                '如何从零开始搭建DevOps体系？',
+                'DevOps如何与敏捷开发结合？',
+                '如何度量DevOps的交付效率？'
+            ]
+        }];
+
+        calcCategoryCounts();
+
+        let deletedEntries = [{
+            id: 101,
+            name: '旧版SaaS定义',
+            icon: '📦',
+            categoryIds: [3],
+            categories: ['行业标准'],
+            intro: '已废弃的SaaS描述，仅供参考。',
+            source: 'admin',
+            deletedBy: '王博士',
+            deletedAt: '2026-07-02',
+            expertise: [],
+            teamMembers: [],
+            openingQuestions: []
+        }];
+
+        // ============================================================
+        //  状态变量
+        // ============================================================
+        let currentView = 'list';
+        let editingEntryId = null;
+        let deleteTargetIds = [];
+        let recycleDeleteTargetIds = [];
+        let selectedIcon = '📖';
+        const iconList = ['', '⚙️', '📊', '📦', '🔧', '📈', '🌐', '📋', '💡', '🐳', '🚀', '🔍', '🏷️', '🔑', '⚡', '🔗', '📱', '💻', '🤖',
+            '🛠️'
+        ];
+
+        // ---- 导入相关 ----
+        let importFileData = null; // 存储读取的JSON数据
+        let importFileName = '';
+
+        // ============================================================
+        //  下拉菜单
+        // ============================================================
+        function toggleAddDropdown() {
+            const menu = document.getElementById('add-dropdown-menu');
+            const chevron = document.getElementById('dropdown-chevron');
+            const isOpen = !menu.classList.contains('hidden');
+            if (isOpen) {
+                menu.classList.add('hidden');
+                chevron.style.transform = 'rotate(0deg)';
+            } else {
+                menu.classList.remove('hidden');
+                chevron.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // 点击外部关闭下拉
+        document.addEventListener('click', function(e) {
+            const wrapper = document.getElementById('add-dropdown-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                const menu = document.getElementById('add-dropdown-menu');
+                const chevron = document.getElementById('dropdown-chevron');
+                if (menu) menu.classList.add('hidden');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        function handleDropdownAction(action) {
+            // 关闭下拉
+            const menu = document.getElementById('add-dropdown-menu');
+            const chevron = document.getElementById('dropdown-chevron');
+            if (menu) menu.classList.add('hidden');
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
+
+            if (action === 'manual') {
+                openAddEntry();
+            } else if (action === 'ai') {
+                showToast('AI 智能创建功能即将上线，敬请期待！', 'success');
+            } else if (action === 'import') {
+                openImportModal();
+            }
+        }
+
+        // ============================================================
+        //  导入弹窗
+        // ============================================================
+        function openImportModal() {
+            // 重置状态
+            importFileData = null;
+            importFileName = '';
+            document.getElementById('import-file-input').value = '';
+            const zone = document.getElementById('import-drop-zone');
+            zone.classList.remove('has-file');
+            document.getElementById('import-file-name').textContent = '';
+
+            // 渲染类别（使用系统categories，只显示已发布的）
+            renderImportCategories();
+
+            openModal('importModal');
+        }
+
+        function renderImportCategories() {
+            const container = document.getElementById('import-category-grid');
+            const sorted = [...categories].filter(c => c.status === 'enabled').sort((a, b) => a.sort - b.sort);
+            if (sorted.length === 0) {
+                container.innerHTML = '<div class="no-category-hint">暂无可用的发布类别，请先在「专家团管理类别」中创建并发布。</div>';
+                return;
+            }
+            container.innerHTML = sorted.map(c => {
+                return `<label>
+                            <input type="checkbox" value="${c.id}" />
+                            ${c.name}
+                        </label>`;
+            }).join('');
+            updateImportCategoryHint();
+        }
+
+        function updateImportCategoryHint() {
+            const checks = document.querySelectorAll('#import-category-grid input[type="checkbox"]:checked');
+            const hint = document.getElementById('import-category-hint');
+            if (checks.length === 0) {
+                hint.innerHTML = '<span class="text-red-500"></span>';
+            } else {
+                const names = Array.from(checks).map(cb => {
+                    const label = cb.closest('label');
+                    return label ? label.textContent.trim() : '';
+                });
+                hint.innerHTML = `<span class="text-green-600">✓ 已选 ${checks.length} 个：${names.join('、')}</span>`;
+            }
+        }
+
+        // 监听导入弹窗中的类别变化
+        document.addEventListener('change', function(e) {
+            if (e.target.closest && e.target.closest('#import-category-grid')) {
+                updateImportCategoryHint();
+            }
+        });
+
+        function getImportSelectedCategoryIds() {
+            const checks = document.querySelectorAll('#import-category-grid input[type="checkbox"]:checked');
+            return Array.from(checks).map(cb => parseInt(cb.value));
+        }
+
+        // ---- 文件上传 ----
+        function handleImportFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            processImportFile(file);
+        }
+
+        // 拖拽支持
+        const dropZone = document.getElementById('import-drop-zone');
+        if (dropZone) {
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+            dropZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    processImportFile(files[0]);
+                }
+            });
+        }
+
+        function processImportFile(file) {
+            // 检查文件类型
+            const validTypes = ['application/json', 'application/zip', 'application/x-zip-compressed'];
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!validTypes.includes(file.type) && ext !== 'json' && ext !== 'zip') {
+                showToast('请上传 JSON 或 ZIP 文件', 'error');
+                return;
+            }
+
+            // 读取文件
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let content = e.target.result;
+                    // 如果是ZIP，这里简化处理：直接尝试解析为JSON
+                    // 实际项目中需要解压ZIP，这里演示直接解析
+                    if (ext === 'zip') {
+                        // 简单提示，实际需要JSZip等库
+                        showToast('ZIP 文件解析需要解压，请上传 JSON 文件（或使用库解压）', 'error');
+                        // 但为了演示，我们假装解析成功
+                        // 实际会使用 JSZip 等库
+                        // 这里我们模拟一个JSON数据
+                        const mockData = {
+                            name: '导入的专家',
+                            icon: '📚',
+                            intro: '这是一个通过导入创建的专家团',
+                            detail: '<p>导入的专家团详情</p>',
+                            expertise: ['导入标签1', '导入标签2'],
+                            teamMembers: [{ name: '导入成员', description: '导入描述' }],
+                            openingQuestions: ['导入问题1', '导入问题2']
+                        };
+                        importFileData = mockData;
+                        importFileName = file.name;
+                        showFileUploaded(file.name);
+                        showToast('ZIP 文件已解析（演示模式）', 'success');
+                        return;
+                    }
+
+                    // JSON 解析
+                    const data = JSON.parse(content);
+                    // 验证数据结构
+                    if (!data.name || !data.intro) {
+                        showToast('JSON 格式不完整，缺少 name 或 intro 字段', 'error');
+                        return;
+                    }
+                    importFileData = data;
+                    importFileName = file.name;
+                    showFileUploaded(file.name);
+                    showToast('文件解析成功', 'success');
+                } catch (err) {
+                    showToast('文件解析失败：' + err.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function showFileUploaded(name) {
+            const zone = document.getElementById('import-drop-zone');
+            zone.classList.add('has-file');
+            document.getElementById('import-file-name').textContent = name;
+        }
+
+        function clearImportFile() {
+            importFileData = null;
+            importFileName = '';
+            document.getElementById('import-file-input').value = '';
+            const zone = document.getElementById('import-drop-zone');
+            zone.classList.remove('has-file');
+            document.getElementById('import-file-name').textContent = '';
+        }
+
+        // ---- 执行导入 ----
+        function doImport() {
+            const categoryIds = getImportSelectedCategoryIds();
+            if (categoryIds.length === 0) {
+                showToast('请至少选择一个类别', 'error');
+                return;
+            }
+            if (!importFileData) {
+                showToast('请先上传配置文件', 'error');
+                return;
+            }
+
+            const data = importFileData;
+            const now = new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\//g, '-');
+
+            // 检查重名（在所选类别中）
+            const conflict = entries.find(e => {
+                if (e.name !== data.name) return false;
+                if (!e.categoryIds || !categoryIds) return false;
+                return e.categoryIds.some(cid => categoryIds.includes(cid));
+            });
+            if (conflict) {
+                showToast(`专家团「${data.name}」在所选类别中已存在`, 'error');
+                return;
+            }
+
+            // 构建新专家团
+            const catNames = categoryIds.map(cid => {
+                const cat = categories.find(c => c.id === cid);
+                return cat ? cat.name : '';
+            }).filter(Boolean);
+
+            const newEntry = {
+                id: Date.now(),
+                name: data.name || '未命名专家',
+                icon: data.icon || '📖',
+                categoryIds: categoryIds,
+                categories: catNames,
+                intro: data.intro || '',
+                detail: data.detail || '',
+                status: 'enabled',
+                source: 'admin',
+                createdBy: '导入用户',
+                createdAt: now,
+                updatedBy: '导入用户',
+                updatedAt: now,
+                usageCount: 0,
+                expertise: data.expertise || [],
+                teamMembers: data.teamMembers || [],
+                openingQuestions: data.openingQuestions || []
+            };
+
+            entries.unshift(newEntry);
+            categoryIds.forEach(cid => {
+                const cat = categories.find(c => c.id === cid);
+                if (cat && cat.status === 'enabled') cat.count = (cat.count || 0) + 1;
+            });
+
+            closeModal('importModal');
+            renderEntryGrid();
+            updateCategoryFilter();
+            showToast(`成功导入专家团「${newEntry.name}」`, 'success');
+
+            // 重置导入状态
+            clearImportFile();
+        }
+
+        // ============================================================
+        //  视图切换
+        // ============================================================
+        function showView(view) {
+            currentView = view;
+            document.getElementById('view-list').classList.toggle('hidden', view !== 'list');
+            document.getElementById('view-recycle').classList.toggle('hidden', view !== 'recycle');
+            document.getElementById('header-list-actions').classList.toggle('hidden', view !== 'list');
+            document.getElementById('header-recycle-actions').classList.toggle('hidden', view !== 'recycle');
+
+            const bc = document.getElementById('breadcrumb-area');
+            if (view === 'list') {
+                bc.innerHTML =
+                    '<span>资源管理</span><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">专家团管理</span>';
+            } else if (view === 'recycle') {
+                bc.innerHTML =
+                    '<a href="#" onclick="showView(\'list\')" class="hover:text-blue-600">专家团管理</a><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">回收站</span>';
+            }
+
+            if (view === 'list') { renderEntryGrid();
+                updateCategoryFilter(); }
+            if (view === 'recycle') renderRecycleGrid();
+        }
+
+        function updateRecycleBadge() {
+            const badge = document.getElementById('recycle-badge');
+            const count = deletedEntries.length;
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = '';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // ============================================================
+        //  渲染专家团卡片
+        // ============================================================
+        function getFilteredEntries() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const catFilter = document.getElementById('category-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            const sourceFilter = document.getElementById('source-filter').value;
+            return entries.filter(e => {
+                if (search && !e.name.toLowerCase().includes(search) && !e.intro.toLowerCase().includes(search))
+                    return false;
+                if (catFilter) {
+                    const cid = parseInt(catFilter);
+                    if (!e.categoryIds || !e.categoryIds.includes(cid)) return false;
+                }
+                if (statusFilter && e.status !== statusFilter) return false;
+                if (sourceFilter && e.source !== sourceFilter) return false;
+                return true;
+            });
+        }
+
+        function renderCategoryTags(categoryIds) {
+            if (!categoryIds || categoryIds.length === 0) return '';
+            return categoryIds.map(cid => {
+                const cat = categories.find(c => c.id === cid);
+                if (!cat) return '';
+                const cls = cat.status === 'enabled' ? 'tag-category' : 'tag-category-disabled';
+                return `<span class="tag ${cls}">${cat.name}</span>`;
+            }).join(' ');
+        }
+
+        function renderSourceTag(source) {
+            if (source === 'admin') {
+                return `<span class="tag tag-source-admin">@ 管理端</span>`;
+            } else if (source === 'client') {
+                return `<span class="tag tag-source-client">@ 客户端</span>`;
+            }
+            return '';
+        }
+
+        function exportEntry(id) {
+            const e = entries.find(x => x.id === id);
+            if (!e) { showToast('专家团不存在', 'error'); return; }
+            const data = {
+                id: e.id,
+                name: e.name,
+                icon: e.icon,
+                categories: e.categories,
+                categoryIds: e.categoryIds,
+                intro: e.intro,
+                detail: e.detail,
+                status: e.status,
+                source: e.source,
+                createdBy: e.createdBy,
+                createdAt: e.createdAt,
+                updatedBy: e.updatedBy,
+                updatedAt: e.updatedAt,
+                usageCount: e.usageCount,
+                expertise: e.expertise || [],
+                teamMembers: e.teamMembers || [],
+                openingQuestions: e.openingQuestions || []
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `专家团_${e.name}_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(`导出「${e.name}」成功`, 'success');
+        }
+
+        function renderEntryGrid() {
+            const filtered = getFilteredEntries();
+            const grid = document.getElementById('entry-grid');
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('empty-state').classList.add('flex');
+                return;
+            }
+
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('empty-state').classList.remove('flex');
+
+            grid.innerHTML = filtered.map(e => {
+                const isEnabled = e.status === 'enabled';
+                const catTags = renderCategoryTags(e.categoryIds);
+                const sourceTag = renderSourceTag(e.source);
+                const isClient = e.source === 'client';
+
+                const editBtn = !isClient ?
+                    `<button onclick="event.stopPropagation();openEdit(${e.id})" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="编辑">
+                            <iconify-icon icon="mdi:pencil-outline" class="text-base"></iconify-icon>
+                        </button>` :
+                    '';
+
+                return `
+                <div class="entry-card bg-white rounded-xl border border-gray-200 p-5 cursor-pointer relative" onclick="openDetail(${e.id})">
+                    <div class="card-hover-actions absolute top-3 right-3 flex items-center gap-1" onclick="event.stopPropagation()">
+                        <button onclick="event.stopPropagation();exportEntry(${e.id})" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors" title="导出">
+                            <iconify-icon icon="mdi:download-outline" class="text-base"></iconify-icon>
+                        </button>
+                        ${editBtn}
+                        <button onclick="event.stopPropagation();openDeleteConfirm([${e.id}])" class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="删除">
+                            <iconify-icon icon="mdi:trash-can-outline" class="text-base"></iconify-icon>
+                        </button>
+                    </div>
+                    <div class="flex items-start gap-3 mb-3">
+                        <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${renderIconHtml(e.icon, 'w-9 h-9')}</div>
+                        <div class="flex-1 min-w-0 pr-12">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="font-semibold text-gray-900 text-base truncate">${e.name}</h3>
+                                ${sourceTag}
+                            </div>
+                            <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                                ${catTags}
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4 line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:calc(14px * 1.5 * 2)">${e.intro}</p>
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div class="flex items-center gap-2 text-xs text-gray-400">
+                            <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline" class="text-sm"></iconify-icon> ${e.updatedBy}</span>
+                            <span class="text-gray-300">|</span>
+                            <span>更新: ${e.updatedAt.split(' ')[0]}</span>
+                        </div>
+                        <label class="toggle-switch ${isClient ? 'toggle-disabled' : ''}" onclick="if(${isClient}){event.stopPropagation();showToast('客户端来源的专家团不可修改状态','error');}else{event.stopPropagation();}">
+                            <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="if(!${isClient}){toggleEntryStatus(${e.id})}" ${isClient ? 'disabled' : ''}/>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function filterEntries() { renderEntryGrid(); }
+
+        // ============================================================
+        //  渲染回收站
+        // ============================================================
+        function renderRecycleGrid() {
+            const search = document.getElementById('recycle-search').value.toLowerCase();
+            const filtered = deletedEntries.filter(e => !search || e.name.toLowerCase().includes(search));
+            const grid = document.getElementById('recycle-grid');
+            document.getElementById('recycle-count').textContent = deletedEntries.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                document.getElementById('recycle-empty').classList.remove('hidden');
+                document.getElementById('recycle-empty').classList.add('flex');
+                return;
+            }
+
+            document.getElementById('recycle-empty').classList.add('hidden');
+            document.getElementById('recycle-empty').classList.remove('flex');
+
+            grid.innerHTML = filtered.map(e => {
+                const isSelected = recycleDeleteTargetIds.includes(e.id);
+                const catTags = renderCategoryTags(e.categoryIds);
+                const sourceTag = renderSourceTag(e.source || 'admin');
+                return `
+                <div class="entry-card bg-white rounded-xl border ${isSelected ? 'border-red-300 ring-2 ring-red-100' : 'border-gray-200'} p-5 relative">
+                    <div class="absolute top-4 right-4">
+                        <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleRecycleSelect(${e.id})" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                    </div>
+                    <div class="flex items-start gap-3 mb-3">
+                        <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">${renderIconHtml(e.icon, 'w-9 h-9')}</div>
+                        <div class="flex-1 min-w-0 pr-6">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="font-semibold text-gray-900 text-base truncate">${e.name}</h3>
+                                ${sourceTag}
+                            </div>
+                            <div class="flex flex-wrap gap-1 mt-1">${catTags}</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4 line-clamp-2" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${e.intro}</p>
+                    <div class="flex items-center pt-3 gap-3 border-t border-gray-100 text-xs text-gray-400">
+                        <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline" class="text-sm"></iconify-icon> ${e.deletedBy}</span>
+                        <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon>删除: ${e.deletedAt}</span>
+                        <div class="ml-auto flex items-center gap-2 recycle-card-actions">
+                            <button onclick="restoreEntry(${e.id})" class="flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                                <iconify-icon icon="mdi:restore"></iconify-icon>
+                                <span>还原</span>
+                            </button>
+                            <button onclick="openPermanentDelete([${e.id}])" class="flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                                <iconify-icon icon="mdi:trash-can"></iconify-icon>
+                                <span>彻底删除</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+
+            updateRecycleSelectedCount();
+        }
+
+        function filterRecycle() { renderRecycleGrid(); }
+
+        // ============================================================
+        //  回收站选择
+        // ============================================================
+        function toggleRecycleSelect(id) {
+            const idx = recycleDeleteTargetIds.indexOf(id);
+            if (idx > -1) recycleDeleteTargetIds.splice(idx, 1);
+            else recycleDeleteTargetIds.push(id);
+            renderRecycleGrid();
+        }
+
+        function toggleRecycleSelectAll() {
+            const checked = document.getElementById('recycle-select-all').checked;
+            const search = document.getElementById('recycle-search').value.toLowerCase();
+            const filtered = deletedEntries.filter(e => !search || e.name.toLowerCase().includes(search));
+            if (checked) {
+                filtered.forEach(e => { if (!recycleDeleteTargetIds.includes(e.id)) recycleDeleteTargetIds.push(e.id); });
+            } else {
+                filtered.forEach(e => { const idx = recycleDeleteTargetIds.indexOf(e.id); if (idx > -1) recycleDeleteTargetIds
+                        .splice(idx, 1); });
+            }
+            renderRecycleGrid();
+        }
+
+        function updateRecycleSelectedCount() {
+            document.getElementById('recycle-selected-count').textContent = `已选 ${recycleDeleteTargetIds.length} 项`;
+            document.getElementById('btn-batch-restore').disabled = recycleDeleteTargetIds.length === 0;
+            document.getElementById('btn-batch-perm-delete').disabled = recycleDeleteTargetIds.length === 0;
+        }
+
+        // ============================================================
+        //  状态切换
+        // ============================================================
+        function toggleEntryStatus(id) {
+            const e = entries.find(x => x.id === id);
+            if (!e) return;
+            if (e.source === 'client') {
+                showToast('客户端来源的专家团不可修改状态', 'error');
+                return;
+            }
+            e.status = e.status === 'enabled' ? 'disabled' : 'enabled';
+            e.updatedAt = new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-');
+            renderEntryGrid();
+            showToast(e.status === 'enabled' ? '发布成功' : '下架成功', 'success');
+        }
+
+        // ============================================================
+        //  类别筛选
+        // ============================================================
+        function updateCategoryFilter() {
+            const sel = document.getElementById('category-filter');
+            const current = sel.value;
+            sel.innerHTML = '<option value="">全部类别</option>';
+            const sorted = [...categories].filter(c => c.status === 'enabled').sort((a, b) => a.sort - b.sort);
+            sorted.forEach(c => {
+                sel.innerHTML += `<option value="${c.id}" ${current == c.id ? 'selected' : ''}>${c.name}</option>`;
+            });
+        }
+
+        // ============================================================
+        //  多选分类渲染（新增/编辑弹窗）
+        // ============================================================
+        function renderCategoryCheckboxes(selectedIds) {
+            const container = document.getElementById('category-checkbox-group');
+            const sorted = [...categories].filter(c => c.status === 'enabled').sort((a, b) => a.sort - b.sort);
+            if (sorted.length === 0) {
+                container.innerHTML = '<div class="no-category-hint">暂无可用的发布类别，请先在「专家团管理类别」中创建并发布。</div>';
+                return;
+            }
+            container.innerHTML = sorted.map(c => {
+                const checked = selectedIds && selectedIds.includes(c.id) ? 'checked' : '';
+                return `<label>
+                            <input type="checkbox" value="${c.id}" ${checked} onchange="onCategoryCheckChange()" />
+                            ${c.name}
+                        </label>`;
+            }).join('');
+            updateCategoryHint();
+        }
+
+        function onCategoryCheckChange() {
+            updateCategoryHint();
+        }
+
+        function updateCategoryHint() {
+            const checks = document.querySelectorAll('#category-checkbox-group input[type="checkbox"]:checked');
+            const hint = document.getElementById('category-hint');
+            if (checks.length === 0) {
+                hint.innerHTML = '<span class="text-red-500"></span>';
+            } else {
+                const names = Array.from(checks).map(cb => {
+                    const label = cb.closest('label');
+                    return label ? label.textContent.trim() : '';
+                });
+                hint.innerHTML = `<span class="text-green-600">✓ 已选 ${checks.length} 个：${names.join('、')}</span>`;
+            }
+        }
+
+        function getSelectedCategoryIds() {
+            const checks = document.querySelectorAll('#category-checkbox-group input[type="checkbox"]:checked');
+            return Array.from(checks).map(cb => parseInt(cb.value));
+        }
+
+        // ============================================================
+        //  详情弹窗
+        // ============================================================
+        function openDetail(id) {
+            const e = entries.find(x => x.id === id);
+            if (!e) return;
+            editingEntryId = id;
+
+            document.getElementById('detail-icon').innerHTML = renderIconHtml(e.icon, 'w-10 h-10');
+            document.getElementById('detail-name').textContent = e.name;
+            document.getElementById('detail-intro').textContent = e.intro;
+            document.getElementById('detail-creator').textContent = e.createdBy;
+            document.getElementById('detail-created-at').textContent = e.createdAt;
+            document.getElementById('detail-updated-at').textContent = e.updatedAt;
+
+            const tagEl = document.getElementById('detail-status-tag');
+            if (e.status === 'enabled') {
+                tagEl.className = 'tag tag-enabled';
+                tagEl.innerHTML = '<span class="status-dot enabled"></span>发布';
+            } else {
+                tagEl.className = 'tag tag-disabled';
+                tagEl.innerHTML = '<span class="status-dot disabled"></span>下架';
+            }
+
+            const sourceTagEl = document.getElementById('detail-source-tag');
+            if (e.source === 'admin') {
+                sourceTagEl.className = 'tag tag-source-admin';
+                sourceTagEl.textContent = '管理端';
+            } else {
+                sourceTagEl.className = 'tag tag-source-client';
+                sourceTagEl.textContent = '客户端';
+            }
+
+            const catTagsContainer = document.getElementById('detail-category-tags');
+            if (e.categoryIds && e.categoryIds.length > 0) {
+                catTagsContainer.innerHTML = e.categoryIds.map(cid => {
+                    const cat = categories.find(c => c.id === cid);
+                    if (!cat) return '';
+                    const cls = cat.status === 'enabled' ? 'tag-category' : 'tag-category-disabled';
+                    return `<span class="tag ${cls}">${cat.name}</span>`;
+                }).join('');
+            } else {
+                catTagsContainer.innerHTML = '';
+            }
+
+            const detailEditBtn = document.getElementById('detail-edit-btn');
+            if (e.source === 'client') {
+                detailEditBtn.style.display = 'none';
+            } else {
+                detailEditBtn.style.display = 'flex';
+            }
+
+            // 擅长领域
+            const expertiseContainer = document.getElementById('detail-expertise');
+            if (e.expertise && e.expertise.length > 0) {
+                expertiseContainer.innerHTML = e.expertise.map(t =>
+                    `<span class="tag tag-expertise">${t}</span>`
+                ).join(' ');
+            } else {
+                expertiseContainer.innerHTML = '<span class="detail-empty">暂无</span>';
+            }
+
+            // 团队成员
+            const teamContainer = document.getElementById('detail-team');
+            if (e.teamMembers && e.teamMembers.length > 0) {
+                teamContainer.innerHTML = e.teamMembers.map(m => {
+                    const initial = m.name ? m.name.charAt(0).toUpperCase() : '?';
+                    return `
+                        <div class="team-member-item">
+                            <div class="team-member-avatar">
+                                <span style="font-size:16px; font-weight:600; color:#4F46E5;">${initial}</span>
+                            </div>
+                            <div class="team-member-info">
+                                <div class="member-name">${m.name}</div>
+                                ${m.description ? `<div class="member-desc">${m.description}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                teamContainer.innerHTML = '<span class="detail-empty">暂无</span>';
+            }
+
+            const questionsContainer = document.getElementById('detail-questions');
+            if (e.openingQuestions && e.openingQuestions.length > 0) {
+                questionsContainer.innerHTML = e.openingQuestions.map(q =>
+                    `<div class="question-item">${q}</div>`
+                ).join('');
+            } else {
+                questionsContainer.innerHTML = '<span class="detail-empty">暂无</span>';
+            }
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        function openEditFromDetail() {
+            if (editingEntryId) {
+                const e = entries.find(x => x.id === editingEntryId);
+                if (e && e.source === 'client') {
+                    showToast('客户端来源的专家团不可编辑', 'error');
+                    return;
+                }
+                closeDetailModal();
+                openEdit(editingEntryId);
+            }
+        }
+
+        // ============================================================
+        //  新增/编辑专家团
+        // ============================================================
+        function openAddEntry() {
+            editingEntryId = null;
+            document.getElementById('modal-title').textContent = '新增专家团';
+            document.getElementById('entry-name').value = '';
+            document.getElementById('entry-intro').value = '';
+            document.getElementById('entry-detail').innerHTML = '';
+            document.getElementById('entry-status').checked = true;
+            document.getElementById('intro-count').textContent = '0';
+            document.getElementById('name-hint').innerHTML = '<span class="text-gray-400">同一类别下不可重名，最大 50 字符</span>';
+            document.querySelector('input[name="entry-source"][value="admin"]').checked = true;
+            selectedIcon = '';
+            renderIconPreview();
+            renderCategoryCheckboxes([]);
+            openModal('addModal');
+        }
+
+        function openEdit(id) {
+            const e = entries.find(x => x.id === id);
+            if (!e) return;
+            if (e.source === 'client') {
+                showToast('客户端来源的专家团不可编辑', 'error');
+                return;
+            }
+            editingEntryId = id;
+            document.getElementById('modal-title').textContent = '编辑专家团 - ' + e.name;
+            document.getElementById('entry-name').value = e.name;
+            document.getElementById('entry-intro').value = e.intro;
+            document.getElementById('entry-detail').innerHTML = e.detail || '';
+            document.getElementById('entry-status').checked = e.status === 'enabled';
+            document.getElementById('intro-count').textContent = e.intro.length;
+            document.getElementById('name-hint').innerHTML = '<span class="text-gray-400">同一类别下不可重名，最大 50 字符</span>';
+            if (e.source === 'admin') {
+                document.querySelector('input[name="entry-source"][value="admin"]').checked = true;
+            } else {
+                document.querySelector('input[name="entry-source"][value="client"]').checked = true;
+            }
+            selectedIcon = e.icon || '';
+            renderIconPreview();
+            const enabledIds = (e.categoryIds || []).filter(cid => {
+                const cat = categories.find(c => c.id === cid);
+                return cat && cat.status === 'enabled';
+            });
+            renderCategoryCheckboxes(enabledIds);
+            openModal('addModal');
+        }
+
+        function validateName() {
+            const name = document.getElementById('entry-name').value.trim();
+            if (!name) { document.getElementById('name-hint').innerHTML = '<span class="text-red-500">名称不能为空</span>'; return false; }
+            if (name.length > 50) { document.getElementById('name-hint').innerHTML =
+                    '<span class="text-red-500">名称不能超过 50 字符</span>'; return false; }
+            const selectedIds = getSelectedCategoryIds();
+            if (selectedIds.length === 0) {
+                document.getElementById('name-hint').innerHTML = '<span class="text-red-500">请至少选择一个类别</span>';
+                return false;
+            }
+            const conflict = entries.find(e => {
+                if (e.id === editingEntryId) return false;
+                if (e.name !== name) return false;
+                if (!e.categoryIds || !selectedIds) return false;
+                return e.categoryIds.some(cid => selectedIds.includes(cid));
+            });
+            if (conflict) {
+                document.getElementById('name-hint').innerHTML = '<span class="text-red-500">该名称在已选类别中存在重名</span>';
+                return false;
+            }
+            document.getElementById('name-hint').innerHTML = '<span class="text-green-600">✓ 名称可用</span>';
+            return true;
+        }
+
+        function updateIntroCount(el) {
+            const count = el.value.length;
+            const counter = document.getElementById('intro-count');
+            counter.textContent = count;
+            counter.className = count > 200 ? 'text-red-500 font-medium' : count > 180 ? 'text-orange-500' : 'text-gray-400';
+        }
+
+        function renderIconPreview() {
+            const el = document.getElementById('icon-preview');
+            if (selectedIcon && selectedIcon.startsWith('data:image/')) {
+                el.innerHTML = '<img src="' + selectedIcon + '" class="w-8 h-8 rounded object-cover"/>';
+            } else {
+                el.innerHTML = selectedIcon || '📖';
+            }
+        }
+
+        function uploadIcon() {
+            document.getElementById('icon-file-input').click();
+        }
+
+        function handleIconUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { showToast('请上传图片文件', 'error'); return; }
+            if (file.size > 2 * 1024 * 1024) { showToast('图片不能超过 2MB', 'error'); return; }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                selectedIcon = e.target.result;
+                renderIconPreview();
+                showToast('图标上传成功', 'success');
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function clearIcon() { selectedIcon = '';
+            renderIconPreview(); }
+
+        function renderIconHtml(icon, sizeClass) {
+            if (icon && icon.startsWith('data:image/')) {
+                return '<img src="' + icon + '" class="' + sizeClass + ' rounded object-cover"/>';
+            }
+            return icon || '📖';
+        }
+
+        function saveEntry() {
+            const name = document.getElementById('entry-name').value.trim();
+            const categoryIds = getSelectedCategoryIds();
+            const intro = document.getElementById('entry-intro').value.trim();
+            const detail = document.getElementById('entry-detail').innerHTML;
+            const status = document.getElementById('entry-status').checked ? 'enabled' : 'disabled';
+            const sourceRadio = document.querySelector('input[name="entry-source"]:checked');
+            const source = sourceRadio ? sourceRadio.value : 'admin';
+
+            if (!name) { showToast('请输入专家团名称', 'error'); return; }
+            if (categoryIds.length === 0) { showToast('请至少选择一个类别', 'error'); return; }
+            if (!intro) { showToast('请输入简介', 'error'); return; }
+            if (intro.length > 200) { showToast('简介不能超过 200 字符', 'error'); return; }
+
+            const conflict = entries.find(e => {
+                if (e.id === editingEntryId) return false;
+                if (e.name !== name) return false;
+                if (!e.categoryIds || !categoryIds) return false;
+                return e.categoryIds.some(cid => categoryIds.includes(cid));
+            });
+            if (conflict) { showToast('该名称在已选类别中存在重名', 'error'); return; }
+
+            const catNames = categoryIds.map(cid => {
+                const cat = categories.find(c => c.id === cid);
+                return cat ? cat.name : '';
+            }).filter(Boolean);
+
+            const now = new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\//g, '-');
+
+            if (editingEntryId) {
+                const e = entries.find(x => x.id === editingEntryId);
+                if (e) {
+                    if (e.categoryIds) {
+                        e.categoryIds.forEach(cid => {
+                            const cat = categories.find(c => c.id === cid);
+                            if (cat && cat.count > 0) cat.count--;
+                        });
+                    }
+                    e.name = name;
+                    e.icon = selectedIcon;
+                    const oldDisabledIds = (e.categoryIds || []).filter(cid => {
+                        const cat = categories.find(c => c.id === cid);
+                        return cat && cat.status === 'disabled';
+                    });
+                    const newIds = [...new Set([...categoryIds, ...oldDisabledIds])];
+                    e.categoryIds = newIds;
+                    e.categories = newIds.map(cid => {
+                        const cat = categories.find(c => c.id === cid);
+                        return cat ? cat.name : '';
+                    }).filter(Boolean);
+                    e.intro = intro;
+                    e.detail = detail;
+                    e.status = status;
+                    e.source = source;
+                    e.updatedBy = '孙礼飞';
+                    e.updatedAt = now;
+                    categoryIds.forEach(cid => {
+                        const cat = categories.find(c => c.id === cid);
+                        if (cat && cat.status === 'enabled') cat.count = (cat.count || 0) + 1;
+                    });
+                }
+                showToast('编辑成功', 'success');
+            } else {
+                const newEntry = {
+                    id: Date.now(),
+                    name,
+                    icon: selectedIcon,
+                    categoryIds: categoryIds,
+                    categories: catNames,
+                    intro,
+                    detail,
+                    status,
+                    source: source,
+                    createdBy: '孙礼飞',
+                    createdAt: now,
+                    updatedBy: '孙礼飞',
+                    updatedAt: now,
+                    usageCount: 0,
+                    expertise: [],
+                    teamMembers: [],
+                    openingQuestions: []
+                };
+                entries.unshift(newEntry);
+                categoryIds.forEach(cid => {
+                    const cat = categories.find(c => c.id === cid);
+                    if (cat && cat.status === 'enabled') cat.count = (cat.count || 0) + 1;
+                });
+                showToast('创建成功', 'success');
+            }
+
+            closeModal('addModal');
+            renderEntryGrid();
+            updateCategoryFilter();
+        }
+
+        // ============================================================
+        //  删除操作
+        // ============================================================
+        function openDeleteConfirm(ids) {
+            deleteTargetIds = [...ids];
+            if (ids.length === 1) {
+                const e = entries.find(x => x.id === ids[0]);
+                document.getElementById('delete-confirm-msg').textContent = `确认删除专家团「${e ? e.name : ''}」？删除后可在回收站恢复。`;
+            } else {
+                document.getElementById('delete-confirm-msg').textContent =
+                    `确认删除选中的 ${ids.length} 个专家团？删除后可在回收站恢复。`;
+            }
+            document.getElementById('delete-confirm-btn').setAttribute('onclick', 'confirmDelete()');
+            openModal('deleteConfirmModal');
+        }
+
+        function confirmDelete() {
+            deleteTargetIds.forEach(id => {
+                const idx = entries.findIndex(e => e.id === id);
+                if (idx > -1) {
+                    const deleted = entries.splice(idx, 1)[0];
+                    if (deleted.categoryIds) {
+                        deleted.categoryIds.forEach(cid => {
+                            const cat = categories.find(c => c.id === cid);
+                            if (cat && cat.count > 0) cat.count--;
+                        });
+                    }
+                    deletedEntries.push({
+                        id: deleted.id,
+                        name: deleted.name,
+                        icon: deleted.icon,
+                        categoryIds: deleted.categoryIds || [],
+                        categories: deleted.categories || [],
+                        intro: deleted.intro,
+                        source: deleted.source || 'admin',
+                        deletedBy: '孙礼飞',
+                        deletedAt: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit',
+                            day: '2-digit' }).replace(/\//g, '-'),
+                        expertise: deleted.expertise || [],
+                        teamMembers: deleted.teamMembers || [],
+                        openingQuestions: deleted.openingQuestions || []
+                    });
+                }
+            });
+            deleteTargetIds = [];
+            closeModal('deleteConfirmModal');
+            renderEntryGrid();
+            updateRecycleBadge();
+            showToast('删除成功', 'success');
+        }
+
+        // ============================================================
+        //  回收站操作
+        // ============================================================
+        function restoreEntry(id) {
+            const idx = deletedEntries.findIndex(e => e.id === id);
+            if (idx > -1) {
+                const restored = deletedEntries.splice(idx, 1)[0];
+                const conflict = entries.find(e => {
+                    if (e.name !== restored.name) return false;
+                    if (!e.categoryIds || !restored.categoryIds) return false;
+                    return e.categoryIds.some(cid => restored.categoryIds.includes(cid));
+                });
+                if (conflict) {
+                    showToast(`已存在同名专家团「${restored.name}」在相同分类中，请先处理冲突`, 'error');
+                    deletedEntries.splice(idx, 0, restored);
+                    return;
+                }
+                const catNames = restored.categoryIds ? restored.categoryIds.map(cid => {
+                    const cat = categories.find(c => c.id === cid);
+                    return cat ? cat.name : '';
+                }).filter(Boolean) : [];
+                entries.push({
+                    id: restored.id,
+                    name: restored.name,
+                    icon: restored.icon,
+                    categoryIds: restored.categoryIds || [],
+                    categories: catNames,
+                    intro: restored.intro,
+                    detail: '',
+                    status: 'enabled',
+                    source: restored.source || 'admin',
+                    createdBy: restored.deletedBy,
+                    createdAt: restored.deletedAt,
+                    updatedBy: '孙礼飞',
+                    updatedAt: new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit',
+                        day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/\//g, '-'),
+                    usageCount: 0,
+                    expertise: restored.expertise || [],
+                    teamMembers: restored.teamMembers || [],
+                    openingQuestions: restored.openingQuestions || []
+                });
+                if (restored.categoryIds) {
+                    restored.categoryIds.forEach(cid => {
+                        const cat = categories.find(c => c.id === cid);
+                        if (cat && cat.status === 'enabled') cat.count = (cat.count || 0) + 1;
+                    });
+                }
+            }
+            renderRecycleGrid();
+            updateRecycleBadge();
+            showToast('恢复成功', 'success');
+        }
+
+        function batchRestore() { if (recycleDeleteTargetIds.length === 0) return;
+            [...recycleDeleteTargetIds].forEach(id => restoreEntry(id));
+            recycleDeleteTargetIds = []; }
+
+        function openPermanentDelete(ids) {
+            recycleDeleteTargetIds = [...ids];
+            openModal('permanentDeleteModal');
+        }
+
+        function batchPermanentDelete() { if (recycleDeleteTargetIds.length === 0) return;
+            openPermanentDelete(recycleDeleteTargetIds); }
+
+        function confirmPermanentDelete() {
+            recycleDeleteTargetIds.forEach(id => {
+                const idx = deletedEntries.findIndex(e => e.id === id);
+                if (idx > -1) deletedEntries.splice(idx, 1);
+            });
+            recycleDeleteTargetIds = [];
+            closeModal('permanentDeleteModal');
+            renderRecycleGrid();
+            updateRecycleBadge();
+            showToast('已彻底删除', 'success');
+        }
+
+        // ============================================================
+        //  类别管理
+        // ============================================================
+        let editingCategoryId = null;
+
+        function renderCategoryTable() {
+            calcCategoryCounts();
+            const sorted = [...categories].sort((a, b) => a.sort - b.sort);
+            document.getElementById('category-table-body').innerHTML = sorted.map(c => `
+                        <tr class="border-b border-gray-50 hover:bg-gray-50">
+                            <td class="px-6 py-3 font-medium text-gray-900">${c.name}</td>
+                            <td class="px-6 py-3 text-gray-500">${c.sort}</td>
+                            <td class="px-6 py-3"><span class="tag ${c.status === 'enabled' ? 'tag-enabled' : 'tag-disabled'}"><span class="status-dot ${c.status === 'enabled' ? 'enabled' : 'disabled'}"></span>${c.status === 'enabled' ? '发布' : '下架'}</span></td>
+                            <td class="px-6 py-3 text-gray-500">${c.count || 0}</td>
+                            <td class="px-6 py-3 text-right">
+                                <button onclick="openEditCategory(${c.id})" class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>
+                                <button onclick="deleteCategory(${c.id})" class="text-red-500 hover:text-red-700 text-xs">删除</button>
+                            </td>
+                        </tr>`).join('');
+        }
+
+        function openAddCategory() {
+            editingCategoryId = null;
+            document.getElementById('category-modal-title').textContent = '新增类别';
+            document.getElementById('cat-name').value = '';
+            document.getElementById('cat-sort').value = '0';
+            document.querySelector('input[name="cat-status"][value="enabled"]').checked = true;
+            openModal('addCategoryModal');
+        }
+
+        function openEditCategory(id) {
+            const c = categories.find(x => x.id === id);
+            if (!c) return;
+            editingCategoryId = id;
+            document.getElementById('category-modal-title').textContent = '编辑类别 - ' + c.name;
+            document.getElementById('cat-name').value = c.name;
+            document.getElementById('cat-sort').value = c.sort;
+            document.querySelector(`input[name="cat-status"][value="${c.status}"]`).checked = true;
+            openModal('addCategoryModal');
+        }
+
+        function saveCategory() {
+            const name = document.getElementById('cat-name').value.trim();
+            const sort = parseInt(document.getElementById('cat-sort').value) || 0;
+            const status = document.querySelector('input[name="cat-status"]:checked').value;
+            if (!name) { showToast('请输入类别名称', 'error'); return; }
+            if (name.length > 20) { showToast('类别名称不能超过 20 字符', 'error'); return; }
+            const conflict = categories.find(c => c.name === name && c.id !== editingCategoryId);
+            if (conflict) { showToast('类别名称已存在', 'error'); return; }
+            if (editingCategoryId) {
+                const c = categories.find(x => x.id === editingCategoryId);
+                if (c) { c.name = name;
+                    c.sort = sort;
+                    c.status = status; }
+                showToast('编辑成功', 'success');
+            } else {
+                categories.push({ id: Date.now(), name, sort, status, count: 0 });
+                showToast('创建成功', 'success');
+            }
+            closeModal('addCategoryModal');
+            renderCategoryTable();
+            updateCategoryFilter();
+            if (!document.getElementById('addModal').classList.contains('hidden')) {
+                const selected = getSelectedCategoryIds();
+                renderCategoryCheckboxes(selected);
+            }
+        }
+
+        let pendingDeleteCategoryId = null;
+
+        function deleteCategory(id) {
+            const c = categories.find(x => x.id === id);
+            if (!c) return;
+            pendingDeleteCategoryId = id;
+            const count = entries.filter(e => e.categoryIds && e.categoryIds.includes(id)).length;
+            const msg = count > 0 ?
+                `类别「${c.name}」下还有 ${count} 个关联专家团，删除后这些专家团将同步删除分类。确认删除？` :
+                `确认删除类别「${c.name}」？`;
+            document.getElementById('delete-confirm-msg').textContent = msg;
+            document.getElementById('delete-confirm-btn').setAttribute('onclick', 'confirmDeleteCategory()');
+            openModal('deleteConfirmModal');
+        }
+
+        function confirmDeleteCategory() {
+            const id = pendingDeleteCategoryId;
+            if (!id) return;
+            entries.forEach(e => {
+                if (e.categoryIds) {
+                    e.categoryIds = e.categoryIds.filter(cid => cid !== id);
+                }
+            });
+            categories = categories.filter(x => x.id !== id);
+            pendingDeleteCategoryId = null;
+            closeModal('deleteConfirmModal');
+            renderCategoryTable();
+            updateCategoryFilter();
+            renderEntryGrid();
+            if (!document.getElementById('addModal').classList.contains('hidden')) {
+                const selected = getSelectedCategoryIds();
+                renderCategoryCheckboxes(selected);
+            }
+            showToast('删除成功', 'success');
+        }
+
+        // ============================================================
+        //  Modal / Toast
+        // ============================================================
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            if (id === 'categoryModal') renderCategoryTable();
+            if (id === 'addModal') {
+                const selected = editingEntryId ? (entries.find(e => e.id === editingEntryId)?.categoryIds || []) : [];
+                const enabledIds = selected.filter(cid => {
+                    const cat = categories.find(c => c.id === cid);
+                    return cat && cat.status === 'enabled';
+                });
+                renderCategoryCheckboxes(enabledIds);
+            }
+            if (id === 'importModal') {
+                // 确保导入弹窗类别渲染
+                renderImportCategories();
+            }
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function showToast(msg, type) {
+            if (!msg && type === 'error') msg = '请完善信息';
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast toast-${type}`;
+            toast.classList.remove('hidden');
+            setTimeout(() => { toast.classList.add('hidden'); }, 2500);
+        }
+
+        // ============================================================
+        //  初始化
+        // ============================================================
+        renderEntryGrid();
+        updateCategoryFilter();
+        updateRecycleBadge();
+
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        });
+
+        // 导入弹窗类别变化监听（使用事件委托）
+        document.addEventListener('change', function(e) {
+            if (e.target.closest && e.target.closest('#import-category-grid')) {
+                updateImportCategoryHint();
+            }
+        });
+    </script>
+</body>
+</html>

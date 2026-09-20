@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>角落iframe 唤起全局弹窗</title>
+</head>
+<body>
+  <button id="showDialog">打开占大半个页面的弹窗</button>
+
+  <script>
+    const btn = document.getElementById('showDialog');
+    const topWin = window.top;
+    const topDoc = topWin.document;
+
+    btn.onclick = function () {
+      // 防止重复创建弹窗
+      if (topDoc.getElementById('iframe-global-mask')) return;
+
+      // 1. 创建遮罩层（挂载到父页面body）
+      const mask = topDoc.createElement('div');
+      mask.id = 'iframe-global-mask';
+      mask.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+
+      // 2. 创建弹窗盒子（占页面75%宽度）
+      const dialog = topDoc.createElement('div');
+      dialog.style.cssText = `
+        width: 75%;
+        height: 70vh;
+        background: #fff;
+        padding: 30px;
+        box-sizing: border-box;
+        overflow: auto;
+      `;
+      dialog.innerHTML = `
+        <h2>全屏弹窗（父页面无任何修改）</h2>
+        <p>我是iframe动态挂载到顶层页面的弹窗，不受iframe小容器限制</p>
+        <button id="close-dialog" style="margin-top:20px;padding:6px 16px;">关闭弹窗</button>
+      `;
+
+      // 3. 弹窗关闭逻辑
+      mask.onclick = function (e) {
+        // 点击遮罩空白处关闭
+        if (e.target === mask) mask.remove();
+      };
+      dialog.addEventListener('click', function (e) {
+        if (e.target.id === 'close-dialog') mask.remove();
+      });
+
+      // 4. 把弹窗插入父页面body
+      mask.appendChild(dialog);
+      topDoc.body.appendChild(mask);
+    };
+  </script>
+</body>
+</html>
