@@ -221,7 +221,6 @@
       padding: 3px 10px; border-radius: 999px;
       font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap;
       background: #f4f4f5; color: #52525b;
-	  display: none;
     }
     .src-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #a1a1aa; }
     .src-badge[data-src="技能市场"] { background: #eff6ff; color: #2563eb; }
@@ -298,7 +297,7 @@
     .dots-btn:hover { background: #f4f4f5; color: #52525b; }
     .menu-dropdown {
       position: absolute; top: 34px; right: 0;
-      width: 124px;
+      width: 144px;
       background: #fff; border: 1px solid #ececef;
       border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.12);
       padding: 6px; z-index: 10;
@@ -338,6 +337,136 @@
     .card.disabled .card-body,
     .card.disabled .card-foot { opacity: .55; filter: grayscale(1); }
 
+    .card-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .btn-contribute {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px;
+      background: #fff;
+      border: 1px solid #e4e4e7;
+      border-radius: 999px;
+      font-size: 12px; font-weight: 500;
+      color: #7c3aed;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .15s, border-color .15s;
+    }
+    .btn-contribute:hover { background: #faf5ff; border-color: #c4b5fd; }
+    .status-reviewing {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px; font-weight: 500;
+      color: #d97706;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      white-space: nowrap;
+    }
+    .status-reviewing .review-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #f59e0b;
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+    .contributor-tag {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px; font-weight: 500;
+      color: #7c3aed;
+      background: #f5f3ff;
+      border: 1px solid #ddd6fe;
+      white-space: nowrap;
+    }
+    .status-rejected {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px; font-weight: 500;
+      color: #dc2626;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      white-space: nowrap;
+    }
+    .reject-info {
+      position: relative;
+      display: inline-flex; align-items: center;
+      cursor: help;
+    }
+    .reject-info .reject-icon {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #dc2626;
+      color: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700;
+      line-height: 1;
+    }
+    .reject-info .reject-tooltip {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #f1f5f9;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 400;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+      box-shadow: 0 4px 16px rgba(0,0,0,.18);
+      z-index: 20;
+    }
+    .reject-info .reject-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid #1e293b;
+    }
+    .reject-info:hover .reject-tooltip {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .contribute-modal-body { padding: 4px 0 0; text-align: center; }
+    .contribute-modal-body .cm-icon {
+      width: 56px; height: 56px; border-radius: 16px;
+      background: linear-gradient(135deg, #ede9fe, #f5f3ff);
+      color: #7c3aed;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, .12);
+    }
+    .contribute-modal-body .cm-title {
+      font-size: 15px; font-weight: 600; color: #18181b;
+      margin-bottom: 8px;
+    }
+    .contribute-modal-body .cm-text {
+      font-size: 13px; color: #52525b; line-height: 1.7; margin-bottom: 12px;
+    }
+    .contribute-modal-body .cm-warn {
+      display: flex; align-items: flex-start; gap: 8px;
+      background: #fffbeb; border: 1px solid #fde68a;
+      border-radius: 10px; padding: 10px 14px;
+      text-align: left;
+    }
+    .contribute-modal-body .cm-warn-icon {
+      flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%;
+      background: #f59e0b; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; margin-top: 1px;
+    }
+    .contribute-modal-body .cm-warn-text {
+      font-size: 12px; color: #92400e; line-height: 1.6;
+    }
+
     /* 顶部成功提示 Toast */
     #toast {
       position: fixed;
@@ -356,14 +485,12 @@
       z-index: 999;
     }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    #toast.error { background: #c9362b; }
 
     /* ---------- Upload Skill Modal ---------- */
     .modal-overlay {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,.58);
+      background: rgba(0,0,0,.45);
       display: flex; align-items: center; justify-content: center;
-      padding: 24px;
       z-index: 1000;
     }
     .modal-overlay.hidden { display: none; }
@@ -374,36 +501,17 @@
       padding: 24px;
       box-shadow: 0 20px 60px rgba(0,0,0,.2);
     }
-    .import-modal {
-      width: 690px;
-      max-width: min(690px, calc(100vw - 32px));
-      max-height: calc(100vh - 32px);
-      overflow-y: auto;
-      border-radius: 26px;
-      padding: 36px 38px 38px;
-      box-shadow: 0 24px 72px rgba(0,0,0,.28);
-    }
     .modal-header {
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 20px;
     }
     .modal-header h2 { font-size: 18px; font-weight: 600; }
-    .import-modal .modal-header { margin-bottom: 28px; }
-    .import-modal .modal-header h2 {
-      font-size: 24px; line-height: 1.25; font-weight: 700;
-      color: #111827; letter-spacing: 0;
-    }
     .modal-close {
       background: none; border: none; cursor: pointer;
       color: #a1a1aa; padding: 4px; display: flex;
       transition: color .15s;
     }
     .modal-close:hover { color: #18181b; }
-    .import-modal .modal-close {
-      width: 32px; height: 32px; align-items: center; justify-content: center;
-      color: #52525b; border-radius: 6px;
-    }
-    .import-modal .modal-close:hover { background: #f4f4f5; color: #18181b; }
     .upload-zone {
       border: 2px dashed #e5e5e5;
       border-radius: 12px;
@@ -413,42 +521,12 @@
       cursor: pointer;
       transition: border-color .2s, background .2s;
     }
-    .import-modal .upload-zone {
-      min-height: 196px;
-      padding: 48px 24px 42px;
-      border: 2px dashed #e5e7eb;
-      border-radius: 15px;
-      background: #fff;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
     .upload-zone:hover, .upload-zone.dragover {
       border-color: #18181b;
       background: #f4f4f5;
     }
     .upload-icon { color: #a1a1aa; margin-bottom: 12px; display: flex; justify-content: center; }
     .upload-text { font-size: 14px; color: #52525b; }
-    .import-modal .upload-icon { color: #858585; margin-bottom: 25px; }
-    .import-modal .upload-text {
-      font-size: 20px; line-height: 1.4; color: #111827; font-weight: 500;
-    }
-    .auto-install-option {
-      display: inline-flex; align-items: center; gap: 10px;
-      margin-top: 24px; color: #4b4b4b;
-      font-size: 17px; line-height: 24px; cursor: pointer; user-select: none;
-    }
-    .auto-install-option input {
-      appearance: none; width: 24px; height: 24px; flex: 0 0 24px;
-      border: 2px solid #d4d4d4; border-radius: 6px; background: #fff;
-      display: grid; place-content: center; cursor: pointer;
-    }
-    .auto-install-option input::before {
-      content: ""; width: 10px; height: 6px;
-      border-left: 2px solid #fff; border-bottom: 2px solid #fff;
-      transform: rotate(-45deg) scale(0); transition: transform .12s ease;
-    }
-    .auto-install-option input:checked { background: #18181b; border-color: #18181b; }
-    .auto-install-option input:checked::before { transform: rotate(-45deg) scale(1); }
-    .auto-install-option input:focus-visible { outline: 3px solid rgba(99,102,241,.2); outline-offset: 2px; }
     .file-requirements { margin-top: 20px; }
     .file-requirements h3 {
       font-size: 14px; font-weight: 600;
@@ -458,99 +536,30 @@
       list-style: disc; padding-left: 18px;
       font-size: 13px; color: #71717a; line-height: 1.7;
     }
-    .import-modal .file-requirements { margin-top: 26px; }
-    .import-modal .file-requirements h3 {
-      margin-bottom: 10px; font-size: 20px; line-height: 1.5;
-      font-weight: 700; color: #111827;
+    .auto-install-check {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 14px; cursor: pointer;
+      font-size: 13px; color: #3f3f46;
+      user-select: none;
     }
-    .import-modal .file-requirements ul {
-      padding-left: 28px; font-size: 17px; line-height: 1.85; color: #5b5b5b;
+    .auto-install-check input { display: none; }
+    .auto-install-check .check-box {
+      width: 16px; height: 16px; border-radius: 4px;
+      border: 1.5px solid #d4d4d8; background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s, border-color .15s;
+      flex-shrink: 0;
     }
-
-    /* ---------- Install Preview Modal ---------- */
-    .install-preview-modal {
-      width: 760px;
-      max-width: min(760px, calc(100vw - 32px));
-      max-height: calc(100vh - 32px);
-      overflow: hidden;
-      border-radius: 24px;
-      padding: 30px 38px 32px;
-      box-shadow: 0 24px 72px rgba(0,0,0,.28);
+    .auto-install-check input:checked + .check-box {
+      background: #6366f1; border-color: #6366f1;
     }
-    .install-preview-modal .modal-header {
-      margin: 0 -38px 0;
-      padding: 0 38px 24px;
-      border-bottom: 1px solid #eceef2;
+    .auto-install-check input:checked + .check-box::after {
+      content: '';
+      width: 4px; height: 8px;
+      border: solid #fff; border-width: 0 2px 2px 0;
+      transform: rotate(45deg) translate(-1px, -1px);
     }
-    .install-preview-modal .modal-header h2 {
-      font-size: 24px; line-height: 1.25; font-weight: 700; color: #111827;
-    }
-    .preview-subtitle {
-      margin: 8px 0 24px;
-      color: #9a9a9a;
-      font-size: 17px;
-      line-height: 1.5;
-    }
-    .preview-info { margin-bottom: 18px; }
-    .preview-info-row {
-      display: flex; align-items: center; gap: 18px;
-      min-height: 58px;
-      border-bottom: 1px solid #eceef2;
-      font-size: 17px;
-    }
-    .preview-info-row:last-child { border-bottom: 0; }
-    .preview-info-label { width: 112px; flex: 0 0 112px; color: #9b9b9b; }
-    .preview-info-value { min-width: 0; color: #202124; font-weight: 600; }
-    .preview-pill {
-      display: inline-flex; align-items: center;
-      padding: 8px 15px; border-radius: 999px;
-      font-weight: 600; white-space: nowrap;
-    }
-    .preview-pill.blue { color: #2674f5; background: #eaf1ff; }
-    .preview-pill.safe { color: #d87300; background: #fff7e6; }
-    .preview-pill.safe::before { content: ""; width: 8px; height: 8px; margin-right: 9px; border-radius: 50%; background: #e27a00; }
-    .preview-pill.danger { color: #d83b32; background: #fff0ef; }
-    .preview-pill.danger::before { content: ""; width: 8px; height: 8px; margin-right: 9px; border-radius: 50%; background: #e24c43; }
-    .preview-path {
-      display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-      padding: 9px 15px; border-radius: 12px; color: #2674f5; background: #eaf1ff; font-weight: 500;
-    }
-    .preview-files-title { margin: 14px 0 10px; color: #999; font-size: 17px; font-weight: 600; }
-    .preview-files {
-      height: 270px; overflow-y: auto; padding: 10px;
-      border: 1px solid #e1e5eb; border-radius: 12px; background: #f2f4f7;
-    }
-    .preview-file {
-      display: flex; align-items: center; gap: 8px; min-height: 41px;
-      padding: 7px 12px; border-radius: 9px; color: #252525; font-size: 17px;
-    }
-    .preview-file:first-child { background: #e7e9ed; }
-    .preview-file::before { content: "•"; color: #1e1e1e; font-size: 20px; }
-    .preview-file.risky { color: #d86d00; }
-    .preview-file.risky::before { color: #d86d00; }
-    .preview-file-status { margin-left: auto; color: #a4a4a4; white-space: nowrap; font-size: 16px; }
-    .preview-file.risky .preview-file-status { color: #e27400; }
-    .install-preview-modal .modal-footer { margin-top: 24px; }
-    .install-preview-modal .btn { min-width: 96px; height: 54px; padding: 0 22px; border-radius: 12px; font-size: 17px; font-weight: 600; }
-    .install-preview-modal .btn.dark { min-width: 132px; }
-    @media (max-width: 640px) {
-      .install-preview-modal { padding: 24px 22px 24px; border-radius: 20px; }
-      .install-preview-modal .modal-header { margin: 0 -22px; padding: 0 22px 20px; }
-      .install-preview-modal .modal-header h2 { font-size: 21px; }
-      .preview-subtitle, .preview-info-row, .preview-files-title, .preview-file { font-size: 15px; }
-      .preview-info-label { width: 82px; flex-basis: 82px; }
-      .preview-files { height: 220px; }
-      .install-preview-modal .btn { height: 48px; font-size: 15px; }
-    }
-    @media (max-width: 640px) {
-      .modal-overlay { padding: 16px; }
-      .import-modal { padding: 28px 22px 30px; border-radius: 20px; }
-      .import-modal .modal-header h2 { font-size: 21px; }
-      .import-modal .upload-zone { min-height: 176px; padding: 36px 18px; }
-      .import-modal .upload-text { font-size: 17px; }
-      .auto-install-option, .import-modal .file-requirements ul { font-size: 15px; }
-      .import-modal .file-requirements h3 { font-size: 18px; }
-    }
+    .auto-install-check .check-label { line-height: 1.4; }
 
     /* ---------- URL Install Modal ---------- */
     .modal.wide { width: 520px; }
@@ -603,6 +612,12 @@
       border-color: #18181b;
     }
     .btn.dark:hover { background: #3f3f46; }
+    .btn.contribute {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff;
+      border-color: #7c3aed;
+      box-shadow: 0 2px 8px rgba(124, 58, 237, .25);
+    }
+    .btn.contribute:hover { background: linear-gradient(135deg, #6d28d9, #5b21b6); }
     .btn:disabled { opacity: .65; cursor: not-allowed; }
 
     .preview-info { margin-bottom: 8px; }
@@ -669,20 +684,20 @@
         添加技能
       </button>
       <div class="dropdown hidden" id="add-dropdown">
-        <button id="btn-find-skill">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <button id="btn-import">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          本地导入
+        </button>
+        <button id="btn-search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
           查找技能
         </button>
         <button id="btn-chat-create">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
           对话创建
         </button>
-        <button id="btn-import">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
-          本地导入
-        </button>
         <button id="btn-guide">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
           技能构建指南
         </button>
       </div>
@@ -702,7 +717,7 @@
       <div class="toolbar-right">
         <div class="search-box">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          <input type="text" id="skill-search" placeholder="搜索技能">
+          <input type="text" placeholder="搜索技能">
         </div>
         <div class="view-toggle">
           <button class="view-btn" data-view="list">
@@ -748,55 +763,108 @@
 
   <!-- Upload Skill Modal -->
   <div class="modal-overlay hidden" id="upload-modal">
-    <div class="modal import-modal" role="dialog" aria-modal="true" aria-labelledby="import-modal-title">
+    <div class="modal">
       <div class="modal-header">
-        <h2 id="import-modal-title">导入技能</h2>
-        <button class="modal-close" id="modal-close" type="button" aria-label="关闭">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        <h2>上传技能</h2>
+        <button class="modal-close" id="modal-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </div>
       <div class="upload-zone" id="upload-zone">
         <input type="file" id="file-input" accept=".zip,.md" hidden>
         <div class="upload-icon">
-          <svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15h30v24H9z"/><path d="M9 21h30"/><path d="M17 9v6M31 9v6"/><path d="M24 34V25"/><path d="m20 29 4-4 4 4"/></svg>
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/><path d="M12 11v6"/><path d="M9 14l3-3 3 3"/></svg>
         </div>
-        <p class="upload-text">拖拽文件或点击上传</p>
+        <p class="upload-text">拖拽文件 或 点击上传</p>
       </div>
-      <label class="auto-install-option">
-        <input type="checkbox" id="auto-install-safe">
-        <span>非高风险自动安装</span>
-      </label>
       <div class="file-requirements">
+        <label class="auto-install-check">
+          <input type="checkbox" id="auto-install-check">
+          <span class="check-box"></span>
+          <span class="check-label">非高风险自动安装</span>
+        </label>
         <h3>文件要求</h3>
         <ul>
-          <li>文件夹或者.zip需要包含SKILL.md文件</li>
-          <li>.md 文件需包含 YAML 格式的技能名称和描述</li>
+          <li>文件或者 .zip 需要包含 SKILL.md 文件</li>
+          <li>SKILL.md 文件需包含 YAML 格式的技能名称和描述</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <!-- Install Preview Modal -->
-  <div class="modal-overlay hidden" id="install-preview-modal">
-    <div class="modal install-preview-modal" role="dialog" aria-modal="true" aria-labelledby="preview-modal-title">
+  <!-- URL Install Modal -->
+  <div class="modal-overlay hidden" id="url-install-modal">
+    <div class="modal">
       <div class="modal-header">
-        <h2 id="preview-modal-title">安装预览</h2>
-        <button class="modal-close" id="preview-modal-close" type="button" aria-label="关闭">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        <h2>从 URL 安装技能</h2>
+        <button class="modal-close" id="url-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </div>
-      <p class="preview-subtitle">安装「<span id="preview-skill-name">skill-security-check</span>」前，请确认安全检查结果、目标路径和技能内容。</p>
-      <div class="preview-info">
-        <div class="preview-info-row"><span class="preview-info-label">技能名</span><span class="preview-info-value" id="preview-name-value">skill-security-check</span></div>
-        <div class="preview-info-row"><span class="preview-info-label">安装模式</span><span class="preview-pill blue">新安装</span></div>
-        <div class="preview-info-row"><span class="preview-info-label">安装路径</span><span class="preview-path" id="preview-path-value">C:\\Users\\zhaonan\\.omnix\\skills\\skill-security-check</span></div>
-        <div class="preview-info-row"><span class="preview-info-label">安全检查</span><span class="preview-pill safe" id="preview-security-value">可安装 · 3 项提示</span></div>
+      <p class="modal-subtitle">支持指向 SKILL.md 或技能压缩包的 URL，安装前会先展示安全预览。</p>
+      <div class="form-group">
+        <label>URL</label>
+        <input type="text" id="url-input" placeholder="https://example.com/my-skill/SKILL.md">
       </div>
-      <div class="preview-files-title">技能内容 · <span id="preview-file-count">9</span> 个文件</div>
-      <div class="preview-files" id="preview-files"></div>
+      <div class="form-group">
+        <label>自定义技能名称（可选）</label>
+        <input type="text" id="url-name" placeholder="输入技能名称">
+      </div>
       <div class="modal-footer">
-        <button class="btn cancel" id="preview-cancel" type="button">取消</button>
-        <button class="btn dark" id="preview-confirm" type="button">确认安装</button>
+        <button class="btn cancel" id="url-cancel">取消</button>
+        <button class="btn gray" id="url-preview" disabled>预览安装</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- URL Install Preview Modal -->
+  <div class="modal-overlay hidden" id="url-preview-modal">
+    <div class="modal wide">
+      <div class="modal-header">
+        <h2>安装预览</h2>
+        <button class="modal-close" id="preview-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="modal-subtitle">安装「<span id="preview-skill-name">guizang-ppt-skill</span>」前，请确认安全扫描结果、目标路径和文件清单。</p>
+      <div class="preview-info">
+        <div class="info-row"><span class="info-label">技能名</span><span id="preview-name">guizang-ppt-skill</span></div>
+        <div class="info-row"><span class="info-label">安装模式</span><span class="badge blue">新安装</span></div>
+        <div class="info-row"><span class="info-label">安装路径</span><span class="path blue" id="preview-path">C:\Users\zhaonan\.omnix\skills\</span></div>
+        <div class="info-row"><span class="info-label">安全检查</span><span class="scan"><span class="dot green"></span>可安装</span></div>
+      </div>
+      <div class="file-list-title">文件清单 · 6 个文件</div>
+      <ul class="file-list" id="preview-files"></ul>
+      <div class="modal-footer">
+        <button class="btn cancel" id="preview-cancel">取消</button>
+        <button class="btn dark" id="preview-install">确认安装</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contribute Confirm Modal -->
+  <div class="modal-overlay hidden" id="contribute-modal">
+    <div class="modal" style="width:420px">
+      <div class="modal-header">
+        <h2>贡献为企业技能</h2>
+        <button class="modal-close" id="contribute-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="contribute-modal-body">
+        <div class="cm-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>
+        </div>
+        <p class="cm-title">将此技能贡献为企业技能</p>
+        <p class="cm-text">贡献后，该技能审核通过后会成为企业技能，您也会成为该企业技能的贡献者。</p>
+        <div class="cm-warn">
+          <span class="cm-warn-icon">!</span>
+          <span class="cm-warn-text">审核通过后会以提交版本作为企业技能覆盖个人自定义，请勿修改或提前做好备份。</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn cancel" id="contribute-cancel">取消</button>
+        <button class="btn contribute" id="contribute-confirm">确认贡献</button>
       </div>
     </div>
   </div>
@@ -816,9 +884,7 @@
       "wecom": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1 1 0 01-1-1v-6a1 1 0 011-1h8zM9 8h4v4H9V8z"/></svg>',
       "fullstack": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>',
       "wxpay": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>',
-      "java": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>',
-      "security": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-      "collab": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>'
+      "java": '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>'
     };
 
     const SKILLS = [
@@ -864,85 +930,32 @@
       { id: 14, name: "Java编程专家", icon: "java", grad: "linear-gradient(135deg,#60a5fa,#2563eb)",
         desc: "Java 源码分析与编程专家。TRIGGER when: 分析Java源码、阅读Java代码、Java代码走读、Java项目结构分析、写Java代码、Java代码重构。",
         stars: 140, downloads: "1,280万", featured: false },
-      { id: 15, name: "小红书爆款文案", icon: "document", grad: "linear-gradient(135deg,#f472b6,#e11d48)",
-        desc: "小红书风格文案生成技能，涵盖种草笔记、测评、教程、Vlog脚本等多种体裁，自动匹配爆款标题公式与话题标签。",
-        stars: 140, downloads: "1,280万", featured: false },
-      { id: 16, name: "SQL优化大师", icon: "fullstack", grad: "linear-gradient(135deg,#34d399,#0d9488)",
-        desc: "SQL 查询诊断与优化技能。自动分析慢查询、索引建议、执行计划解读，支持 MySQL、PostgreSQL、Oracle 主流方言。",
-        stars: 140, downloads: "1,280万", featured: false },
-      { id: 17, name: "英语雅思口语陪练", icon: "knowledge", grad: "linear-gradient(135deg,#a78bfa,#6d28d9)",
-        desc: "雅思口语全真模拟陪练，覆盖 Part1/2/3 全题型，实时评分与发音纠正，按官方评分标准给出四项维度反馈。",
-        stars: 140, downloads: "1,280万", featured: false },
-      { id: 18, name: "周报生成器", icon: "pm", grad: "linear-gradient(135deg,#fbbf24,#d97706)",
-        desc: "根据本周聊天记录、会议纪要、任务列表自动生成结构化周报，支持互联网、咨询、研发等多种风格模板。",
-        stars: 140, downloads: "1,280万", featured: false },
-      { id: 19, name: "法律合同审查", icon: "academic", grad: "linear-gradient(135deg,#94a3b8,#475569)",
-        desc: "合同条款风险审查技能，识别违约责任、知识产权、保密条款等常见风险点，给出修改建议与条款级解释。",
-        stars: 140, downloads: "1,280万", featured: false },
-      { id: 20, name: "Python数据分析", icon: "stock", grad: "linear-gradient(135deg,#38bdf8,#0369a1)",
-        desc: "Pandas/NumPy/Matplotlib 一站式数据分析技能，自动完成数据清洗、特征工程、可视化图表与结论摘要输出。",
-        stars: 140, downloads: "1,280万", featured: false },
-      { id: 21, name: "旅行规划师", icon: "ima", grad: "linear-gradient(135deg,#4ade80,#16a34a)",
-        desc: "根据目的地、预算、出行天数生成详细旅行攻略，包含行程安排、餐厅推荐、交通衔接与避坑提示。",
-        stars: 140, downloads: "1,280万", featured: false },
-      { id: 22, name: "简历优化顾问", icon: "document", grad: "linear-gradient(135deg,#f97316,#c2410c)",
-        desc: "针对目标岗位 JD 优化简历表达，量化工作成果，匹配 ATS 关键词，提供中英双语版本与面试官视角点评。",
-        stars: 140, downloads: "1,280万", featured: false },
-      { id: 23, name: "隐私合规检测", icon: "security", grad: "linear-gradient(135deg,#f87171,#b91c1c)",
-        desc: "依据个保法、GDPR 对产品文案、隐私政策、数据收集逻辑进行合规扫描，输出风险清单与整改建议。",
-        stars: 140, downloads: "1,280万", featured: false },
-      { id: 24, name: "安全渗透测试助手", icon: "security", grad: "linear-gradient(135deg,#64748b,#0f172a)",
-        desc: "面向授权测试场景的渗透测试辅助技能，覆盖信息收集、漏洞验证、报告输出全流程，内置 OWASP Top10 检查项。",
-        stars: 140, downloads: "1,280万", featured: false },
-      { id: 25, name: "会议纪要助手", icon: "collab", grad: "linear-gradient(135deg,#2dd4bf,#0f766e)",
-        desc: "根据会议录音转写文本自动提炼议题、结论与待办事项，支持按参会人拆分行动项并同步到协作工具。",
-        stars: 140, downloads: "1,280万", featured: false },
-      { id: 26, name: "跨语言翻译官", icon: "collab", grad: "linear-gradient(135deg,#818cf8,#4338ca)",
-        desc: "支持中英日韩等 30+ 语种互译，针对技术文档、商务邮件、社媒内容提供不同语气风格的翻译策略。",
-        stars: 140, downloads: "1,280万", featured: false }
+      { id: 15, name: "智能代码审查助手", icon: "diagram", grad: "linear-gradient(135deg,#a78bfa,#7c3aed)",
+        desc: "自动检测代码质量、安全漏洞和性能瓶颈，提供优化建议和最佳实践指导。",
+        stars: 86, downloads: "520万", featured: false, reviewStatus: "reviewing" },
+      { id: 16, name: "API文档生成器", icon: "document", grad: "linear-gradient(135deg,#34d399,#059669)",
+        desc: "根据代码自动生成标准化 API 文档，支持 OpenAPI/Swagger 格式，一键导出多种文档格式。",
+        stars: 120, downloads: "860万", featured: false, reviewStatus: "approved", contributor: "孙礼飞" },
+      { id: 17, name: "数据库优化大师", icon: "knowledge", grad: "linear-gradient(135deg,#f87171,#dc2626)",
+        desc: "SQL 语句分析与优化建议，索引优化方案生成，数据库性能瓶颈诊断与调优。",
+        stars: 65, downloads: "320万", featured: false, reviewStatus: "rejected", rejectReason: "技能描述信息不完整，请补充详细的功能说明" }
     ];
-
-    // 按技能 id 生成固定的伪随机收藏量与下载量（刷新不变）
-    const seededRandom = seed => {
-      let t = seed * 9301 + 49297;
-      return () => {
-        t = (t * 9301 + 49297) % 233280;
-        return t / 233280;
-      };
-    };
-    SKILLS.forEach(s => {
-      const rnd = seededRandom(s.id);
-      s.stars = Math.floor(rnd() * 480) + 20; // 20 ~ 499
-      const wan = Math.floor(rnd() * 1950) + 50; // 50万 ~ 1999万
-      s.downloadsNum = wan;
-      s.downloads = wan.toLocaleString("en-US") + "万";
-    });
-    SKILLS.sort((a, b) => b.downloadsNum - a.downloadsNum);
 
     SKILLS.forEach((s, i) => {
       s.installed = i % 3 !== 0;
       s.enabled = i % 4 !== 0;
     });
 
-    // 为每个技能标注来源（用于「去试试」标签页展示）
     SKILLS.forEach(s => {
-      if ([1, 2, 3, 4, 6, 7, 8, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26].includes(s.id)) s.source = "技能市场";
-      else if ([5, 11, 13, 10].includes(s.id)) s.source = "企业技能";
+      if ([1, 2, 3, 4, 6, 7, 8].includes(s.id)) s.source = "技能市场";
+      else if ([5, 11, 13, 10, 16].includes(s.id)) s.source = "企业技能";
       else if ([12, 14].includes(s.id)) s.source = "系统内置";
       else s.source = "自定义";
     });
 
-    // 为每个技能分配分类（对应顶部分类栏 data-cat）
-    const CAT_MAP = {
-      1: "collab", 2: "efficiency", 3: "efficiency", 4: "content",
-      5: "data", 6: "content", 7: "efficiency", 8: "efficiency",
-      9: "efficiency", 10: "dev", 11: "dev", 12: "dev",
-      13: "dev", 14: "dev", 15: "content", 16: "dev",
-      17: "efficiency", 18: "efficiency", 19: "security", 20: "data",
-      21: "efficiency", 22: "efficiency", 23: "security", 24: "security",
-      25: "collab", 26: "collab"
-    };
-    SKILLS.forEach(s => { s.cat = CAT_MAP[s.id] || "efficiency"; });
+    SKILLS.forEach(s => {
+      if (s.id === 11) s.contributor = "孙礼飞";
+    });
 
     const byId = ids => ids.map(id => {
       const o = SKILLS.find(s => s.id === id);
@@ -950,14 +963,11 @@
     }).filter(Boolean);
 
     const TAB_DATA = {
-      market: byId([1, 2, 3, 4, 6, 7, 8, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]),
+      market: byId([1, 2, 3, 4, 6, 7, 8]),
       enterprise: byId([5, 11, 13, 10]),
       builtin: byId([12, 14]),
-      installed: byId([1, 9, 10])
+      installed: byId([1, 9, 10, 15, 16, 17])
     };
-    Object.values(TAB_DATA).forEach(list =>
-      list.sort((a, b) => b.downloadsNum - a.downloadsNum)
-    );
     // 系统内置 / 去试试 Tab 下的技能均为去试试且默认启用状态
     TAB_DATA.builtin.forEach(s => { s.installed = true; s.enabled = true; });
     TAB_DATA.installed.forEach(s => { s.installed = true; s.enabled = true; });
@@ -979,7 +989,6 @@
     let currentTab = "market";
     let currentFilter = "all";
     let currentSource = "all";
-    let currentCat = "all";
 
     const FILTER_OPTIONS = {
       market: [
@@ -1018,7 +1027,6 @@
       container.className = currentView === "card" ? "grid-cards" : "grid-list";
       const source = TAB_DATA[currentTab] || SKILLS;
       const list = source.filter(s => {
-        if (currentCat !== "all" && s.cat !== currentCat) return false;
         if (currentFilter === "installed") return s.installed;
         if (currentFilter === "uninstalled") return !s.installed;
         if (currentFilter === "enabled") return s.enabled;
@@ -1028,7 +1036,21 @@
       });
       container.innerHTML = list.map(s => {
         const iconHtml = '<div class="icon-box" style="background:' + s.grad + '">' + (ICONS[s.icon] || "") + '</div>';
-        const titleHtml = '<h3 class="card-title">' + s.name + '</h3>';
+        let titleExtraHtml = '';
+        if (currentTab === 'installed') {
+          if (s.reviewStatus === 'reviewing') {
+            titleExtraHtml = '<span class="status-reviewing"><span class="review-dot"></span>审核中</span>';
+          } else if (s.reviewStatus === 'approved') {
+            titleExtraHtml = '<span class="contributor-tag">贡献者：' + s.contributor + '</span>';
+          } else if (s.reviewStatus === 'rejected') {
+            titleExtraHtml = '<span class="status-rejected">审核不通过</span>' +
+              '<span class="reject-info"><span class="reject-icon">!</span><span class="reject-tooltip">' + (s.rejectReason || '') + '</span></span>';
+          }
+        }
+        if (currentTab === 'enterprise' && s.contributor) {
+          titleExtraHtml = '<span class="contributor-tag">贡献者：' + s.contributor + '</span>';
+        }
+        const titleHtml = '<div class="card-title-row"><h3 class="card-title">' + s.name + '</h3>' + titleExtraHtml + '</div>';
         const descHtml = '<p class="card-desc ' + (currentView === "card" ? "clamp-2" : "clamp-1") + '">' + s.desc + '</p>';
         const showStats = currentTab !== 'builtin' && currentTab !== 'installed' && currentTab !== 'enterprise';
         const statsHtml = showStats
@@ -1049,9 +1071,11 @@
             '</button>';
           if (currentTab !== 'market' && currentTab !== 'enterprise') {
             const showUninstall = currentTab !== 'builtin';
+            const showContribute = s.source === '自定义' && s.reviewStatus !== 'approved' && s.reviewStatus !== 'reviewing';
             menuHtml = '<div class="card-menu">' +
               '<button class="dots-btn" type="button" aria-label="更多操作">···</button>' +
               '<div class="menu-dropdown hidden">' +
+                (showContribute ? '<button class="menu-item" data-action="contribute">贡献为企业技能</button>' : '') +
                 '<button class="menu-item" data-action="toggle">' + (s.enabled ? '禁用' : '启用') + '</button>' +
                 (showUninstall ? '<button class="menu-item danger" data-action="uninstall">卸载</button>' : '') +
               '</div>' +
@@ -1060,6 +1084,15 @@
         } else if (s.featured) {
           actionHtml = '<button class="btn-try">' + TRY_SVG + '去试试</button>';
         } else {
+          const showContribute = s.source === '自定义' && s.reviewStatus !== 'approved' && s.reviewStatus !== 'reviewing';
+          if (showContribute) {
+            menuHtml = '<div class="card-menu">' +
+              '<button class="dots-btn" type="button" aria-label="更多操作">···</button>' +
+              '<div class="menu-dropdown hidden">' +
+                '<button class="menu-item" data-action="contribute">贡献为企业技能</button>' +
+              '</div>' +
+            '</div>';
+          }
           actionHtml = '<button class="btn-install" data-name="' + s.name + '">' + PLUS_SVG + '安装技能</button>';
         }
 
@@ -1111,10 +1144,6 @@
         sourceFilter.style.display = currentTab === "installed" ? "none" : "none";
         if (currentTab !== "installed") { currentSource = "all"; sourceFilter.value = "all"; }
         catsEl.style.display = (currentTab === "market" || currentTab === "enterprise") ? "flex" : "none";
-        currentCat = "all";
-        document.querySelectorAll(".cat").forEach(b =>
-          b.classList.toggle("active", b.dataset.cat === "all")
-        );
         render();
       });
     });
@@ -1132,8 +1161,6 @@
       btn.addEventListener("click", () => {
         document.querySelectorAll(".cat").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-        currentCat = btn.dataset.cat;
-        render();
       });
     });
 
@@ -1198,6 +1225,10 @@
             TAB_DATA.installed = TAB_DATA.installed.filter(x => x.id !== id);
           }
           showToast("技能 " + skill.name + " 已卸载");
+        } else if (action === "contribute") {
+          contributeTargetId = id;
+          document.getElementById("contribute-modal").classList.remove("hidden");
+          return;
         }
         render();
         return;
@@ -1238,38 +1269,49 @@
     const btnImport = document.getElementById("btn-import");
     const modalClose = document.getElementById("modal-close");
     const uploadZone = document.getElementById("upload-zone");
-    const previewModal = document.getElementById("install-preview-modal");
-    const previewModalClose = document.getElementById("preview-modal-close");
-    const previewCancel = document.getElementById("preview-cancel");
-    const previewConfirm = document.getElementById("preview-confirm");
-    let pendingInstall = null;
 
     const UPLOAD_ZONE_DEFAULT =
       '<input type="file" id="file-input" accept=".zip,.md" hidden>' +
       '<div class="upload-icon">' +
-        '<svg width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15h30v24H9z"/><path d="M9 21h30"/><path d="M17 9v6M31 9v6"/><path d="M24 34V25"/><path d="m20 29 4-4 4 4"/></svg>' +
+        '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/><path d="M12 11v6"/><path d="M9 14l3-3 3 3"/></svg>' +
       '</div>' +
-      '<p class="upload-text">拖拽文件或点击上传</p>';
+      '<p class="upload-text">拖拽文件 或 点击上传</p>';
 
     function openModal() {
       uploadZone.innerHTML = UPLOAD_ZONE_DEFAULT;
+      const chk = document.getElementById("auto-install-check");
+      if (chk) chk.checked = false;
       modal.classList.remove("hidden");
       dropdown.classList.add("hidden");
     }
     function closeModal() {
       modal.classList.add("hidden");
       uploadZone.innerHTML = UPLOAD_ZONE_DEFAULT;
-    }
-    function closePreviewModal() {
-      previewModal.classList.add("hidden");
-      pendingInstall = null;
+      const chk = document.getElementById("auto-install-check");
+      if (chk) chk.checked = false;
     }
     btnImport.addEventListener("click", openModal);
     modalClose.addEventListener("click", closeModal);
     modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape" && !modal.classList.contains("hidden")) closeModal();
-      if (e.key === "Escape" && !previewModal.classList.contains("hidden")) closePreviewModal();
+
+    // ---- New dropdown buttons ----
+    const btnSearch = document.getElementById("btn-search");
+    const btnChatCreate = document.getElementById("btn-chat-create");
+    const btnGuide = document.getElementById("btn-guide");
+
+    btnSearch.addEventListener("click", () => {
+      dropdown.classList.add("hidden");
+      window.location.href = '../content.html?data=请帮我查找并自动安装能「……」的skill';
+    });
+
+    btnChatCreate.addEventListener("click", () => {
+      dropdown.classList.add("hidden");
+      window.location.href = '../content.html?skill=skill-creator&data=帮我生成一个[填写用途，例如:整理周报]的技能';
+    });
+
+    btnGuide.addEventListener("click", () => {
+      dropdown.classList.add("hidden");
+      window.open("./JNWDhtml/index.html", "_blank");
     });
 
     uploadZone.addEventListener("click", e => {
@@ -1295,44 +1337,121 @@
     function handleFile(file) {
       if (!file) return;
       const name = file.name.replace(/\.(zip|md)$/i, "");
-      const autoInstall = document.getElementById("auto-install-safe").checked;
-      if (autoInstall) {
-        closeModal();
-        showToast("\u6280\u80fd " + (name || "imported-skill") + " \u5b89\u88c5\u6210\u529f");
-        return;
-      }
+      const autoInstall = document.getElementById("auto-install-check").checked;
       uploadZone.innerHTML =
         '<svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 109 9"/></svg>' +
         '<p class="upload-text" style="margin-top:12px">正在校验 SKILL.md...</p>';
       setTimeout(() => {
         closeModal();
-        showToast("技能 " + name + " 安装成功");
+        if (autoInstall) {
+          showToast("技能 " + name + " 安装成功");
+        } else {
+          previewSkillName.textContent = name;
+          previewName.textContent = name;
+          previewPath.textContent = "~/.skills/" + name;
+          previewFiles.innerHTML = MOCK_FILES.map(f =>
+            '<li class="file-item"><span>' + f.name + '</span><span style="color:#a1a1aa">' + f.size + '</span></li>'
+          ).join("");
+          previewInstall.disabled = false;
+          previewInstall.innerHTML = "确认安装";
+          urlPreviewModal.classList.remove("hidden");
+        }
       }, 1500);
     }
 
-    // ---- 对话创建：挂载 skill-creator 并回填技能生成提示词 ----
-    document.getElementById("btn-chat-create").addEventListener("click", () => {
+    // ---- URL install modal ----
+    const urlInstallModal = document.getElementById("url-install-modal");
+    const urlPreviewModal = document.getElementById("url-preview-modal");
+    const urlClose = document.getElementById("url-close");
+    const urlCancel = document.getElementById("url-cancel");
+    const urlPreviewBtn = document.getElementById("url-preview");
+    const urlInput = document.getElementById("url-input");
+    const urlNameInput = document.getElementById("url-name");
+
+    const previewClose = document.getElementById("preview-close");
+    const previewCancel = document.getElementById("preview-cancel");
+    const previewInstall = document.getElementById("preview-install");
+    const previewSkillName = document.getElementById("preview-skill-name");
+    const previewName = document.getElementById("preview-name");
+    const previewPath = document.getElementById("preview-path");
+    const previewFiles = document.getElementById("preview-files");
+
+    const MOCK_FILES = [
+      { name: "SKILL.md", size: "3.2 kB" },
+      { name: "template.html", size: "12.8 kB" },
+      { name: "styles/magazine.css", size: "3.6 kB" },
+      { name: "styles/swiss.css", size: "4.1 kB" },
+      { name: "scripts/build.py", size: "5.4 kB" },
+      { name: "manifest.json", size: "0.8 kB" }
+    ];
+
+    function openUrlInstall() {
+      urlInput.value = "";
+      urlNameInput.value = "";
+      urlInstallModal.classList.remove("hidden");
       dropdown.classList.add("hidden");
-      const params = new URLSearchParams({
-        skill: "skill-creator",
-        prefill: "帮我生成一个［填写用途，例如：整理周报］的技能。"
-      });
-      parentClick("content.html?" + params.toString());
+      urlPreviewBtn.disabled = true;
+      urlPreviewBtn.className = "btn gray";
+      urlPreviewBtn.textContent = "预览安装";
+    }
+    function syncPreviewBtn() {
+      const hasUrl = urlInput.value.trim() !== "";
+      urlPreviewBtn.disabled = !hasUrl;
+      urlPreviewBtn.className = hasUrl ? "btn dark" : "btn gray";
+    }
+    function closeUrlInstall() { urlInstallModal.classList.add("hidden"); }
+    function closeUrlPreview() { urlPreviewModal.classList.add("hidden"); }
+
+    function extractSkillName(url) {
+      try {
+        const path = new URL(url).pathname;
+        const seg = path.substring(path.lastIndexOf("/") + 1);
+        return seg.replace(/\.(md|zip)$/i, "").replace(/[^a-zA-Z0-9_\u4e00-\u9fa5-]/g, "-") || "my-skill";
+      } catch (e) {
+        return "my-skill";
+      }
+    }
+
+    function renderPreview(skillName) {
+      const displayName = urlNameInput.value.trim() || skillName;
+      previewSkillName.textContent = displayName;
+      previewName.textContent = displayName;
+      previewPath.textContent = "~/.skills/" + displayName;
+      previewFiles.innerHTML = MOCK_FILES.map(f =>
+        '<li class="file-item"><span>' + f.name + '</span><span style="color:#a1a1aa">' + f.size + '</span></li>'
+      ).join("");
+    }
+
+    urlInput.addEventListener("input", syncPreviewBtn);
+    urlClose.addEventListener("click", closeUrlInstall);
+    urlCancel.addEventListener("click", closeUrlInstall);
+    urlInstallModal.addEventListener("click", e => { if (e.target === urlInstallModal) closeUrlInstall(); });
+
+    urlPreviewBtn.addEventListener("click", () => {
+      const url = urlInput.value.trim();
+      if (!url) { urlInput.focus(); return; }
+      const skillName = extractSkillName(url);
+      renderPreview(skillName);
+      urlInstallModal.classList.add("hidden");
+      urlPreviewModal.classList.remove("hidden");
+      previewInstall.disabled = false;
+      previewInstall.innerHTML = "确认安装";
     });
 
-    // ---- 查找技能：跳转至新会话页面，并自动回填提示词 ----
-    document.getElementById("btn-find-skill").addEventListener("click", () => {
-      dropdown.classList.add("hidden");
-      const prefill = "请帮我查找并自动安装能「……」的skill";
-      parentClick("content.html?prefill=" + encodeURIComponent(prefill));
+    previewClose.addEventListener("click", closeUrlPreview);
+    previewCancel.addEventListener("click", closeUrlPreview);
+    urlPreviewModal.addEventListener("click", e => { if (e.target === urlPreviewModal) closeUrlPreview(); });
+
+    previewInstall.addEventListener("click", () => {
+      const name = previewName.textContent;
+      previewInstall.disabled = true;
+      previewInstall.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 109 9"/></svg> 安装中';
+      setTimeout(() => {
+        closeUrlPreview();
+        showToast("技能 " + name + " 安装成功");
+      }, 1500);
     });
 
-    // ---- 技能构建指南：在外部浏览器的新标签页打开指南页 ----
-    document.getElementById("btn-guide").addEventListener("click", () => {
-      dropdown.classList.add("hidden");
-      const guideUrl = new URL("JNWDhtml/index.html", window.location.href);
-      window.open(guideUrl.href, "_blank", "noopener,noreferrer");
-    });
 
 // 父窗口点击菜单
 function parentClick(url='') {
@@ -1345,76 +1464,32 @@ function parentClick(url='') {
 	}
 }
 
+    // ---- Contribute modal ----
+    let contributeTargetId = null;
+    const contributeModal = document.getElementById("contribute-modal");
+    const contributeCloseBtn = document.getElementById("contribute-close");
+    const contributeCancelBtn = document.getElementById("contribute-cancel");
+    const contributeConfirmBtn = document.getElementById("contribute-confirm");
+
+    function closeContributeModal() {
+      contributeModal.classList.add("hidden");
+      contributeTargetId = null;
+    }
+    contributeCloseBtn.addEventListener("click", closeContributeModal);
+    contributeCancelBtn.addEventListener("click", closeContributeModal);
+    contributeModal.addEventListener("click", e => { if (e.target === contributeModal) closeContributeModal(); });
+
+    contributeConfirmBtn.addEventListener("click", () => {
+      if (contributeTargetId == null) return;
+      const skill = (TAB_DATA[currentTab] || []).find(x => x.id === contributeTargetId);
+      if (skill) { skill.reviewStatus = 'reviewing'; skill.rejectReason = ''; }
+      closeContributeModal();
+      render();
+      showToast("已提交贡献申请，等待审核");
+    });
+
     // ---- Init ----
     render();
-    // Import flow override: validate first, then require explicit confirmation.
-    function showToast(msg, type) {
-      const t = document.getElementById("toast");
-      t.textContent = msg;
-      t.className = type === "error" ? "show error" : "show";
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => t.classList.remove("show", "error"), 2600);
-    }
-
-    function handleFile(file) {
-      if (!file) return;
-      const name = file.name.replace(/\.(zip|md)$/i, "");
-      const autoInstall = document.getElementById("auto-install-safe").checked;
-      if (autoInstall) {
-        closeModal();
-        showToast("\u6280\u80fd " + (name || "imported-skill") + " \u5b89\u88c5\u6210\u529f");
-        return;
-      }
-      uploadZone.innerHTML =
-        '<svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 109 9"/></svg>' +
-        '<p class="upload-text" style="margin-top:12px">正在校验 SKILL.md...</p>';
-      setTimeout(() => {
-        closeModal();
-        openInstallPreview(name, file);
-      }, 1200);
-    }
-
-    function openInstallPreview(name, file) {
-      const normalizedName = name || "imported-skill";
-      const isRisky = /(risk|unsafe|danger|malware|security)/i.test(normalizedName);
-      const fileNames = ["SKILL.md", "\u5355\u76ee\u5f55\u5c01\u88c5\u5f52\u6863", "\u6280\u80fd\u5185\u5bb9", "scripts/pre-check.sh", "scripts/scan.sh", "install.sh", "README.md", "config/default.yaml", "tests/smoke.test.js"];
-      pendingInstall = { name: normalizedName, isRisky, file };
-      document.getElementById("preview-skill-name").textContent = normalizedName;
-      document.getElementById("preview-name-value").textContent = normalizedName;
-      document.getElementById("preview-path-value").textContent = "C:\\Users\\zhaonan\\.omnix\\skills\\" + normalizedName;
-      document.getElementById("preview-file-count").textContent = fileNames.length;
-      const security = document.getElementById("preview-security-value");
-      security.className = "preview-pill " + (isRisky ? "danger" : "safe");
-      security.textContent = isRisky ? "\u5b58\u5728\u5b89\u5168\u95ee\u9898" : "\u53ef\u5b89\u88c5 \u00b7 3 \u9879\u63d0\u793a";
-      document.getElementById("preview-files").innerHTML = fileNames.map((fileName, index) => {
-        const riskyFile = isRisky && index >= 3 && index <= 5;
-        const status = riskyFile ? "\u98ce\u9669\u63d0\u793a" : (index === 0 ? "\u5df2\u6821\u9a8c" : index === 1 ? "ZIP" : index === 2 ? "40 KB" : "");
-        return '<div class="preview-file' + (riskyFile ? ' risky' : '') + '"><span>' + fileName + '</span><span class="preview-file-status">' + status + '</span></div>';
-      }).join("");
-      previewConfirm.disabled = false;
-      previewConfirm.textContent = "\u786e\u8ba4\u5b89\u88c5";
-      previewModal.classList.remove("hidden");
-    }
-
-    function installImportedSkill() {
-      if (!pendingInstall) return;
-      const { name, isRisky } = pendingInstall;
-      if (isRisky) {
-        closePreviewModal();
-        showToast("\u5b89\u5168\u95ee\u9898\uff1a\u68c0\u6d4b\u5230\u9ad8\u98ce\u9669\u6587\u4ef6\uff0c\u5b89\u88c5\u672a\u6210\u529f", "error");
-        return;
-      }
-      previewConfirm.disabled = true;
-      previewConfirm.textContent = "\u5b89\u88c5\u4e2d...";
-      setTimeout(() => {
-        closePreviewModal();
-        showToast("\u6280\u80fd " + name + " \u5b89\u88c5\u6210\u529f");
-      }, 700);
-    }
-    previewModalClose.addEventListener("click", closePreviewModal);
-    previewCancel.addEventListener("click", closePreviewModal);
-    previewConfirm.addEventListener("click", installImportedSkill);
-    previewModal.addEventListener("click", e => { if (e.target === previewModal) closePreviewModal(); });
   </script>
 
 

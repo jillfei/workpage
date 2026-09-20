@@ -2037,20 +2037,6 @@
       ta.style.height = Math.min(ta.scrollHeight, 180) + 'px';
     });
 
-    // URL 参数 prefill 回填：支持从「查找技能」等入口携带提示词跳入新会话
-    (function applyPrefill() {
-      const params = new URLSearchParams(window.location.search);
-      const prefill = params.get('prefill');
-      if (prefill) {
-        ta.value = prefill;
-        ta.style.height = 'auto';
-        ta.style.height = Math.min(ta.scrollHeight, 180) + 'px';
-        // 聚焦并将光标移至末尾，便于用户在「……」处续写
-        ta.focus();
-        ta.setSelectionRange(ta.value.length, ta.value.length);
-      }
-    })();
-
     // Knowledge base logic
     const selectedKbs = new Map();
 
@@ -2354,18 +2340,6 @@
         area.appendChild(tag);
       });
     }
-
-    // URL 参数 skill：支持从技能页进入新会话时自动挂载指定技能
-    (function applyPrefilledSkill() {
-      const skillName = new URLSearchParams(window.location.search).get('skill');
-      if (!skillName) return;
-      const item = Array.from(document.querySelectorAll('#skillList .skill-item'))
-        .find(el => el.dataset.name === skillName);
-      if (!item) return;
-      addedSkills.add(skillName);
-      item.classList.add('selected');
-      renderSkillTags();
-    })();
 
     function filterSkills() {
       const query = document.getElementById('skillSearch').value.toLowerCase();
@@ -2968,6 +2942,27 @@
         document.getElementById('qualityDropdown').classList.remove('show');
       }
     });
+
+    (function initUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      const skillParam = params.get('skill');
+      if (skillParam) {
+        skillParam.split(',').forEach(function(name) {
+          const trimmed = name.trim();
+          if (!trimmed) return;
+          const el = document.querySelector('#skillList .skill-item[data-name="' + trimmed + '"]');
+          if (el && !addedSkills.has(trimmed)) {
+            addSkill(el);
+          }
+        });
+      }
+      const dataParam = params.get('data');
+      if (dataParam) {
+        const ta = document.querySelector('.input-textarea');
+        ta.value = dataParam;
+        ta.dispatchEvent(new Event('input'));
+      }
+    })();
   </script>
 
   <style> .prd-fab-wrapper { position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; align-items: center; justify-content: center; }  .prd-fab-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #ffffff; box-shadow: 0 8px 28px rgba(79, 70, 229, 0.45); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; text-decoration: none; cursor: pointer; border: none; outline: none; position: relative; } .prd-fab-btn:hover { transform: scale(1.10); box-shadow: 0 12px 40px rgba(79, 70, 229, 0.60); } .prd-fab-btn:active { transform: scale(0.92); } .prd-fab-btn svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08)); } .prd-fab-tooltip { position: absolute; right: 50px; background: #1e293b; color: #f1f5f9; padding: 6px 16px; border-radius: 8px; font-family: -apple-system, 'Inter', 'Microsoft YaHei', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.3px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateX(4px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); } .prd-fab-tooltip::after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); border-left: 6px solid #1e293b; border-top: 6px solid transparent; border-bottom: 6px solid transparent; } .prd-fab-btn:hover .prd-fab-tooltip { opacity: 1; transform: translateX(0); }  @media (max-width: 640px) { .prd-fab-wrapper { bottom: 20px; right: 20px; } .prd-fab-btn { width: 48px; height: 48px; } .prd-fab-btn svg { width: 22px; height: 22px; } .prd-fab-tooltip { right: 60px; font-size: 12px; padding: 4px 12px; } .prd-fab-tooltip::after { right: -5px; border-width: 5px; } }  @media (prefers-color-scheme: dark) { .prd-fab-tooltip { background: #0f172a; color: #e2e8f0; } .prd-fab-tooltip::after { border-left-color: #0f172a; } }</style>
