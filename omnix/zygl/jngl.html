@@ -1627,6 +1627,140 @@
             color: #4F46E5;
             font-weight: 600;
         }
+
+        /* ══ 调试弹窗样式 ═══ */
+        .debug-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .debug-modal-overlay.hidden {
+            display: none;
+        }
+        .debug-modal {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            width: 95vw;
+            max-width: 1400px;
+            height: 85vh;
+            max-height: 900px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .debug-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f3f4f6;
+            flex-shrink: 0;
+        }
+        .debug-modal-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6, #4f46e5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .debug-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        .debug-modal-desc {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        .debug-modal-close {
+            margin-left: auto;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #9ca3af;
+            cursor: pointer;
+            border: none;
+            background: none;
+            transition: all 0.15s;
+        }
+        .debug-modal-close:hover {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+        .debug-modal-body {
+            flex: 1;
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            min-height: 0;
+        }
+        .debug-panel {
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            min-width: 0;
+        }
+        .debug-panel-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            flex-shrink: 0;
+        }
+        .debug-panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+        .debug-panel-body {
+            flex: 1;
+            min-height: 0;
+            position: relative;
+        }
+        .debug-panel-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+        .debug-divider {
+            width: 6px;
+            flex-shrink: 0;
+            cursor: col-resize;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 5;
+        }
+        .debug-divider::after {
+            content: '';
+            width: 2px;
+            height: 40px;
+            border-radius: 2px;
+            background: #d1d5db;
+            transition: all 0.15s;
+        }
+        .debug-divider:hover::after {
+            background: #4f46e5;
+            height: 60px;
+        }
     </style>
 </head>
 <body>
@@ -1674,7 +1808,7 @@
                         <iconify-icon icon="mdi:shield-check-outline"></iconify-icon>
                         <span>审核</span>
                     </button>
-                    <button id="btn-debug-detail" onclick="if(currentSkill)window.location.href='../qyznt/zjgl.html?type=detail&id='+currentSkill.id+'&title='+encodeURIComponent(currentSkill.name)+'&desc='+encodeURIComponent(currentSkill.desc)" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-green-600 rounded-lg hover:bg-green-50 transition-colors text-sm">
+                    <button id="btn-debug-detail" onclick="if(currentSkill)openDebugModal(currentSkill.id)" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 text-green-600 rounded-lg hover:bg-green-50 transition-colors text-sm">
                         <iconify-icon icon="mdi:bug"></iconify-icon>
                         <span>调试</span>
                     </button>
@@ -2550,6 +2684,41 @@
         </div>
     </div>
 
+    <!-- ═════ 调试弹窗 ════ -->
+    <div id="debugModal" class="debug-modal-overlay hidden" onclick="if(event.target===this)closeDebugModal()">
+        <div class="debug-modal">
+            <div class="debug-modal-header">
+                <div class="debug-modal-icon" id="debug-modal-icon">🤖</div>
+                <div>
+                    <div class="debug-modal-title" id="debug-modal-title">技能名称</div>
+                    <div class="debug-modal-desc" id="debug-modal-desc">技能描述</div>
+                </div>
+                <button class="debug-modal-close" onclick="closeDebugModal()">
+                    <iconify-icon icon="mdi:close" style="font-size:20px;"></iconify-icon>
+                </button>
+            </div>
+            <div class="debug-modal-body">
+                <div class="debug-panel" id="debugPanelLeft" style="flex: 0 0 40%;">
+                    <div class="debug-panel-header">
+                        <span class="debug-panel-title">专家配置</span>
+                    </div>
+                    <div class="debug-panel-body">
+                        <iframe id="debugIframeLeft" src=""></iframe>
+                    </div>
+                </div>
+                <div class="debug-divider" id="debugDivider"></div>
+                <div class="debug-panel" id="debugPanelRight" style="flex: 1;">
+                    <div class="debug-panel-header">
+                        <span class="debug-panel-title">预览调试</span>
+                    </div>
+                    <div class="debug-panel-body">
+                        <iframe id="debugIframeRight" src=""></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ═════ Toast ═════ -->
     <div id="toast" class="toast hidden"></div>
 
@@ -2822,7 +2991,7 @@
                                         <span class="ml-auto text-xs text-gray-400">（${blacklistCount})</span>
                                     </div>
                                     <div class="dropdown-divider"></div>
-                                    <div class="dropdown-item" onclick="event.stopPropagation();window.location.href='../qyznt/zjgl.html?type=detail&id=${s.id}&title=${encodeURIComponent(s.name)}&desc=${encodeURIComponent(s.desc)}';closeAllCardDropdowns()">
+                                    <div class="dropdown-item" onclick="event.stopPropagation();openDebugModal(${s.id});closeAllCardDropdowns()">
                                         <iconify-icon icon="mdi:bug"></iconify-icon>
                                         <span>调试</span>
                                     </div>
@@ -4403,6 +4572,59 @@
         }
 
         // ═══════════════════════════════════════════════
+        // 调试弹窗
+        // ═══════════════════════════════════════════════
+        function openDebugModal(id) {
+            const skill = skills.find(s => s.id === id);
+            if (!skill) return;
+            document.getElementById('debug-modal-icon').textContent = skill.icon || '🤖';
+            document.getElementById('debug-modal-title').textContent = skill.name;
+            document.getElementById('debug-modal-desc').textContent = skill.desc || '';
+            const iframeLeft = document.getElementById('debugIframeLeft');
+            const iframeRight = document.getElementById('debugIframeRight');
+            iframeLeft.src = '../qyznt/zjgl/1-agent-config-page.html';
+            iframeRight.src = '../qyznt/zjgl/2-ai-chat2.html';
+            document.getElementById('debugModal').classList.remove('hidden');
+        }
+
+        function closeDebugModal() {
+            document.getElementById('debugModal').classList.add('hidden');
+            document.getElementById('debugIframeLeft').src = '';
+            document.getElementById('debugIframeRight').src = '';
+        }
+
+        (function() {
+            var divider = document.getElementById('debugDivider');
+            var panelLeft = document.getElementById('debugPanelLeft');
+            var panelRight = document.getElementById('debugPanelRight');
+            var body = document.querySelector('.debug-modal-body');
+            if (!divider || !panelLeft || !panelRight || !body) return;
+            var isDragging = false;
+            divider.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                e.preventDefault();
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                var bodyRect = body.getBoundingClientRect();
+                var offset = e.clientX - bodyRect.left;
+                var totalW = bodyRect.width - 6;
+                var pct = Math.max(20, Math.min(70, (offset / totalW) * 100));
+                panelLeft.style.flex = '0 0 ' + pct + '%';
+                panelRight.style.flex = '1';
+            });
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                }
+            });
+        })();
+
+        // ═══════════════════════════════════════════════
         // 编辑器视图切换（预览 / 代码）
         // ═══════════════════════════════════════════════
         function switchEditorView(mode) {
@@ -5186,43 +5408,58 @@
         // ═══════════════════════════════════════════════
         const skillOperationLogs = {
             1: [
-                { type: '创建', user: '孙礼飞', time: '2026-06-20 10:30', detail: '创建技能「代码审查助手」' },
+                { type: '导入', user: '孙礼飞', time: '2026-06-20 10:30', detail: '通过 ZIP 文件导入技能「代码审查助手」' },
                 { type: '编辑', user: '孙礼飞', time: '2026-06-22 14:15', detail: '修改技能描述' },
-                { type: '上传', user: '孙礼飞', time: '2026-06-25 09:40', detail: '上传文件 track_actions.py' },
-                { type: '上传', user: '孙礼飞', time: '2026-06-25 09:45', detail: '上传文件 analyze.py' },
-                { type: '发布', user: '孙礼飞', time: '2026-06-28 16:00', detail: '发布技能' },
-                { type: '编辑', user: '王博士', time: '2026-07-01 11:20', detail: '修改文件 SKILL.md' },
-                { type: '配置', user: '孙礼飞', time: '2026-07-03 08:50', detail: '更新白名单设置，新增 3 人' },
-                { type: '删除', user: '孙礼飞', time: '2026-07-04 15:30', detail: '删除文件 meeting_template.md' },
-                { type: '导出', user: '李工', time: '2026-07-05 10:00', detail: '导出技能文件' },
-                { type: '编辑', user: '孙礼飞', time: '2026-07-05 14:30', detail: '更新技能分类为「代码生成」' }
+                { type: '白名单设置', user: '孙礼飞', time: '2026-06-25 09:40', detail: '新增 3 人到白名单' },
+                { type: '黑名单设置', user: '孙礼飞', time: '2026-06-25 09:45', detail: '新增 1 人到黑名单' },
+                { type: '贡献', user: '孙礼飞', time: '2026-06-28 16:00', detail: '修改贡献模式为「白名单模式」' },
+                { type: '审核', user: '王博士', time: '2026-07-01 11:20', detail: '审核通过' },
+                { type: '导出', user: '李工', time: '2026-07-03 08:50', detail: '导出技能文件' },
+                { type: '删除', user: '孙礼飞', time: '2026-07-04 15:30', detail: '删除技能（移入回收站）' },
+                { type: '恢复', user: '孙礼飞', time: '2026-07-05 10:00', detail: '从回收站恢复技能' },
+                { type: '编辑', user: '孙礼飞', time: '2026-07-05 14:30', detail: '更新技能分类为「代码生成」' },
+                { type: '彻底删除', user: '孙礼飞', time: '2026-07-06 09:00', detail: '从回收站彻底删除技能' }
             ],
             2: [
-                { type: '创建', user: '孙礼飞', time: '2026-06-15 09:00', detail: '创建技能「数据分析看板」' },
-                { type: '上传', user: '孙礼飞', time: '2026-06-18 11:30', detail: '上传文件 dashboard.py' },
-                { type: '发布', user: '孙礼飞', time: '2026-06-20 14:00', detail: '发布技能' },
+                { type: '导入', user: '孙礼飞', time: '2026-06-15 09:00', detail: '通过 ZIP 文件导入技能「数据分析看板」' },
+                { type: '编辑', user: '孙礼飞', time: '2026-06-18 11:30', detail: '修改技能描述' },
+                { type: '白名单设置', user: '孙礼飞', time: '2026-06-20 14:00', detail: '设置白名单人员' },
+                { type: '贡献', user: '孙礼飞', time: '2026-06-22 10:00', detail: '修改贡献模式为「允许全部」' },
+                { type: '导出', user: '王博士', time: '2026-07-01 09:00', detail: '导出技能文件' },
                 { type: '编辑', user: '孙礼飞', time: '2026-07-04 09:15', detail: '更新技能描述' }
             ],
             3: [
-                { type: '创建', user: '王博士', time: '2026-06-10 08:30', detail: '创建技能「文档翻译助手」' },
-                { type: '下架', user: '王博士', time: '2026-07-03 16:45', detail: '下架技能' }
+                { type: '导入', user: '王博士', time: '2026-06-10 08:30', detail: '通过 ZIP 文件导入技能「文档翻译助手」' },
+                { type: '编辑', user: '王博士', time: '2026-06-15 14:20', detail: '修改技能配置' },
+                { type: '审核', user: '孙礼飞', time: '2026-06-20 10:30', detail: '审核不通过：技能描述不够详细' },
+                { type: '删除', user: '王博士', time: '2026-07-03 16:45', detail: '删除技能（移入回收站）' }
             ],
             4: [
-                { type: '创建', user: '李工', time: '2026-06-05 10:00', detail: '创建技能「会议纪要生成器」' },
-                { type: '上传', user: '李工', time: '2026-06-08 14:20', detail: '上传文件 track_actions.py' },
-                { type: '发布', user: '李工', time: '2026-06-10 09:00', detail: '发布技能' },
+                { type: '导入', user: '李工', time: '2026-06-05 10:00', detail: '通过 ZIP 文件导入技能「会议纪要生成器」' },
+                { type: '编辑', user: '李工', time: '2026-06-08 14:20', detail: '修改技能描述' },
+                { type: '白名单设置', user: '李工', time: '2026-06-10 09:00', detail: '设置白名单人员' },
+                { type: '黑名单设置', user: '李工', time: '2026-06-12 11:00', detail: '设置黑名单人员' },
+                { type: '贡献', user: '李工', time: '2026-06-15 09:30', detail: '修改贡献模式为「黑名单模式」' },
+                { type: '导出', user: '王博士', time: '2026-06-20 14:00', detail: '导出技能文件' },
                 { type: '编辑', user: '李工', time: '2026-07-02 11:20', detail: '更新技能描述' }
             ],
             5: [
-                { type: '创建', user: '孙礼飞', time: '2026-06-01 09:00', detail: '创建技能「智能客服机器人」' },
-                { type: '发布', user: '孙礼飞', time: '2026-06-05 16:00', detail: '发布技能' },
-                { type: '审核', user: '王博士', time: '2026-06-20 10:30', detail: '审核不通过：技能描述不够详细' },
-                { type: '下架', user: '孙礼飞', time: '2026-06-28 08:00', detail: '下架技能' }
+                { type: '导入', user: '孙礼飞', time: '2026-06-01 09:00', detail: '通过 ZIP 文件导入技能「智能客服机器人」' },
+                { type: '编辑', user: '孙礼飞', time: '2026-06-03 10:00', detail: '修改技能配置' },
+                { type: '审核', user: '王博士', time: '2026-06-05 16:00', detail: '审核通过' },
+                { type: '白名单设置', user: '孙礼飞', time: '2026-06-10 09:00', detail: '更新白名单人员' },
+                { type: '贡献', user: '孙礼飞', time: '2026-06-15 14:30', detail: '修改贡献模式' },
+                { type: '删除', user: '孙礼飞', time: '2026-06-20 10:30', detail: '删除技能（移入回收站）' },
+                { type: '恢复', user: '孙礼飞', time: '2026-06-25 08:00', detail: '从回收站恢复技能' },
+                { type: '彻底删除', user: '孙礼飞', time: '2026-06-28 08:00', detail: '从回收站彻底删除技能' }
             ],
             6: [
-                { type: '创建', user: '王博士', time: '2026-06-12 11:00', detail: '创建技能「自动化部署工具」' },
-                { type: '上传', user: '王博士', time: '2026-06-15 14:30', detail: '上传文件 deploy.sh, rollback.sh' },
-                { type: '下架', user: '王博士', time: '2026-07-01 13:10', detail: '下架技能' }
+                { type: '导入', user: '王博士', time: '2026-06-12 11:00', detail: '通过 ZIP 文件导入技能「自动化部署工具」' },
+                { type: '编辑', user: '王博士', time: '2026-06-15 14:30', detail: '修改技能描述' },
+                { type: '黑名单设置', user: '王博士', time: '2026-06-18 09:00', detail: '设置黑名单人员' },
+                { type: '贡献', user: '王博士', time: '2026-06-20 10:00', detail: '修改贡献模式为「拒绝全部」' },
+                { type: '导出', user: '李工', time: '2026-06-25 14:00', detail: '导出技能文件' },
+                { type: '删除', user: '王博士', time: '2026-07-01 13:10', detail: '删除技能（移入回收站）' }
             ]
         };
 
@@ -5234,15 +5471,16 @@
                 tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-8 text-center text-gray-400">暂无操作日志</td></tr>';
             } else {
                 const typeStyleMap = {
-                    '创建': 'background:#D1FAE5;color:#059669;',
-                    '编辑': 'background:#DBEAFE;color:#2563EB;',
-                    '上传': 'background:#E0E7FF;color:#4F46E5;',
-                    '发布': 'background:#D1FAE5;color:#059669;',
-                    '下架': 'background:#FEE2E2;color:#DC2626;',
+                    '导入': 'background:#DBEAFE;color:#2563EB;',
+                    '导出': 'background:#E0E7FF;color:#4F46E5;',
+                    '编辑': 'background:#D1FAE5;color:#059669;',
+                    '白名单设置': 'background:#D1FAE5;color:#059669;',
+                    '黑名单设置': 'background:#FEE2E2;color:#DC2626;',
                     '删除': 'background:#FEE2E2;color:#DC2626;',
-                    '导出': 'background:#F3F4F6;color:#6B7280;',
-                    '配置': 'background:#FEF3C7;color:#D97706;',
-                    '审核': 'background:#FEF3C7;color:#D97706;'
+                    '恢复': 'background:#D1FAE5;color:#059669;',
+                    '贡献': 'background:#FEF3C7;color:#D97706;',
+                    '审核': 'background:#FEF3C7;color:#D97706;',
+                    '彻底删除': 'background:#FEE2E2;color:#DC2626;'
                 };
                 tbody.innerHTML = logs.slice().reverse().map(log => {
                     const style = typeStyleMap[log.type] || 'background:#F3F4F6;color:#6B7280;';
