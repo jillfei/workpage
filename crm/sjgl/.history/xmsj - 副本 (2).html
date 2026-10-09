@@ -1,0 +1,2427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>思维特项目商机管理 · CRM</title>
+<style>
+:root{
+  --primary:#2563EB; --primary-d:#1D4ED8; --primary-l:#EFF4FF; --primary-l2:#DBE7FF;
+  --ink:#0F172A; --ink-2:#334155; --ink-3:#64748B; --ink-4:#94A3B8;
+  --bg:#F4F6FA; --surface:#FFFFFF; --surface-2:#F8FAFD;
+  --line:#E5E9F2; --line-2:#EDF1F7;
+  --ok:#0E9F6E; --ok-l:#E7F7F1; --warn:#D97706; --warn-l:#FEF4E6;
+  --danger:#DC2626; --danger-l:#FDECEC; --info:#0891B2; --info-l:#E6F7FB;
+  --purple:#7C3AED; --purple-l:#F2EBFE;
+  --nav-bg:#0F1B33; --nav-bg-2:#16233F; --nav-ink:#C3CEDF; --nav-ink-d:#7C8AA5;
+  --r-sm:6px; --r:9px; --r-lg:13px;
+  --sh-1:0 1px 2px rgba(15,23,42,.05);
+  --sh-2:0 1px 2px rgba(15,23,42,.04), 0 6px 18px rgba(15,23,42,.06);
+  --sh-3:0 10px 40px rgba(15,23,42,.14);
+  --ease:cubic-bezier(.2,0,0,1);
+  --fz:13px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Source Han Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:var(--fz); color:var(--ink); background:var(--bg);
+  -webkit-font-smoothing:antialiased; line-height:1.5;
+}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:6px;border:2px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:#94A3B8;background-clip:content-box;border:2px solid transparent}
+::-webkit-scrollbar-track{background:transparent}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:var(--primary);text-decoration:none}
+
+/* ============ Layout ============ */
+.app{display:flex;min-height:100vh}
+.sidebar{width:212px;flex:0 0 212px;background:var(--nav-bg);color:var(--nav-ink);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:40}
+.brand{display:flex;align-items:center;gap:10px;padding:18px 18px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
+.brand-logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#3B82F6,#1D4ED8);display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;letter-spacing:-.5px;box-shadow:0 4px 12px rgba(37,99,235,.4)}
+.brand-txt b{display:block;color:#fff;font-size:14px;font-weight:650;letter-spacing:.2px}
+.brand-txt span{font-size:11px;color:var(--nav-ink-d)}
+.nav{padding:12px 10px;overflow-y:auto;flex:1}
+.nav-group{font-size:10.5px;color:#5D6B87;letter-spacing:.12em;padding:14px 10px 7px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;color:var(--nav-ink);font-size:13px;cursor:pointer;transition:all .16s var(--ease);margin-bottom:2px;position:relative}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.on{background:linear-gradient(90deg,rgba(37,99,235,.9),rgba(37,99,235,.55));color:#fff;font-weight:600;box-shadow:0 3px 10px rgba(37,99,235,.28)}
+.nav-item svg{width:16px;height:16px;flex:0 0 16px;opacity:.85}
+.nav-item .tag{margin-left:auto;font-size:10px;background:rgba(255,255,255,.14);padding:1px 6px;border-radius:20px;color:#DCE4F1}
+.nav-foot{padding:12px 14px;border-top:1px solid rgba(255,255,255,.07);font-size:11px;color:#5D6B87;line-height:1.7}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:52px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 22px;position:sticky;top:0;z-index:35}
+.crumb{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-3)}
+.crumb b{color:var(--ink);font-weight:600}
+.crumb i{color:var(--ink-4);font-style:normal}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.icon-btn{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--ink-3);transition:.15s}
+.icon-btn:hover{background:var(--surface-2);color:var(--primary)}
+.icon-btn svg{width:16px;height:16px}
+.avatar{display:flex;align-items:center;gap:8px;padding-left:14px;border-left:1px solid var(--line)}
+.avatar-img{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#60A5FA,#2563EB);color:#fff;display:grid;place-items:center;font-size:11.5px;font-weight:650}
+.avatar-txt{font-size:12px;line-height:1.3}
+.avatar-txt b{display:block;font-weight:600}
+.avatar-txt span{color:var(--ink-4);font-size:10.5px}
+
+.page{padding:18px 22px 34px;min-height:100vh}
+.page-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.page-title{font-size:20px;font-weight:680;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
+.page-title .chip{font-size:10.5px;font-weight:600;background:var(--primary-l);color:var(--primary-d);padding:2px 8px;border-radius:20px;letter-spacing:.02em}
+.page-desc{color:var(--ink-3);font-size:12.5px;margin-top:5px;max-width:900px}
+.page-actions{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* tabs */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:16px;background:var(--surface);border-radius:var(--r) var(--r) 0 0;padding:0 8px;box-shadow:var(--sh-1)}
+.tab{padding:11px 16px;font-size:13px;color:var(--ink-3);font-weight:550;position:relative;transition:.15s;border-radius:7px 7px 0 0;display:flex;align-items:center;gap:7px}
+.tab:hover{color:var(--ink);background:var(--surface-2)}
+.tab.on{color:var(--primary);font-weight:650}
+.tab.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2.5px;background:var(--primary);border-radius:3px 3px 0 0}
+.tab svg{width:15px;height:15px}
+.tab .n{font-size:10.5px;background:var(--line-2);color:var(--ink-3);padding:0 6px;border-radius:20px;font-weight:600}
+.tab.on .n{background:var(--primary-l);color:var(--primary-d)}
+.pane{display:none;animation:fade .28s var(--ease)}
+.pane.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ============ Buttons ============ */
+.btn{height:32px;padding:0 13px;border-radius:8px;font-size:12.5px;font-weight:560;display:inline-flex;align-items:center;gap:6px;transition:all .15s var(--ease);border:1px solid transparent;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn-pri{background:var(--primary);color:#fff;box-shadow:0 1px 2px rgba(37,99,235,.3)}
+.btn-pri:hover{background:var(--primary-d);box-shadow:0 4px 12px rgba(37,99,235,.32);transform:translateY(-1px)}
+.btn-pri:active{transform:none}
+.btn-out{background:var(--surface);border-color:var(--line);color:var(--ink-2)}
+.btn-out:hover{border-color:#C7D2E6;color:var(--primary);background:var(--primary-l)}
+.btn-ghost{color:var(--ink-3)}
+.btn-ghost:hover{background:var(--surface-2);color:var(--primary)}
+.btn-sm{height:27px;padding:0 9px;font-size:12px;border-radius:7px}
+.btn-lg{height:38px;padding:0 18px;font-size:13.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important}
+.btn-danger{background:var(--danger-l);color:var(--danger);border-color:#F8D4D4}
+.btn-danger:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+
+/* ============ Cards & Stats ============ */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-1)}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:13px 15px 12px;position:relative;overflow:hidden;transition:all .2s var(--ease);box-shadow:var(--sh-1)}
+.stat:hover{box-shadow:var(--sh-2);transform:translateY(-2px);border-color:#D8E2F2}
+.stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--primary));opacity:.85}
+.stat-l{font-size:11.5px;color:var(--ink-3);display:flex;align-items:center;gap:5px;font-weight:550}
+.stat-l svg{width:13px;height:13px;color:var(--c,var(--primary))}
+.stat-v{font-size:22px;font-weight:700;letter-spacing:-.6px;margin-top:5px;font-variant-numeric:tabular-nums;line-height:1.15}
+.stat-v small{font-size:12px;font-weight:600;color:var(--ink-3);margin-left:3px;letter-spacing:0}
+.stat-sub{font-size:11px;color:var(--ink-4);margin-top:4px;display:flex;align-items:center;gap:4px}
+.stat-sub .up{color:var(--ok);font-weight:600}
+.stat-sub .dn{color:var(--danger);font-weight:600}
+.mini-bars{display:flex;align-items:flex-end;gap:2.5px;height:22px;margin-top:7px}
+.mini-bars i{flex:1;background:var(--c,var(--primary));opacity:.22;border-radius:2px 2px 0 0;transition:.3s var(--ease)}
+.mini-bars i.hi{opacity:.85}
+.stat:hover .mini-bars i{opacity:.4}
+.stat:hover .mini-bars i.hi{opacity:1}
+
+/* ============ Filter ============ */
+.filter{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-1);margin-bottom:12px;overflow:hidden}
+.filter-top{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line-2);border-radius:var(--r-lg) var(--r-lg) 0 0}
+.search{position:relative;flex:0 0 320px}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--ink-4)}
+.search input{width:100%;height:34px;border:1px solid var(--line);background:var(--surface-2);border-radius:9px;padding:0 30px 0 32px;transition:.16s;font-size:12.5px}
+.search input:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.11)}
+.search .clr{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;display:none;place-items:center;color:var(--ink-4);background:var(--line)}
+.search .clr:hover{background:#DCE3EE;color:var(--ink-2)}
+.search.has .clr{display:grid}
+.filter-hint{font-size:11.5px;color:var(--ink-4);display:flex;align-items:center;gap:5px}
+.filter-hint kbd{background:var(--surface-2);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px;font-size:10.5px;font-family:inherit;color:var(--ink-3)}
+.filter-acts{margin-left:auto;display:flex;gap:7px}
+.filter-body{padding:12px 14px 4px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 14px}
+.f-item{min-width:0}
+.f-item.wide{grid-column:span 2}
+.f-lab{font-size:11.5px;color:var(--ink-3);margin-bottom:5px;display:flex;align-items:center;gap:5px;font-weight:550}
+.f-lab .dot{width:5px;height:5px;border-radius:50%;background:var(--primary);opacity:.5}
+.f-more{display:none}
+.filter.expanded .f-more{display:block}
+.filter-foot{display:none;align-items:center;gap:10px;padding:10px 14px;border-top:1px dashed var(--line);background:var(--surface-2)}
+.filter.expanded .filter-foot{display:flex}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip-x{display:inline-flex;align-items:center;gap:5px;background:var(--primary-l);color:var(--primary-d);border:1px solid var(--primary-l2);border-radius:20px;padding:2px 6px 2px 9px;font-size:11.5px;font-weight:550}
+.chip-x b{font-weight:600}
+.chip-x button{width:14px;height:14px;border-radius:50%;display:grid;place-items:center;color:var(--primary-d);opacity:.6}
+.chip-x button:hover{opacity:1;background:rgba(37,99,235,.16)}
+
+/* multiselect */
+.ms{position:relative}
+.ms-btn{width:100%;min-height:34px;border:1px solid var(--line);background:var(--surface-2);border-radius:9px;padding:4px 26px 4px 9px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;transition:.16s;text-align:left;position:relative}
+.ms-btn:hover{border-color:#C7D2E6;background:#fff}
+.ms.open .ms-btn{border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.11)}
+.ms-btn .ph{color:var(--ink-4);font-size:12.5px}
+.ms-btn .caret{position:absolute;right:9px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--ink-4);transition:.2s}
+.ms.open .ms-btn .caret{transform:translateY(-50%) rotate(180deg);color:var(--primary)}
+.ms-pill{background:#fff;border:1px solid var(--primary-l2);color:var(--primary-d);border-radius:5px;padding:1px 5px;font-size:11px;font-weight:600;line-height:1.5;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-cnt{background:var(--primary);color:#fff;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:650}
+.ms-pop{position:fixed;top:0;left:0;min-width:120px;width:max-content;max-width:min(360px,calc(100vw - 24px));background:#fff;border:1px solid var(--line);border-radius:11px;box-shadow:var(--sh-3);z-index:400;display:none;overflow:hidden;flex-direction:column;animation:pop .16s var(--ease)}
+.ms-pop.placed{display:flex}
+.ms-pop.up{animation:popup .16s var(--ease)}
+@keyframes pop{from{opacity:0;transform:translateY(-5px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes popup{from{opacity:0;transform:translateY(5px) scale(.985)}to{opacity:1;transform:none}}
+.ms-search{flex:0 0 auto}
+.ms-foot{flex:0 0 auto}
+.ms-search{padding:8px;border-bottom:1px solid var(--line-2)}
+.ms-search input{width:100%;height:29px;border:1px solid var(--line);border-radius:7px;padding:0 8px;font-size:12px;background:var(--surface-2)}
+.ms-search input:focus{outline:none;border-color:var(--primary);background:#fff}
+.ms-list{flex:1 1 auto;min-height:0;max-height:280px;overflow-y:auto;padding:5px}
+.ms-opt{display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:7px;cursor:pointer;font-size:12.5px;transition:.12s}
+.ms-opt:hover{background:var(--primary-l)}
+.ms-opt.sel{background:var(--primary-l);color:var(--primary-d);font-weight:600}
+.ms-opt .sub{display:block;font-size:10.5px;color:var(--ink-4);font-weight:400;margin-top:1px;max-width:250px;white-space:normal;line-height:1.45}
+.ms-foot{display:flex;gap:6px;padding:7px 8px;border-top:1px solid var(--line-2);background:var(--surface-2)}
+.ms-foot button{flex:1;height:26px;border-radius:6px;font-size:11.5px;color:var(--ink-3);font-weight:550}
+.ms-foot button:hover{background:#fff;color:var(--primary);box-shadow:var(--sh-1)}
+.ck{width:15px;height:15px;border-radius:4px;border:1.5px solid #C3CCDD;flex:0 0 15px;margin-top:1px;display:grid;place-items:center;transition:.14s;background:#fff}
+.ck svg{width:10px;height:10px;color:#fff;opacity:0;transform:scale(.5);transition:.14s}
+.ck.on{background:var(--primary);border-color:var(--primary)}
+.ck.on svg{opacity:1;transform:none}
+.ck.part{background:var(--primary);border-color:var(--primary)}
+.ck.part::after{content:"";width:7px;height:2px;background:#fff;border-radius:2px;position:absolute}
+.ck{position:relative}
+
+/* date range */
+.drange{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface-2);border-radius:9px;padding:0 9px;height:34px;transition:.16s}
+.drange:focus-within{border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.11)}
+.drange svg{width:14px;height:14px;color:var(--ink-4);flex:0 0 14px}
+.drange input{border:none;background:none;height:100%;width:100%;min-width:0;font-size:12.5px;color:var(--ink-2)}
+.drange input:focus{outline:none}
+.drange span{color:var(--ink-4);font-size:11.5px}
+.inp{width:100%;height:34px;border:1px solid var(--line);background:var(--surface-2);border-radius:9px;padding:0 10px;font-size:12.5px;transition:.16s}
+.inp:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.11)}
+textarea.inp{height:auto;padding:8px 10px;line-height:1.6;resize:vertical;min-height:74px}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;background-size:12px;padding-right:26px;cursor:pointer}
+
+/* ============ Toolbar ============ */
+.toolbar{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--surface);border:1px solid var(--line);border-bottom:none;border-radius:var(--r-lg) var(--r-lg) 0 0;flex-wrap:wrap}
+.tb-sep{width:1px;height:20px;background:var(--line);margin:0 3px}
+.tb-info{font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+.tb-info b{color:var(--ink);font-weight:680;font-variant-numeric:tabular-nums}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:7px}
+.seg{display:flex;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:2px;gap:2px}
+.seg button{height:25px;padding:0 11px;border-radius:6px;font-size:12px;color:var(--ink-3);font-weight:550;display:flex;align-items:center;gap:5px;transition:.15s}
+.seg button svg{width:13px;height:13px}
+.seg button.on{background:#fff;color:var(--primary);font-weight:640;box-shadow:var(--sh-1)}
+.seg button:not(.on):hover{color:var(--ink)}
+.sel-bar{display:none;align-items:center;gap:10px;padding:8px 12px;background:var(--primary-l);border:1px solid var(--primary-l2);border-bottom:none;font-size:12.5px;color:var(--primary-d)}
+.sel-bar.on{display:flex}
+.sel-bar b{font-weight:700}
+.sel-bar .acts{margin-left:auto;display:flex;gap:7px}
+
+/* ============ Table ============ */
+.table-card{background:var(--surface);border:1px solid var(--line);border-radius:0 0 var(--r-lg) var(--r-lg);box-shadow:var(--sh-1);overflow:hidden}
+.tbl-scroll{overflow:auto;max-height:calc(100vh - 190px);position:relative}
+table.grid{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-size:12.5px}
+table.grid th,table.grid td{border-bottom:1px solid var(--line-2);border-right:1px solid var(--line-2);padding:0;vertical-align:middle;background:var(--surface)}
+table.grid thead th{position:sticky;top:0;z-index:12;background:var(--surface-2);height:38px;padding:0 10px;font-size:11.5px;font-weight:640;color:var(--ink-2);text-align:left;white-space:nowrap;border-bottom:1px solid var(--line);user-select:none}
+table.grid thead th .th-in{display:flex;align-items:center;gap:4px;min-width:0}
+table.grid thead th .th-in .lb{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+table.grid thead th .req{color:var(--danger);font-size:10px}
+table.grid thead th .lock{width:10px;height:10px;color:var(--ink-4);flex:0 0 10px}
+table.grid thead th.sortable{cursor:pointer}
+table.grid thead th.sortable:hover{color:var(--primary);background:var(--primary-l)}
+table.grid thead th .sarrow{width:11px;height:11px;color:var(--ink-4);opacity:0;transition:.15s;flex:0 0 11px}
+table.grid thead th:hover .sarrow{opacity:.6}
+table.grid thead th.sorted{color:var(--primary)}
+table.grid thead th.sorted .sarrow{opacity:1;color:var(--primary)}
+table.grid tbody tr{transition:background .12s}
+table.grid tbody tr:hover td{background:#F7FAFF}
+table.grid tbody tr.sel td{background:var(--primary-l)}
+table.grid tbody tr.sel:hover td{background:#E4EDFF}
+table.grid tbody tr.active td{background:#FFF8E9;box-shadow:inset 0 0 0 1px #FDE9B8}
+table.grid tbody td{height:40px;padding:0 10px;color:var(--ink-2);position:relative;max-width:0}
+table.grid tbody td.editable{cursor:cell}
+table.grid tbody td.editable:hover{box-shadow:inset 0 0 0 1.5px rgba(37,99,235,.45);background:#fff!important}
+table.grid tbody td.editing{padding:0;box-shadow:inset 0 0 0 2px var(--primary);background:#fff!important;z-index:8}
+table.grid tbody td.lockcell{background:#fff}
+table.grid tbody tr:hover td.lockcell{background:#F7FAFF}
+table.grid tbody tr.sel td.lockcell{background:var(--primary-l)}
+.sticky-l{position:sticky;z-index:10;background:var(--surface)}
+table.grid tbody td.sticky-l{position:sticky;z-index:10;background:var(--surface)}
+thead .sticky-l{z-index:14;background:var(--surface-2)}
+.sticky-l::after{content:"";position:absolute;top:0;right:-1px;bottom:0;width:6px;background:linear-gradient(90deg,rgba(15,23,42,.055),transparent);opacity:0;transition:.2s;pointer-events:none}
+.scrolled .sticky-l::after{opacity:1}
+.cell-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+tr.expanded td{height:auto;padding-top:7px;padding-bottom:7px;vertical-align:top}
+tr.expanded .cell-t{white-space:pre-wrap;word-break:break-word;overflow:visible;text-overflow:clip;line-height:1.62;max-height:none}
+tr.expanded .cell-t.pre{font-size:12px}
+.cell-edit{width:100%;height:100%;border:none;background:#fff;padding:0 10px;font-size:12.5px;outline:none}
+textarea.cell-edit{height:auto;min-height:88px;padding:7px 10px;line-height:1.6;resize:vertical}
+select.cell-edit{appearance:none;cursor:pointer;padding-right:22px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563EB' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;background-size:11px}
+.edit-hint{position:fixed;background:var(--ink);color:#fff;font-size:11px;padding:4px 9px;border-radius:6px;white-space:nowrap;z-index:420;box-shadow:var(--sh-2);pointer-events:none;animation:pop .15s var(--ease)}
+.edit-hint::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--ink)}
+.edit-hint.flip{animation:popup .15s var(--ease)}
+.edit-hint.flip::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:var(--ink)}
+.num{font-variant-numeric:tabular-nums;text-align:right;font-weight:560}
+.amount{color:var(--ink);font-weight:650}
+.amount.big{color:var(--primary-d)}
+.muted{color:var(--ink-4)}
+.calc{background:#FFFBEB!important;color:#92400E;font-weight:640;font-variant-numeric:tabular-nums}
+tr:hover .calc{background:#FEF6DF!important}
+.code{font-family:"SF Mono",Consolas,"Roboto Mono",monospace;font-size:11.5px;color:var(--primary-d);font-weight:600;letter-spacing:-.2px}
+.nm{font-weight:640;color:var(--ink)}
+.nm:hover{color:var(--primary);text-decoration:underline;text-underline-offset:2px}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:5px;font-size:11px;font-weight:640;white-space:nowrap;line-height:1}
+.lv{width:22px;height:20px;justify-content:center;padding:0;border-radius:5px;font-size:11.5px;font-weight:750;letter-spacing:-.3px}
+.lv-SS{background:linear-gradient(135deg,#B91C1C,#7F1D1D);color:#fff;box-shadow:0 2px 6px rgba(185,28,28,.3)}
+.lv-S{background:linear-gradient(135deg,#EA580C,#C2410C);color:#fff;box-shadow:0 2px 6px rgba(234,88,12,.28)}
+.lv-A{background:#DBE7FF;color:#1D4ED8}
+.lv-B{background:#D9F0F7;color:#0E7490}
+.lv-C{background:var(--purple-l);color:var(--purple)}
+.lv-D{background:#E8EDF5;color:#4B5B76}
+.lv-E{background:#EEF1F6;color:#64748B}
+.lv-F{background:#F1F3F7;color:#94A3B8}
+.lv-O{background:#2B3444;color:#9CA9BD}
+.b-src{background:var(--info-l);color:#0E7490}
+.b-bench{background:var(--warn-l);color:#B45309}
+.b-cat0{background:#EEF2F7;color:#64748B}
+.b-cat1{background:var(--ok-l);color:#047857}
+.b-yes{background:var(--purple-l);color:var(--purple)}
+.b-no{background:#F1F3F7;color:#94A3B8}
+.b-prod{background:var(--primary-l);color:var(--primary-d);border:1px solid var(--primary-l2)}
+.b-extra{background:#FFF;border:1px dashed #C7D2E6;color:var(--ink-3)}
+.stage{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.stage .pip{width:6px;height:6px;border-radius:50%;background:var(--sc,#94A3B8);box-shadow:0 0 0 3px color-mix(in srgb,var(--sc,#94A3B8) 18%,transparent)}
+.rate-bar{display:flex;align-items:center;gap:6px;min-width:64px}
+.rate-bar .track{flex:1;height:4px;background:var(--line-2);border-radius:3px;overflow:hidden;min-width:26px}
+.rate-bar .fill{height:100%;border-radius:3px;background:var(--rc,var(--primary));transition:width .4s var(--ease)}
+.rate-bar .v{font-size:11.5px;font-weight:680;color:var(--rc,var(--primary));font-variant-numeric:tabular-nums;min-width:30px;text-align:right}
+.coef{font-variant-numeric:tabular-nums;font-weight:640;color:var(--ink-2)}
+.coef.hi{color:var(--ok)}
+.coef.lo{color:var(--ink-4)}
+.risk-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
+.tag-list{display:flex;gap:4px;flex-wrap:wrap}
+tr:not(.expanded) .tag-list{flex-wrap:nowrap;overflow:hidden}
+.empty{padding:64px 20px;text-align:center;color:var(--ink-4)}
+.empty svg{width:52px;height:52px;color:#D8DFEA;margin-bottom:12px}
+.empty b{display:block;color:var(--ink-2);font-size:14px;font-weight:620;margin-bottom:5px}
+.empty p{font-size:12.5px}
+
+/* pager (bottom) */
+.pager{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--surface);border-top:1px solid var(--line);flex-wrap:wrap}
+.pager .tot{font-size:12px;color:var(--ink-3)}
+.pager .tot b{color:var(--ink);font-weight:680}
+.pages{margin-left:auto;display:flex;align-items:center;gap:4px}
+.pg{min-width:29px;height:29px;padding:0 7px;border-radius:7px;font-size:12.5px;color:var(--ink-2);font-weight:550;display:grid;place-items:center;transition:.14s;border:1px solid transparent;font-variant-numeric:tabular-nums}
+.pg:hover:not(:disabled){background:var(--surface-2);border-color:var(--line);color:var(--primary)}
+.pg.on{background:var(--primary);color:#fff;font-weight:680;box-shadow:0 2px 6px rgba(37,99,235,.3)}
+.pg:disabled{opacity:.35;cursor:not-allowed}
+.pg svg{width:13px;height:13px}
+.pg-size{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-3)}
+.pg-size select{height:29px;border:1px solid var(--line);border-radius:7px;padding:0 22px 0 8px;background:var(--surface-2);font-size:12px;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;background-size:11px}
+
+/* ============ Modal ============ */
+.mask{position:fixed;inset:0;background:rgba(15,23,42,.42);backdrop-filter:blur(2px);z-index:100;display:none;align-items:center;justify-content:center;padding:24px;animation:fadein .18s var(--ease)}
+.mask.on{display:flex}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surface);border-radius:16px;box-shadow:0 24px 70px rgba(15,23,42,.32);width:100%;max-width:1080px;max-height:calc(100vh - 48px);display:flex;flex-direction:column;animation:up .26s var(--ease);overflow:hidden}
+.modal.sm{max-width:520px}
+.modal.md{max-width:760px}
+@keyframes up{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:none}}
+.m-head{display:flex;align-items:center;gap:12px;padding:15px 20px;border-bottom:1px solid var(--line)}
+.m-head .ico{width:32px;height:32px;border-radius:9px;background:var(--primary-l);color:var(--primary);display:grid;place-items:center;flex:0 0 32px}
+.m-head .ico svg{width:17px;height:17px}
+.m-title{font-size:15.5px;font-weight:680;letter-spacing:-.2px}
+.m-sub{font-size:11.5px;color:var(--ink-4);margin-top:2px}
+.m-close{margin-left:auto;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--ink-4);transition:.15s}
+.m-close:hover{background:var(--danger-l);color:var(--danger)}
+.m-close svg{width:16px;height:16px}
+.m-body{padding:18px 20px;overflow-y:auto;flex:1;background:var(--surface-2)}
+.m-foot{display:flex;align-items:center;gap:9px;padding:13px 20px;border-top:1px solid var(--line);background:var(--surface)}
+.m-foot .left{margin-right:auto;font-size:11.5px;color:var(--ink-4);display:flex;align-items:center;gap:6px}
+.m-foot .right{margin-left:auto;display:flex;gap:9px}
+
+/* form */
+.fsec{margin-bottom:16px}
+.fsec-h{display:flex;align-items:center;gap:8px;margin-bottom:11px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.fsec-h .n{width:19px;height:19px;border-radius:6px;background:var(--primary);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center}
+.fsec-h b{font-size:13px;font-weight:660}
+.fsec-h span{font-size:11px;color:var(--ink-4);margin-left:auto}
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 14px}
+.fgrid.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.f-fld{min-width:0;display:flex;flex-direction:column;gap:5px}
+.f-fld.span2{grid-column:span 2}
+.f-fld.span3{grid-column:span 3}
+.f-lab2{font-size:11.5px;color:var(--ink-2);font-weight:570;display:flex;align-items:center;gap:5px}
+.f-lab2 .req{color:var(--danger)}
+.f-lab2 .lk{width:11px;height:11px;color:var(--ink-4)}
+.f-lab2 .auto{font-size:9.5px;background:var(--warn-l);color:#B45309;padding:0 5px;border-radius:20px;font-weight:650;letter-spacing:.02em}
+.f-tip{font-size:10.5px;color:var(--ink-4);line-height:1.5}
+.f-ro{height:34px;border:1px dashed var(--line);background:repeating-linear-gradient(45deg,#F8FAFD,#F8FAFD 6px,#F3F6FB 6px,#F3F6FB 12px);border-radius:9px;display:flex;align-items:center;gap:6px;padding:0 10px;font-size:12.5px;color:var(--ink-3)}
+.f-ro svg{width:12px;height:12px;color:var(--ink-4);flex:0 0 12px}
+.f-calc{height:34px;border:1px solid #FDE68A;background:#FFFBEB;border-radius:9px;display:flex;align-items:center;gap:6px;padding:0 10px;font-size:12.5px;color:#92400E;font-weight:650;font-variant-numeric:tabular-nums}
+.f-calc svg{width:13px;height:13px;flex:0 0 13px}
+.f-err{border-color:var(--danger)!important;box-shadow:0 0 0 3px rgba(220,38,38,.1)!important}
+.f-msg{font-size:10.5px;color:var(--danger);display:none}
+.f-msg.on{display:block}
+.msx{display:flex;gap:6px;align-items:flex-start}
+.msx .ms{flex:1}
+.msx .inp{flex:0 0 38%}
+.formula{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.formula code{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:2px 7px;font-family:"SF Mono",Consolas,monospace;font-size:11.5px;color:var(--primary-d);font-weight:600}
+.formula .eq{color:var(--ink-4);font-weight:700}
+.live-calc{background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border:1px solid #FDE68A;border-radius:11px;padding:12px 14px;display:flex;align-items:center;gap:14px}
+.live-calc .lb{font-size:11.5px;color:#92400E;font-weight:600}
+.live-calc .vv{font-size:24px;font-weight:750;color:#B45309;letter-spacing:-.6px;font-variant-numeric:tabular-nums;line-height:1.1}
+.live-calc .brk{margin-left:auto;font-size:11px;color:#A16207;font-family:"SF Mono",Consolas,monospace;text-align:right;line-height:1.7}
+
+/* ============ Drawer ============ */
+.drawer-mask{position:fixed;inset:0;background:rgba(15,23,42,.36);z-index:95;display:none;animation:fadein .18s}
+.drawer-mask.on{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(760px,94vw);background:var(--surface);z-index:96;box-shadow:-14px 0 46px rgba(15,23,42,.2);display:flex;flex-direction:column;transform:translateX(102%);transition:transform .3s var(--ease);visibility:hidden}
+.drawer.on{transform:none;visibility:visible}
+.d-head{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:13px;background:linear-gradient(180deg,#FBFCFF,#fff)}
+.d-head .badge-col{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.d-title{font-size:16px;font-weight:690;letter-spacing:-.2px;line-height:1.35}
+.d-code{font-size:11.5px;color:var(--ink-4);font-family:"SF Mono",Consolas,monospace;margin-top:3px}
+.d-body{flex:1;overflow-y:auto;padding:16px 20px 24px;background:var(--surface-2)}
+.d-sec{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:13px;overflow:hidden}
+.d-sec-h{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface-2);border-bottom:1px solid var(--line-2)}
+.d-sec-h .bar{width:3px;height:13px;border-radius:2px;background:var(--primary)}
+.d-sec-h b{font-size:12.5px;font-weight:660}
+.d-sec-h span{margin-left:auto;font-size:10.5px;color:var(--ink-4)}
+.d-rows{padding:4px 14px 10px}
+.d-row{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line-2);align-items:start}
+.d-row:last-child{border-bottom:none}
+.d-row .k{font-size:11.5px;color:var(--ink-3);font-weight:550;display:flex;align-items:center;gap:5px;padding-top:1px}
+.d-row .k .auto{font-size:9px;background:var(--warn-l);color:#B45309;padding:0 4px;border-radius:20px;font-weight:650}
+.d-row .v{font-size:12.5px;color:var(--ink);word-break:break-word;white-space:pre-wrap;line-height:1.68}
+.d-row .v.empty-v{color:var(--ink-4);font-style:italic}
+.d-row .v.num-v{font-variant-numeric:tabular-nums;font-weight:640}
+.d-foot{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:9px;align-items:center;background:#fff}
+.d-foot .meta{margin-right:auto;font-size:11px;color:var(--ink-4)}
+.timeline{display:flex;align-items:center;gap:0;padding:14px 6px 4px;overflow-x:auto}
+.tl-step{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;flex:1;min-width:74px}
+.tl-step .dot{width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--line);display:grid;place-items:center;font-size:10px;font-weight:700;color:var(--ink-4);z-index:2;transition:.2s}
+.tl-step .lb{font-size:11px;color:var(--ink-4);white-space:nowrap;font-weight:550}
+.tl-step::before{content:"";position:absolute;top:11px;left:-50%;width:100%;height:2px;background:var(--line);z-index:1}
+.tl-step:first-child::before{display:none}
+.tl-step.done .dot{background:var(--primary);border-color:var(--primary);color:#fff}
+.tl-step.done .lb{color:var(--ink-2)}
+.tl-step.done::before{background:var(--primary)}
+.tl-step.cur .dot{background:#fff;border-color:var(--primary);color:var(--primary);box-shadow:0 0 0 4px rgba(37,99,235,.14)}
+.tl-step.cur .lb{color:var(--primary);font-weight:680}
+
+/* ============ Dict table ============ */
+.dict-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.dict-card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.dict-card.full{grid-column:span 2}
+.dict-h{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:1px solid var(--line-2);background:var(--surface-2)}
+.dict-h b{font-size:13px;font-weight:660}
+.dict-h .desc{font-size:11px;color:var(--ink-4)}
+.dict-h .acts{margin-left:auto;display:flex;gap:6px}
+table.dict{width:100%;border-collapse:collapse;font-size:12.5px}
+table.dict th{background:#fff;padding:8px 12px;text-align:left;font-size:11px;color:var(--ink-3);font-weight:620;border-bottom:1px solid var(--line);white-space:nowrap}
+table.dict td{padding:6px 12px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+table.dict tr:last-child td{border-bottom:none}
+table.dict tr:hover td{background:#FAFCFF}
+table.dict td.idx{color:var(--ink-4);font-variant-numeric:tabular-nums;width:34px;font-size:11.5px}
+.dinput{width:74px;height:29px;border:1px solid var(--line);border-radius:7px;padding:0 8px;text-align:center;font-weight:660;font-variant-numeric:tabular-nums;background:var(--surface-2);transition:.15s}
+.dinput:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.11)}
+.dinput.dirty{border-color:var(--warn);background:var(--warn-l);color:#B45309}
+.dinput.pct{width:82px}
+.swatch{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:middle}
+
+/* spec table */
+table.spec{width:100%;border-collapse:collapse;font-size:12.5px;background:#fff}
+table.spec th{background:var(--surface-2);padding:9px 12px;text-align:left;font-size:11.5px;color:var(--ink-2);font-weight:650;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;white-space:nowrap}
+table.spec td{padding:8px 12px;border-bottom:1px solid var(--line-2);vertical-align:top;color:var(--ink-2);line-height:1.6}
+table.spec tr:hover td{background:#FAFCFF}
+table.spec td.fn{font-weight:620;color:var(--ink);white-space:nowrap}
+table.spec td.tp{white-space:nowrap}
+.tpill{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:5px;font-size:10.5px;font-weight:640;white-space:nowrap}
+.tp-text{background:#EEF2F7;color:#4B5B76}
+.tp-area{background:var(--purple-l);color:var(--purple)}
+.tp-sel{background:var(--info-l);color:#0E7490}
+.tp-msel{background:#E0F2FE;color:#0369A1}
+.tp-date{background:var(--warn-l);color:#B45309}
+.tp-num{background:var(--ok-l);color:#047857}
+.tp-calc{background:#FEF3C7;color:#92400E}
+.tp-ro{background:#F1F3F7;color:#64748B}
+.rule-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.rule{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 15px;display:flex;gap:12px}
+.rule .ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:0 0 32px;background:var(--primary-l);color:var(--primary)}
+.rule .ic svg{width:16px;height:16px}
+.rule b{font-size:12.5px;font-weight:660;display:block;margin-bottom:4px}
+.rule p{font-size:11.5px;color:var(--ink-3);line-height:1.68}
+.rule code{background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:0 4px;font-size:11px;font-family:"SF Mono",Consolas,monospace;color:var(--primary-d)}
+.note{background:var(--warn-l);border:1px solid #FDE68A;border-radius:10px;padding:11px 14px;font-size:12px;color:#92400E;display:flex;gap:9px;line-height:1.7}
+.note svg{width:15px;height:15px;flex:0 0 15px;margin-top:2px}
+.note b{font-weight:680}
+
+/* toast */
+.toasts{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:var(--ink);color:#fff;border-radius:10px;padding:9px 15px;font-size:12.5px;display:flex;align-items:center;gap:9px;box-shadow:var(--sh-3);animation:tin .26s var(--ease);max-width:520px}
+.toast svg{width:15px;height:15px;flex:0 0 15px}
+.toast.ok svg{color:#4ADE80}.toast.err svg{color:#F87171}.toast.warn svg{color:#FBBF24}.toast.info svg{color:#60A5FA}
+.toast b{font-weight:650}
+@keyframes tin{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+.toast.out{animation:tout .22s var(--ease) forwards}
+@keyframes tout{to{opacity:0;transform:translateY(-10px)}}
+
+/* col settings */
+.colset{max-height:56vh;overflow-y:auto;padding:4px}
+.colset-grp{margin-bottom:10px}
+.colset-grp h5{font-size:11px;color:var(--ink-4);letter-spacing:.06em;padding:6px 8px;font-weight:650;display:flex;align-items:center;gap:7px}
+.colset-grp h5 button{font-size:10.5px;color:var(--primary);font-weight:600;margin-left:auto}
+.colset-grp h5 button:hover{text-decoration:underline}
+.colset-item{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:7px;cursor:pointer;font-size:12.5px}
+.colset-item:hover{background:var(--primary-l)}
+.colset-item .nm2{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.colset-item .wt{font-size:10px;color:var(--ink-4)}
+.drop{border:1.5px dashed #C7D2E6;border-radius:12px;padding:26px;text-align:center;color:var(--ink-3);background:var(--surface-2);transition:.18s}
+.drop.hover{border-color:var(--primary);background:var(--primary-l);color:var(--primary-d)}
+.drop svg{width:34px;height:34px;color:#C7D2E6;margin-bottom:9px}
+.drop.hover svg{color:var(--primary)}
+.drop b{display:block;font-size:13px;font-weight:640;color:var(--ink-2);margin-bottom:4px}
+.drop p{font-size:11.5px;color:var(--ink-4)}
+.imp-prev{max-height:230px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+.imp-stat{display:flex;gap:9px;margin-bottom:11px;flex-wrap:wrap}
+.imp-stat div{flex:1;min-width:104px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.imp-stat b{display:block;font-size:19px;font-weight:720;letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+.imp-stat span{font-size:11px;color:var(--ink-3)}
+.imp-stat .c-ok b{color:var(--ok)} .imp-stat .c-new b{color:var(--primary)} .imp-stat .c-skip b{color:var(--ink-4)} .imp-stat .c-err b{color:var(--danger)}
+
+@media (max-width:1500px){.stats{grid-template-columns:repeat(3,1fr)}.filter-body{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:1180px){.sidebar{display:none}.stats{grid-template-columns:repeat(2,1fr)}.filter-body{grid-template-columns:repeat(2,minmax(0,1fr))}.fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.dict-grid{grid-template-columns:1fr}.dict-card.full{grid-column:span 1}.rule-list{grid-template-columns:1fr}.tbl-scroll{max-height:none}}
+@media (max-width:760px){.page{padding:14px}.stats{grid-template-columns:1fr}.filter-body{grid-template-columns:1fr}.f-item.wide{grid-column:span 1}.fgrid,.fgrid.c2{grid-template-columns:1fr}.f-fld.span2,.f-fld.span3{grid-column:span 1}.search{flex:1}.d-row{grid-template-columns:1fr;gap:3px}}
+</style>
+</head>
+<body>
+<div class="page">
+      <div class="page-head">
+        <div>
+          <div class="page-title">项目商机管理 <span class="chip">宽表 · 39 字段</span></div>
+          <div class="page-desc">全生命周期商机台账：来源与标杆系数、项目等级成单率、阶段推进、关键人链条、竞争 SWOT 与加权预计达成金额一表管理。系数与字典均支持后台配置。</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-out" id="btnDictTop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>系数配置</button>
+          <button class="btn btn-pri btn-lg" id="btnNew"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>新建商机</button>
+        </div>
+      </div>
+
+      <div class="tabs" id="tabs">
+        <button class="tab on" data-pane="p-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>商机列表<span class="n" id="tabCnt">16</span></button>
+        <button class="tab" data-pane="p-dict"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>数据字典与系数配置</button>
+        <button class="tab" data-pane="p-spec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>字段与交互说明</button>
+      </div>
+
+      <!-- ============ PANE: LIST ============ -->
+      <div class="pane on" id="p-list">
+        <div class="stats" id="stats"></div>
+
+        <!-- filter -->
+        <section class="filter" id="filter">
+          <div class="filter-top">
+            <div class="search" id="searchBox">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+              <input type="text" id="kw" placeholder="搜索项目编号 / 名称 / 客户行业 / 决策人 / 竞品 / 痛点关键词…">
+              <button class="clr" id="kwClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" style="width:10px;height:10px"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            </div>
+            <div class="filter-hint"><kbd>Enter</kbd> 检索 · 支持多字段模糊匹配</div>
+            <div class="filter-acts">
+              <button class="btn btn-ghost btn-sm" id="btnReset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 109-9"/><path d="M3 4v5h5"/></svg>重置</button>
+              <button class="btn btn-out btn-sm" id="btnMore"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>高级筛选</button>
+              <button class="btn btn-pri btn-sm" id="btnQuery"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>查询</button>
+            </div>
+          </div>
+          <div class="filter-body" id="filterBody"></div>
+          <div class="filter-foot">
+            <div class="chips" id="chips"></div>
+            <button class="btn btn-ghost btn-sm" id="btnClearChips" style="margin-left:auto">清空全部条件</button>
+          </div>
+        </section>
+
+        <!-- toolbar -->
+        <div class="toolbar">
+          <div class="seg" id="segExpand">
+            <button data-exp="0" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>全部收起</button>
+            <button data-exp="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 11h16M4 16h16M4 21h10"/></svg>全部展开</button>
+          </div>
+          <div class="tb-sep"></div>
+          <div class="tb-info">共 <b id="cntTotal">0</b> 条 · 已选 <b id="cntSel">0</b> 条 · 可见列 <b id="cntCols">0</b></div>
+          <div class="tb-right">
+            <button class="btn btn-out btn-sm" id="btnImport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>覆盖导入</button>
+            <button class="btn btn-out btn-sm" id="btnExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 8l5-5 5 5M12 3v12"/></svg>批量导出</button>
+            <div class="tb-sep"></div>
+            <button class="btn btn-out btn-sm" id="btnCols"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/></svg>列设置</button>
+            <button class="btn btn-out btn-sm" id="btnDensity" title="切换行高"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5h18M3 12h18M3 19h18"/></svg></button>
+          </div>
+        </div>
+        <div class="sel-bar" id="selBar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:15px;height:15px"><path d="M20 6L9 17l-5-5"/></svg>
+          已选中 <b id="selN">0</b> 条商机
+          <div class="acts">
+            <button class="btn btn-out btn-sm" id="btnSelExport">导出选中</button>
+            <button class="btn btn-out btn-sm" id="btnSelEdit">批量修改等级</button>
+            <button class="btn btn-ghost btn-sm" id="btnSelClear">取消选择</button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="tbl-scroll" id="tblScroll">
+            <table class="grid" id="grid">
+              <thead><tr id="theadRow"></tr></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+          <div class="pager" id="pager"></div>
+        </div>
+      </div>
+
+      <!-- ============ PANE: DICT ============ -->
+      <div class="pane" id="p-dict">
+        <div class="note" style="margin-bottom:14px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <div><b>CRM 开发要求：各个系数参数可配置。</b>本页所有系数、成单率均由数据字典维护，修改后列表与弹窗中的「预计达成金额」将<b>实时重算</b>；生产环境需保存至字典表并保留变更日志与生效时间。</div>
+        </div>
+        <div class="dict-grid" id="dictGrid"></div>
+        <div style="display:flex;gap:9px;margin-top:14px;align-items:center">
+          <div style="font-size:11.5px;color:var(--ink-4);display:flex;align-items:center;gap:6px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            最近修改：<span id="dictDirty">无未保存变更</span>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:9px">
+            <button class="btn btn-out" id="btnDictReset">还原默认</button>
+            <button class="btn btn-pri" id="btnDictSave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>保存字典配置</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ PANE: SPEC ============ -->
+      <div class="pane" id="p-spec">
+        <div class="rule-list" style="margin-bottom:14px">
+          <div class="rule"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4h9M11 12h9M11 20h9"/><circle cx="5" cy="4" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="20" r="2"/></svg></div><div><b>筛选检索</b><p>顶部关键字全文检索（编号/名称/行业/决策人/竞品/痛点等），下方 12+ 项下拉多选、日期区间、数值区间；已生效条件以标签形式展示，可单项删除。</p></div></div>
+          <div class="rule"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div><div><b>导入导出</b><p>勾选多行后「批量导出」，导出当前<b>可见列</b>（Excel/CSV）；「覆盖导入」按<b>项目编号</b>为主键，存在则整条覆盖、不存在则新增，导入前给出匹配预览与差异统计。</p></div></div>
+          <div class="rule"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg></div><div><b>两种编辑方式</b><p>① 行内「编辑」按钮 → 弹窗整条编辑（分区表单、含公式实时试算）；② 单元格<b>双击</b> → 原地编辑，<code>Enter</code> 保存 / <code>Esc</code> 取消 / <code>Tab</code> 保存并跳下一可编辑格。</p></div></div>
+          <div class="rule"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div><div><b>详情与展开收起</b><p>单击任意行（非编辑态）→ 右侧抽屉展示该行<b>完整内容</b>（长文本不截断、分组呈现、含阶段时间轴）；工具栏「全部展开 / 全部收起」控制多行文本字段是否换行全显。</p></div></div>
+        </div>
+        <div class="card" style="overflow:hidden">
+          <div class="dict-h"><b>字段清单（39 项）</b><span class="desc">类型 · 数据来源 · 是否可编辑 · 交互说明</span>
+            <div class="acts"><button class="btn btn-out btn-sm" id="btnSpecExport">导出字段说明</button></div>
+          </div>
+          <div style="max-height:calc(100vh - 330px);overflow:auto">
+            <table class="spec"><thead><tr><th style="width:34px">#</th><th style="width:190px">字段</th><th style="width:112px">类型</th><th style="width:150px">数据来源</th><th style="width:80px">可编辑</th><th>说明 / 提示语</th></tr></thead><tbody id="specBody"></tbody></table>
+          </div>
+        </div>
+        <div class="note" style="margin-top:14px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+          <div><b>不可修改字段（来源商机同步）：</b>项目编号、项目名称、商机来源、商机来源系数、是否伙伴引入、项目新增时间点。<br><b>系统自动计算：</b>标杆类型系数、成单率、项目分类系数、预计达成金额（<code>预计我司合同金额 × 商机来源系数 × 标杆类型系数 × 成单率 × 项目分类系数 ÷ 1.3</code>）。</div>
+        </div>
+      </div>
+    </div>
+
+<!-- ============ Drawer: 行详情 ============ -->
+<div class="drawer-mask" id="dMask"></div>
+<aside class="drawer" id="drawer">
+  <div class="d-head">
+    <div style="flex:1;min-width:0">
+      <div class="d-title" id="dTitle">—</div>
+      <div class="d-code" id="dCode">—</div>
+      <div class="badge-col" id="dBadges"></div>
+    </div>
+    <button class="btn btn-out" id="dEdit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>编辑</button>
+    <button class="m-close" id="dClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="d-body" id="dBody"></div>
+  <div class="d-foot">
+    <div class="meta" id="dMeta">—</div>
+    <button class="btn btn-out" id="dPrev">上一条</button>
+    <button class="btn btn-out" id="dNext">下一条</button>
+    <button class="btn btn-pri" id="dEdit2">编辑此商机</button>
+  </div>
+</aside>
+
+<!-- ============ Modal: 编辑弹窗 ============ -->
+<div class="mask" id="mEdit">
+  <div class="modal">
+    <div class="m-head">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg></div>
+      <div><div class="m-title" id="mEditTitle">编辑商机</div><div class="m-sub" id="mEditSub">整条数据编辑 · 系数与预计达成金额自动联动</div></div>
+      <button class="m-close" data-close="mEdit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="m-body" id="mEditBody"></div>
+    <div class="m-foot">
+      <div class="left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:13px;height:13px"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span id="mEditHint">带 <span style="color:var(--danger)">*</span> 为必填；斜纹底为来源商机同步字段，不可修改</span></div>
+      <div class="right">
+        <button class="btn btn-out" data-close="mEdit">取消</button>
+        <button class="btn btn-out" id="mEditSaveNext">保存并下一条</button>
+        <button class="btn btn-pri" id="mEditSave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Modal: 列设置 ============ -->
+<div class="mask" id="mCols">
+  <div class="modal md">
+    <div class="m-head">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/></svg></div>
+      <div><div class="m-title">列设置</div><div class="m-sub">勾选需要在列表展示的字段（39 项，前 4 列固定）</div></div>
+      <button class="m-close" data-close="mCols"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="m-body"><div class="colset" id="colSet"></div></div>
+    <div class="m-foot">
+      <div class="left">已显示 <b id="colN">0</b> / 39 列</div>
+      <div class="right">
+        <button class="btn btn-out" id="colMinimal">精简视图</button>
+        <button class="btn btn-out" id="colAll">全部显示</button>
+        <button class="btn btn-pri" data-close="mCols">应用</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Modal: 覆盖导入 ============ -->
+<div class="mask" id="mImp">
+  <div class="modal md">
+    <div class="m-head">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg></div>
+      <div><div class="m-title">覆盖导入</div><div class="m-sub">以「项目编号」为主键：命中则整条覆盖，未命中则新增</div></div>
+      <button class="m-close" data-close="mImp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="m-body">
+      <div class="drop" id="dropZone">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3"/></svg>
+        <b>拖拽文件到此处，或点击选择文件</b>
+        <p>支持 .xlsx / .xls / .csv，单次建议 ≤ 5000 行；首行需为字段中文名表头</p>
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
+      </div>
+      <div style="display:flex;gap:8px;margin:12px 0">
+        <button class="btn btn-out btn-sm" id="btnTpl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 8l5-5 5 5M12 3v12"/></svg>下载导入模板</button>
+        <button class="btn btn-out btn-sm" id="btnDemoImp">载入示例数据（演示）</button>
+      </div>
+      <div class="imp-stat" id="impStat" style="display:none"></div>
+      <div class="imp-prev" id="impPrev" style="display:none"></div>
+      <div class="note" style="margin-top:12px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+        <div>覆盖导入为<b>不可撤销</b>操作，建议先导出台账备份。导入时若文件缺少某字段列，该字段保持库中原值不变（不做清空）。</div>
+      </div>
+    </div>
+    <div class="m-foot">
+      <div class="left">导入日志将保留 30 天，可在系统日志中追溯</div>
+      <div class="right">
+        <button class="btn btn-out" data-close="mImp">取消</button>
+        <button class="btn btn-pri" id="btnImpGo" disabled>确认覆盖导入</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Modal: 批量修改 ============ -->
+<div class="mask" id="mBatch">
+  <div class="modal sm">
+    <div class="m-head">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+      <div><div class="m-title">批量修改</div><div class="m-sub" id="mBatchSub">对已选商机统一赋值</div></div>
+      <button class="m-close" data-close="mBatch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="m-body">
+      <div class="f-fld" style="margin-bottom:12px"><div class="f-lab2">选择字段</div><select class="inp" id="batchField"></select></div>
+      <div class="f-fld"><div class="f-lab2">统一赋值为</div><select class="inp" id="batchVal"></select>
+        <div class="f-tip">仅字典类字段支持批量赋值；保存后系数与预计达成金额自动重算。</div>
+      </div>
+    </div>
+    <div class="m-foot"><div class="right"><button class="btn btn-out" data-close="mBatch">取消</button><button class="btn btn-pri" id="btnBatchGo">确认修改</button></div></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* =========================================================================
+   思维特项目商机管理 · 数据字典（生产环境由后台数据字典表下发，此处为原型内置）
+   ========================================================================= */
+const DICT = {
+  src: [ // 商机来源 → 系数
+    {v:'自有',            c:1.2},
+    {v:'公司提供',        c:0.7},
+    {v:'伙伴（自己提供）',c:1.0},
+    {v:'伙伴（公司提供）',c:0.5},
+  ],
+  bench: [ // 标杆类型 → 系数
+    {v:'100万以上标杆(化工行业，纺织行业)', c:1.5},
+    {v:'标杆(化工行业，纺织行业)',          c:1.3},
+    {v:'自研产品占比超50%',                 c:1.2},
+    {v:'大单100万以上',                     c:1.2},
+    {v:'高利润单',                          c:1.2},
+    {v:'普单',                              c:1.0},
+  ],
+  partner: [{v:'是'},{v:'否'}],
+  level: [ // 项目等级 → 成单率
+    {v:'SS（内定）', r:1.00, desc:'内定项目'},
+    {v:'S（最高决策人站台支持、行业标杆且有IT或业务负责人站台支持）', r:0.75, desc:'最高决策人站台支持、行业标杆且有IT或业务负责人站台支持'},
+    {v:'A（IT和业务负责人均站台支持）', r:0.65, desc:'IT和业务负责人均站台支持'},
+    {v:'B（IT负责人站台或者业务负责人站台）', r:0.50, desc:'IT负责人站台或者业务负责人站台'},
+    {v:'C（老板引入）', r:0.20, desc:'老板引入'},
+    {v:'D（IT、业务、人员引入、公司人员来正凯交流或者生态大会且有与公司产品相关有具体需求）', r:0.10, desc:'人员引入/来正凯交流或生态大会，且有与公司产品相关的具体需求'},
+    {v:'E（IT、业务、人员引入、公司人员来正凯交流或者生态大会引入）', r:0.05, desc:'人员引入/来正凯交流或生态大会引入'},
+    {v:'F（两周未激活项目）', r:0.02, desc:'两周未激活项目'},
+    {v:'O项目已经丢标', r:0.00, desc:'项目已丢标'},
+  ],
+  cat: [ // 项目分类 → 系数
+    {v:'有效线索', c:0.3, desc:'明确表达需求、详细询问与我公司相关产品'},
+    {v:'有效商机', c:1.0, desc:'明确表达需求、详细询问相关产品；关注价格、有充足预算或和竞品有签约意向'},
+  ],
+  stage: [
+    {v:'初次交流',c:'#94A3B8'},{v:'调研',c:'#60A5FA'},{v:'解决方案',c:'#3B82F6'},
+    {v:'POC',c:'#7C3AED'},{v:'提前投入',c:'#0891B2'},{v:'立项',c:'#0E9F6E'},
+    {v:'招投标',c:'#D97706'},{v:'报价',c:'#DC2626'},
+  ],
+  product: [{v:'AI'},{v:'MDM'},{v:'SRM'},{v:'CRM'},{v:'海外矩阵式营销'}],
+  quarter: [{v:'Q1'},{v:'Q2'},{v:'Q3'},{v:'Q4'}],
+};
+const YEARS = Array.from({length:10},(_,i)=>({v:String(2026+i)}));
+const MONTHS = Array.from({length:12},(_,i)=>({v:(i+1)+'月'}));
+let DIVISOR = 1.3; // 公式除数（可配置，默认 1.3）
+
+const lvKey = v => (v||'').trim().charAt(0).toUpperCase()==='O' ? 'O' : (v||'').split('（')[0].split('(')[0].trim() || '-';
+const srcCoef  = v => (DICT.src.find(x=>x.v===v)||{}).c;
+const benchCoef= v => (DICT.bench.find(x=>x.v===v)||{}).c;
+const catCoef  = v => (DICT.cat.find(x=>x.v===v)||{}).c;
+const lvRate   = v => (DICT.level.find(x=>x.v===v)||{}).r;
+const lvDesc   = v => (DICT.level.find(x=>x.v===v)||{}).desc||'';
+const stageColor = v => (DICT.stage.find(x=>x.v===v)||{}).c||'#94A3B8';
+const fmtPct = r => r==null?'—':(Math.round(r*1000)/10)+'%';
+const fmtWan = n => { n=Number(n); if(!isFinite(n)||!n) return '—'; return (n/10000).toFixed(n/10000>=100?0:1)+' 万'; };
+const money = n => { n=Number(n); return isFinite(n)&&n ? n.toLocaleString('zh-CN',{maximumFractionDigits:2}) : ''; };
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nvl = s => (s==null||String(s).trim()==='')?'—':s;
+
+/* =========================================================================
+   字段定义（39 列，顺序与需求文档一致）
+   type: text/area/sel/msel/date/year/quarter/month/num/coef/calc/ro-code
+   lock: true = 来源商机同步，不可修改
+   ========================================================================= */
+const FIELDS = [
+  {k:'code',    n:'项目编号',   type:'ro',     lock:true,  src:'来源商机编号',      w:118, sticky:true, note:'主键，覆盖导入以此匹配'},
+  {k:'name',    n:'项目名称',   type:'ro',     lock:true,  src:'来源商机名称',      w:250, sticky:true, nm:true},
+  {k:'src',     n:'商机来源',   type:'ro-sel', lock:true,  src:'来源商机来源',      w:140, dict:'src', badge:'b-src'},
+  {k:'srcC',    n:'商机来源系数',type:'coef',  lock:true,  src:'字典关联自动显示',  w:112, auto:true, ref:'src'},
+  {k:'bench',   n:'标杆类型',   type:'sel',    src:'手动选择',  w:224, dict:'bench', badge:'b-bench'},
+  {k:'benchC',  n:'标杆类型系数',type:'coef',  src:'字典关联自动显示', w:116, auto:true, ref:'bench'},
+  {k:'partner', n:'是否伙伴引入',type:'ro-sel',lock:true,  src:'手动选择（同步锁定）', w:110, dict:'partner'},
+  {k:'level',   n:'项目等级',   type:'sel',    src:'手动选择',  w:250, dict:'level', render:'level', req:true},
+  {k:'rate',    n:'成单率',     type:'calc',   src:'与项目等级关联自动带入', w:120, auto:true, ref:'level', render:'rate'},
+  {k:'cat',     n:'项目分类',   type:'sel',    src:'手动选择',  w:118, dict:'cat', render:'cat', req:true},
+  {k:'catC',    n:'项目分类系数',type:'coef',  src:'字典关联自动显示', w:116, auto:true, ref:'cat'},
+  {k:'addTime', n:'项目新增时间点',type:'ro-date',lock:true,src:'来源商机创建时间',w:132},
+  {k:'stage',   n:'项目阶段',   type:'sel',    src:'手动选择',  w:124, dict:'stage', render:'stage'},
+  {k:'need',    n:'项目需求与范围', type:'area', src:'手动填写', w:250, ph:'具体业务需求痛点与范围', grp:'需求与方案'},
+  {k:'it',      n:'IT情况',     type:'area',   src:'手动填写',  w:230, ph:'现有IT系统情况、品牌及数据情况、团队情况及权限（级别）', grp:'需求与方案'},
+  {k:'pain',    n:'具体业务痛点',type:'area',  src:'手动填写',  w:230, ph:'具体业务痛点', grp:'需求与方案'},
+  {k:'prod',    n:'涉及我司具体产品',type:'msel',src:'手动选择 + 可额外输入',w:200,dict:'product',extra:true,extraPh:'哪类生态', grp:'需求与方案'},
+  {k:'fit',     n:'我司评估适配具体场景',type:'area',src:'手动填写',w:230,ph:'我司评估适配具体场景', grp:'需求与方案'},
+  {k:'prog',    n:'项目跟进进度',type:'area',  src:'手动填写',  w:240, ph:'具体描述日期和动作', grp:'跟进与风险'},
+  {k:'risk',    n:'项目卡点与风险点',type:'area',src:'手动填写',w:230, ph:'项目卡点与风险点', grp:'跟进与风险'},
+  {k:'support', n:'需要哪些具体支持',type:'area',src:'手动填写',w:220, ph:'需要哪些具体支持', grp:'跟进与风险'},
+  {k:'dApprove',n:'项目关键时间点-立项',type:'date',src:'手动选择',w:150, grp:'跟进与风险'},
+  {k:'dBid',    n:'项目关键时间点-招标或邀标、单一来源时间',type:'date',src:'手动选择',w:190, grp:'跟进与风险'},
+  {k:'budget',  n:'项目预算',   type:'num',    src:'手动填写（数字）', w:130, unit:'元', grp:'商务与金额'},
+  {k:'amount',  n:'预计我司合同金额',type:'num',src:'手动填写（数字）',w:150,unit:'元',grp:'商务与金额',req:true},
+  {k:'year',    n:'预计合同落地年份',type:'sel',src:'手动选择（2026 起 10 年）',w:140,dict:'years',grp:'商务与金额'},
+  {k:'quarter', n:'预计合同落单季度',type:'sel',src:'手动选择',w:140,dict:'quarter',grp:'商务与金额'},
+  {k:'month',   n:'预计合同落单月份',type:'sel',src:'手动选择（1~12 月）',w:140,dict:'months',grp:'商务与金额'},
+  {k:'chain',   n:'项目决策人链条（具体姓名及职务）',type:'text',src:'手动填写',w:230,ph:'IT负责人-业务负责人-决策人', grp:'关键人与竞争'},
+  {k:'contact', n:'对应人员联系方式',type:'text',src:'手动填写',w:160,ph:'电话号码', grp:'关键人与竞争'},
+  {k:'reach',   n:'客情关系触达',type:'text',  src:'手动填写',  w:200, ph:'具体姓名+职位', grp:'关键人与竞争'},
+  {k:'backer',  n:'关键站台支持人及职位',type:'text',src:'手动填写',w:200,ph:'具体姓名+职位', grp:'关键人与竞争'},
+  {k:'comp',    n:'竞争对手',   type:'area',   src:'手动填写',  w:230, ph:'具体公司情况和资质能力及合作关系', grp:'关键人与竞争'},
+  {k:'swot',    n:'SWOT分析',   type:'area',   src:'手动填写',  w:250, ph:'与竞争对手优劣势分析（1.产品及品牌、案例；2.价格；3.关键人支持；）', grp:'关键人与竞争'},
+  {k:'scale',   n:'公司销售额与行业地位',type:'area',src:'手动填写',w:210,ph:'具体收入可四舍五入', grp:'关键人与竞争'},
+  {k:'industry',n:'公司行业',   type:'text',   src:'手动填写',  w:130, ph:'行业'},
+  {k:'lostR',   n:'项目丢标具体原因',type:'area',src:'手动填写',w:230,ph:'项目丢掉的原因', grp:'关键人与竞争'},
+  {k:'expect',  n:'预计达成金额',type:'calc2', src:'公式自动计算', w:140, formula:true, grp:'商务与金额'},
+  {k:'actual',  n:'实际达成金额',type:'num',   src:'手动填写（数字）', w:140, unit:'元', grp:'商务与金额'},
+];
+const GROUPS = ['基础信息','需求与方案','跟进与风险','商务与金额','关键人与竞争'];
+const F = {}; FIELDS.forEach(f=>F[f.k]=f);
+const dictOf = d => d==='years'?YEARS : d==='months'?MONTHS : (DICT[d]||[]);
+
+/* 预计达成金额 = 预计我司合同金额 × 商机来源系数 × 标杆类型系数 × 成单率 × 项目分类系数 ÷ 1.3 */
+function calcExpect(r){
+  const a = Number(r.amount)||0;
+  if(!a) return 0;
+  const sc = srcCoef(r.src), bc = benchCoef(r.bench), rt = lvRate(r.level), cc = catCoef(r.cat);
+  if(sc==null||bc==null||rt==null||cc==null) return 0;
+  return Math.round(a*sc*bc*rt*cc/DIVISOR*100)/100;
+}
+function recalc(r){
+  r.srcC   = srcCoef(r.src);
+  r.benchC = benchCoef(r.bench);
+  r.rate   = lvRate(r.level);
+  r.catC   = catCoef(r.cat);
+  r.expect = calcExpect(r);
+  return r;
+}
+
+/* =========================================================================
+   示例数据（原型演示用；生产环境来源 CRM 商机同步 + 项目组维护）
+   ========================================================================= */
+const RAW = [
+{code:'SJ-2026-0137',name:'恒逸石化供应链协同平台（SRM）二期',src:'自有',bench:'100万以上标杆(化工行业，纺织行业)',partner:'否',level:'SS（内定）',cat:'有效商机',addTime:'2026-03-12',stage:'报价',
+ need:'覆盖集团 6 家工厂的采购全流程数字化：寻源比价、供应商准入与绩效、合同与订单协同、对账开票。二期重点扩展海外工厂与一级供应商协同门户，并要求与现有 ERP（SAP ECC6）及 MDM 主数据打通。',
+ it:'现有 SAP ECC6 + 自建 OA（泛微 e-cology），供应商主数据分散在 3 套系统；IT 团队 28 人，设信息化中心，主任为副处级权限，可直接决策预算内 200 万以下项目。',
+ pain:'供应商准入平均 23 天，重复供应商编码约 1800 条；比价依赖 Excel，年度采购额 42 亿但比价覆盖率不足 40%；对账每月需 6 人 5 天。',
+ prod:['SRM','MDM'],prodX:'化工生态伙伴 2 家',fit:'集团型多工厂 SRM + 供应商主数据治理场景高度适配，已有 3 个同行业标杆案例可复用。',
+ prog:'2026-03-12 首次交流；03-25 完成需求调研（3 场）；04-10 提交方案 V1；05-06 POC 通过（供应商协同门户 + 准入流程）；06-18 商务谈判；08-05 提交最终报价 386 万；09-02 客户内部立项审批通过。',
+ risk:'客户集团审计要求二期必须与一期同供应商签约，但需走单一来源论证；若论证未通过将转为邀标，存在竞品插入风险。',
+ support:'需要售前出具单一来源论证技术材料；需要总裁在客户高层拜访中站台；需要财务提供分期收款方案。',
+ dApprove:'2026-09-20',dBid:'2026-10-15',budget:5200000,amount:3860000,year:'2026',quarter:'Q4',month:'11月',
+ chain:'IT负责人-王志强（信息化中心主任）-业务负责人-李海峰（集团采购部总经理）-决策人-陈建国（集团副总裁）',contact:'138****2043 / 0571-8866****',reach:'陈建国 集团副总裁（已通过行业协会两次面谈）',backer:'李海峰 集团采购部总经理',
+ comp:'用友 BIP 采购云（本地服务商关系强，报价约 320 万，但多工厂协同能力弱）；甄云 SRM（SaaS 模式，客户不接受数据出集团）。',
+ swot:'S：一期已落地，业务与 IT 双站台，行业案例充分，产品支持私有化部署。\nW：报价高于用友约 20%，海外工厂模块需定制。\nO：集团 2027 年要推海外基地，可形成三期扩展。\nT：单一来源论证若不通过，用友可能借本地服务商关系切入。',
+ scale:'年营收约 2100 亿，中国民营企业 100 强，化工化纤行业前三。',industry:'化工化纤',lostR:'',actual:0},
+
+{code:'SJ-2026-0142',name:'桐昆集团供应商主数据治理（MDM）项目',src:'公司提供',bench:'标杆(化工行业，纺织行业)',partner:'否',level:'S（最高决策人站台支持、行业标杆且有IT或业务负责人站台支持）',cat:'有效商机',addTime:'2026-04-02',stage:'POC',
+ need:'统一集团 4 大板块的供应商、物料、组织三类主数据，建立编码规则、清洗规则与分发机制，并向 SAP、SRM、MES 分发。',
+ it:'SAP S/4HANA + 用友 NC + 自研 MES，主数据由财务与采购各自维护，无 MDM 平台；IT 中心 45 人，主任直接向 CIO 汇报。',
+ pain:'同一供应商存在 5~8 个编码，年度重复付款风险敞口约 3000 万；物料描述不规范导致采购比价失真。',
+ prod:['MDM','AI'],prodX:'',fit:'主数据治理 + AI 相似供应商识别为成熟方案，海宁项目同类脚本可直接复用。',
+ prog:'2026-04-02 线索转入；04-18 高层拜访（总裁同行）；05-09 需求调研；06-11 方案汇报；07-22 POC 环境搭建完成；08-30 POC 演示：3 万条供应商数据清洗，识别重复编码 2143 组。',
+ risk:'POC 数据清洗准确率需达到 95% 以上才可通过验收；客户 IT 中心内部对是否自建存在分歧。',
+ support:'需要数据治理专家驻场 2 周；需要 AI 团队优化相似度模型阈值；需要市场部提供同行业治理效果数据。',
+ dApprove:'2026-11-10',dBid:'2026-12-05',budget:2600000,amount:1980000,year:'2026',quarter:'Q4',month:'12月',
+ chain:'IT负责人-周敏（信息中心主任）-业务负责人-吴国平（集团财务管理部副总）-决策人-CIO 郑立',contact:'139****7781',reach:'郑立 CIO（生态大会现场交流，认可我司方法论）',backer:'周敏 信息中心主任',
+ comp:'亿信华辰（主数据产品成熟，价格低 15%）；SAP MDG（客户已购 SAP 许可，但实施成本高、周期长）。',
+ swot:'S：AI 相似识别能力独有，POC 数据效果领先；总裁级站台。\nW：MDM 产品化程度低于亿信，需较多配置。\nO：可延伸至 SRM，形成 800 万以上组合订单。\nT：SAP MDG 若被打包进现有维保合同，将直接失去机会。',
+ scale:'年营收约 900 亿，涤纶长丝全球产能第一。',industry:'化纤纺织',lostR:'',actual:0},
+
+{code:'SJ-2026-0118',name:'新凤鸣集团采购数字化（SRM）一期',src:'伙伴（自己提供）',bench:'大单100万以上',partner:'是',level:'A（IT和业务负责人均站台支持）',cat:'有效商机',addTime:'2026-02-20',stage:'招投标',
+ need:'一期覆盖寻源比价、合同管理、订单协同与供应商门户，要求 6 个月内上线 3 家工厂。',
+ it:'用友 U9 + 钉钉审批，采购业务基本线下；IT 部门 12 人，主管具备决策建议权。',
+ pain:'询价周期长（平均 11 天）、比价过程不可追溯、审计提出 3 项整改要求。',
+ prod:['SRM'],prodX:'',fit:'标准 SRM 产品覆盖度约 85%，需少量定制（招标评分表）。',
+ prog:'2026-02-20 伙伴引入；03-06 需求交流；04-15 方案初稿；05-20 客户完成预算审批；07-18 发布招标公告；08-22 提交投标文件；09-05 开标，技术分第一。',
+ risk:'商务分权重 40%，竞品报价低 18%；伙伴要求分成比例 22%，超出公司政策上限 18%。',
+ support:'需要商务政策支持伙伴分成上浮至 20%；需要法务复核招标文件中的付款节点条款。',
+ dApprove:'2026-05-20',dBid:'2026-07-18',budget:1800000,amount:1520000,year:'2026',quarter:'Q4',month:'10月',
+ chain:'IT负责人-沈涛（IT 主管）-业务负责人-姚芳（采购部经理）-决策人-集团总经理助理 胡明',contact:'137****5520',reach:'姚芳 采购部经理（3 次现场拜访，关系良好）',backer:'沈涛 IT 主管',
+ comp:'企企通（报价 125 万，SaaS + 本地混合）；本地集成商代理用友采购云（关系型竞争）。',
+ swot:'S：IT 与业务双站台，技术分领先，交付案例充足。\nW：报价偏高，伙伴分成诉求超政策。\nO：一期成功后可拓展二期供应商绩效与对账。\nT：竞品以低价 + 快速交付承诺抢单。',
+ scale:'年营收约 570 亿，行业前五。',industry:'化纤纺织',lostR:'',actual:0},
+
+{code:'SJ-2026-0156',name:'荣盛石化 AI 智能问答与知识中枢',src:'自有',bench:'自研产品占比超50%',partner:'否',level:'B（IT负责人站台或者业务负责人站台）',cat:'有效商机',addTime:'2026-06-08',stage:'解决方案',
+ need:'面向集团 1.2 万员工的 AI 问答入口，接入制度、工艺、安全、采购四类知识库，要求私有化部署并支持权限隔离。',
+ it:'已有企业微信 + 自建门户，无 AI 平台；IT 中心下设数字化创新组，组长为本项目发起人。',
+ pain:'制度文件分散在 7 个系统，员工查找平均耗时 18 分钟；新员工培训成本高。',
+ prod:['AI'],prodX:'大模型生态（本地算力伙伴）',fit:'自研 GPT 平台 + 知识库检索，自研占比 70%，符合标杆类型要求。',
+ prog:'2026-06-08 创新组主动接洽；06-25 场景梳理（5 个）；07-30 Demo 演示；08-28 方案 V2 提交，正在等待预算窗口。',
+ risk:'集团 2027 年 IT 预算尚未下达，项目可能延后；创新组仅有 IT 负责人站台，业务部门未介入。',
+ support:'需要 AI 产品经理配合输出 ROI 测算模型；需要销售总监推动业务部门（人力/安环）站台。',
+ dApprove:'2027-01-15',dBid:'2027-03-10',budget:1200000,amount:860000,year:'2027',quarter:'Q1',month:'3月',
+ chain:'IT负责人-范晓东（数字化创新组组长）-业务负责人-待定-决策人-CIO',contact:'135****9012',reach:'范晓东 创新组组长（每周一次线上沟通）',backer:'范晓东 数字化创新组组长',
+ comp:'百度智能云（大模型能力强，但私有化报价超预算 60%）；本地高校联合实验室（价格极低，交付风险高）。',
+ swot:'S：私有化 + 自研可控，价格适中，制造业知识沉淀。\nW：缺乏业务部门站台，大模型底座能力弱于头部厂商。\nO：可延伸为集团级 AI 中枢，后续空间大。\nT：预算未落实，头部厂商可能以免费 POC 抢占心智。',
+ scale:'年营收约 3200 亿，石化行业龙头。',industry:'石油化工',lostR:'',actual:0},
+
+{code:'SJ-2026-0163',name:'海宁基地 CRM 客户主数据与银行信息标准化',src:'自有',bench:'普单',partner:'否',level:'A（IT和业务负责人均站台支持）',cat:'有效商机',addTime:'2026-06-26',stage:'立项',
+ need:'CRM 客户档案与银行信息标准化清洗、子公司客户导入、合同视图与银行信息同步，形成 v202604 迭代版本。',
+ it:'自建 CRM（正凯自研）+ 财务共享系统；数据质量差，银行名称不规范导致付款失败率约 3.2%。',
+ pain:'1526 条银行名单中存在大量简称、错别字、支行信息缺失；人工核对每月约 40 工时。',
+ prod:['CRM','MDM'],prodX:'',fit:'纯规则 + AI 相似度识别方案已在 v202604 版本验证，可复制到集团其他基地。',
+ prog:'2026-06-26 启动数据处理；06-29~07-09 完成 1526 条银行名单标准化与比对；08-15 合同处理完成；09-01 提交立项材料，预计 09-25 通过。',
+ risk:'集团要求本季度内完成，人力紧张；规则脚本需业务部门确认口径。',
+ support:'需要 1 名数据工程师支持 3 周；需要财务部确认银行全称口径。',
+ dApprove:'2026-09-25',dBid:'',budget:420000,amount:380000,year:'2026',quarter:'Q3',month:'9月',
+ chain:'IT负责人-集团数字化部 韩磊-业务负责人-海宁财务部经理 曹燕-决策人-基地总经理',contact:'内线 8023',reach:'曹燕 财务部经理（内部协同，关系顺畅）',backer:'韩磊 数字化部',
+ comp:'内部实施，无外部竞争对手。',
+ swot:'S：内部项目，需求明确，方法论已验证。\nW：预算规模小，标杆价值有限。\nO：可复制至集团 8 个基地，形成标准化产品能力。\nT：无。',
+ scale:'基地年营收约 120 亿。',industry:'化纤制造',lostR:'',actual:0},
+
+{code:'SJ-2026-0171',name:'万凯新材料海外矩阵式营销平台',src:'公司提供',bench:'高利润单',partner:'否',level:'C（老板引入）',cat:'有效线索',addTime:'2026-07-15',stage:'初次交流',
+ need:'面向东南亚与中东市场的多语言营销站点、询盘管理与海外经销商门户，需与国内 CRM 打通。',
+ it:'仅有企业官网（外包维护），无营销系统；外贸部 15 人，无 IT 支持。',
+ pain:'询盘分散在邮箱与 WhatsApp，转化率无法统计；海外经销商报价混乱。',
+ prod:['海外矩阵式营销','CRM'],prodX:'',fit:'海外营销矩阵产品可覆盖站点 + 询盘，需增加多币种报价模块。',
+ prog:'2026-07-15 老板引荐首次拜访；08-06 外贸部需求初步沟通；尚未进入方案阶段。',
+ risk:'仅老板引荐，业务与 IT 层面无对接人，需求真实性待验证；外贸部对预算无概念。',
+ support:'需要海外营销产品负责人参与下一次交流；需要市场部提供出海案例集。',
+ dApprove:'',dBid:'',budget:900000,amount:720000,year:'2027',quarter:'Q2',month:'5月',
+ chain:'IT负责人-无-业务负责人-外贸部经理 高翔-决策人-董事长（引荐人）',contact:'138****6674',reach:'高翔 外贸部经理（1 次面谈）',backer:'董事长引荐',
+ comp:'小满科技（外贸 CRM 头部，SaaS 模式）；谷歌代理商（仅投放，无系统能力）。',
+ swot:'S：老板引荐，决策链短，利润率高。\nW：无 IT 支撑，客户认知不足，需求模糊。\nO：出海为集团战略，后续可扩容。\nT：客户可能先选择低价 SaaS 试用。',
+ scale:'年营收约 210 亿，PET 新材料出口占比 35%。',industry:'新材料',lostR:'',actual:0},
+
+{code:'SJ-2026-0129',name:'正凯集团 SRM 标准产品 v2.0 集团内推广',src:'自有',bench:'自研产品占比超50%',partner:'否',level:'SS（内定）',cat:'有效商机',addTime:'2026-01-18',stage:'提前投入',
+ need:'SRM 标准产品 v2.0 在集团 8 个基地的统一推广，含采购动态、新闻公告、供应商风控 AI 升级与三期路线图落地。',
+ it:'集团统一私有云环境，各基地 ERP 品牌不一（SAP / 用友 / 金蝶），需通过集成平台适配。',
+ pain:'各基地采购规则差异大，标准产品配置化能力不足；风控 AI 依赖外部数据，SaaS 不开放接口。',
+ prod:['SRM','AI','MDM'],prodX:'内部生态',fit:'v2.0 标准产品 + 三期路线图，风控 AI 采用内嵌策略而非独立产品。',
+ prog:'2026-01-18 立项；03 月完成 v2.0 宣传册与功能规划；05 月风控 AI 可行性论证（结论：独立产品不可行）；07 月完成三期总体路线图；09-10 启动思维特商机管理模块迭代。',
+ risk:'三期规划需总经理审批，预算窗口在 Q4；各基地 ERP 适配工作量被低估。',
+ support:'需要产品、研发、实施三方联合排期；需要总经理办公会审议三期投入。',
+ dApprove:'2026-01-18',dBid:'',budget:8000000,amount:6800000,year:'2026',quarter:'Q4',month:'12月',
+ chain:'IT负责人-集团数字化部-业务负责人-集团采购中心-决策人-集团总经理',contact:'内线 6001',reach:'集团总经理（月度经营会汇报）',backer:'集团数字化部负责人',
+ comp:'内部项目，无外部竞争。',
+ swot:'S：集团内定，自研可控，业务理解深。\nW：多基地适配成本高，需求变更频繁。\nO：可沉淀为对外销售的行业标准产品。\nT：外部厂商以低价切入单个基地形成既成事实。',
+ scale:'集团年营收约 1500 亿。',industry:'多元化制造',lostR:'',actual:0},
+
+{code:'SJ-2026-0180',name:'靖江基地化纤公司业务流程调研与系统规划',src:'伙伴（公司提供）',bench:'普单',partner:'是',level:'D（IT、业务、人员引入、公司人员来正凯交流或者生态大会且有与公司产品相关有具体需求）',cat:'有效线索',addTime:'2026-08-02',stage:'调研',
+ need:'梳理靖江基地化纤公司从原料采购到成品销售的端到端业务流程，输出调研方案与软件产品 ROI 分析。',
+ it:'仅有财务软件与 Excel 台账，生产数据靠人工填报；IT 无专职人员。',
+ pain:'流程不清导致系统选型无从下手；管理层看不到实时产量与成本。',
+ prod:['SRM','MDM'],prodX:'园区生态伙伴',fit:'先做流程调研与 ROI 分析，再分阶段导入 SRM 与主数据。',
+ prog:'2026-08-02 生态大会现场交流；08-20 提交调研方案；09-03 完成 2 个部门访谈。',
+ risk:'客户预算未落实，调研费用是否付费尚未确认；伙伴仅做引荐，不参与交付。',
+ support:'需要咨询顾问 2 人 3 周；需要公司提供调研模板与 ROI 测算模型。',
+ dApprove:'',dBid:'',budget:300000,amount:240000,year:'2027',quarter:'Q1',month:'2月',
+ chain:'IT负责人-无-业务负责人-生产副总 田军-决策人-基地总经理',contact:'159****3308',reach:'田军 生产副总（生态大会认识）',backer:'园区伙伴引荐',
+ comp:'本地咨询公司（关系型，报价 15 万）；浪潮云 ERP（打包销售）。',
+ swot:'S：咨询 + 产品一体化能力，方法论成熟。\nW：客户付费意愿低，项目金额小。\nO：调研成功后可带动后续系统建设。\nT：本地咨询公司以低价先入场。',
+ scale:'基地年营收约 45 亿。',industry:'化纤制造',lostR:'',actual:0},
+
+{code:'SJ-2026-0095',name:'恒力石化供应商绩效与风控平台',src:'伙伴（公司提供）',bench:'100万以上标杆(化工行业，纺织行业)',partner:'是',level:'O项目已经丢标',cat:'有效商机',addTime:'2025-11-06',stage:'招投标',
+ need:'供应商全生命周期绩效评估、风险预警（工商、司法、舆情）与准入分级管理，要求对接启信慧眼等外部数据源。',
+ it:'SAP Ariba 已上线 2 年，绩效模块未启用；IT 中心 60 人，数据治理团队独立。',
+ pain:'Ariba 绩效模型僵化，无法适配集团分级管理；外部风险数据需人工查询。',
+ prod:['SRM','AI'],prodX:'数据服务生态（启信慧眼）',fit:'绩效 + 风控 AI 场景适配度高，但需替换 Ariba，客户不愿承担迁移成本。',
+ prog:'2025-11-06 伙伴引荐；12 月完成调研；2026-01 提交方案；03 月投标；04-18 开标失利。',
+ risk:'已丢标。',
+ support:'需要总结失利原因，形成竞品应对话术库。',
+ dApprove:'2026-02-10',dBid:'2026-03-20',budget:3500000,amount:0,year:'2026',quarter:'Q2',month:'6月',
+ chain:'IT负责人-Ariba 运维经理-业务负责人-采购中心副总-决策人-CIO',contact:'—',reach:'采购中心副总（1 次拜访）',backer:'伙伴方销售总监',
+ comp:'SAP Ariba 原厂扩容（客户已用 Ariba，扩容成本最低）；甄云（提供迁移工具与补贴）。',
+ swot:'S：风控 AI 能力独特，价格适中。\nW：替换 Ariba 迁移成本高，客户存量绑定深。\nO：可转向 Ariba 之外的二级供应商协同场景。\nT：原厂扩容直接封杀替换可能。',
+ scale:'年营收约 6800 亿，世界 500 强。',industry:'石油化工',
+ lostR:'客户已上线 SAP Ariba，原厂以扩容方式报价（仅为新建成本的 35%），迁移成本与风险成为决定性因素；我司方案虽在风控 AI 上领先，但未能提供 Ariba 数据平滑迁移方案，技术分第二、商务分第三，综合失利。',actual:0},
+
+{code:'SJ-2026-0188',name:'雅戈尔集团采购寻源与比价系统',src:'公司提供',bench:'标杆(化工行业，纺织行业)',partner:'否',level:'E（IT、业务、人员引入、公司人员来正凯交流或者生态大会引入）',cat:'有效线索',addTime:'2026-08-20',stage:'初次交流',
+ need:'服装面辅料采购的寻源比价与供应商协同，需支持多品类、多基地、多币种。',
+ it:'已有用友 NC 与自建供应商名录，采购流程线上化程度约 50%。',
+ pain:'面辅料品类繁多（3000+ SKU），比价口径不统一，年度议价空间难以量化。',
+ prod:['SRM'],prodX:'',fit:'SRM 寻源比价模块适配，但面辅料品类模型需定制。',
+ prog:'2026-08-20 来正凯参观交流；08-28 电话回访，对方表示 2027 年才会启动选型。',
+ risk:'客户尚无明确预算与时间表，属于培育型线索。',
+ support:'需要持续的内容触达（行业白皮书、案例分享）。',
+ dApprove:'',dBid:'',budget:1500000,amount:1100000,year:'2027',quarter:'Q3',month:'8月',
+ chain:'IT负责人-信息化部主管-业务负责人-采购中心主任-决策人-待定',contact:'0574-8888****',reach:'信息化部主管（交流会认识）',backer:'无',
+ comp:'百布（面料 B2B 平台，切入品类数据）；用友采购云（存量关系）。',
+ swot:'S：制造业 SRM 经验，集团型多基地能力强。\nW：服装行业案例较少。\nO：2027 年选型窗口，可提前培育。\nT：B2B 平台以数据优势先行绑定品类。',
+ scale:'年营收约 480 亿，服装行业龙头。',industry:'服装纺织',lostR:'',actual:0},
+
+{code:'SJ-2026-0149',name:'卫星化学供应链一体化（SRM+MDM+AI）',src:'自有',bench:'100万以上标杆(化工行业，纺织行业)',partner:'否',level:'S（最高决策人站台支持、行业标杆且有IT或业务负责人站台支持）',cat:'有效商机',addTime:'2026-05-11',stage:'解决方案',
+ need:'供应链一体化平台：供应商主数据、寻源、合同、订单、对账、绩效，叠加 AI 风控与价格预测。',
+ it:'SAP S/4HANA + 自建数据中台（阿里 DataWorks），IT 中心 52 人，设供应链数字化专项组。',
+ pain:'原料价格波动大（丙烷、乙烷），采购决策缺乏预测支撑；供应商风险事件平均发现滞后 9 天。',
+ prod:['SRM','MDM','AI'],prodX:'大数据与模型生态',fit:'三产品组合方案，自研占比 60%，可形成行业标杆案例。',
+ prog:'2026-05-11 高层互访；05-30 专项组成立；06-24 需求调研（8 场）；08-12 方案 V1 汇报；09-08 方案 V2 评审通过，等待预算确认。',
+ risk:'预算约 620 万，超出单年度审批权限，需分两期立项；AI 价格预测准确率承诺需谨慎。',
+ support:'需要 AI 团队输出价格预测模型的可解释性与准确率承诺边界；需要总裁参与二期立项汇报。',
+ dApprove:'2026-12-01',dBid:'2027-02-20',budget:6200000,amount:4600000,year:'2027',quarter:'Q1',month:'3月',
+ chain:'IT负责人-供应链数字化专项组组长 邱峰-业务负责人-集团采购总监 何俊-决策人-集团总裁',contact:'136****4417',reach:'何俊 采购总监（4 次深度沟通，认可方案）',backer:'集团总裁（曾到访正凯）',
+ comp:'SAP Ariba + 德勤实施（品牌强，报价 900 万+）；甄云（SaaS，价格低 30%）。',
+ swot:'S：一体化组合能力、私有化、AI 风控独特、总裁级关系。\nW：品牌影响力弱于 SAP。\nO：标杆效应可辐射整个 C2/C3 产业链。\nT：客户若倾向国际品牌，可能拆分标段给 Ariba。',
+ scale:'年营收约 640 亿，轻烃化工龙头。',industry:'石油化工',lostR:'',actual:0},
+
+{code:'SJ-2026-0102',name:'盛虹集团采购对账与电子发票平台',src:'伙伴（自己提供）',bench:'高利润单',partner:'是',level:'B（IT负责人站台或者业务负责人站台）',cat:'有效商机',addTime:'2026-01-25',stage:'立项',
+ need:'三单匹配（订单、入库、发票）、自动对账、电子发票归集与税务合规校验，覆盖 5 家子公司。',
+ it:'SAP + 金税系统，对账靠人工 Excel；财务共享中心 40 人。',
+ pain:'月度对账耗时 8 人 10 天，发票差错率 1.7%，税务稽查存在合规风险。',
+ prod:['SRM','AI'],prodX:'财税生态伙伴',fit:'对账 + OCR 发票识别（可集成合合信息 Xparse），自研占比 55%。',
+ prog:'2026-01-25 伙伴引入；02-18 需求调研；03-30 方案汇报；06-15 客户预算审批；08-20 立项流程启动。',
+ risk:'伙伴希望主导实施，我司仅提供产品，利润率受影响；客户财务共享中心对 OCR 准确率要求 ≥ 99%。',
+ support:'需要与合合信息确认 Xparse 集成方式与授权费用；需要财务专家参与对账规则梳理。',
+ dApprove:'2026-10-10',dBid:'2026-11-25',budget:1350000,amount:1080000,year:'2026',quarter:'Q4',month:'11月',
+ chain:'IT负责人-信息中心副主任-业务负责人-财务共享中心主任 袁莉-决策人-CFO',contact:'150****8823',reach:'袁莉 财务共享中心主任（2 次现场沟通）',backer:'信息中心副主任',
+ comp:'百望云（发票领域头部，与税务系统对接成熟）；航天信息（国资背景，价格高）。',
+ swot:'S：与 SRM 采购流程原生打通，一体化优势。\nW：发票领域专业度弱于百望云。\nO：可扩展至集团全税种管理。\nT：客户可能单独采购发票平台，我司仅获对账模块。',
+ scale:'年营收约 1400 亿。',industry:'化纤纺织',lostR:'',actual:0},
+
+{code:'SJ-2026-0191',name:'华峰集团供应商准入与资质审核 AI',src:'自有',bench:'自研产品占比超50%',partner:'否',level:'F（两周未激活项目）',cat:'有效线索',addTime:'2026-07-28',stage:'初次交流',
+ need:'供应商营业执照、资质证书的 OCR 识别与自动核验，减少人工审核工作量。',
+ it:'现有 SRM 为本地厂商开发，资质审核完全人工；IT 部 8 人。',
+ pain:'每月新增供应商约 120 家，资质审核耗时 3 人天/周，且存在过期资质漏检。',
+ prod:['AI','SRM'],prodX:'',fit:'DocFlow + Xparse 组合可实现证照识别与有效期预警，适配度高。',
+ prog:'2026-07-28 客户官网留言咨询；08-03 电话沟通 1 次，客户要求先发资料；08-10 发送方案简介，此后无回应。',
+ risk:'已超两周未激活，按规则降为 F 级（成单率 2%）。需重新触达或转线索池。',
+ support:'需要市场部提供化工行业证照识别案例；需要销售重新安排上门拜访。',
+ dApprove:'',dBid:'',budget:400000,amount:320000,year:'2027',quarter:'Q2',month:'4月',
+ chain:'IT负责人-IT 部经理-业务负责人-采购部主管-决策人-未知',contact:'0577-6666****',reach:'采购部主管（1 次电话）',backer:'无',
+ comp:'合合信息直销（客户可能直接采购原厂）；RPA 厂商（流程自动化切入）。',
+ swot:'S：与 SRM 深度集成，形成闭环。\nW：客户对 AI 价值认知不足，触达中断。\nO：若激活可带动 SRM 替换。\nT：原厂直销绕过我司。',
+ scale:'年营收约 260 亿，聚氨酯行业领先。',industry:'化工新材料',lostR:'',actual:0},
+
+{code:'SJ-2026-0175',name:'东方盛虹海外营销与经销商门户',src:'伙伴（自己提供）',bench:'大单100万以上',partner:'是',level:'C（老板引入）',cat:'有效线索',addTime:'2026-07-30',stage:'调研',
+ need:'海外 12 个国家的经销商门户、多语言站点、订单与库存可视、佣金结算。',
+ it:'海外业务使用当地代理的独立系统，数据不互通；集团 IT 不掌握海外系统权限。',
+ pain:'海外销售数据滞后 15 天，佣金核算纠纷频发，渠道政策执行不到位。',
+ prod:['海外矩阵式营销','CRM'],prodX:'海外云生态',fit:'海外矩阵营销产品可覆盖门户与站点，佣金结算需定制。',
+ prog:'2026-07-30 老板引荐；08-14 与海外事业部首次交流；09-02 完成 3 个国家经销商访谈提纲。',
+ risk:'海外数据合规（GDPR）要求高，需评估部署位置；集团 IT 无海外系统权限，调研受阻。',
+ support:'需要法务评估 GDPR 合规方案；需要海外交付伙伴评估本地化实施能力。',
+ dApprove:'',dBid:'',budget:2200000,amount:1650000,year:'2027',quarter:'Q2',month:'6月',
+ chain:'IT负责人-集团 IT（无海外权限）-业务负责人-海外事业部总经理 秦岚-决策人-董事长（引荐）',contact:'186****2245',reach:'秦岚 海外事业部总经理（老板引荐，1 次面谈）',backer:'董事长',
+ comp:'Salesforce（海外品牌强，成本高）；本地外贸 SaaS（价格低，能力弱）。',
+ swot:'S：老板引荐，一体化方案，性价比高。\nW：海外交付经验不足，合规风险。\nO：可建立海外交付能力标杆。\nT：Salesforce 品牌优势明显，客户海外团队更熟悉。',
+ scale:'年营收约 1200 亿。',industry:'化纤纺织',lostR:'',actual:0},
+
+{code:'SJ-2026-0159',name:'恒逸文莱基地采购系统本地化部署',src:'自有',bench:'大单100万以上',partner:'否',level:'A（IT和业务负责人均站台支持）',cat:'有效商机',addTime:'2026-06-15',stage:'POC',
+ need:'文莱炼化基地的采购系统本地化部署，支持中英双语、多币种、当地税务规则，与总部 SRM 数据互通。',
+ it:'总部 SAP + 基地本地 ERP（Infor），网络专线已通；基地 IT 6 人。',
+ pain:'基地采购需回总部审批，平均周期 19 天；当地供应商无法使用中文系统。',
+ prod:['SRM'],prodX:'海外生态',fit:'SRM 国际化版本适配，需增加多语言与当地税务规则配置。',
+ prog:'2026-06-15 总部推动；07-08 基地需求调研（视频 4 场）；08-19 POC 环境部署（中英双语 + 多币种）；09-06 POC 演示通过，等待商务谈判。',
+ risk:'跨境数据合规需法务确认；当地实施资源缺乏，交付成本高；汇率波动影响报价。',
+ support:'需要国际业务法务支持；需要评估海外实施伙伴；需要财务给出汇率风险对冲建议。',
+ dApprove:'2026-11-05',dBid:'2026-12-18',budget:2800000,amount:2150000,year:'2026',quarter:'Q4',month:'12月',
+ chain:'IT负责人-基地 IT 经理 Lim-业务负责人-基地采购总监 Zhang Wei-决策人-总部集团副总裁',contact:'+673 ****8890',reach:'Zhang Wei 基地采购总监（总部引荐，2 次视频）',backer:'总部信息化中心主任',
+ comp:'Infor 原厂（基地存量 ERP 厂商）；SAP Ariba（总部已用，延伸部署）。',
+ swot:'S：总部关系强，中文 + 英文双语，成本可控。\nW：海外实施经验不足，本地化税务规则需开发。\nO：可复制到集团其他海外基地。\nT：Ariba 借总部存量合同延伸，商务阻力小。',
+ scale:'集团年营收约 2100 亿。',industry:'石油化工',lostR:'',actual:0},
+
+{code:'SJ-2026-0166',name:'正凯集团 NeoOmni 智能体平台一期',src:'自有',bench:'自研产品占比超50%',partner:'否',level:'SS（内定）',cat:'有效商机',addTime:'2026-05-06',stage:'提前投入',
+ need:'四端架构（BOSS 治理 / GPT 开发中枢 / Chat 使用入口 / 桌面端），分三阶段 2025-2027 建设，总投入 1000 万；一期完成治理端与开发中枢。',
+ it:'集团私有云 + 已有 OmniGPT 项目沉淀；研发团队 42 人，2025 年人力核算已完成两轮口径调整。',
+ pain:'各业务系统 AI 能力重复建设，缺乏统一治理与技能复用机制；模型调用成本不可控。',
+ prod:['AI'],prodX:'内部技术生态',fit:'技能管理、专家管理、全员组模块为一期核心，PRD 已按七段式结构输出。',
+ prog:'2026-05-06 立项报告启动；06 月完成 2025 年人力与工时核算（按每人每天不重复计算口径）；07 月技能中心 PRD v1.0 发布并完成 5 项升级功能分析；08 月 jnglv1.html v14 原型迭代（详情页/编辑页按钮显隐逻辑）；09 月推进 qyznt 专家管理模块。',
+ risk:'总投入 1000 万分三年，年度预算需逐年审批；技能生态运营依赖全员参与，推广难度大。',
+ support:'需要总经理办公会审批立项；需要 HR 配合技能贡献激励机制；需要各业务线提供 3 个以上试点场景。',
+ dApprove:'2026-05-06',dBid:'',budget:10000000,amount:10000000,year:'2026',quarter:'Q4',month:'12月',
+ chain:'IT负责人-集团数字化部-业务负责人-各事业部 AI 接口人-决策人-集团总经理',contact:'内线 6100',reach:'集团总经理（立项汇报）',backer:'数字化部负责人',
+ comp:'内部自研，无外部竞争（对外销售时竞品为百度智能云、字节扣子）。',
+ swot:'S：自研可控，与集团业务深度融合，技能资产可复用。\nW：投入大、周期长，短期 ROI 难量化。\nO：可对外输出为行业智能体平台产品。\nT：外部平台快速迭代，可能形成能力压制。',
+ scale:'集团年营收约 1500 亿。',industry:'多元化制造',lostR:'',actual:0},
+].map(recalc);
+RAW.forEach((r,i)=>{ r.__id = 'R'+(i+1); });
+let DATA = RAW.slice();
+
+/* =========================================================================
+   状态
+   ========================================================================= */
+const S = {
+  view: [],            // 过滤后的数据
+  sel: new Set(),      // 勾选的 __id
+  expanded: false,     // 全部展开/收起
+  page: 1, size: 20,
+  sort: {k:'expect', dir:-1},
+  cols: new Set(['code','name','src','srcC','bench','benchC','partner','level','rate','cat','catC','addTime','stage','prod','amount','expect','year','quarter','industry','dApprove']),
+  dense: false,
+  editing: null,
+  drawerId: null,
+  q: {kw:'', ms:{}, dr:{}, nr:{}, onlyRisk:false},
+};
+const $ = s=>document.querySelector(s), $$ = s=>[...document.querySelectorAll(s)];
+const el = (t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e;};
+
+/* ---- Toast ---- */
+const TICON = {ok:'<path d="M20 6L9 17l-5-5"/>',err:'<circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>',warn:'<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>',info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>'};
+function toast(msg, type='ok', title=''){
+  const t = el('div','toast '+type, `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">${TICON[type]}</svg><span>${title?`<b>${title}</b> · `:''}${esc(msg)}</span>`);
+  $('#toasts').appendChild(t);
+  setTimeout(()=>{t.classList.add('out'); setTimeout(()=>t.remove(),220);}, 2600);
+}
+
+/* ---- MultiSelect 组件 ---- */
+function MS(opts){
+  // {options:[{v,sub}], value:[], placeholder, onChange, searchable, multiple}
+  const wrap = el('div','ms');
+  const btn = el('button','ms-btn'); btn.type='button';
+  const pop = el('div','ms-pop');   // portal 到 body，fixed 定位，避免被筛选框/弹窗裁剪
+  let val = (opts.value||[]).slice(), open=false;
+  const multi = opts.multiple!==false;
+
+  function place(){
+    const r = btn.getBoundingClientRect();
+    const pw = Math.max(r.width, 220);
+    pop.style.minWidth = pw+'px';
+    pop.style.left = Math.min(Math.max(8, r.left), window.innerWidth - pw - 8)+'px';
+    const ph = pop.offsetHeight || 300;
+    const below = window.innerHeight - r.bottom - 12;
+    const above = r.top - 12;
+    const up = below < Math.min(ph, 200) && above > below;
+    pop.classList.toggle('up', up);
+    if(up){
+      pop.style.top = Math.max(8, r.top - Math.min(ph, above) - 5)+'px';
+      pop.style.maxHeight = Math.min(ph, above)+'px';
+    } else {
+      pop.style.top = (r.bottom + 5)+'px';
+      pop.style.maxHeight = Math.max(140, below)+'px';
+    }
+  }
+
+  function renderBtn(){
+    btn.innerHTML='';
+    if(!val.length){ btn.appendChild(el('span','ph',esc(opts.placeholder||'请选择'))); }
+    else if(multi){
+      val.slice(0,opts.showN||2).forEach(v=>btn.appendChild(el('span','ms-pill',esc(short(v)))));
+      if(val.length>(opts.showN||2)) btn.appendChild(el('span','ms-cnt','+'+(val.length-(opts.showN||2))));
+    } else btn.appendChild(el('span','ms-pill',esc(short(val[0]))));
+    btn.appendChild(el('span','',`<svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>`));
+  }
+  const short = v => v.length>14 ? v.slice(0,13)+'…' : v;
+  function renderList(kw=''){
+    const list = pop.querySelector('.ms-list'); list.innerHTML='';
+    const k = kw.trim().toLowerCase();
+    opts.options.filter(o=>!k||o.v.toLowerCase().includes(k)||(o.sub||'').toLowerCase().includes(k)).forEach(o=>{
+      const on = val.includes(o.v);
+      const item = el('div','ms-opt'+(on?' sel':''),
+        `<span class="ck${on?' on':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+         <span style="min-width:0">${esc(o.v)}${o.sub?`<span class="sub">${esc(o.sub)}</span>`:''}</span>`);
+      item.onclick = e=>{
+        e.stopPropagation();
+        if(multi){ val = on ? val.filter(x=>x!==o.v) : val.concat(o.v); }
+        else { val=[o.v]; close(); }
+        renderBtn(); renderList(kw); opts.onChange && opts.onChange(val.slice());
+      };
+      list.appendChild(item);
+    });
+    if(!list.children.length) list.appendChild(el('div','ms-opt','<span class="muted" style="padding:4px">无匹配项</span>'));
+  }
+  function build(){
+    pop.innerHTML='';
+    if(opts.searchable!==false){
+      const s = el('div','ms-search'); const i = el('input'); i.type='text'; i.placeholder='搜索选项…';
+      i.oninput=()=>renderList(i.value); i.onclick=e=>e.stopPropagation();
+      s.appendChild(i); pop.appendChild(s);
+    }
+    pop.appendChild(el('div','ms-list'));
+    if(multi && opts.options.length>3){
+      const f = el('div','ms-foot');
+      const all = el('button','','全选'); all.onclick=e=>{e.stopPropagation(); val=opts.options.map(o=>o.v); renderBtn(); renderList(); opts.onChange&&opts.onChange(val.slice());};
+      const clr = el('button','','清空'); clr.onclick=e=>{e.stopPropagation(); val=[]; renderBtn(); renderList(); opts.onChange&&opts.onChange(val.slice());};
+      f.append(all,clr); pop.appendChild(f);
+    }
+    renderList();
+  }
+  function openIt(){
+    if(open) return;
+    open = true; wrap.classList.add('open');
+    build();
+    if(pop.parentNode !== document.body) document.body.appendChild(pop);
+    pop.classList.remove('placed');
+    // 先不可见地插入以取得真实高度，再定位
+    pop.style.visibility='hidden'; pop.classList.add('placed');
+    place();
+    pop.style.visibility='';
+    setTimeout(()=>{const i=pop.querySelector('input'); i&&i.focus();},20);
+  }
+  function close(){
+    if(!open) return;
+    open=false; wrap.classList.remove('open');
+    pop.classList.remove('placed','up');
+    if(pop.parentNode===document.body) pop.remove();
+  }
+  btn.onclick=e=>{e.stopPropagation(); open?close():openIt();};
+  pop.addEventListener('mousedown',e=>e.stopPropagation());
+  pop.addEventListener('click',e=>e.stopPropagation());
+  wrap.append(btn);
+  renderBtn();
+  wrap._set = v=>{val=(v||[]).slice(); renderBtn();};
+  wrap._get = ()=>val.slice();
+  wrap._close = close;
+  wrap._isOpen = ()=>open;
+  wrap._place = place;
+  return wrap;
+}
+// 点击空白关闭；面板已 portal 到 body，需同时判断点击是否落在面板内。
+// 用捕获阶段拦截：若当前有面板打开，这次点击只用于关闭面板，不穿透到下方元素（如表格行）
+document.addEventListener('click',e=>{
+  const openList = $$('.ms.open');
+  if(!openList.length) return;
+  if(e.target.closest && e.target.closest('.ms-pop')) return;   // 面板内部正常交互
+  const hitBtn = e.target.closest && e.target.closest('.ms-btn');
+  if(hitBtn){
+    // 点到另一个下拉按钮：先关掉已打开的，避免同时出现两个面板
+    const own = hitBtn.closest('.ms');
+    openList.forEach(m=>{ if(m!==own && m._close) m._close(); });
+    return;                                                     // 开合交给按钮自身 onclick
+  }
+  e.stopPropagation(); e.preventDefault();                      // 阻断穿透到表格行等下层元素
+  openList.forEach(m=>m._close && m._close());
+}, true);
+// 滚动 / 缩放时：触发按钮仍可见则跟随重定位，滚出视口则关闭
+function repositionOpenMS(){
+  $$('.ms.open').forEach(m=>{
+    if(!m._place) return;
+    const b = m.querySelector('.ms-btn');
+    const r = b && b.getBoundingClientRect();
+    if(!r || r.bottom < 0 || r.top > window.innerHeight) m._close();
+    else m._place();
+  });
+}
+window.addEventListener('resize', repositionOpenMS);
+['scroll','wheel'].forEach(ev=>window.addEventListener(ev, e=>{
+  if(e.target && e.target.closest && e.target.closest('.ms-pop')) return;
+  repositionOpenMS();
+}, {capture:true, passive:true}));
+
+/* =========================================================================
+   筛选区
+   ========================================================================= */
+const FILTERS = [
+  {k:'src',     n:'商机来源',     type:'msel', dict:'src'},
+  {k:'bench',   n:'标杆类型',     type:'msel', dict:'bench'},
+  {k:'level',   n:'项目等级',     type:'msel', dict:'level'},
+  {k:'cat',     n:'项目分类',     type:'msel', dict:'cat'},
+  {k:'stage',   n:'项目阶段',     type:'msel', dict:'stage'},
+  {k:'prod',    n:'涉及我司产品', type:'msel', dict:'product', arr:true},
+  {k:'partner', n:'是否伙伴引入', type:'msel', dict:'partner'},
+  {k:'industry',n:'公司行业',     type:'msel', dyn:true},
+  {k:'year',    n:'预计合同落地年份', type:'msel', dict:'years', more:true},
+  {k:'quarter', n:'预计合同落单季度', type:'msel', dict:'quarter', more:true},
+  {k:'month',   n:'预计合同落单月份', type:'msel', dict:'months', more:true},
+  {k:'addTime', n:'项目新增时间点',   type:'drange', more:true},
+  {k:'dApprove',n:'关键时间点-立项',  type:'drange', more:true},
+  {k:'dBid',    n:'招标/邀标/单一来源', type:'drange', more:true},
+  {k:'amount',  n:'预计合同金额（万元）', type:'nrange', more:true},
+  {k:'expect',  n:'预计达成金额（万元）', type:'nrange', more:true},
+];
+const msRefs = {};
+function buildFilters(){
+  const body = $('#filterBody'); body.innerHTML='';
+  FILTERS.forEach(f=>{
+    const item = el('div','f-item'+(f.more?' f-more':'')+(f.type!=='msel'?' wide':''));
+    item.appendChild(el('div','f-lab',`<span class="dot"></span>${f.n}`));
+    if(f.type==='msel'){
+      const options = f.dyn ? [...new Set(DATA.map(r=>r[f.k]).filter(Boolean))].sort().map(v=>({v})) : dictOf(f.dict).map(o=>({v:o.v, sub:o.desc||''}));
+      const ms = MS({options, placeholder:'全部'+f.n, value:S.q.ms[f.k]||[], showN:1,
+        onChange:v=>{ S.q.ms[f.k]=v; if(!v.length) delete S.q.ms[f.k]; apply(); }});
+      msRefs[f.k]=ms; item.appendChild(ms);
+    } else if(f.type==='drange'){
+      const w = el('div','drange',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>`);
+      const a = el('input'); a.type='date'; a.title='开始日期';
+      const b = el('input'); b.type='date'; b.title='结束日期';
+      const set=()=>{ S.q.dr[f.k]=[a.value,b.value]; if(!a.value&&!b.value) delete S.q.dr[f.k]; apply(); };
+      a.onchange=set; b.onchange=set;
+      w.append(a,el('span','','至'),b); item.appendChild(w);
+    } else {
+      const w = el('div','drange',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>`);
+      const a = el('input'); a.type='number'; a.placeholder='最小'; a.min=0;
+      const b = el('input'); b.type='number'; b.placeholder='最大'; b.min=0;
+      const set=()=>{ S.q.nr[f.k]=[a.value,b.value]; if(!a.value&&!b.value) delete S.q.nr[f.k]; apply(); };
+      a.oninput=set; b.oninput=set;
+      w.append(a,el('span','','—'),b); item.appendChild(w);
+    }
+    body.appendChild(item);
+  });
+  // 风险开关
+  const item = el('div','f-item f-more');
+  item.appendChild(el('div','f-lab','<span class="dot"></span>快捷视图'));
+  const seg = el('div','seg');
+  [['','全部'],['risk','仅有卡点风险'],['lost','仅丢标项目'],['hot','SS/S/A 级']].forEach(([v,t])=>{
+    const b = el('button', S.q.onlyRisk===v?'on':'', t);
+    b.onclick=()=>{ S.q.onlyRisk=v; $$('#filterBody .seg button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); apply(); };
+    seg.appendChild(b);
+  });
+  item.appendChild(seg); body.appendChild(item);
+}
+function chipDefs(){
+  const out=[];
+  if(S.q.kw) out.push({t:'关键字', v:S.q.kw, clear:()=>{S.q.kw=''; $('#kw').value=''; $('#searchBox').classList.remove('has');}});
+  Object.entries(S.q.ms).forEach(([k,v])=>{ if(v&&v.length) out.push({t:(FILTERS.find(f=>f.k===k)||{n:k}).n, v:v.length>1?`${v[0]} 等 ${v.length} 项`:v[0], clear:()=>{delete S.q.ms[k]; msRefs[k]&&msRefs[k]._set([]);}}); });
+  Object.entries(S.q.dr).forEach(([k,v])=>{ if(v&&(v[0]||v[1])) out.push({t:(FILTERS.find(f=>f.k===k)||{n:k}).n, v:`${v[0]||'不限'} ~ ${v[1]||'不限'}`, clear:()=>{delete S.q.dr[k]; buildFilters();}}); });
+  Object.entries(S.q.nr).forEach(([k,v])=>{ if(v&&(v[0]||v[1])) out.push({t:(FILTERS.find(f=>f.k===k)||{n:k}).n, v:`${v[0]||'0'} ~ ${v[1]||'不限'} 万`, clear:()=>{delete S.q.nr[k]; buildFilters();}}); });
+  if(S.q.onlyRisk) out.push({t:'快捷视图', v:{risk:'有卡点风险',lost:'丢标项目',hot:'SS/S/A 级'}[S.q.onlyRisk], clear:()=>{S.q.onlyRisk=''; buildFilters();}});
+  return out;
+}
+function renderChips(){
+  const box = $('#chips'); box.innerHTML='';
+  const defs = chipDefs();
+  if(!defs.length){ box.appendChild(el('span','muted','未设置筛选条件，展示全部商机')); $('#btnClearChips').style.display='none'; return; }
+  $('#btnClearChips').style.display='';
+  defs.forEach(d=>{
+    const c = el('span','chip-x',`${esc(d.t)}：<b>${esc(d.v)}</b>`);
+    const b = el('button','','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:9px;height:9px"><path d="M18 6L6 18M6 6l12 12"/></svg>');
+    b.onclick=()=>{ d.clear(); apply(); };
+    c.appendChild(b); box.appendChild(c);
+  });
+}
+function match(r){
+  const q = S.q;
+  if(q.kw){
+    const k = q.kw.toLowerCase();
+    const hay = ['code','name','industry','chain','contact','reach','backer','comp','swot','pain','need','it','prog','risk','support','lostR','scale','fit'].map(x=>String(r[x]||'')).join(' ').toLowerCase()
+      + ' ' + (r.prod||[]).join(' ').toLowerCase();
+    if(!hay.includes(k)) return false;
+  }
+  for(const [k,v] of Object.entries(q.ms)){
+    if(!v||!v.length) continue;
+    const raw = r[k];
+    if(Array.isArray(raw)){ if(!raw.some(x=>v.includes(x))) return false; }
+    else if(!v.includes(raw)) return false;
+  }
+  for(const [k,v] of Object.entries(q.dr)){
+    if(!v) continue; const [a,b]=v; const d=r[k];
+    if(a && (!d || d<a)) return false;
+    if(b && (!d || d>b)) return false;
+  }
+  for(const [k,v] of Object.entries(q.nr)){
+    if(!v) continue; const [a,b]=v; const n=(Number(r[k])||0)/10000;
+    if(a!=='' && a!=null && n < Number(a)) return false;
+    if(b!=='' && b!=null && n > Number(b)) return false;
+  }
+  if(q.onlyRisk==='risk' && !String(r.risk||'').trim()) return false;
+  if(q.onlyRisk==='lost' && lvKey(r.level)!=='O') return false;
+  if(q.onlyRisk==='hot' && !['SS','S','A'].includes(lvKey(r.level))) return false;
+  return true;
+}
+function apply(){
+  S.view = DATA.filter(match);
+  const {k,dir} = S.sort;
+  S.view.sort((a,b)=>{
+    let x=a[k], y=b[k];
+    if(k==='level'){ x=DICT.level.findIndex(o=>o.v===a.level); y=DICT.level.findIndex(o=>o.v===b.level); }
+    if(k==='stage'){ x=DICT.stage.findIndex(o=>o.v===a.stage); y=DICT.stage.findIndex(o=>o.v===b.stage); }
+    if(typeof x==='number'||typeof y==='number'){ x=Number(x)||0; y=Number(y)||0; return (x-y)*dir; }
+    x=String(x||''); y=String(y||''); return x.localeCompare(y,'zh-CN')*dir;
+  });
+  S.page = 1;
+  [...S.sel].forEach(id=>{ if(!S.view.some(r=>r.__id===id)) S.sel.delete(id); });
+  renderChips(); renderStats(); renderTable(); renderPager(); updateSelBar();
+  $('#tabCnt').textContent = S.view.length;
+}
+
+/* =========================================================================
+   统计卡片
+   ========================================================================= */
+function renderStats(){
+  const rows = S.view;
+  const sum = k => rows.reduce((s,r)=>s+(Number(r[k])||0),0);
+  const valid = rows.filter(r=>r.cat==='有效商机').length;
+  const hot = rows.filter(r=>['SS','S','A'].includes(lvKey(r.level))).length;
+  const lost = rows.filter(r=>lvKey(r.level)==='O').length;
+  const amount = sum('amount'), expect = sum('expect'), actual = sum('actual');
+  const rate = amount? (expect/amount*100) : 0;
+  const stageCnt = DICT.stage.map(s=>rows.filter(r=>r.stage===s.v).length);
+  const mx = Math.max(1,...stageCnt);
+  const lvCnt = ['SS','S','A','B','C','D','E','F','O'].map(k=>rows.filter(r=>lvKey(r.level)===k).length);
+  const lvMx = Math.max(1,...lvCnt);
+  const cards = [
+    {l:'商机总数', v:rows.length, u:'条', c:'#2563EB', sub:`高价值 <b class="up">${hot}</b> 条 · 丢标 ${lost} 条`, bars:lvCnt, mx:lvMx, ic:'<path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 4-5"/>'},
+    {l:'有效商机', v:valid, u:'条', c:'#0E9F6E', sub:`占比 ${rows.length?Math.round(valid/rows.length*100):0}% · 有效线索 ${rows.length-valid} 条`, ic:'<path d="M20 6L9 17l-5-5"/>'},
+    {l:'预计合同金额', v:fmtWan(amount), c:'#7C3AED', sub:`单均 ${rows.length?fmtWan(amount/rows.length):'—'}`, ic:'<path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>'},
+    {l:'预计达成金额（加权）', v:fmtWan(expect), c:'#D97706', sub:`加权系数 ${rate.toFixed(1)}% · 含来源/标杆/成单率/分类`, ic:'<path d="M12 20V10M18 20V4M6 20v-4"/>'},
+    {l:'实际达成金额', v:fmtWan(actual), c:'#0891B2', sub:actual?`达成率 ${(actual/Math.max(expect,1)*100).toFixed(1)}%`:'暂无回款登记', ic:'<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>'},
+    {l:'阶段分布', v:DICT.stage.length, u:'阶段', c:'#DC2626', sub:`当前最多：${DICT.stage[stageCnt.indexOf(Math.max(...stageCnt))].v} ${Math.max(...stageCnt)} 条`, bars:stageCnt, mx:mx, ic:'<path d="M4 6h16M4 12h16M4 18h10"/>'},
+  ];
+  const box = $('#stats'); box.innerHTML='';
+  cards.forEach((c,i)=>{
+    const d = el('div','stat'); d.style.setProperty('--c',c.c); d.style.animation=`fade .34s var(--ease) ${i*45}ms both`;
+    d.innerHTML = `<div class="stat-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${c.ic}</svg>${c.l}</div>
+      <div class="stat-v">${typeof c.v==='number'?c.v.toLocaleString('zh-CN'):c.v}${c.u?`<small>${c.u}</small>`:''}</div>
+      <div class="stat-sub">${c.sub}</div>
+      ${c.bars?`<div class="mini-bars">${c.bars.map((v,j)=>`<i class="${v===Math.max(...c.bars)?'hi':''}" style="height:${Math.max(8,v/c.mx*100)}%"></i>`).join('')}</div>`:''}`;
+    box.appendChild(d);
+  });
+}
+
+/* =========================================================================
+   单元格渲染
+   ========================================================================= */
+function cellHTML(r, f){
+  const v = r[f.k];
+  switch(f.k){
+    case 'code': return `<span class="code">${esc(v||'')}</span>`;
+    case 'name': return `<span class="nm cell-t" title="单击查看详情">${esc(v||'')}</span>`;
+    case 'src':   return v?`<span class="badge b-src">${esc(v)}</span>`:'<span class="muted">—</span>';
+    case 'bench': return v?`<span class="badge b-bench cell-t" title="${esc(v)}">${esc(v)}</span>`:'<span class="muted">—</span>';
+    case 'partner':return v==='是'?'<span class="badge b-yes">是</span>':v==='否'?'<span class="badge b-no">否</span>':'<span class="muted">—</span>';
+    case 'level':{
+      const k = lvKey(v); if(!v) return '<span class="muted">—</span>';
+      return `<span class="lv lv-${k}" title="${esc(lvDesc(v)||v)}">${k}</span>`;
+    }
+    case 'rate':{
+      const rt = r.rate; if(rt==null) return '<span class="muted">—</span>';
+      const c = rt>=.65?'#0E9F6E':rt>=.2?'#D97706':'#94A3B8';
+      return `<span class="rate-bar" style="--rc:${c}"><span class="track"><span class="fill" style="width:${Math.max(rt*100,2)}%"></span></span><span class="v">${fmtPct(rt)}</span></span>`;
+    }
+    case 'cat': return v==='有效商机'?'<span class="badge b-cat1">有效商机</span>':v==='有效线索'?'<span class="badge b-cat0">有效线索</span>':'<span class="muted">—</span>';
+    case 'srcC': case 'benchC': case 'catC':{
+      if(v==null) return '<span class="muted">—</span>';
+      return `<span class="coef ${v>=1?'hi':'lo'}">×${v}</span>`;
+    }
+    case 'stage':{
+      if(!v) return '<span class="muted">—</span>';
+      return `<span class="stage" style="--sc:${stageColor(v)}"><span class="pip"></span>${esc(v)}</span>`;
+    }
+    case 'prod':{
+      const arr = v||[], extra = r.prodX;
+      if(!arr.length && !extra) return '<span class="muted">—</span>';
+      return `<span class="tag-list">${arr.map(p=>`<span class="badge b-prod">${esc(p)}</span>`).join('')}${extra?`<span class="badge b-extra">+${esc(extra)}</span>`:''}</span>`;
+    }
+    case 'amount': case 'budget': case 'actual':{
+      const n = Number(v)||0; if(!n) return '<span class="muted">—</span>';
+      return `<span class="num ${n>=2000000?'amount big':'amount'}">${money(n)}</span>`;
+    }
+    case 'expect':{
+      const n = Number(v)||0; if(!n) return '<span class="muted calc" style="display:inline-block;padding:1px 6px;border-radius:5px">0.00</span>';
+      return `<span class="num amount big calc" style="display:inline-block;padding:1px 6px;border-radius:5px">${money(n)}</span>`;
+    }
+    case 'year': return v?`<span class="coef">${esc(v)}</span>`:'<span class="muted">—</span>';
+    case 'quarter': case 'month': return v?`<span class="badge b-cat0">${esc(v)}</span>`:'<span class="muted">—</span>';
+    case 'dApprove': case 'dBid': case 'addTime':{
+      if(!v) return '<span class="muted">—</span>';
+      const d = new Date(v), today = new Date('2026-09-10');
+      const near = f.k!=='addTime' && d>today && (d-today)/86400000 < 45;
+      return `<span style="font-variant-numeric:tabular-nums;${near?'color:#B45309;font-weight:640':''}">${esc(v)}${near?' ⏱':''}</span>`;
+    }
+    case 'risk':{
+      const t = String(v||'').trim();
+      if(!t) return '<span class="muted">无</span>';
+      return `<span class="cell-t"><i class="risk-dot" style="background:#DC2626"></i>${esc(t)}</span>`;
+    }
+    case 'lostR':{
+      const t = String(v||'').trim();
+      return t?`<span class="cell-t">${esc(t)}</span>`:'<span class="muted">—</span>';
+    }
+    case 'industry': return v?`<span class="badge b-cat0">${esc(v)}</span>`:'<span class="muted">—</span>';
+    default:{
+      const t = String(v==null?'':v);
+      if(!t.trim()) return '<span class="muted">—</span>';
+      return `<span class="cell-t${f.type==='area'?' pre':''}" title="${esc(t.slice(0,120))}">${esc(t)}</span>`;
+    }
+  }
+}
+
+/* =========================================================================
+   表格
+   ========================================================================= */
+function visFields(){ return FIELDS.filter(f=>S.cols.has(f.k)); }
+function renderHead(){
+  const tr = $('#theadRow'); tr.innerHTML='';
+  // checkbox
+  const thCk = el('th','sticky-l'); thCk.style.cssText='left:0;width:40px;min-width:40px;padding:0 10px';
+  const allSel = S.view.length>0 && S.view.every(r=>S.sel.has(r.__id));
+  const partSel = !allSel && S.view.some(r=>S.sel.has(r.__id));
+  thCk.innerHTML = `<span class="ck${allSel?' on':''}${partSel?' part':''}" id="ckAll"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>`;
+  tr.appendChild(thCk);
+  // 序号
+  const thNo = el('th','sticky-l'); thNo.style.cssText='left:40px;width:44px;min-width:44px;padding:0 8px';
+  thNo.innerHTML='<span class="th-in"><span class="lb">#</span></span>';
+  tr.appendChild(thNo);
+
+  let left = 84;
+  const fs = visFields();
+  fs.forEach(f=>{
+    const th = el('th','sortable'+(f.sticky?' sticky-l':''));
+    if(f.sticky){ th.style.left = left+'px'; left += f.w; }
+    th.style.width=f.w+'px'; th.style.minWidth=f.w+'px'; th.style.maxWidth=f.w+'px';
+    const sorted = S.sort.k===f.k;
+    if(sorted) th.classList.add('sorted');
+    th.innerHTML = `<span class="th-in">${f.req?'<span class="req">*</span>':''}${f.lock?'<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>':''}${f.auto?'<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="4"/></svg>':''}<span class="lb" title="${esc(f.n)}${f.auto?'（自动）':''}">${esc(f.n)}</span><svg class="sarrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" style="transform:${sorted&&S.sort.dir<0?'rotate(180deg)':'none'}"><path d="M12 5v14M6 13l6 6 6-6"/></svg></span>`;
+    th.onclick = ()=>{ S.sort = {k:f.k, dir: S.sort.k===f.k ? -S.sort.dir : -1}; renderHead(); apply(); };
+    tr.appendChild(th);
+  });
+  const thOp = el('th'); thOp.style.cssText='width:112px;min-width:112px;position:sticky;right:0;z-index:12;background:var(--surface-2)';
+  thOp.innerHTML='<span class="th-in"><span class="lb">操作</span></span>';
+  tr.appendChild(thOp);
+}
+function renderTable(){
+  renderHead();
+  const tb = $('#tbody'); tb.innerHTML='';
+  const fs = visFields();
+  $('#cntCols').textContent = fs.length;
+  const start = (S.page-1)*S.size;
+  const rows = S.view.slice(start, start+S.size);
+  if(!rows.length){
+    const tr = el('tr'); const td = el('td');
+    td.colSpan = fs.length+3;
+    td.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M8 11h6"/></svg><b>没有符合条件的商机</b><p>试着放宽筛选条件，或清空关键字后重新查询</p></div>`;
+    tr.appendChild(td); tb.appendChild(tr); return;
+  }
+  let left = 84;
+  const stickyMap = {}; fs.forEach(f=>{ if(f.sticky){ stickyMap[f.k]=left; left+=f.w; } });
+
+  rows.forEach((r,ri)=>{
+    const tr = el('tr');
+    tr.dataset.id = r.__id;
+    if(S.sel.has(r.__id)) tr.classList.add('sel');
+    if(S.expanded) tr.classList.add('expanded');
+    if(S.drawerId===r.__id) tr.classList.add('active');
+
+    const idx = start+ri+1;
+    const tdCk = el('td','sticky-l lockcell');
+    tdCk.style.cssText='left:0;width:40px;min-width:40px;max-width:40px;padding:0 10px';
+    tdCk.innerHTML = `<span class="ck${S.sel.has(r.__id)?' on':''}" data-ck="${r.__id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>`;
+    tr.appendChild(tdCk);
+    const tdNo = el('td','sticky-l lockcell');
+    tdNo.style.cssText='left:40px;width:44px;min-width:44px;max-width:44px;padding:0 8px;color:var(--ink-4);font-size:11.5px;font-variant-numeric:tabular-nums;text-align:center';
+    tdNo.textContent = idx; tr.appendChild(tdNo);
+
+    fs.forEach(f=>{
+      const td = el('td');
+      if(f.sticky){ td.classList.add('sticky-l','lockcell'); td.style.left=stickyMap[f.k]+'px'; }
+      td.style.width=f.w+'px'; td.style.minWidth=f.w+'px'; td.style.maxWidth=f.w+'px';
+      td.dataset.k = f.k;
+      const editable = !f.lock && !f.auto && !f.formula;
+      if(editable) td.classList.add('editable');
+      if(f.num || ['amount','budget','actual','expect'].includes(f.k)) td.style.textAlign='right';
+      td.innerHTML = cellHTML(r,f);
+      tr.appendChild(td);
+    });
+
+    const tdOp = el('td');
+    tdOp.style.cssText='width:112px;min-width:112px;max-width:112px;padding:0 8px;position:sticky;right:0;z-index:6;background:#fff;box-shadow:-6px 0 6px -6px rgba(15,23,42,.14)';
+    tdOp.innerHTML = `<div style="display:flex;gap:4px;justify-content:flex-end">
+        <button class="btn btn-ghost btn-sm" data-act="view" title="查看详情"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:13px;height:13px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button class="btn btn-out btn-sm" data-act="edit" title="编辑整条数据">编辑</button></div>`;
+    tr.appendChild(tdOp);
+    tb.appendChild(tr);
+  });
+  $('#cntTotal').textContent = S.view.length;
+  $('#cntSel').textContent = S.sel.size;
+}
+
+/* =========================================================================
+   分页（置于页面最底部）
+   ========================================================================= */
+function renderPager(){
+  const p = $('#pager'); const total = S.view.length;
+  const pages = Math.max(1, Math.ceil(total/S.size));
+  if(S.page>pages) S.page = pages;
+  const from = total? (S.page-1)*S.size+1 : 0, to = Math.min(total, S.page*S.size);
+  const sumExp = S.view.reduce((s,r)=>s+(Number(r.expect)||0),0);
+  let btns = '';
+  const add = (n)=>btns+=`<button class="pg${n===S.page?' on':''}" data-pg="${n}">${n}</button>`;
+  btns += `<button class="pg" data-pg="${S.page-1}" ${S.page<=1?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>`;
+  const win = [];
+  for(let i=1;i<=pages;i++){ if(i===1||i===pages||Math.abs(i-S.page)<=2) win.push(i); }
+  let prev=0; win.forEach(i=>{ if(prev&&i-prev>1) btns+='<span class="pg" style="pointer-events:none;color:var(--ink-4)">…</span>'; add(i); prev=i; });
+  btns += `<button class="pg" data-pg="${S.page+1}" ${S.page>=pages?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>`;
+  p.innerHTML = `<div class="tot">显示 <b>${from}</b>–<b>${to}</b> 条，共 <b>${total}</b> 条 · 当前筛选加权预计达成 <b>${fmtWan(sumExp)}</b></div>
+    <div class="pages">${btns}</div>
+    <div class="pg-size">每页 <select id="pgSize">${[10,20,50,100].map(n=>`<option ${n===S.size?'selected':''}>${n}</option>`).join('')}</select> 条</div>`;
+  p.querySelectorAll('[data-pg]').forEach(b=>b.onclick=()=>{ const n=+b.dataset.pg; if(n>=1&&n<=pages){S.page=n; renderTable(); renderPager(); $('#tblScroll').scrollTop=0;} });
+  $('#pgSize').onchange = e=>{ S.size=+e.target.value; S.page=1; renderTable(); renderPager(); };
+}
+function updateSelBar(){
+  const on = S.sel.size>0;
+  $('#selBar').classList.toggle('on',on);
+  $('#selN').textContent = S.sel.size;
+  $('#cntSel').textContent = S.sel.size;
+  const ck = $('#ckAll');
+  if(ck){
+    const all = S.view.length>0 && S.view.every(r=>S.sel.has(r.__id));
+    const part = !all && S.view.some(r=>S.sel.has(r.__id));
+    ck.className = 'ck'+(all?' on':'')+(part?' part':'');
+  }
+}
+
+/* =========================================================================
+   行内双击编辑
+   ========================================================================= */
+function editableFields(){ return FIELDS.filter(f=>!f.lock && !f.auto && !f.formula); }
+function startInline(td){
+  if(S.editing) commitInline(true);
+  const tr = td.closest('tr'); const id = tr.dataset.id; const k = td.dataset.k;
+  const r = DATA.find(x=>x.__id===id); const f = F[k]; if(!r||!f) return;
+  S.editing = {td, id, k, old:r[k]};
+  td.classList.add('editing');
+  const prev = td.innerHTML; td.dataset.prev = prev;
+  td.innerHTML='';
+  let input;
+  if(f.type==='sel'){
+    input = el('select','cell-edit');
+    input.appendChild(new Option('— 请选择 —',''));
+    dictOf(f.dict).forEach(o=>input.appendChild(new Option(o.v,o.v,false,o.v===r[k])));
+    input.style.height='40px';
+  } else if(f.type==='msel'){
+    input = el('input','cell-edit'); input.type='text';
+    input.value = (r[k]||[]).join('、') + (r.prodX? ' +'+r.prodX : '');
+    input.placeholder = '多个用顿号「、」分隔，可追加自定义生态';
+  } else if(f.type==='date'){
+    input = el('input','cell-edit'); input.type='date'; input.value=r[k]||''; input.style.height='40px';
+  } else if(f.type==='num'){
+    input = el('input','cell-edit'); input.type='number'; input.value=r[k]||''; input.style.textAlign='right'; input.style.height='40px';
+  } else if(f.type==='area'){
+    input = el('textarea','cell-edit'); input.value=r[k]||''; input.placeholder=f.ph||''; input.rows=4;
+  } else {
+    input = el('input','cell-edit'); input.type='text'; input.value=r[k]||''; input.placeholder=f.ph||''; input.style.height='40px';
+  }
+  td.appendChild(input);
+  input.focus(); if(input.select) input.select();
+  const hint = el('div','edit-hint',`<b>${esc(f.n)}</b> · Enter 保存 / Esc 取消 / Tab 下一格`);
+  document.body.appendChild(hint);
+  S.editing.hint = hint;
+  const hr = td.getBoundingClientRect();
+  hint.style.left = Math.min(Math.max(8, hr.left + hr.width/2 - hint.offsetWidth/2), window.innerWidth - hint.offsetWidth - 8)+'px';
+  const above = hr.top - hint.offsetHeight - 8;
+  if(above >= 8){ hint.style.top = above+'px'; hint.classList.add('below-arrow'); }
+  else { hint.style.top = (hr.bottom + 8)+'px'; hint.classList.add('flip'); }
+  input.onkeydown = e=>{
+    if(e.key==='Enter' && (f.type!=='area' || e.ctrlKey || e.metaKey)){ e.preventDefault(); commitInline(true); }
+    else if(e.key==='Enter' && f.type==='area'){ /* 换行 */ }
+    else if(e.key==='Escape'){ e.preventDefault(); commitInline(false); }
+    else if(e.key==='Tab'){ e.preventDefault(); const next = nextEditable(td); commitInline(true); next && startInline(next); }
+    e.stopPropagation();
+  };
+  input.onblur = ()=>setTimeout(()=>{ if(S.editing && S.editing.td===td) commitInline(true); },120);
+  if(f.type==='sel'||f.type==='date') input.onchange=()=>commitInline(true);
+}
+function nextEditable(td){
+  const tr = td.closest('tr');
+  const tds = [...tr.querySelectorAll('td.editable')];
+  const i = tds.indexOf(td);
+  if(i< tds.length-1) return tds[i+1];
+  const ntr = tr.nextElementSibling;
+  return ntr ? ntr.querySelector('td.editable') : null;
+}
+function commitInline(save){
+  const e = S.editing; if(!e) return; S.editing=null;
+  const {td,id,k,old} = e;
+  if(e.hint && e.hint.parentNode) e.hint.remove();
+  const input = td.querySelector('.cell-edit');
+  const r = DATA.find(x=>x.__id===id); const f = F[k];
+  if(save && input && r){
+    let v;
+    if(f.type==='msel'){
+      let raw = input.value; let extra='';
+      const m = raw.match(/\+(.*)$/); if(m){ extra=m[1].trim(); raw=raw.replace(/\+[^+]*$/,''); }
+      const known = DICT.product.map(o=>o.v);
+      v = raw.split(/[、,，]/).map(s=>s.trim()).filter(Boolean);
+      const unknown = v.filter(x=>!known.includes(x));
+      v = v.filter(x=>known.includes(x));
+      if(unknown.length) extra = (extra?extra+'、':'')+unknown.join('、');
+      r.prodX = extra;
+    } else if(f.type==='num'){ v = input.value===''?'':Number(input.value); }
+    else v = input.value;
+    if(String(v)!==String(old==null?'':old)){
+      r[k]=v; recalc(r);
+      toast(`「${f.n}」已保存`, 'ok', r.name);
+    }
+  }
+  td.classList.remove('editing');
+  td.innerHTML = td.dataset.prev || '';
+  if(r) td.innerHTML = cellHTML(r,f);
+  if(save){ renderStats(); refreshRowTotals(r); }
+}
+function refreshRowTotals(r){
+  // 仅重绘当前行受影响单元格，避免整表重排丢失滚动位置
+  const tr = $(`#tbody tr[data-id="${r.__id}"]`); if(!tr) return;
+  tr.querySelectorAll('td[data-k]').forEach(td=>{
+    const f = F[td.dataset.k]; if(!f) return;
+    if(['expect','rate','srcC','benchC','catC','amount'].includes(f.k) || td.dataset.k==='amount'){
+      td.innerHTML = cellHTML(r,f);
+    }
+  });
+}
+
+/* =========================================================================
+   抽屉：单击行 → 完整内容（长文本不截断）
+   ========================================================================= */
+const D_SECS = [
+  {n:'基础信息与系数', ks:['code','name','src','srcC','bench','benchC','partner','level','rate','cat','catC','addTime','stage','industry']},
+  {n:'需求 · IT · 方案', ks:['need','it','pain','prod','fit']},
+  {n:'跟进 · 风险 · 支持', ks:['prog','risk','support','dApprove','dBid']},
+  {n:'商务与金额', ks:['budget','amount','year','quarter','month','expect','actual']},
+  {n:'关键人链条与客情', ks:['chain','contact','reach','backer']},
+  {n:'竞争与 SWOT', ks:['comp','swot','scale','lostR']},
+];
+function detailValue(r,k){
+  const f = F[k]; const v = r[k];
+  if(k==='prod'){
+    const arr=v||[]; if(!arr.length && !r.prodX) return {empty:true, html:'—'};
+    return {html:`<span class="tag-list" style="flex-wrap:wrap">${arr.map(p=>`<span class="badge b-prod">${esc(p)}</span>`).join('')}${r.prodX?`<span class="badge b-extra">+ ${esc(r.prodX)}（自定义生态）</span>`:''}</span>`};
+  }
+  if(k==='level') return {html:`<span class="lv lv-${lvKey(v)}">${lvKey(v)}</span> <span style="color:var(--ink-3);font-size:12px;margin-left:6px">${esc(lvDesc(v)||v)}</span>`};
+  if(k==='rate'){ const rt=v; if(rt==null) return {empty:true,html:'—'};
+    const c = rt>=.65?'#0E9F6E':rt>=.2?'#D97706':'#94A3B8';
+    return {html:`<span class="rate-bar" style="--rc:${c};max-width:150px;display:inline-flex"><span class="track"><span class="fill" style="width:${Math.max(rt*100,2)}%"></span></span><span class="v">${fmtPct(rt)}</span></span>`}; }
+  if(k==='stage') return v?{html:`<span class="stage" style="--sc:${stageColor(v)}"><span class="pip"></span>${esc(v)}</span>`}:{empty:true,html:'—'};
+  if(['srcC','benchC','catC'].includes(k)) return v==null?{empty:true,html:'—'}:{html:`<span class="coef ${v>=1?'hi':'lo'}">×${v}</span> <span style="color:var(--ink-4);font-size:11px">（由${esc(F[f.ref].n)}自动关联）</span>`};
+  if(k==='expect'){ const n=Number(v)||0; return {html:`<span class="num amount big calc" style="display:inline-block;padding:2px 9px;border-radius:6px">${n?money(n):'0.00'}</span> <span style="color:var(--ink-4);font-size:11px">元 ≈ ${fmtWan(n)}</span>`, num:true}; }
+  if(['amount','budget','actual'].includes(k)){ const n=Number(v)||0; return n?{html:`<span class="num amount">${money(n)}</span> <span style="color:var(--ink-4);font-size:11px">元 ≈ ${fmtWan(n)}</span>`,num:true}:{empty:true,html:'—'}; }
+  if(k==='cat') return v?{html:v==='有效商机'?'<span class="badge b-cat1">有效商机</span>':'<span class="badge b-cat0">有效线索</span>'}:{empty:true,html:'—'};
+  if(k==='src') return v?{html:`<span class="badge b-src">${esc(v)}</span>`}:{empty:true,html:'—'};
+  if(k==='bench') return v?{html:`<span class="badge b-bench">${esc(v)}</span>`}:{empty:true,html:'—'};
+  if(k==='partner') return v?{html:v==='是'?'<span class="badge b-yes">是</span>':'<span class="badge b-no">否</span>'}:{empty:true,html:'—'};
+  if(k==='code') return {html:`<span class="code">${esc(v||'')}</span>`};
+  if(k==='name') return {html:`<b>${esc(v||'')}</b>`};
+  if(f.type==='area' || ['comp','swot','lostR'].includes(k)) return String(v||'').trim()?{html:esc(v).replace(/\n/g,'<br>')}:{empty:true,html:'未填写'};
+  return String(v||'').trim()?{html:esc(v)}:{empty:true,html:'—'};
+}
+function openDrawer(id){
+  const r = DATA.find(x=>x.__id===id); if(!r) return;
+  S.drawerId = id;
+  $('#dTitle').textContent = r.name||'（未命名商机）';
+  $('#dCode').textContent = `${r.code||'—'} · 新增于 ${r.addTime||'—'} · ${r.industry||'行业未填'}`;
+  $('#dBadges').innerHTML = `
+    <span class="lv lv-${lvKey(r.level)}">${lvKey(r.level)}</span>
+    ${r.stage?`<span class="badge b-cat0" style="background:${stageColor(r.stage)}1a;color:${stageColor(r.stage)}">${esc(r.stage)}</span>`:''}
+    ${r.cat==='有效商机'?'<span class="badge b-cat1">有效商机</span>':'<span class="badge b-cat0">有效线索</span>'}
+    ${r.partner==='是'?'<span class="badge b-yes">伙伴引入</span>':''}
+    <span class="badge b-bench">${esc(r.bench||'标杆类型未选')}</span>
+    <span class="badge" style="background:#FFFBEB;color:#92400E">预计达成 ${fmtWan(r.expect)}</span>`;
+  // 阶段时间轴
+  const si = DICT.stage.findIndex(s=>s.v===r.stage);
+  const tl = `<div class="d-sec"><div class="d-sec-h"><span class="bar"></span><b>项目阶段推进</b><span>${si>=0?`第 ${si+1} / ${DICT.stage.length} 阶段`:'未设置阶段'}</span></div>
+    <div class="timeline">${DICT.stage.map((s,i)=>`<div class="tl-step ${si<0?'':i<si?'done':i===si?'cur':''}"><span class="dot">${i<si?'✓':i+1}</span><span class="lb">${s.v}</span></div>`).join('')}</div></div>`;
+  let html = tl;
+  D_SECS.forEach(sec=>{
+    const rows = sec.ks.map(k=>{
+      const f = F[k]; const dv = detailValue(r,k);
+      return `<div class="d-row"><div class="k">${esc(f.n)}${f.auto?'<span class="auto">自动</span>':''}${f.lock?'<svg class="lk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:10px;height:10px;color:var(--ink-4)"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>':''}</div>
+        <div class="v ${dv.empty?'empty-v':''} ${dv.num?'num-v':''}">${dv.html}</div></div>`;
+    }).join('');
+    html += `<div class="d-sec"><div class="d-sec-h"><span class="bar"></span><b>${sec.n}</b><span>${sec.ks.length} 项</span></div><div class="d-rows">${rows}</div></div>`;
+  });
+  html += `<div class="d-sec"><div class="d-sec-h"><span class="bar" style="background:var(--warn)"></span><b>预计达成金额计算过程</b><span>公式口径 v1.0</span></div>
+    <div class="d-rows"><div class="formula" style="border:none;padding:6px 0">
+      <code>${money(r.amount)||0}</code><span class="eq">×</span><code>${r.srcC??'—'}</code><span style="color:var(--ink-4);font-size:11px">来源</span>
+      <span class="eq">×</span><code>${r.benchC??'—'}</code><span style="color:var(--ink-4);font-size:11px">标杆</span>
+      <span class="eq">×</span><code>${r.rate!=null?fmtPct(r.rate):'—'}</code><span style="color:var(--ink-4);font-size:11px">成单率</span>
+      <span class="eq">×</span><code>${r.catC??'—'}</code><span style="color:var(--ink-4);font-size:11px">分类</span>
+      <span class="eq">÷</span><code>${DIVISOR}</code>
+      <span class="eq">=</span><code style="background:#FFFBEB;border-color:#FDE68A;color:#92400E">${money(r.expect)||'0.00'}</code>
+    </div></div></div>`;
+  $('#dBody').innerHTML = html;
+  $('#dMeta').innerHTML = `加权金额 <b style="color:#B45309">${fmtWan(r.expect)}</b> · 预计合同 <b>${fmtWan(r.amount)}</b> · 落地 ${r.year||'—'} ${r.quarter||''} ${r.month||''}`;
+  $('#dMask').classList.add('on'); $('#drawer').classList.add('on');
+  $$('#tbody tr').forEach(t=>t.classList.toggle('active', t.dataset.id===id));
+}
+function closeDrawer(){ $('#dMask').classList.remove('on'); $('#drawer').classList.remove('on'); S.drawerId=null; $$('#tbody tr.active').forEach(t=>t.classList.remove('active')); }
+
+/* =========================================================================
+   编辑弹窗（整条数据）
+   ========================================================================= */
+const E_SECS = [
+  {n:'基础信息与系数', ks:['code','name','src','srcC','bench','benchC','partner','level','rate','cat','catC','addTime','stage','industry'], c:3},
+  {n:'项目需求与方案评估', ks:['need','it','pain','prod','fit'], c:2},
+  {n:'跟进进度 · 卡点 · 支持', ks:['prog','risk','support','dApprove','dBid'], c:2},
+  {n:'商务信息与金额', ks:['budget','amount','year','quarter','month','expect','actual'], c:3},
+  {n:'决策人链条与客情关系', ks:['chain','contact','reach','backer'], c:2},
+  {n:'竞争对手与 SWOT', ks:['comp','swot','scale','lostR'], c:2},
+];
+let EF = {};   // 编辑态字段引用
+let EREC = null;
+function openEdit(id){
+  const isNew = !id;
+  const src = isNew ? null : DATA.find(x=>x.__id===id);
+  const r = isNew ? blankRec() : JSON.parse(JSON.stringify(src));
+  EREC = r; EREC.__new = isNew; EF = {};
+  $('#mEditTitle').textContent = isNew? '新建项目商机' : '编辑项目商机';
+  $('#mEditSub').textContent = isNew? '编号/名称/来源等由商机同步生成，可先填写业务字段' : `${r.code} · 整条数据编辑 · 系数与预计达成金额自动联动`;
+  const body = $('#mEditBody'); body.innerHTML='';
+  // 公式提示条
+  body.appendChild(el('div','live-calc',`<div><div class="lb">预计达成金额（实时试算）</div><div class="vv" id="liveV">—</div></div>
+    <div class="brk" id="liveB"></div>`));
+  body.appendChild(el('div','',`<div class="formula" style="margin:11px 0 16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;color:#B45309"><path d="M4 4h16v16H4z"/><path d="M8 8l8 8M16 8l-8 8"/></svg>预计达成金额 <span class="eq">=</span><code>预计我司合同金额</code><span class="eq">×</span><code>商机来源系数</code><span class="eq">×</span><code>标杆类型系数</code><span class="eq">×</span><code>成单率</code><span class="eq">×</span><code>项目分类系数</code><span class="eq">÷</span><code>${DIVISOR}</code></div>`));
+
+  E_SECS.forEach((sec,si)=>{
+    const d = el('div','fsec');
+    d.innerHTML = `<div class="fsec-h"><span class="n">${si+1}</span><b>${sec.n}</b><span>${sec.ks.length} 个字段</span></div>`;
+    const g = el('div','fgrid'+(sec.c===2?' c2':''));
+    sec.ks.forEach(k=>g.appendChild(buildField(r,k)));
+    d.appendChild(g); body.appendChild(d);
+  });
+  openModal('mEdit');
+  liveCalc();
+  setTimeout(()=>{ const f=body.querySelector('input:not([disabled]),select:not([disabled]),textarea'); },50);
+}
+function blankRec(){
+  const r = {__id:'NEW'+Date.now(), code:'SJ-2026-'+String(200+Math.floor(Math.random()*99)), name:'', src:'自有', partner:'否', addTime:'2026-09-10', prod:[], prodX:''};
+  return recalc(r);
+}
+function buildField(r,k){
+  const f = F[k];
+  const wrap = el('div','f-fld'+(f.type==='area'?' span'+(k==='need'||k==='it'?'1':'2'):''));
+  if(f.type==='area') wrap.className = 'f-fld span2';
+  if(['swot','comp','need','it'].includes(k)) wrap.className = 'f-fld span2';
+  wrap.appendChild(el('div','f-lab2',`${f.req?'<span class="req">*</span>':''}${esc(f.n)}${f.lock?'<svg class="lk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>':''}${f.auto||f.formula?'<span class="auto">自动</span>':''}`));
+
+  let ctl;
+  if(f.lock || f.auto || f.formula){
+    if(f.formula){
+      ctl = el('div','f-calc',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16v16H4z"/><path d="M8 8l8 8M16 8l-8 8"/></svg><span id="fxExpect">—</span>`);
+    } else if(f.type==='coef'||f.type==='calc'){
+      ctl = el('div','f-ro',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg><span data-auto="${k}">—</span>`);
+    } else if(f.type==='ro-sel'){
+      ctl = el('div','f-ro',`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><span data-ro="${k}">${esc(r[k]||'—')}</span>`);
+    } else {
+      ctl = el('input','inp'); ctl.value=r[k]||''; ctl.disabled=true;
+      ctl.style.cssText='background:repeating-linear-gradient(45deg,#F8FAFD,#F8FAFD 6px,#F3F6FB 6px,#F3F6FB 12px);border-style:dashed;color:var(--ink-3)';
+    }
+  } else if(f.type==='sel'){
+    const opts = f.dict;
+    ctl = MS({options: dictOf(opts).map(o=>({v:o.v, sub:o.desc||''})), value:r[k]?[r[k]]:[], multiple:false, searchable:dictOf(opts).length>5,
+      placeholder:'请选择'+f.n, onChange:v=>{ r[k]=v[0]||''; recalc(r); syncAuto(r); liveCalc(); }});
+  } else if(f.type==='msel'){
+    const holder = el('div','msx');
+    const ms = MS({options:DICT.product.map(o=>({v:o.v})), value:r.prod||[], placeholder:'选择产品（可多选）',
+      onChange:v=>{ r.prod=v; liveCalc(); }});
+    const ex = el('input','inp'); ex.value=r.prodX||''; ex.placeholder=f.extraPh||'哪类生态（额外输入）';
+    ex.oninput=()=>{ r.prodX = ex.value; };
+    holder.append(ms,ex); ctl = holder;
+  } else if(f.type==='date'){
+    ctl = el('input','inp'); ctl.type='date'; ctl.value=r[k]||'';
+    ctl.onchange=()=>{ r[k]=ctl.value; };
+  } else if(f.type==='num'){
+    ctl = el('input','inp'); ctl.type='number'; ctl.min=0; ctl.step='0.01'; ctl.value=r[k]||'';
+    ctl.placeholder='请输入金额（元）'; ctl.style.textAlign='right';
+    ctl.oninput=()=>{ r[k]= ctl.value===''?'':Number(ctl.value); recalc(r); liveCalc(); };
+  } else if(f.type==='area'){
+    ctl = el('textarea','inp'); ctl.value=r[k]||''; ctl.placeholder=f.ph||''; ctl.rows = k==='prog'||k==='swot'?4:3;
+    ctl.oninput=()=>{ r[k]=ctl.value; };
+  } else {
+    ctl = el('input','inp'); ctl.type='text'; ctl.value=r[k]||''; ctl.placeholder=f.ph||'';
+    ctl.oninput=()=>{ r[k]=ctl.value; };
+  }
+  wrap.appendChild(ctl);
+  if(f.ph && !f.lock) wrap.appendChild(el('div','f-tip','提示：'+esc(f.ph)));
+  else if(f.src) wrap.appendChild(el('div','f-tip','来源：'+esc(f.src)));
+  const msg = el('div','f-msg'); wrap.appendChild(msg);
+  EF[k]={wrap,ctl,msg};
+  syncAuto(r);
+  return wrap;
+}
+function syncAuto(r){
+  const set = (k,txt)=>{ const s=$(`#mEditBody [data-auto="${k}"]`); if(s) s.textContent=txt; };
+  set('srcC', r.srcC==null?'—（未选择来源）':'×'+r.srcC);
+  set('benchC', r.benchC==null?'—（未选择标杆类型）':'×'+r.benchC);
+  set('catC', r.catC==null?'—（未选择分类）':'×'+r.catC);
+  const rt=$(`#mEditBody [data-auto="rate"]`); if(rt) rt.textContent = r.rate==null?'—（未选择等级）':fmtPct(r.rate);
+  ['src','partner','code','name','addTime'].forEach(k=>{ const s=$(`#mEditBody [data-ro="${k}"]`); if(s) s.textContent = k==='prod'?(r[k]||[]).join('、'):(r[k]||'—'); });
+}
+function liveCalc(){
+  if(!EREC) return;
+  recalc(EREC);
+  const v = $('#liveV'), b=$('#liveB'), fx=$('#fxExpect');
+  const n = Number(EREC.expect)||0;
+  if(v) v.textContent = money(n)+' 元';
+  if(fx) fx.textContent = money(n)+' 元（≈'+fmtWan(n)+'）';
+  if(b) b.innerHTML = `合同金额 ${money(EREC.amount)||0}<br>× ${EREC.srcC??'—'} × ${EREC.benchC??'—'} × ${EREC.rate!=null?fmtPct(EREC.rate):'—'} × ${EREC.catC??'—'} ÷ ${DIVISOR}`;
+  syncAuto(EREC);
+}
+function saveEdit(){
+  const r = EREC; let bad=null;  // 必填校验
+  ['name','level','cat','amount'].forEach(k=>{
+    const f=F[k]; const e=EF[k]; if(!e) return;
+    const val = k==='amount'? Number(r[k])||0 : r[k];
+    const ok = k==='amount'? val>0 : !!String(val||'').trim();
+    e.msg.textContent = ok?'':(k==='amount'?'请填写大于 0 的预计我司合同金额':'请填写'+f.n);
+    e.msg.classList.toggle('on',!ok);
+    const c = e.ctl.classList?.contains('ms')?e.ctl.querySelector('.ms-btn'):e.ctl;
+    c && c.classList && c.classList.toggle('f-err',!ok);
+    if(!ok && !bad){ bad=k; }
+  });
+  if(bad){ toast('请补全必填项后再保存','err','校验未通过'); const w=EF[bad].wrap; w.scrollIntoView({behavior:'smooth',block:'center'}); return false; }
+  recalc(r);
+  const i = DATA.findIndex(x=>x.__id===r.__id);
+  if(i>=0){ DATA[i]=r; toast(`「${r.name}」已保存，预计达成 ${fmtWan(r.expect)}`,'ok','保存成功'); }
+  else { DATA.unshift(r); toast(`新建商机「${r.name}」成功`,'ok','已新增'); }
+  closeModal('mEdit');
+  if(S.drawerId===r.__id) openDrawer(r.__id);
+  buildFilters(); apply();
+  return true;
+}
+
+/* ---- Modal helpers ---- */
+function openModal(id){ $('#'+id).classList.add('on'); document.body.style.overflow='hidden'; }
+function closeModal(id){ $('#'+id).classList.remove('on'); if(!$$('.mask.on').length) document.body.style.overflow=''; }
+$$('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
+$$('.mask').forEach(m=>m.addEventListener('mousedown',e=>{ if(e.target===m) closeModal(m.id); }));
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    const openMS = $$('.ms.open');
+    if(openMS.length){ openMS.forEach(m=>m._close && m._close()); e.stopPropagation(); return; }  // 先关下拉
+    if(S.editing){ commitInline(false); return; }
+    const m = $$('.mask.on').pop(); if(m) closeModal(m.id);
+    else if($('#drawer').classList.contains('on')) closeDrawer();
+  }
+}, true);
+
+/* =========================================================================
+   导出（多选批量导出，导出当前可见列）
+   ========================================================================= */
+function csvCell(v){
+  if(Array.isArray(v)) v = v.join('、');
+  v = v==null?'':String(v);
+  return /[",\n\r]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v;
+}
+function exportRows(rows, tag){
+  if(!rows.length){ toast('没有可导出的数据','warn'); return; }
+  const fs = visFields();
+  const head = fs.map(f=>f.n).join(',');
+  const body = rows.map(r=>fs.map(f=>{
+    let v = r[f.k];
+    if(f.k==='rate') v = v==null?'':Math.round(v*1000)/10+'%';
+    if(f.k==='prod') v = (r.prod||[]).join('、')+(r.prodX?(' +'+r.prodX):'');
+    if(['srcC','benchC','catC'].includes(f.k)) v = v==null?'':v;
+    return csvCell(v);
+  }).join(',')).join('\r\n');
+  const blob = new Blob(['\ufeff'+head+'\r\n'+body], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  const ts = new Date().toISOString().slice(0,10);
+  a.href = URL.createObjectURL(blob);
+  a.download = `思维特项目商机管理_${tag}_${rows.length}条_${ts}.csv`;
+  a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  toast(`已导出 ${rows.length} 条 · ${fs.length} 列（Excel 可直接打开）`,'ok','导出成功');
+}
+
+/* =========================================================================
+   覆盖导入
+   ========================================================================= */
+let IMP = null;
+function parseCSV(text){
+  const rows=[]; let row=[], cur='', q=false;
+  text = text.replace(/^\ufeff/,'');
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else if(c==='"') q=true;
+    else if(c===','){ row.push(cur); cur=''; }
+    else if(c==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; }
+    else if(c==='\r'){ /* skip */ }
+    else cur+=c;
+  }
+  if(cur!==''||row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(r=>r.some(c=>String(c).trim()!==''));
+}
+function importRows(parsed, fileName){
+  // parsed: [{...中文表头: 值}]
+  const keyMap = {}; FIELDS.forEach(f=>keyMap[f.n]=f.k);
+  let add=0, upd=0, skip=0, err=0; const diffs=[];
+  parsed.forEach((row,i)=>{
+    const code = String(row['项目编号']||'').trim();
+    if(!code){ err++; diffs.push({no:i+2, code:'—', type:'错误', msg:'缺少项目编号，已跳过'}); return; }
+    const rec = {}; let hasField=false;
+    Object.keys(row).forEach(h=>{ const k=keyMap[h.trim()]; if(!k) return;
+      let v = row[h];
+      const f = F[k];
+      if(f.type==='num'||f.k==='actual'){ v = v===''||v==null?'':Number(String(v).replace(/[,，\s元]/g,''))||''; }
+      if(f.k==='prod'){ v = String(v||'').split(/[、,，]/).map(s=>s.trim()).filter(Boolean); const known=DICT.product.map(o=>o.v);
+        rec.prodX = v.filter(x=>!known.includes(x)).join('、'); v = v.filter(x=>known.includes(x)); }
+      rec[k]=v; hasField=true;
+    });
+    if(!hasField){ err++; diffs.push({no:i+2, code, type:'错误', msg:'无可识别字段列'}); return; }
+    const exist = DATA.find(d=>d.code===code);
+    if(exist){
+      const changed = Object.keys(rec).filter(k=>String(rec[k])!==String(exist[k]==null?'':exist[k]));
+      upd++; diffs.push({no:i+2, code, name:exist.name, type:'覆盖', msg:changed.length?`更新 ${changed.length} 个字段：${changed.slice(0,4).map(k=>F[k].n).join('、')}${changed.length>4?' 等':''}`:'内容与库中一致，无变化', n:changed.length});
+      Object.assign(exist, rec); recalc(exist);
+    } else {
+      const nr = Object.assign(blankRec(), rec, {code, __id:'R'+Date.now()+i});
+      recalc(nr); DATA.push(nr); add++;
+      diffs.push({no:i+2, code, name:nr.name, type:'新增', msg:'库中无此编号，作为新商机新增'});
+    }
+  });
+  IMP = {add,upd,skip,err,diffs,file:fileName,total:parsed.length};
+  renderImp();
+  buildFilters(); apply();
+  toast(`解析完成：覆盖 ${upd} 条 · 新增 ${add} 条 · 异常 ${err} 条`,'ok','导入预览');
+}
+function renderImp(){
+  const s = $('#impStat'), p = $('#impPrev');
+  if(!IMP){ s.style.display='none'; p.style.display='none'; $('#btnImpGo').disabled=true; return; }
+  s.style.display='flex'; p.style.display='block'; $('#btnImpGo').disabled=false;
+  s.innerHTML = `<div><b>${IMP.total}</b><span>文件行数</span></div>
+    <div class="c-ok"><b>${IMP.upd}</b><span>覆盖已有</span></div>
+    <div class="c-new"><b>${IMP.add}</b><span>新增商机</span></div>
+    <div class="c-err"><b>${IMP.err}</b><span>异常跳过</span></div>`;
+  const head = `<table class="spec"><thead><tr><th style="width:52px">行号</th><th style="width:120px">项目编号</th><th>项目名称</th><th style="width:70px">处理</th><th>说明</th></tr></thead><tbody>`;
+  p.innerHTML = head + IMP.diffs.slice(0,80).map(d=>`<tr>
+    <td style="color:var(--ink-4)">${d.no}</td>
+    <td><span class="code">${esc(d.code)}</span></td>
+    <td>${esc(d.name||'—')}</td>
+    <td><span class="tpill ${d.type==='新增'?'tp-msel':d.type==='覆盖'?'tp-num':'tp-ro'}" style="${d.type==='错误'?'background:var(--danger-l);color:var(--danger)':''}">${d.type}</span></td>
+    <td style="font-size:11.5px;color:var(--ink-3)">${esc(d.msg)}</td></tr>`).join('') + `</tbody></table>`
+    + (IMP.diffs.length>80?`<div style="padding:8px 12px;font-size:11.5px;color:var(--ink-4);text-align:center">仅展示前 80 条，共 ${IMP.diffs.length} 条处理记录</div>`:'');
+}
+function downloadTemplate(){
+  const head = FIELDS.map(f=>f.n).join(',');
+  const demo = FIELDS.map(f=>{
+    if(f.k==='code') return 'SJ-2026-0001';
+    if(f.k==='name') return '示例项目名称';
+    if(f.k==='prod') return 'SRM、MDM';
+    if(f.type==='num') return '1000000';
+    if(f.type==='date') return '2026-12-31';
+    if(f.auto||f.formula||f.lock) return '';
+    if(f.dict) return dictOf(f.dict)[0].v;
+    return '';
+  });
+  const blob = new Blob(['\ufeff'+head+'\r\n'+demo.map(csvCell).join(',')+'\r\n'],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='思维特项目商机管理_覆盖导入模板.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  toast('模板已下载（首行为 39 个字段中文名，灰色自动字段可留空）','ok','导出模板');
+}
+
+/* =========================================================================
+   列设置
+   ========================================================================= */
+function renderColSet(){
+  const box = $('#colSet'); box.innerHTML='';
+  GROUPS.forEach(g=>{
+    const items = FIELDS.filter(f=>(f.grp||'基础信息')===g);
+    if(!items.length) return;
+    const d = el('div','colset-grp');
+    const h = el('h5','',`${g}<span style="color:var(--ink-4);font-weight:500">（${items.length}）</span>`);
+    const bAll = el('button','','本组全选');
+    bAll.onclick=()=>{ items.forEach(f=>S.cols.add(f.k)); renderColSet(); renderTable(); };
+    h.appendChild(bAll); d.appendChild(h);
+    items.forEach(f=>{
+      const it = el('div','colset-item');
+      const on = S.cols.has(f.k);
+      it.innerHTML = `<span class="ck${on?' on':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+        <span class="nm2">${esc(f.n)}</span>${f.lock?'<span class="wt">同步锁定</span>':f.auto||f.formula?'<span class="wt">自动</span>':''}`;
+      it.onclick=()=>{ S.cols.has(f.k)?S.cols.delete(f.k):S.cols.add(f.k); renderColSet(); renderTable(); };
+      d.appendChild(it);
+    });
+    box.appendChild(d);
+  });
+  $('#colN').textContent = S.cols.size;
+}
+
+/* =========================================================================
+   数据字典与系数配置
+   ========================================================================= */
+let dictSnapshot = JSON.stringify(DICT)+'|'+DIVISOR;
+function renderDict(){
+  const g = $('#dictGrid'); g.innerHTML='';
+  const cards = [
+    {t:'商机来源系数', d:'关联字段「商机来源」自动带入，来源商机同步不可改', rows:DICT.src, key:'src',
+      cols:[{n:'商机来源',v:'v'},{n:'商机来源系数',c:'c',step:0.1}]},
+    {t:'标杆类型系数', d:'关联字段「标杆类型」自动带入', rows:DICT.bench, key:'bench',
+      cols:[{n:'标杆类型',v:'v'},{n:'标杆类型系数',c:'c',step:0.1}]},
+    {t:'项目等级与成单率', d:'关联字段「项目等级」自动带入；等级口径详见说明列', rows:DICT.level, key:'level',
+      cols:[{n:'项目等级',v:'v',sub:'desc'},{n:'成单率',c:'r',pct:true}]},
+    {t:'项目分类系数', d:'关联字段「项目分类」自动带入', rows:DICT.cat, key:'cat',
+      cols:[{n:'项目分类',v:'v',sub:'desc'},{n:'项目分类系数',c:'c',step:0.1}]},
+    {t:'项目阶段', d:'下拉单选，8 个阶段，用于阶段推进与漏斗分析', rows:DICT.stage, key:'stage',
+      cols:[{n:'阶段名称',v:'v'},{n:'标识色',color:'c'}], full:true},
+    {t:'涉及我司具体产品', d:'下拉多选，支持文本框额外输入「哪类生态」', rows:DICT.product, key:'product',
+      cols:[{n:'产品名称',v:'v'}], full:true},
+  ];
+  cards.forEach(cd=>{
+    const card = el('div','dict-card'+(cd.full?' full':''));
+    card.innerHTML = `<div class="dict-h"><b>${cd.t}</b><span class="desc">${cd.d}</span>
+      <div class="acts"><button class="btn btn-out btn-sm" data-add="${cd.key}">+ 新增枚举</button></div></div>`;
+    const t = el('table','dict');
+    const ths = cd.cols.map(c=>`<th>${c.n}</th>`).join('')+'<th style="width:56px">操作</th>';
+    t.innerHTML = `<thead><tr>${ths}</tr></thead><tbody>`+cd.rows.map((row,i)=>{
+      const tds = cd.cols.map(c=>{
+        if(c.c!=null){
+          const val = row[c.c];
+          return `<td>${c.pct
+            ? `<input class="dinput pct" type="number" step="1" min="0" max="100" value="${Math.round(val*100)}" data-dict="${cd.key}" data-i="${i}" data-f="${c.c}" data-pct="1"> %`
+            : `<input class="dinput" type="number" step="${c.step||0.05}" min="0" value="${val}" data-dict="${cd.key}" data-i="${i}" data-f="${c.c}">`}</td>`;
+        }
+        if(c.color!=null){
+          return `<td><span class="swatch" style="background:${row[c.color]}"></span><input type="color" value="${row[c.color]}" style="width:26px;height:22px;border:1px solid var(--line);border-radius:5px;padding:0;background:#fff;cursor:pointer" data-dict="${cd.key}" data-i="${i}" data-f="${c.color}" data-color="1"></td>`;
+        }
+        return `<td><b style="font-weight:600">${esc(row[c.v])}</b>${c.sub&&row[c.sub]?`<div style="font-size:10.5px;color:var(--ink-4);line-height:1.5;margin-top:2px;max-width:430px">${esc(row[c.sub])}</div>`:''}</td>`;
+      }).join('');
+      return `<tr><td class="idx">${String(i+1).padStart(2,'0')}</td>${tds.replace(/^/,'')}<td><button class="btn btn-ghost btn-sm" data-del="${cd.key}:${i}" title="删除枚举"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:13px;height:13px;color:var(--ink-4)"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></td></tr>`;
+    }).join('')+`</tbody>`;
+    // 序号列插入
+    t.querySelectorAll('thead tr').forEach(tr=>tr.insertAdjacentHTML('afterbegin','<th style="width:40px">#</th>'));
+    card.appendChild(t);
+    g.appendChild(card);
+  });
+  // 公式配置卡
+  const fc = el('div','dict-card full');
+  fc.innerHTML = `<div class="dict-h"><b>计算公式与固定参数</b><span class="desc">预计达成金额计算口径（可配置除数）</span></div>
+    <div style="padding:14px">
+      <div class="formula"><span style="font-weight:640">预计达成金额</span><span class="eq">=</span><code>预计我司合同金额</code><span class="eq">×</span><code>商机来源系数</code><span class="eq">×</span><code>标杆类型系数</code><span class="eq">×</span><code>成单率</code><span class="eq">×</span><code>项目分类系数</code><span class="eq">÷</span>
+        <input class="dinput" type="number" step="0.05" min="0.1" id="divisorInput" value="${DIVISOR}" style="width:70px"></div>
+      <div class="f-tip" style="margin-top:9px">除数默认 ${DIVISOR}（需求口径固定值）；调整后所有商机的预计达成金额立即重算。</div>
+    </div>`;
+  g.appendChild(fc);
+  bindDict();
+  markDirty();
+}
+function bindDict(){
+  $$('#dictGrid .dinput, #dictGrid input[type=color]').forEach(inp=>{
+    if(inp.id==='divisorInput'){
+      inp.oninput = ()=>{ const v=Number(inp.value); if(v>0){ DIVISOR=v; inp.classList.add('dirty'); recalcAll(); markDirty(); } };
+      return;
+    }
+    inp.oninput = ()=>{
+      const k=inp.dataset.dict, i=+inp.dataset.i, f=inp.dataset.f;
+      if(!k || !DICT[k] || !DICT[k][i]) return;
+      if(inp.dataset.pct) DICT[k][i][f] = Math.min(100,Math.max(0,Number(inp.value)||0))/100;
+      else if(inp.dataset.color) DICT[k][i][f] = inp.value;
+      else DICT[k][i][f] = Number(inp.value)||0;
+      inp.classList.add('dirty'); recalcAll(); markDirty();
+    };
+  });
+  $$('[data-del]').forEach(b=>b.onclick=()=>{
+    const [k,i]=b.dataset.del.split(':'); const row=DICT[k][+i];
+    const used = DATA.filter(r=>Object.values(r).includes(row.v)).length;
+    if(used){ toast(`「${row.v}」已被 ${used} 条商机使用，不可删除（可停用）`,'err','删除失败'); return; }
+    DICT[k].splice(+i,1); renderDict(); buildFilters(); apply(); toast(`已删除枚举「${row.v}」`,'ok');
+  });
+  $$('[data-add]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.add;
+    const nm = prompt('新增枚举值名称：'); if(!nm||!nm.trim()) return;
+    const row = {v:nm.trim()};
+    if(k==='src'||k==='bench'||k==='cat') row.c = 1;
+    if(k==='level') { row.r = 0.1; row.desc=''; }
+    if(k==='stage') row.c = '#60A5FA';
+    DICT[k].push(row); renderDict(); buildFilters(); apply(); toast(`已新增枚举「${nm.trim()}」，请设置系数`,'ok');
+  });
+}
+function recalcAll(){ DATA.forEach(recalc); renderStats(); renderTable(); }
+function markDirty(){
+  const d = (JSON.stringify(DICT)+'|'+DIVISOR) !== dictSnapshot;
+  $('#dictDirty').innerHTML = d ? '<b style="color:var(--warn)">有未保存变更（系数修改已实时生效于本页）</b>' : '无未保存变更';
+}
+
+/* =========================================================================
+   字段与交互说明表
+   ========================================================================= */
+const TYPE_MAP = {text:['tp-text','单行文本'],area:['tp-area','多行文本'],sel:['tp-sel','下拉单选'],'ro-sel':['tp-sel','下拉单选'],msel:['tp-msel','下拉多选'],date:['tp-date','日期选择'],num:['tp-num','数字'],coef:['tp-calc','系数（自动）'],calc:['tp-calc','自动带入'],'calc2':['tp-calc','公式计算'],ro:['tp-ro','只读'],};
+function renderSpec(){
+  const tb = $('#specBody'); tb.innerHTML='';
+  FIELDS.forEach((f,i)=>{
+    const t = TYPE_MAP[f.type]||['tp-text','文本'];
+    let extra = '';
+    if(f.dict){ const ds = dictOf(f.dict); extra = `枚举 ${ds.length} 项：${ds.slice(0,4).map(o=>o.v).join('、')}${ds.length>4?' …':''}`; }
+    if(f.formula) extra = '预计我司合同金额 × 商机来源系数 × 标杆类型系数 × 成单率 × 项目分类系数 ÷ 1.3';
+    const canEdit = f.lock? '<span class="tpill tp-ro">不可修改</span>' : (f.auto||f.formula? '<span class="tpill tp-calc">系统自动</span>' : '<span class="tpill tp-num">可编辑</span>');
+    const tr = el('tr');
+    tr.innerHTML = `<td style="color:var(--ink-4);font-variant-numeric:tabular-nums">${String(i+1).padStart(2,'0')}</td>
+      <td class="fn">${esc(f.n)}${f.req?' <span style="color:var(--danger)">*</span>':''}</td>
+      <td class="tp"><span class="tpill ${t[0]}">${t[1]}</span>${f.extra?'<span class="tpill tp-msel" style="margin-left:4px">+额外输入</span>':''}</td>
+      <td style="font-size:11.5px;color:var(--ink-3)">${esc(f.src||'—')}</td>
+      <td>${canEdit}</td>
+      <td>${f.ph?`<span style="color:var(--ink-3)">提示：${esc(f.ph)}</span><br>`:''}<span style="font-size:11.5px;color:var(--ink-4)">${esc(extra)}${f.grp?` · 归属分组「${esc(f.grp)}」`:''}${f.w?` · 列宽 ${f.w}px`:''}</span></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+/* =========================================================================
+   事件绑定
+   ========================================================================= */
+let clickTimer=null;
+const tbody = $('#tbody');
+
+// 勾选
+tbody.addEventListener('click', e=>{
+  const ck = e.target.closest('[data-ck]');
+  if(ck){
+    const id = ck.dataset.ck;
+    S.sel.has(id)?S.sel.delete(id):S.sel.add(id);
+    ck.classList.toggle('on', S.sel.has(id));
+    ck.closest('tr').classList.toggle('sel', S.sel.has(id));
+    updateSelBar(); return;
+  }
+  const act = e.target.closest('[data-act]');
+  if(act){
+    const id = act.closest('tr').dataset.id;
+    if(act.dataset.act==='edit') openEdit(id);
+    else openDrawer(id);
+    return;
+  }
+  if(e.target.closest('.cell-edit')||e.target.closest('td.editing')) return;
+  const tr = e.target.closest('tr[data-id]'); if(!tr) return;
+  clearTimeout(clickTimer);
+  clickTimer = setTimeout(()=>openDrawer(tr.dataset.id), 210);
+});
+// 全选
+$('#theadRow').addEventListener('click', e=>{
+  if(!e.target.closest('#ckAll')) return;
+  const all = S.view.every(r=>S.sel.has(r.__id));
+  S.view.forEach(r=> all?S.sel.delete(r.__id):S.sel.add(r.__id));
+  renderTable(); updateSelBar();
+});
+// 双击实时编辑
+tbody.addEventListener('dblclick', e=>{
+  const td = e.target.closest('td.editable');
+  if(!td) return;
+  clearTimeout(clickTimer);
+  e.preventDefault();
+  startInline(td);
+});
+tbody.addEventListener('keydown', e=>e.stopPropagation());
+// 横向滚动阴影
+$('#tblScroll').addEventListener('scroll', function(){ this.classList.toggle('scrolled', this.scrollLeft>4); });
+
+// 展开/收起
+$('#segExpand').addEventListener('click', e=>{
+  const b = e.target.closest('button[data-exp]'); if(!b) return;
+  $$('#segExpand button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  S.expanded = b.dataset.exp==='1';
+  $$('#tbody tr').forEach(tr=>tr.classList.toggle('expanded', S.expanded));
+  toast(S.expanded?'已展开全部多行文本（换行完整显示）':'已收起全部多行文本（截断为一行）','info','视图切换');
+});
+
+// 关键字搜索
+$('#kw').addEventListener('input', e=>{
+  S.q.kw = e.target.value.trim();
+  $('#searchBox').classList.toggle('has', !!e.target.value);
+  clearTimeout(window.__kwt); window.__kwt = setTimeout(()=>apply(), 220);
+});
+$('#kw').addEventListener('keydown', e=>{ if(e.key==='Enter') apply(); });
+$('#kwClear').onclick = ()=>{ $('#kw').value=''; S.q.kw=''; $('#searchBox').classList.remove('has'); apply(); };
+$('#btnQuery').onclick = ()=>{ apply(); toast(`检索完成，命中 ${S.view.length} 条商机`,'ok'); };
+$('#btnReset').onclick = ()=>{
+  S.q = {kw:'',ms:{},dr:{},nr:{},onlyRisk:''}; $('#kw').value=''; $('#searchBox').classList.remove('has');
+  buildFilters(); apply(); toast('筛选条件已重置','info');
+};
+$('#btnClearChips').onclick = ()=>$('#btnReset').click();
+$('#btnMore').onclick = ()=>{
+  const f = $('#filter'); f.classList.toggle('expanded');
+  $('#btnMore').innerHTML = f.classList.contains('expanded')
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 18h4M7 12h10M4 6h16"/></svg>收起筛选'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>高级筛选';
+};
+
+// 工具栏
+$('#btnExport').onclick = ()=>{
+  const rows = S.sel.size? S.view.filter(r=>S.sel.has(r.__id)) : S.view;
+  exportRows(rows, S.sel.size?'已选':'全部筛选结果');
+};
+$('#btnSelExport').onclick = ()=>exportRows(S.view.filter(r=>S.sel.has(r.__id)),'已选');
+$('#btnSelClear').onclick = ()=>{ S.sel.clear(); renderTable(); updateSelBar(); };
+$('#btnNew').onclick = ()=>openEdit(null);
+$('#btnImport').onclick = ()=>{ IMP=null; renderImp(); openModal('mImp'); };
+$('#btnCols').onclick = ()=>{ renderColSet(); openModal('mCols'); };
+$('#colAll').onclick = ()=>{ FIELDS.forEach(f=>S.cols.add(f.k)); renderColSet(); renderTable(); };
+$('#colMinimal').onclick = ()=>{ S.cols=new Set(['code','name','level','rate','cat','stage','prod','amount','expect','year','quarter']); renderColSet(); renderTable(); toast('已切换为精简视图（11 列）','info'); };
+$('#btnDensity').onclick = ()=>{
+  S.dense=!S.dense;
+  document.documentElement.style.setProperty('--fz', S.dense?'12px':'13px');
+  const h = S.dense?'32px':'40px';
+  $('#grid').querySelectorAll('tbody td').forEach(td=>{ td.style.height=h; });
+  $('#grid').querySelectorAll('thead th').forEach(th=>{ th.style.height=S.dense?'32px':'38px'; });
+  toast(S.dense?'紧凑模式：行高 32px':'标准模式：行高 40px','info','密度切换');
+};
+$('#btnDictTop').onclick = ()=>{ goPane('p-dict'); };
+
+// 批量修改
+$('#btnSelEdit').onclick = ()=>{
+  if(!S.sel.size){ toast('请先勾选商机','warn'); return; }
+  const sel = FIELDS.filter(f=>f.dict && !f.lock && !f.auto && !f.formula && f.type==='sel');
+  $('#batchField').innerHTML = sel.map(f=>`<option value="${f.k}">${esc(f.n)}</option>`).join('');
+  $('#mBatchSub').textContent = `已选 ${S.sel.size} 条商机 · 保存后系数与预计达成金额自动重算`;
+  fillBatchVal(); openModal('mBatch');
+};
+$('#batchField').onchange = fillBatchVal;
+function fillBatchVal(){
+  const k = $('#batchField').value; const f = F[k];
+  $('#batchVal').innerHTML = dictOf(f.dict).map(o=>`<option value="${esc(o.v)}">${esc(o.v)}</option>`).join('');
+}
+$('#btnBatchGo').onclick = ()=>{
+  const k = $('#batchField').value, v = $('#batchVal').value;
+  let n=0; DATA.forEach(r=>{ if(S.sel.has(r.__id)){ r[k]=v; recalc(r); n++; } });
+  closeModal('mBatch'); buildFilters(); apply();
+  toast(`已将 ${n} 条商机的「${F[k].n}」统一修改为「${v}」`,'ok','批量修改成功');
+};
+
+// Tabs
+function goPane(id){
+  $$('.tab').forEach(t=>t.classList.toggle('on', t.dataset.pane===id));
+  $$('.pane').forEach(p=>p.classList.toggle('on', p.id===id));
+  if(id==='p-dict') renderDict();
+  if(id==='p-spec') renderSpec();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+$('#tabs').addEventListener('click', e=>{ const t=e.target.closest('.tab'); if(t) goPane(t.dataset.pane); });
+
+// Drawer
+$('#dClose').onclick = closeDrawer;
+$('#dMask').onclick = closeDrawer;
+$('#dEdit').onclick = ()=>openEdit(S.drawerId);
+$('#dEdit2').onclick = ()=>openEdit(S.drawerId);
+$('#dPrev').onclick = ()=>stepDrawer(-1);
+$('#dNext').onclick = ()=>stepDrawer(1);
+function stepDrawer(d){
+  const i = S.view.findIndex(r=>r.__id===S.drawerId);
+  const j = i+d;
+  if(j<0||j>=S.view.length){ toast(d<0?'已是第一条':'已是最后一条','warn'); return; }
+  openDrawer(S.view[j].__id);
+}
+
+// 编辑弹窗
+$('#mEditSave').onclick = ()=>{ saveEdit(); };
+$('#mEditSaveNext').onclick = ()=>{
+  const curId = EREC && EREC.__id;
+  if(!saveEdit()) return;
+  let i = S.view.findIndex(r=>r.__id===curId);
+  if(i<0) i = 0;
+  if(i+1 < S.view.length){ const nx=S.view[i+1].__id; openDrawer(nx); openEdit(nx); }
+  else { closeDrawer(); toast('已是最后一条商机','info'); }
+};
+
+// 字典
+$('#btnDictSave').onclick = ()=>{
+  dictSnapshot = JSON.stringify(DICT)+'|'+DIVISOR; markDirty(); recalcAll();
+  toast('字典与系数配置已保存，所有商机预计达成金额已重算','ok','保存成功');
+};
+$('#btnDictReset').onclick = ()=>{
+  if(!confirm('确认还原为需求文档中的默认系数与成单率？')) return;
+  DICT.src.forEach((o,i)=>o.c=[1.2,0.7,1.0,0.5][i]);
+  DICT.bench.forEach((o,i)=>o.c=[1.5,1.3,1.2,1.2,1.2,1.0][i]);
+  DICT.level.forEach((o,i)=>o.r=[1,0.75,0.65,0.5,0.2,0.1,0.05,0.02,0][i]);
+  DICT.cat.forEach((o,i)=>o.c=[0.3,1.0][i]);
+  DIVISOR = 1.3;
+  renderDict(); recalcAll(); toast('已还原默认系数与公式除数','info');
+};
+$('#btnSpecExport').onclick = ()=>{
+  const head='序号,字段名称,控件类型,数据来源,是否可编辑,说明/提示语';
+  const rows = FIELDS.map((f,i)=>{
+    const t=TYPE_MAP[f.type]||['','文本'];
+    return [i+1,f.n,t[1],f.src||'',f.lock?'不可修改':(f.auto||f.formula?'系统自动':'可编辑'),(f.ph||'')+(f.formula?'预计我司合同金额×商机来源系数×标杆类型系数×成单率×项目分类系数÷1.3':'')].map(csvCell).join(',');
+  });
+  const blob=new Blob(['\ufeff'+head+'\r\n'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='思维特项目商机管理_字段说明.csv'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  toast('字段说明已导出（39 项）','ok');
+};
+
+// 导入
+const dz = $('#dropZone'), fi = $('#fileInput');
+dz.onclick = ()=>fi.click();
+['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('hover');}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('hover');}));
+dz.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; f&&handleFile(f); });
+fi.onchange = e=>{ const f=e.target.files[0]; f&&handleFile(f); };
+$('#btnTpl').onclick = downloadTemplate;
+function handleFile(file){
+  if(/\.(xlsx|xls)$/i.test(file.name)){
+    toast('原型演示版仅支持 CSV 解析；生产环境由后端解析 xlsx/xls（可先「下载导入模板」另存为 CSV）','warn','格式提示');
+    dz.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg><b>${esc(file.name)}</b><p>已接收文件 · 原型演示请改用 CSV，或点击下方「载入示例数据」查看导入效果</p>`;
+    return;
+  }
+  const rd = new FileReader();
+  rd.onload = ()=>{
+    const rows = parseCSV(String(rd.result));
+    if(rows.length<2){ toast('文件无有效数据行','err'); return; }
+    const head = rows[0].map(h=>String(h).trim());
+    const data = rows.slice(1).map(r=>{ const o={}; head.forEach((h,i)=>o[h]=r[i]||''); return o; });
+    dz.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#0E9F6E" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg><b>${esc(file.name)}</b><p>解析成功：${data.length} 行 · 识别 ${head.filter(h=>FIELDS.some(f=>f.n===h)).length} 个字段列</p>`;
+    importRows(data, file.name);
+  };
+  rd.readAsText(file,'utf-8');
+}
+$('#btnDemoImp').onclick = ()=>{
+  const demo = [
+    {'项目编号':'SJ-2026-0137','项目名称':'恒逸石化供应链协同平台（SRM）二期','预计我司合同金额':'4120000','标杆类型':'100万以上标杆(化工行业，纺织行业)','项目等级':'SS（内定）','项目分类':'有效商机','项目阶段':'报价','项目跟进进度':'2026-09-08 客户完成集团审批，进入合同签署流程；预计 09-25 签约。','实际达成金额':'0'},
+    {'项目编号':'SJ-2026-0201','项目名称':'三江化工采购寻源与供应商门户（导入新增）','商机来源':'公司提供','标杆类型':'标杆(化工行业，纺织行业)','是否伙伴引入':'否','项目等级':'B（IT负责人站台或者业务负责人站台）','项目分类':'有效商机','项目阶段':'调研','涉及我司具体产品':'SRM、AI','公司行业':'基础化工','项目预算':'1600000','预计我司合同金额':'1280000','预计合同落地年份':'2027','预计合同落单季度':'Q2','预计合同落单月份':'5月','项目需求与范围':'寻源比价 + 供应商门户，覆盖 2 家工厂。','项目跟进进度':'2026-09-05 完成首次需求调研。'},
+    {'项目编号':'','项目名称':'缺编号异常行','预计我司合同金额':'100000'},
+  ];
+  dz.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#0E9F6E" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg><b>demo_import_20260910.csv</b><p>演示文件解析成功：3 行 · 识别 ${Object.keys(demo[0]).filter(h=>FIELDS.some(f=>f.n===h)).length}+ 个字段列</p>`;
+  importRows(demo,'demo_import_20260910.csv');
+};
+$('#btnImpGo').onclick = ()=>{
+  if(!IMP) return;
+  closeModal('mImp');
+  toast(`覆盖导入完成：覆盖 ${IMP.upd} 条 · 新增 ${IMP.add} 条 · 异常 ${IMP.err} 条，日志已留存`,'ok','导入成功');
+  IMP=null; renderImp();
+};
+
+/* =========================================================================
+   初始化
+   ========================================================================= */
+function init(){
+  buildFilters();
+  renderDict();
+  apply();
+  updateSelBar();
+  // 首屏引导提示
+  setTimeout(()=>toast('双击单元格可实时修改，单击行查看完整详情，工具栏可切换全部展开/收起','info','操作提示'), 700);
+}
+init();
+</script>
+</body>
+</html>
