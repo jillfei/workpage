@@ -558,6 +558,139 @@
     .project-tag:hover .project-tag-remove { opacity: 1; }
     .project-tag-remove:hover { background: #e0e0e0; color: #666; }
 
+    /* Knowledge base selector dropdown */
+    .kb-sel-dropdown-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+    .kb-sel-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 280px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border: 1px solid #e8e8e8;
+      padding: 8px 0;
+      display: none;
+      z-index: 100;
+    }
+    .kb-sel-dropdown.show { display: block; }
+    .kb-sel-search-wrap {
+      padding: 4px 10px 6px;
+    }
+    .kb-sel-search {
+      width: 100%;
+      padding: 7px 10px 7px 32px;
+      border-radius: 7px;
+      border: 1px solid #e0e0e0;
+      background: #f5f5f5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 10px center no-repeat;
+      font-size: 13px;
+      outline: none;
+      color: #333;
+    }
+    .kb-sel-search:focus { border-color: #4a6cf7; background-color: #fff; }
+    .kb-sel-search::placeholder { color: #bbb; }
+    .kb-sel-list-wrap {
+      max-height: 240px;
+      overflow-y: auto;
+    }
+    .kb-sel-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #333;
+      position: relative;
+    }
+    .kb-sel-item:hover { background: #f5f5f5; }
+    .kb-sel-item.selected { background: #f0f4ff; }
+    .kb-sel-item.selected::after {
+      content: '\2713';
+      position: absolute;
+      right: 14px;
+      color: #4a6cf7;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .kb-sel-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      color: #fff;
+    }
+    .kb-sel-name {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .kb-sel-divider {
+      height: 1px;
+      background: #e8e8e8;
+      margin: 6px 0;
+    }
+    .kb-sel-manage {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: #555;
+    }
+    .kb-sel-manage:hover { background: #f5f5f5; }
+    .kb-sel-manage svg { width: 16px; height: 16px; color: #555; flex-shrink: 0; }
+    .kb-sel-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px 4px 8px;
+      background: #f0f4ff;
+      border-radius: 7px;
+      font-size: 12px;
+      color: #4a6cf7;
+      line-height: 17px;
+      border: 1px solid #d0d8ff;
+    }
+    .kb-sel-tag-avatar {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .kb-sel-tag-remove {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      color: #999;
+      font-size: 10px;
+    }
+    .kb-sel-tag:hover .kb-sel-tag-remove { opacity: 1; }
+    .kb-sel-tag-remove:hover { background: #e0e0e0; color: #666; }
+
     /* Skill dropdown */
     .skill-dropdown {
       position: absolute;
@@ -1885,7 +2018,7 @@
 
       <!-- File attachment trigger -->
       <div class="file-row" style="position:relative;">
-        <div class="project-dropdown-wrapper" style="position:relative;display:inline-block;">
+        <div class="project-dropdown-wrapper" id="projectDropdownWrapper" style="position:relative;display:inline-block;">
           <div class="file-trigger" id="addProjectBtn" onclick="toggleProjectDropdown()">
 		    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
 		    添加项目
@@ -1919,6 +2052,47 @@
               使用现有文件夹
             </div>
           </div>
+          <div id="projectTagsArea" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
+        </div>
+        <div class="kb-sel-dropdown-wrapper" id="kbSelWrapper">
+          <div class="file-trigger" id="addKbSelBtn" onclick="toggleKbSelDropdown()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            选择知识库
+            <svg style="width:10px;height:10px;color:#aaa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="kb-sel-dropdown" id="kbSelDropdown">
+            <div class="kb-sel-search-wrap">
+              <input type="text" class="kb-sel-search" placeholder="搜索知识库" id="kbSelSearch" oninput="filterKbSelItems()" />
+            </div>
+            <div class="kb-sel-list-wrap" id="kbSelList">
+              <div class="kb-sel-item" data-name="需求文档存档库" data-avatar="👨‍💻" data-color="#4a6cf7" onclick="selectKbSelItem(this)">
+                <div class="kb-sel-avatar" style="background:#4a6cf7">👨‍💻</div>
+                <span class="kb-sel-name">需求文档存档库</span>
+              </div>
+              <div class="kb-sel-item" data-name="办公技巧私库" data-avatar="👩‍" data-color="#8b5cf6" onclick="selectKbSelItem(this)">
+                <div class="kb-sel-avatar" style="background:#8b5cf6">👩‍</div>
+                <span class="kb-sel-name">办公技巧私库</span>
+              </div>
+              <div class="kb-sel-item" data-name="会议纪要知识库" data-avatar="👨" data-color="#10b981" onclick="selectKbSelItem(this)">
+                <div class="kb-sel-avatar" style="background:#10b981">👨</div>
+                <span class="kb-sel-name">会议纪要知识库</span>
+              </div>
+              <div class="kb-sel-item" data-name="周报知识库" data-avatar="💼" data-color="#f59e0b" onclick="selectKbSelItem(this)">
+                <div class="kb-sel-avatar" style="background:#f59e0b">💼</div>
+                <span class="kb-sel-name">周报知识库</span>
+              </div>
+              <div class="kb-sel-item" data-name="行业调研资料库" data-avatar="👩‍" data-color="#ec4899" onclick="selectKbSelItem(this)">
+                <div class="kb-sel-avatar" style="background:#ec4899">👩‍</div>
+                <span class="kb-sel-name">行业调研资料库</span>
+              </div>
+            </div>
+            <div class="kb-sel-divider"></div>
+            <div class="kb-sel-manage" onclick="parentClick('./zsk/list.html')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              管理知识库
+            </div>
+          </div>
+          <div id="kbSelTagsArea" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"></div>
         </div>
         <div class="perm-dropdown-wrapper">
           <button class="toolbar-btn" id="permBtn" title="默认权限" onclick="togglePermDropdown()">
@@ -1950,7 +2124,6 @@
             </div>
           </div>
         </div>
-        <div id="projectTagsArea" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:-6px;"></div>
       </div>
 
     </div>
@@ -2299,6 +2472,72 @@
       }
       addedProjects.add(name);
       renderProjectTags();
+    }
+
+    // Knowledge base selector logic (multi-select)
+    const selectedKbSelItems = new Map();
+
+    function toggleKbSelDropdown() {
+      const dropdown = document.getElementById('kbSelDropdown');
+      dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        updateKbSelSelectedState();
+        setTimeout(() => document.getElementById('kbSelSearch').focus(), 50);
+      }
+    }
+
+    function selectKbSelItem(item) {
+      const name = item.dataset.name;
+      if (selectedKbSelItems.has(name)) {
+        selectedKbSelItems.delete(name);
+        item.classList.remove('selected');
+      } else {
+        selectedKbSelItems.set(name, {
+          name: name,
+          avatar: item.dataset.avatar,
+          color: item.dataset.color
+        });
+        item.classList.add('selected');
+      }
+      renderKbSelTags();
+    }
+
+    function removeKbSel(name) {
+      selectedKbSelItems.delete(name);
+      const item = document.querySelector(`#kbSelList .kb-sel-item[data-name="${name}"]`);
+      if (item) item.classList.remove('selected');
+      renderKbSelTags();
+    }
+
+    function renderKbSelTags() {
+      const area = document.getElementById('kbSelTagsArea');
+      const btn = document.getElementById('addKbSelBtn');
+      area.innerHTML = '';
+      selectedKbSelItems.forEach((item, name) => {
+        const tag = document.createElement('div');
+        tag.className = 'kb-sel-tag';
+        tag.innerHTML = `
+          <div class="kb-sel-tag-avatar" style="background:${item.color}">${item.avatar}</div>
+          <span onclick="toggleKbSelDropdown()" style="cursor:pointer;">${item.name}</span>
+          <div class="kb-sel-tag-remove" onclick="removeKbSel('${name}')">✕</div>
+        `;
+        area.appendChild(tag);
+      });
+      btn.style.display = selectedKbSelItems.size > 0 ? 'none' : 'inline-flex';
+    }
+
+    function filterKbSelItems() {
+      const query = document.getElementById('kbSelSearch').value.toLowerCase();
+      document.querySelectorAll('#kbSelList .kb-sel-item').forEach(item => {
+        const name = item.dataset.name.toLowerCase();
+        item.style.display = name.includes(query) ? '' : 'none';
+      });
+    }
+
+    function updateKbSelSelectedState() {
+      document.querySelectorAll('#kbSelList .kb-sel-item').forEach(item => {
+        item.classList.toggle('selected', selectedKbSelItems.has(item.dataset.name));
+      });
     }
 
     // Skill dropdown logic
@@ -2916,9 +3155,12 @@
         document.querySelector('.select-dropdown-connector-item').classList.remove('connector-open');
       }
       const projectWrapper = document.querySelector('.project-dropdown-wrapper');
-      const projectTagsArea = document.getElementById('projectTagsArea');
-      if (!projectWrapper.contains(e.target) && !projectTagsArea.contains(e.target)) {
+      if (!projectWrapper.contains(e.target)) {
         document.getElementById('projectDropdown').classList.remove('show');
+      }
+      const kbSelWrapper = document.querySelector('.kb-sel-dropdown-wrapper');
+      if (!kbSelWrapper.contains(e.target)) {
+        document.getElementById('kbSelDropdown').classList.remove('show');
       }
       const mcpWrapper = document.querySelector('.mcp-dropdown-wrapper');
       if (!mcpWrapper.contains(e.target)) {
