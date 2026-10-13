@@ -687,24 +687,24 @@
           </select>
           <select class="select" id="typeFilter" onchange="filterFiles()">
             <option value="">文件类型</option>
-            <option value="md">Markdown (.md)</option>
-            <option value="txt">文本文件 (.txt)</option>
-            <option value="pdf">PDF (.pdf)</option>
-            <option value="docx">Word (.docx)</option>
-            <option value="xlsx">Excel (.xlsx)</option>
-            <option value="pptx">PPT (.pptx)</option>
-            <option value="image">图片 (.jpg/.png/.webp/.gif)</option>
+            <option value="md">Markdown</option>
+            <option value="txt">文本文件</option>
+            <option value="pdf">PDF</option>
+            <option value="docx">Word</option>
+            <option value="xlsx">Excel</option>
+            <option value="pptx">PPT</option>
+            <option value="image">图片</option>
           </select>
           <div class="batch-bar" id="batchBar">
             <span class="batch-info">已选择 <strong id="selCount">0</strong> 个文件</span>
             <div class="batch-actions">
-              <button class="btn" onclick="batchMove()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l-3 3 3 3"/><path d="M9 5l3-3 3 3"/><path d="M2 12h20"/><path d="M19 9l3 3-3 3"/><path d="M9 19l3 3 3-3"/><path d="M12 2v20"/></svg>
-                批量移动
-              </button>
               <button class="btn" onclick="addToConversation()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="14"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
                 添加到会话
+              </button>
+              <button class="btn" onclick="batchMove()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l-3 3 3 3"/><path d="M9 5l3-3 3 3"/><path d="M2 12h20"/><path d="M19 9l3 3-3 3"/><path d="M9 19l3 3 3-3"/><path d="M12 2v20"/></svg>
+                批量移动
               </button>
               <button class="btn btn-danger" onclick="batchDelete()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
@@ -761,7 +761,7 @@
           <svg class="alert-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
           <div>
             <div class="alert-title">支持的文件格式</div>
-            <div class="alert-body">Markdown (.md) · 文本文件 (.txt) · PDF (.pdf) · Word (.docx) · Excel (.xlsx) · PPT (.pptx) · 图片 (.jpg/.jpeg/.png/.webp/.gif) </div>
+            <div class="alert-body">Markdown · 文本文件 · PDF · Word · Excel · PPT · 图片 </div>
           </div>
         </div>
         <div class="form-group">
@@ -1028,13 +1028,13 @@
     }
 
     const TYPE_CONFIG = {
-      md:     { label: 'Markdown', ext: '.md', color: '#6366f1', bg: '#eef2ff', icon: 'M' },
-      txt:    { label: '文本文件', ext: '.txt', color: '#8b5cf6', bg: '#f5f3ff', icon: 'T' },
-      pdf:    { label: 'PDF', ext: '.pdf', color: '#ef4444', bg: '#fef2f2', icon: 'P' },
-      docx:   { label: 'Word', ext: '.docx', color: '#3b82f6', bg: '#eff6ff', icon: 'W' },
-      xlsx:   { label: 'Excel', ext: '.xlsx', color: '#10b981', bg: '#ecfdf5', icon: 'X' },
-      pptx:   { label: 'PPT', ext: '.pptx', color: '#f59e0b', bg: '#fffbeb', icon: 'S' },
-      image:  { label: '图片', ext: '.jpg/.png/.webp/.gif', color: '#ec4899', bg: '#fdf2f8', icon: 'I' }
+      md:     { label: 'Markdown', ext: '', color: '#6366f1', bg: '#eef2ff', icon: 'M' },
+      txt:    { label: '文本文件', ext: '', color: '#8b5cf6', bg: '#f5f3ff', icon: 'T' },
+      pdf:    { label: 'PDF', ext: '', color: '#ef4444', bg: '#fef2f2', icon: 'P' },
+      docx:   { label: 'Word', ext: '', color: '#3b82f6', bg: '#eff6ff', icon: 'W' },
+      xlsx:   { label: 'Excel', ext: '', color: '#10b981', bg: '#ecfdf5', icon: 'X' },
+      pptx:   { label: 'PPT', ext: '', color: '#f59e0b', bg: '#fffbeb', icon: 'S' },
+      image:  { label: '图片', ext: '', color: '#ec4899', bg: '#fdf2f8', icon: 'I' }
     };
 
     function openCapacityDetail() {
@@ -1144,8 +1144,16 @@
       }
     }
     function reparseAll() {
-      files.forEach(f => { if (f.status === '解析失败') { f.status = '待解析'; delete f.reason; } });
-      renderTable();
+      const failedFiles = files.filter(f => f.status === '解析失败');
+      if (failedFiles.length === 0) {
+        showToast('没有需要重新解析的文件');
+        return;
+      }
+      showConfirm('重新解析', `确定要重新解析 ${failedFiles.length} 个解析失败的文件吗？`, () => {
+        failedFiles.forEach(f => { f.status = '待解析'; delete f.reason; });
+        renderTable();
+        showToast(`已将 ${failedFiles.length} 个文件标记为待解析`);
+      });
     }
 
     function filterFiles() { renderTable(); }
