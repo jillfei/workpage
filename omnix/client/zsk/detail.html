@@ -666,7 +666,7 @@
 			</span>
             <button class="btn btn-danger" id="reparseAllBtn" onclick="reparseAll()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-              重新解析
+              重新处理
             </button>
             <button class="btn" onclick="openSettingsModal()" style="display: none;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -686,7 +686,7 @@
             <option value="解析中">解析中</option>
             <option value="索引中">索引中</option>
             <option value="已完成">已完成</option>
-            <option value="解析失败">解析失败</option>
+            <option value="处理失败">处理失败</option>
             <option value="暂不支持">暂不支持</option>
           </select>
           <select class="select" id="typeFilter" onchange="filterFiles()">
@@ -907,23 +907,23 @@
 
   <script>
     // ---------- Data ----------
-    const STATUS_ORDER = { '待解析': 0, '解析中': 1, '索引中': 2, '已完成': 3, '暂不支持': 4, '解析失败': 5 };
+    const STATUS_ORDER = { '待解析': 0, '解析中': 1, '索引中': 2, '已完成': 3, '暂不支持': 4, '处理失败': 5 };
     const STATUS_CLASS = {
       '已完成': 'status-success',
       '解析中': 'status-processing',
       '索引中': 'status-indexing',
-      '解析失败': 'status-failed',
+      '处理失败': 'status-failed',
       '暂不支持': 'status-unsupported',
       '待解析': 'status-pending'
     };
     let files = [
       { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月22日', size: '39.45KB', sizeNum: 39.45, status: '已完成', time: '2026-07-14 13:24', user: '孙里菲', type: 'docx' },
-      { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月01日', size: '99.40KB', sizeNum: 99.40, status: '解析失败', reason: '文档包含受密码保护的加密内容，解析引擎无法读取正文', time: '2026-07-14 13:24', user: '孙里菲', type: 'pdf' },
+      { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月01日', size: '99.40KB', sizeNum: 99.40, status: '处理失败', reason: '文档包含受密码保护的加密内容，解析引擎无法读取正文', time: '2026-07-14 13:24', user: '孙里菲', type: 'pdf' },
       { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月08日', size: '40.33KB', sizeNum: 40.33, status: '暂不支持', time: '2026-07-14 13:24', user: '孙里菲', type: 'pptx' },
       { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月15日', size: '40.74KB', sizeNum: 40.74, status: '解析中', time: '2026-07-14 13:24', user: '孙里菲', type: 'md' },
       { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月29日', size: '41.20KB', sizeNum: 41.20, status: '索引中', time: '2026-07-14 13:24', user: '孙里菲', type: 'xlsx' },
       { name: '信息管理部周工作总结及计划（孙礼飞）2026年07月06日', size: '38.90KB', sizeNum: 38.90, status: '待解析', time: '2026-07-14 13:24', user: '孙里菲', type: 'txt' },
-      { name: '信息管理部周工作总结及计划（孙礼飞）2026年07月06日', size: '38.30KB', sizeNum: 38.30, status: '解析失败', reason: '文件被损坏，无法读取',  time: '2026-07-14 13:14', user: '孙里菲', type: 'image' }
+      { name: '信息管理部周工作总结及计划（孙礼飞）2026年07月06日', size: '38.30KB', sizeNum: 38.30, status: '处理失败', reason: '文件被损坏，无法读取',  time: '2026-07-14 13:14', user: '孙里菲', type: 'image' }
     ];
     files.forEach((f, i) => { f.id = i + 1; });
 
@@ -961,13 +961,13 @@
       tbody.innerHTML = rows.map(f => {
         const sc = STATUS_CLASS[f.status];
         let statusCell = `<span class="status-badge ${sc}">${f.status}</span>`;
-        if (f.status === '解析失败') {
+        if (f.status === '处理失败') {
           statusCell = `
             <span class="status-cell">
-              <span class="status-badge ${sc}">解析失败</span>
+              <span class="status-badge ${sc}">处理失败</span>
               <span class="warn-icon" onclick="reparseOne('${f.name.replace(/'/g, "\\'")}')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                <span class="tooltip">解析失败：${f.reason || '未知错误'}<br/>点击重新解析</span>
+                <span class="tooltip">处理失败：${f.reason || '未知错误'}<br/>点击重新处理</span>
               </span>
             </span>`;
         }
@@ -997,7 +997,7 @@
               <div class="actions">
                 <span class="action-more" onclick="toggleDropdown(event)">更多
                   <div class="dropdown-menu" onclick="event.stopPropagation()">
-                    ${f.status === '解析失败' ? `<div class="menu-reparse" onclick="reparseOne('${escapedName}')">${reparseIcon}重新解析</div>` : ''}
+                    ${f.status === '处理失败' ? `<div class="menu-reparse" onclick="reparseOne('${escapedName}')">${reparseIcon}重新处理</div>` : ''}
                     <div onclick="copyPath('${escapedName}')">${copyIcon}复制路径</div>
                     <div onclick="openInExplorer('${escapedName}')">${openIcon}文件管理器中打开</div>
                     <div onclick="addToConversationOne(${f.id})">${chatIcon}添加到会话</div>
@@ -1027,9 +1027,9 @@
         card('stat-indexing', count('索引中'), '索引中') +
         card('stat-success', count('已完成'), '已完成') +
         card('stat-unsupported', count('暂不支持'), '暂不支持') +
-        card('stat-failed', count('解析失败'), '解析失败');
+        card('stat-failed', count('处理失败'), '处理失败');
 
-      const failed = count('解析失败');
+      const failed = count('处理失败');
       document.getElementById('reparseAllBtn').classList.toggle('show', failed > 0);
     }
 
@@ -1143,19 +1143,19 @@
     // ---------- Reparse ----------
     function reparseOne(name) {
       const f = files.find(x => x.name === name);
-      if (f && f.status === '解析失败') {
+      if (f && f.status === '处理失败') {
         f.status = '待解析';
         delete f.reason;
         renderTable();
       }
     }
     function reparseAll() {
-      const failedFiles = files.filter(f => f.status === '解析失败');
+      const failedFiles = files.filter(f => f.status === '处理失败');
       if (failedFiles.length === 0) {
-        showToast('没有需要重新解析的文件');
+        showToast('没有需要重新处理的文件');
         return;
       }
-      showConfirm('重新解析', `确定要重新解析 ${failedFiles.length} 个解析失败的文件吗？`, () => {
+      showConfirm('重新处理', `确定要重新处理 ${failedFiles.length} 个处理失败的文件吗？`, () => {
         failedFiles.forEach(f => { f.status = '待解析'; delete f.reason; });
         renderTable();
         showToast(`已将 ${failedFiles.length} 个文件标记为待解析`);
