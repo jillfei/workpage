@@ -193,6 +193,8 @@
     .stat-card.stat-pending .stat-num { color: #8b5cf6; }
     .stat-card.stat-processing { background: #eff6ff; border-left-color: #3b82f6; }
     .stat-card.stat-processing .stat-num { color: #3b82f6; }
+    .stat-card.stat-indexing { background: #f0f9ff; border-left-color: #0ea5e9; }
+    .stat-card.stat-indexing .stat-num { color: #0ea5e9; }
     .stat-card.stat-success { background: #ecfdf5; border-left-color: #10b981; }
     .stat-card.stat-success .stat-num { color: #10b981; }
     .stat-card.stat-unsupported { background: #f9fafb; border-left-color: #9ca3af; }
@@ -306,6 +308,7 @@
     .status-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
     .status-success { color: var(--success); }
     .status-processing { color: var(--info); }
+    .status-indexing { color: #0ea5e9; }
     .status-failed { color: var(--danger); }
     .status-unsupported { color: #9ca3af; }
     .status-pending { color: #8b5cf6; }
@@ -681,6 +684,7 @@
             <option value="">文档状态</option>
             <option value="待解析">待解析</option>
             <option value="解析中">解析中</option>
+            <option value="索引中">索引中</option>
             <option value="已完成">已完成</option>
             <option value="解析失败">解析失败</option>
             <option value="暂不支持">暂不支持</option>
@@ -903,10 +907,11 @@
 
   <script>
     // ---------- Data ----------
-    const STATUS_ORDER = { '待解析': 0, '解析中': 1, '已完成': 2, '暂不支持': 3, '解析失败': 4 };
+    const STATUS_ORDER = { '待解析': 0, '解析中': 1, '索引中': 2, '已完成': 3, '暂不支持': 4, '解析失败': 5 };
     const STATUS_CLASS = {
       '已完成': 'status-success',
       '解析中': 'status-processing',
+      '索引中': 'status-indexing',
       '解析失败': 'status-failed',
       '暂不支持': 'status-unsupported',
       '待解析': 'status-pending'
@@ -916,7 +921,7 @@
       { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月01日', size: '99.40KB', sizeNum: 99.40, status: '解析失败', reason: '文档包含受密码保护的加密内容，解析引擎无法读取正文', time: '2026-07-14 13:24', user: '孙里菲', type: 'pdf' },
       { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月08日', size: '40.33KB', sizeNum: 40.33, status: '暂不支持', time: '2026-07-14 13:24', user: '孙里菲', type: 'pptx' },
       { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月15日', size: '40.74KB', sizeNum: 40.74, status: '解析中', time: '2026-07-14 13:24', user: '孙里菲', type: 'md' },
-      { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月29日', size: '41.20KB', sizeNum: 41.20, status: '待解析', time: '2026-07-14 13:24', user: '孙里菲', type: 'xlsx' },
+      { name: '信息管理部周工作总结及计划（孙礼飞）2026年06月29日', size: '41.20KB', sizeNum: 41.20, status: '索引中', time: '2026-07-14 13:24', user: '孙里菲', type: 'xlsx' },
       { name: '信息管理部周工作总结及计划（孙礼飞）2026年07月06日', size: '38.90KB', sizeNum: 38.90, status: '待解析', time: '2026-07-14 13:24', user: '孙里菲', type: 'txt' },
       { name: '信息管理部周工作总结及计划（孙礼飞）2026年07月06日', size: '38.30KB', sizeNum: 38.30, status: '解析失败', reason: '文件被损坏，无法读取',  time: '2026-07-14 13:14', user: '孙里菲', type: 'image' }
     ];
@@ -1019,6 +1024,7 @@
       document.getElementById('statsBar').innerHTML =
         card('stat-pending', count('待解析'), '待解析') +
         card('stat-processing', count('解析中'), '解析中') +
+        card('stat-indexing', count('索引中'), '索引中') +
         card('stat-success', count('已完成'), '已完成') +
         card('stat-unsupported', count('暂不支持'), '暂不支持') +
         card('stat-failed', count('解析失败'), '解析失败');

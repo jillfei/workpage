@@ -301,6 +301,8 @@
   }
   .status-done { color: var(--success); background: var(--success-bg); }
   .status-done::before { content: '✓'; margin-right: 0; font-size: 11px; }
+  .status-invalid { color: var(--danger); background: var(--danger-bg); }
+  .status-invalid::before { content: '✕'; margin-right: 0; font-size: 11px; }
   @keyframes pulse-dot {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.4; transform: scale(0.8); }
@@ -829,6 +831,9 @@
       <button class="filter-btn" data-status="done" onclick="setStatusFilter('done', this)">
         已完成
       </button>
+      <button class="filter-btn" data-status="invalid" onclick="setStatusFilter('invalid', this)">
+        已失效
+      </button>
     </div>
     <!--div class="sort-btns">
       <button class="sort-btn active" data-sort="update" onclick="setSort('update', this)">最热</button>
@@ -1046,6 +1051,19 @@ let knowledgeBases = [
     createTime: '2026-05-15 09:00',
     updateTime: '2026-07-08 14:30'
   },
+  {
+    id: 'kb_006',
+    name: '旧项目资料',
+    icon: '📦',
+    iconColor: '#6B7280',
+    desc: '已归档的旧项目资料，原文件夹已被删除',
+    status: 'invalid',
+    type: '本地文件夹',
+    path: 'F:\\OldProjects\\Archived',
+    totalFiles: 0,
+    createTime: '2026-03-10 08:00',
+    updateTime: '2026-06-20 10:00'
+  },
 ];
 
 let currentStatus = 'all';
@@ -1119,14 +1137,18 @@ function renderCards() {
 
 function createCardHTML(kb) {
   const statusClass = kb.status === 'done' ? 'status-done' :
-                       kb.status === 'processing' ? 'status-processing' : 'status-pending';
+                       kb.status === 'processing' ? 'status-processing' : 
+                       kb.status === 'invalid' ? 'status-invalid' : 'status-pending';
   const statusLabel = kb.status === 'done' ? '已完成' :
-                      kb.status === 'processing' ? '处理中' : '待处理';
+                      kb.status === 'processing' ? '处理中' : 
+                      kb.status === 'invalid' ? '已失效' : '待处理';
 
   const timeDisplay = kb.status === 'pending' ? kb.createTime : kb.updateTime;
+  const isInvalid = kb.status === 'invalid';
+  const cardStyle = isInvalid ? 'opacity: 0.6;' : '';
 
   return `
-    <div class="kb-card" onclick="openDetail('${kb.id}')">
+    <div class="kb-card" onclick="${isInvalid ? '' : `openDetail('${kb.id}')`}" style="${cardStyle}">
       <button class="card-delete-btn" title="删除知识库" onclick="event.stopPropagation(); openDeleteModal('${kb.id}', '${escapeHtml(kb.name)}')">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
       </button>
@@ -1150,10 +1172,14 @@ function createCardHTML(kb) {
       </div>
       <div class="kb-desc">${escapeHtml(kb.desc)}</div>
       <div class="kb-tags">
-        <span class="kb-tag" onclick="event.stopPropagation(); openPath('${escapeHtml(kb.path)}')" style="cursor:pointer;" title="点击打开路径">
+        <span class="kb-tag" onclick="event.stopPropagation(); ${isInvalid ? `showToast('文件夹不存在，无法打开', 'error')` : `openPath('${escapeHtml(kb.path)}')`}" style="cursor:pointer;" title="${isInvalid ? '文件夹不存在' : '点击打开路径'}">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
           ${escapeHtml(kb.path)}
         </span>
+        ${isInvalid ? `<span style="color: var(--danger); font-size: 11.5px; display: inline-flex; align-items: center; gap: 3px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          文件夹不存在
+        </span>` : ''}
       </div>
       <div class="kb-footer">
         <div class="kb-stats">
@@ -1170,7 +1196,7 @@ function createCardHTML(kb) {
             <span>更新：${kb.updateTime}</span>
           </div>
         </div>
-        <button class="kb-apply-btn" onclick="event.stopPropagation(); parentClick('content.html')">去使用</button>
+        ${!isInvalid ? `<button class="kb-apply-btn" onclick="event.stopPropagation(); parentClick('content.html')">去使用</button>` : ''}
       </div>
     </div>`;
 }
