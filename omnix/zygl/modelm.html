@@ -1423,6 +1423,12 @@
           </div>
           <div class="hint" id="modelVersionHint">可多选模型，选择后模型参数将由系统自动配置</div>
         </div>
+
+        <div class="form-group">
+          <label>模型描述</label>
+          <textarea class="form-textarea" id="formStandardDesc" placeholder="请输入模型描述，最多500个字符" maxlength="500" oninput="updateStandardDescCount()"></textarea>
+          <div class="char-count"><span id="standardDescCharCount">0</span>/500</div>
+        </div>
       </div>
 
       <!-- Step 2: Custom Model Config -->
@@ -2488,6 +2494,12 @@ function updateCustomDescCount() {
   document.getElementById('customDescCharCount').textContent = len;
 }
 
+function updateStandardDescCount() {
+  const el = document.getElementById('formStandardDesc');
+  const counter = document.getElementById('standardDescCharCount');
+  if (el && counter) counter.textContent = el.value.length;
+}
+
 // ==================== IMAGE BILLING TYPE FUNCTIONS ====================
 function selectImageBillingType(type) {
   // Update button states
@@ -3194,7 +3206,7 @@ function renderTable() {
             </label>
           </td>
           <td>
-            ${m.custom ? `<a class="link-btn" onclick="event.stopPropagation();openEditModal(${ri})">编辑</a>&nbsp;` : ''}
+            <a class="link-btn" onclick="event.stopPropagation();openEditModal(${ri})">编辑</a>&nbsp;
             <a class="link-btn" style="color:#ff4d4f;" onclick="event.stopPropagation();removeModel(${ri})">删除</a>
           </td>
         </tr>`;
@@ -3765,6 +3777,11 @@ function openAddModal() {
         </div>
         <div class="hint" id="modelVersionHint">可多选模型，选择后模型参数将由系统自动配置</div>
       </div>
+      <div class="form-group">
+        <label>模型描述</label>
+        <textarea class="form-textarea" id="formStandardDesc" placeholder="请输入模型描述，最多500个字符" maxlength="500" oninput="updateStandardDescCount()"></textarea>
+        <div class="char-count"><span id="standardDescCharCount">0</span>/500</div>
+      </div>
     `;
   }
 
@@ -3772,6 +3789,12 @@ function openAddModal() {
   document.getElementById('formCustomName').disabled = false;
   document.getElementById('formCustomDesc').value = '';
   document.getElementById('customDescCharCount').textContent = '0';
+  const formStandardDesc = document.getElementById('formStandardDesc');
+  if (formStandardDesc) {
+    formStandardDesc.value = '';
+    const stdCounter = document.getElementById('standardDescCharCount');
+    if (stdCounter) stdCounter.textContent = '0';
+  }
   document.getElementById('formCustomEndpoint').value = '';
   document.getElementById('formCustomApiKey').value = '';
   // Reset custom type selector
@@ -3888,6 +3911,11 @@ function openEditModal(index) {
           </select>
           <div class="hint" id="modelVersionHint">选择型号后，模型参数将由系统自动配置</div>
         </div>
+        <div class="form-group">
+          <label>模型描述</label>
+          <textarea class="form-textarea" id="formStandardDesc" placeholder="请输入模型描述，最多500个字符" maxlength="500" oninput="updateStandardDescCount()"></textarea>
+          <div class="char-count"><span id="standardDescCharCount">0</span>/500</div>
+        </div>
       `;
     }
     stdConfig.style.display = 'block';
@@ -3907,6 +3935,14 @@ function openEditModal(index) {
     versionSelect.style.opacity = '0.7';
     versionSelect.style.cursor = 'not-allowed';
     document.getElementById('modelVersionHint').textContent = '选择型号后，模型参数将由系统自动配置';
+
+    // Populate editable model description
+    const stdDescEl = document.getElementById('formStandardDesc');
+    if (stdDescEl) {
+      stdDescEl.value = m.desc || '';
+      const counter = document.getElementById('standardDescCharCount');
+      if (counter) counter.textContent = (m.desc || '').length;
+    }
   }
 
   document.getElementById('modelModal').classList.add('show');
@@ -3952,6 +3988,8 @@ function validateForm() {
     }
   } else {
     // Official provider: API Key comes from the modal field, or the saved provider-level key
+    // Edit mode: only description is editable, skip model selection / API Key validation
+    if (editingIndex >= 0) return true;
     const apiKeyInput = document.getElementById('formProviderApiKey');
     const apiKey = (apiKeyInput && apiKeyInput.value.trim()) || (providerApiKeys[selectedProvider] || '');
     if (selectedModelIds.length === 0 || !apiKey) return false;
@@ -4065,6 +4103,17 @@ function submitModel(enable) {
     const apiKeyInput = document.getElementById('formProviderApiKey');
     const apiKey = (apiKeyInput && apiKeyInput.value.trim()) || (providerApiKeys[selectedProvider] || '');
 
+    // Edit mode for supplier model: only description is editable
+    if (editingIndex >= 0) {
+      const stdDescEl = document.getElementById('formStandardDesc');
+      const newDesc = stdDescEl ? stdDescEl.value.trim() : '';
+      models[editingIndex].desc = newDesc;
+      showToast(enable ? '模型已更新并启用' : '模型已更新', 'success');
+      closeModal('modelModal');
+      renderTable();
+      return;
+    }
+
     if (selectedModelIds.length === 0) {
       showToast('请至少选择一个模型', 'error');
       return;
@@ -4077,6 +4126,8 @@ function submitModel(enable) {
 
     const providerData = providerModels[selectedProvider];
     const addedModels = [];
+    const standardDescInput = document.getElementById('formStandardDesc');
+    const standardDesc = standardDescInput ? standardDescInput.value.trim() : '';
 
     selectedModelIds.forEach(modelId => {
       const modelData = providerData.models[selectedModelType].find(m => m.id === modelId);
@@ -4089,7 +4140,7 @@ function submitModel(enable) {
             type: 'builtin',
             modelType: selectedModelType,
             provider: providerData.name,
-            desc: modelData.desc,
+            desc: standardDesc || modelData.desc,
             contextLength: modelData.contextLength,
             maxInput: modelData.maxInput,
             maxOutput: modelData.maxOutput,
