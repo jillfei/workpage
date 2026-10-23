@@ -577,6 +577,34 @@
       z-index: 100;
     }
     .kb-sel-dropdown.show { display: block; }
+    .kb-sel-tabs {
+      display: flex;
+      gap: 18px;
+      padding: 2px 14px 0;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .kb-sel-tab {
+      position: relative;
+      padding: 8px 1px 9px;
+      border: 0;
+      background: transparent;
+      color: #888;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+    }
+    .kb-sel-tab:hover { color: #4a6cf7; }
+    .kb-sel-tab.active { color: #4a6cf7; font-weight: 600; }
+    .kb-sel-tab.active::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: -1px;
+      left: 0;
+      height: 2px;
+      border-radius: 2px 2px 0 0;
+      background: #4a6cf7;
+    }
     .kb-sel-search-wrap {
       padding: 4px 10px 6px;
     }
@@ -2061,29 +2089,49 @@
             <svg style="width:10px;height:10px;color:#aaa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="kb-sel-dropdown" id="kbSelDropdown">
+            <div class="kb-sel-tabs" role="tablist" aria-label="知识库类型">
+              <button class="kb-sel-tab active" type="button" role="tab" aria-selected="true" data-kb-type="personal" onclick="switchKbSelTab(this)">个人知识库</button>
+              <button class="kb-sel-tab" type="button" role="tab" aria-selected="false" data-kb-type="enterprise" onclick="switchKbSelTab(this)">企业知识库</button>
+            </div>
             <div class="kb-sel-search-wrap">
               <input type="text" class="kb-sel-search" placeholder="搜索知识库" id="kbSelSearch" oninput="filterKbSelItems()" />
             </div>
             <div class="kb-sel-list-wrap" id="kbSelList">
-              <div class="kb-sel-item" data-name="需求文档存档库" data-avatar="👨‍💻" data-color="#4a6cf7" onclick="selectKbSelItem(this)">
+              <div class="kb-sel-item" data-kb-type="personal" data-name="需求文档存档库" data-avatar="👨‍💻" data-color="#4a6cf7" onclick="selectKbSelItem(this)">
                 <div class="kb-sel-avatar" style="background:#4a6cf7">👨‍💻</div>
                 <span class="kb-sel-name">需求文档存档库</span>
               </div>
-              <div class="kb-sel-item" data-name="办公技巧私库" data-avatar="👩‍" data-color="#8b5cf6" onclick="selectKbSelItem(this)">
+              <div class="kb-sel-item" data-kb-type="personal" data-name="办公技巧私库" data-avatar="👩‍" data-color="#8b5cf6" onclick="selectKbSelItem(this)">
                 <div class="kb-sel-avatar" style="background:#8b5cf6">👩‍</div>
                 <span class="kb-sel-name">办公技巧私库</span>
               </div>
-              <div class="kb-sel-item" data-name="会议纪要知识库" data-avatar="👨" data-color="#10b981" onclick="selectKbSelItem(this)">
+              <div class="kb-sel-item" data-kb-type="personal" data-name="会议纪要知识库" data-avatar="👨" data-color="#10b981" onclick="selectKbSelItem(this)">
                 <div class="kb-sel-avatar" style="background:#10b981">👨</div>
                 <span class="kb-sel-name">会议纪要知识库</span>
               </div>
-              <div class="kb-sel-item" data-name="周报知识库" data-avatar="💼" data-color="#f59e0b" onclick="selectKbSelItem(this)">
+              <div class="kb-sel-item" data-kb-type="personal" data-name="周报知识库" data-avatar="💼" data-color="#f59e0b" onclick="selectKbSelItem(this)">
                 <div class="kb-sel-avatar" style="background:#f59e0b">💼</div>
                 <span class="kb-sel-name">周报知识库</span>
               </div>
-              <div class="kb-sel-item" data-name="行业调研资料库" data-avatar="👩‍" data-color="#ec4899" onclick="selectKbSelItem(this)">
+              <div class="kb-sel-item" data-kb-type="personal" data-name="行业调研资料库" data-avatar="👩‍" data-color="#ec4899" onclick="selectKbSelItem(this)">
                 <div class="kb-sel-avatar" style="background:#ec4899">👩‍</div>
                 <span class="kb-sel-name">行业调研资料库</span>
+              </div>
+              <div class="kb-sel-item" data-kb-type="enterprise" data-name="公司制度知识库" data-avatar="🏢" data-color="#2563eb" onclick="selectKbSelItem(this)" style="display:none">
+                <div class="kb-sel-avatar" style="background:#2563eb">🏢</div>
+                <span class="kb-sel-name">公司制度知识库</span>
+              </div>
+              <div class="kb-sel-item" data-kb-type="enterprise" data-name="产品技术文档库" data-avatar="📘" data-color="#0891b2" onclick="selectKbSelItem(this)" style="display:none">
+                <div class="kb-sel-avatar" style="background:#0891b2">📘</div>
+                <span class="kb-sel-name">产品技术文档库</span>
+              </div>
+              <div class="kb-sel-item" data-kb-type="enterprise" data-name="销售支持资料库" data-avatar="📈" data-color="#059669" onclick="selectKbSelItem(this)" style="display:none">
+                <div class="kb-sel-avatar" style="background:#059669">📈</div>
+                <span class="kb-sel-name">销售支持资料库</span>
+              </div>
+              <div class="kb-sel-item" data-kb-type="enterprise" data-name="项目交付知识库" data-avatar="📁" data-color="#d97706" onclick="selectKbSelItem(this)" style="display:none">
+                <div class="kb-sel-avatar" style="background:#d97706">📁</div>
+                <span class="kb-sel-name">项目交付知识库</span>
               </div>
             </div>
             <div class="kb-sel-divider"></div>
@@ -2476,14 +2524,27 @@
 
     // Knowledge base selector logic (multi-select)
     const selectedKbSelItems = new Map();
+    let activeKbSelType = 'personal';
 
     function toggleKbSelDropdown() {
       const dropdown = document.getElementById('kbSelDropdown');
       dropdown.classList.toggle('show');
       if (dropdown.classList.contains('show')) {
         updateKbSelSelectedState();
+        filterKbSelItems();
         setTimeout(() => document.getElementById('kbSelSearch').focus(), 50);
       }
+    }
+
+    function switchKbSelTab(tab) {
+      activeKbSelType = tab.dataset.kbType;
+      document.querySelectorAll('.kb-sel-tab').forEach(item => {
+        const active = item === tab;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-selected', active);
+      });
+      document.getElementById('kbSelSearch').value = '';
+      filterKbSelItems();
     }
 
     function selectKbSelItem(item) {
@@ -2530,7 +2591,7 @@
       const query = document.getElementById('kbSelSearch').value.toLowerCase();
       document.querySelectorAll('#kbSelList .kb-sel-item').forEach(item => {
         const name = item.dataset.name.toLowerCase();
-        item.style.display = name.includes(query) ? '' : 'none';
+        item.style.display = item.dataset.kbType === activeKbSelType && name.includes(query) ? '' : 'none';
       });
     }
 

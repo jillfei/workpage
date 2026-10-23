@@ -103,6 +103,268 @@
         .header-icon:hover {
             opacity: 1;
         }
+        .notification-trigger {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            color: #666;
+            cursor: pointer;
+            opacity: 0.75;
+            border: 0;
+            padding: 0;
+            background: transparent;
+        }
+        .notification-trigger:hover,
+        .notification-trigger:focus-visible {
+            opacity: 1;
+            outline: none;
+        }
+        .notification-trigger::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 8px;
+            border-radius: 4px;
+            color: #fff;
+            background: #333;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+            z-index: 1002;
+        }
+        .notification-trigger:hover::after,
+        .notification-trigger:focus-visible::after {
+            opacity: 1;
+        }
+        .notification-trigger svg {
+            width: 16px;
+            height: 16px;
+        }
+        .notification-count {
+            position: absolute;
+            top: -7px;
+            right: -9px;
+            min-width: 15px;
+            height: 15px;
+            padding: 0 4px;
+            border: 1px solid #f7f7f7;
+            border-radius: 8px;
+            color: #fff;
+            background: #ef4444;
+            font-size: 10px;
+            font-weight: 600;
+            line-height: 13px;
+            text-align: center;
+        }
+
+        /* ===== Message Center ===== */
+        .notification-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1001;
+        }
+        .notification-overlay.show {
+            display: block;
+        }
+        .notification-panel {
+            position: absolute;
+            top: 36px;
+            left: 12px;
+            width: 420px;
+            max-width: calc(100vw - 24px);
+            overflow: hidden;
+            border: 1px solid #e6eaf0;
+            border-radius: 9px;
+            background: #fff;
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+        }
+        .notification-panel::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: var(--notification-arrow-left, 201px);
+            width: 10px;
+            height: 10px;
+            border-top: 1px solid #e6eaf0;
+            border-left: 1px solid #e6eaf0;
+            background: #fff;
+            transform: rotate(45deg);
+        }
+        .notification-header {
+            display: flex;
+            align-items: center;
+            padding: 24px 24px 14px;
+            border-bottom: 1px solid #e8ecf1;
+        }
+        .notification-title {
+            color: #172554;
+            font-size: 17px;
+            font-weight: 700;
+        }
+        .mark-all-read {
+            width: 24px;
+            height: 24px;
+            margin-left: 8px;
+            border: 0;
+            border-radius: 5px;
+            color: #2563eb;
+            background: transparent;
+            cursor: pointer;
+        }
+        .mark-all-read:hover {
+            background: #eff6ff;
+        }
+        .mark-all-read svg {
+            width: 17px;
+            height: 17px;
+            vertical-align: middle;
+        }
+        .notification-close {
+            width: 24px;
+            height: 24px;
+            margin-left: auto;
+            border: 0;
+            color: #334155;
+            background: transparent;
+            font-size: 23px;
+            font-weight: 300;
+            line-height: 20px;
+            cursor: pointer;
+        }
+        .notification-close:hover {
+            color: #0f172a;
+        }
+        .notification-list {
+            padding: 2px 24px 7px;
+        }
+        .notification-item {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 12px 20px 11px 0;
+            border: 0;
+            color: #1e3a6b;
+            background: transparent;
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+        }
+        .notification-item:hover {
+            color: #2563eb;
+        }
+        .notification-item-title {
+            overflow: hidden;
+            font-size: 14px;
+            line-height: 20px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .notification-date {
+            margin-top: 1px;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+        .notification-unread-dot {
+            position: absolute;
+            top: 17px;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #f43f5e;
+        }
+        .notification-item.read {
+            color: #64748b;
+        }
+        .notification-item.read .notification-unread-dot {
+            display: none;
+        }
+        .notification-empty {
+            display: none;
+            padding: 28px 0 30px;
+            color: #94a3b8;
+            font-size: 13px;
+            text-align: center;
+        }
+        .notification-empty.show {
+            display: block;
+        }
+        .notification-detail-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1003;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.48);
+            backdrop-filter: blur(3px);
+        }
+        .notification-detail-overlay.show {
+            display: flex;
+        }
+        .notification-detail {
+            position: relative;
+            width: 420px;
+            max-width: 100%;
+            padding: 38px 25px 24px;
+            border-radius: 10px;
+            color: #64748b;
+            background: #fff;
+            box-shadow: 0 20px 44px rgba(15, 23, 42, 0.28);
+        }
+        .notification-detail h2 {
+            margin-bottom: 7px;
+            color: #172554;
+            font-size: 19px;
+            line-height: 1.45;
+        }
+        .notification-detail time {
+            display: block;
+            margin-bottom: 16px;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+        .notification-detail-content {
+            font-size: 14px;
+            line-height: 1.85;
+            white-space: pre-line;
+        }
+        .notification-detail-close {
+            position: absolute;
+            top: 17px;
+            right: 18px;
+            width: 24px;
+            height: 24px;
+            border: 0;
+            color: #64748b;
+            background: transparent;
+            font-size: 22px;
+            cursor: pointer;
+        }
+        .notification-detail-confirm {
+            width: 100%;
+            margin-top: 18px;
+            padding: 10px;
+            border: 0;
+            border-radius: 7px;
+            color: #fff;
+            background: #4169f5;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .notification-detail-confirm:hover {
+            background: #3157e6;
+        }
 
         .app-title {
             font-size: 13px;
@@ -677,6 +939,10 @@
                     <rect x="4" y="4" width="14" height="14" rx="2" />
                     <line x1="9" y1="4" x2="9" y2="21" />
                 </svg>
+                <button class="notification-trigger" id="notificationTrigger" type="button" aria-label="消息中心" aria-expanded="false" data-tooltip="消息中心">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+                    <span class="notification-count" id="notificationCount">2</span>
+                </button>
                 <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8" />
                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -883,6 +1149,43 @@
         </div>
     </div>
 
+    <!-- ====== Message Center ====== -->
+    <div class="notification-overlay" id="notificationOverlay">
+        <section class="notification-panel" id="notificationPanel" aria-label="消息中心">
+            <div class="notification-header">
+                <span class="notification-title">消息中心</span>
+                <button class="mark-all-read" id="markAllRead" type="button" title="全部标为已读" aria-label="全部标为已读">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11 3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+                </button>
+                <button class="notification-close" id="notificationClose" type="button" aria-label="关闭消息中心">×</button>
+            </div>
+            <div class="notification-list" id="notificationList">
+                <button class="notification-item" type="button" data-title="TeleAgent Android APP 正式上线" data-date="2026-09-30" data-content="TeleAgent Android APP 已正式上线，欢迎前往应用市场下载体验。\n\n新版支持随时随地处理会话、查看任务进度，并持续优化移动端使用体验。">
+                    <div class="notification-item-title">TeleAgent Android APP 正式上线</div>
+                    <div class="notification-date">2026-09-30</div>
+                    <span class="notification-unread-dot"></span>
+                </button>
+                <button class="notification-item" type="button" data-title="邀请好友，共享积分福利！" data-date="2026-08-21 18:31" data-content="🎉 邀请共享积分礼活动已上线！即日起至2026年9月30日23:59，邀请用户注册且7日内登录 TeleAgent，您和好友均可获得积分奖励：\n\n• 邀请人：每邀请1位好友，得500积分（每月最高累计3万积分），积分有效期1年\n• 被邀请人：注册并登录桌面端后，立得3000积分，积分有效期1个月\n• 参与方式：点击「头像 - 积分福利社 - 邀请共享积分 - 前往活动」进入活动页面，查看详情并分享邀请\n\n📍温馨提示：邀请功能长期有效，奖励细则请以积分福利社活动说明为准。">
+                    <div class="notification-item-title">邀请好友，共享积分福利！</div>
+                    <div class="notification-date">2026-08-21</div>
+                    <span class="notification-unread-dot"></span>
+                </button>
+            </div>
+            <div class="notification-empty" id="notificationEmpty">全部消息已读</div>
+        </section>
+    </div>
+
+    <!-- ====== Message Detail ====== -->
+    <div class="notification-detail-overlay" id="notificationDetailOverlay">
+        <section class="notification-detail" id="notificationDetail" role="dialog" aria-modal="true" aria-labelledby="notificationDetailTitle">
+            <button class="notification-detail-close" id="notificationDetailClose" type="button" aria-label="关闭消息详情">×</button>
+            <h2 id="notificationDetailTitle"></h2>
+            <time id="notificationDetailDate"></time>
+            <div class="notification-detail-content" id="notificationDetailContent"></div>
+            <button class="notification-detail-confirm" id="notificationDetailConfirm" type="button">我知道了</button>
+        </section>
+    </div>
+
     <!-- ====== Main Content (iframe) ====== -->
     <main class="main-area">
         <iframe id="content-frame" src="content.html?view=new-chat" title="OmniX 内容区"></iframe>
@@ -978,6 +1281,93 @@
                     }
                 }
             });
+
+            // 消息中心
+            var notificationTrigger = document.getElementById('notificationTrigger');
+            var notificationCount = document.getElementById('notificationCount');
+            var notificationOverlay = document.getElementById('notificationOverlay');
+            var notificationPanel = document.getElementById('notificationPanel');
+            var notificationClose = document.getElementById('notificationClose');
+            var markAllRead = document.getElementById('markAllRead');
+            var notificationItems = document.querySelectorAll('.notification-item');
+            var notificationEmpty = document.getElementById('notificationEmpty');
+            var notificationDetailOverlay = document.getElementById('notificationDetailOverlay');
+            var notificationDetail = document.getElementById('notificationDetail');
+            var notificationDetailTitle = document.getElementById('notificationDetailTitle');
+            var notificationDetailDate = document.getElementById('notificationDetailDate');
+            var notificationDetailContent = document.getElementById('notificationDetailContent');
+
+            function updateNotificationCount() {
+                var unreadCount = document.querySelectorAll('.notification-item:not(.read)').length;
+                notificationCount.textContent = unreadCount;
+                notificationCount.style.display = unreadCount ? 'block' : 'none';
+                notificationEmpty.classList.toggle('show', unreadCount === 0);
+            }
+
+            function positionNotificationPanel() {
+                var triggerRect = notificationTrigger.getBoundingClientRect();
+                var panelWidth = Math.min(420, window.innerWidth - 24);
+                var panelLeft = Math.max(12, Math.min(triggerRect.left - panelWidth / 2 + triggerRect.width / 2, window.innerWidth - panelWidth - 12));
+                var arrowLeft = Math.max(16, Math.min(triggerRect.left - panelLeft + triggerRect.width / 2 - 5, panelWidth - 16));
+                notificationPanel.style.top = (triggerRect.bottom + 8) + 'px';
+                notificationPanel.style.left = panelLeft + 'px';
+                notificationPanel.style.setProperty('--notification-arrow-left', arrowLeft + 'px');
+            }
+
+            function closeNotificationPanel() {
+                notificationOverlay.classList.remove('show');
+                notificationTrigger.setAttribute('aria-expanded', 'false');
+            }
+
+            function closeNotificationDetail() {
+                notificationDetailOverlay.classList.remove('show');
+            }
+
+            notificationTrigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var visible = notificationOverlay.classList.toggle('show');
+                notificationTrigger.setAttribute('aria-expanded', String(visible));
+                if (visible) positionNotificationPanel();
+            });
+
+            notificationClose.addEventListener('click', closeNotificationPanel);
+            notificationOverlay.addEventListener('click', function(e) {
+                if (!notificationPanel.contains(e.target)) closeNotificationPanel();
+            });
+
+            markAllRead.addEventListener('click', function() {
+                notificationItems.forEach(function(item) {
+                    item.classList.add('read');
+                });
+                updateNotificationCount();
+            });
+
+            notificationItems.forEach(function(item) {
+                item.addEventListener('click', function() {
+                    item.classList.add('read');
+                    updateNotificationCount();
+                    notificationDetailTitle.textContent = item.getAttribute('data-title');
+                    notificationDetailDate.textContent = item.getAttribute('data-date');
+                    notificationDetailContent.textContent = item.getAttribute('data-content');
+                    closeNotificationPanel();
+                    notificationDetailOverlay.classList.add('show');
+                });
+            });
+
+            document.getElementById('notificationDetailClose').addEventListener('click', closeNotificationDetail);
+            document.getElementById('notificationDetailConfirm').addEventListener('click', closeNotificationDetail);
+            notificationDetailOverlay.addEventListener('click', function(e) {
+                if (!notificationDetail.contains(e.target)) closeNotificationDetail();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key !== 'Escape') return;
+                closeNotificationDetail();
+                closeNotificationPanel();
+            });
+            window.addEventListener('resize', function() {
+                if (notificationOverlay.classList.contains('show')) positionNotificationPanel();
+            });
+            updateNotificationCount();
 
             // 用户弹窗
             var userProfile = document.querySelector('.user-profile');
