@@ -1,0 +1,2736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WeKnora · 知识库功能原型</title>
+<style>
+:root{
+  --brand:#07c160; --brand-hover:#06ad56; --brand-weak:#e8f8ef; --brand-border:#b7e9cd;
+  --text-1:#1a1a1a; --text-2:#4b5563; --text-3:#8a919f; --text-4:#b4bac4;
+  --bg-page:#eef0f3; --bg-card:#ffffff; --bg-hover:#f3f5f7; --bg-sunken:#f7f8fa;
+  --border:#e3e6eb; --border-strong:#d3d7de;
+  --warn:#ed7b2f; --warn-bg:#fff4e6; --err:#e34d59; --err-bg:#fdecee;
+  --info:#0052d9; --info-bg:#eaf1ff; --gray:#8a919f; --gray-bg:#f0f2f5;
+  --radius:8px; --radius-lg:12px;
+  --shadow:0 2px 10px rgba(0,0,0,.06); --shadow-lg:0 8px 32px rgba(0,0,0,.14);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg-page);color:var(--text-1);font-size:13px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;font-size:inherit}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+.hidden{display:none !important}
+.icon{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.icon.sm{width:14px;height:14px}
+.icon.lg{width:20px;height:20px}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#d5d9e0;border-radius:8px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ---------- shell ---------- */
+.app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{height:52px;flex:none;display:flex;align-items:center;gap:10px;padding:0 20px;background:var(--bg-card);border-bottom:1px solid var(--border)}
+.crumb{display:flex;align-items:center;gap:6px;color:var(--text-2)}
+.crumb .sep{color:var(--text-4)}
+.crumb b{color:var(--text-1);font-weight:500}
+.topbar .spacer{flex:1}
+.content{flex:1;overflow:auto;padding:20px 24px 40px}
+
+/* ---------- generic ---------- */
+.btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:var(--radius);border:1px solid var(--border-strong);background:#fff;color:var(--text-1);font-size:13px;transition:.15s}
+.btn:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-weak)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.primary:hover{background:var(--brand-hover);border-color:var(--brand-hover);color:#fff}
+.btn.text{border-color:transparent;background:transparent;padding:0 8px}
+.btn.text:hover{background:var(--bg-hover);color:var(--brand)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.ibtn{width:30px;height:30px;border-radius:var(--radius);display:inline-flex;align-items:center;justify-content:center;color:var(--text-2)}
+.ibtn:hover{background:var(--bg-hover);color:var(--brand)}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field>label{font-size:13px;color:var(--text-2)}
+.field>label .req{color:var(--err);margin-left:2px}
+.chunk-row .info b .req{color:var(--err);margin-left:2px;font-weight:400}
+.field .hint{font-size:12px;color:var(--text-3);line-height:1.6}
+.input,.select,.textarea{height:32px;border:1px solid var(--border-strong);border-radius:var(--radius);background:#fff;padding:0 10px;outline:none;width:100%}
+.textarea{height:auto;min-height:76px;padding:8px 10px;resize:vertical;line-height:1.6}
+.input:focus,.select:focus,.textarea:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(7,193,96,.12)}
+.select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a919f' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.switch{width:36px;height:20px;border-radius:20px;background:#d3d7de;position:relative;flex:none;transition:.2s;cursor:pointer}
+.switch.on{background:var(--brand)}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.2s}
+.switch.on::after{left:18px}
+.tag{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:4px;font-size:12px;background:var(--gray-bg);color:var(--text-2);white-space:nowrap}
+.tag.brand{background:var(--brand-weak);color:#0a8f4d}
+.tag.warn{background:var(--warn-bg);color:var(--warn)}
+.tag.err{background:var(--err-bg);color:var(--err)}
+.tag.info{background:var(--info-bg);color:var(--info)}
+.tag.outline{background:#fff;border:1px solid var(--border)}
+.dot{width:6px;height:6px;border-radius:50%;flex:none}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
+.divider{height:1px;background:var(--border);margin:16px 0}
+.muted{color:var(--text-3)}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:56px 20px;color:var(--text-3)}
+.empty .big{width:56px;height:56px;border-radius:14px;background:var(--bg-sunken);display:flex;align-items:center;justify-content:center;color:var(--text-4)}
+.empty b{color:var(--text-2);font-weight:500}
+
+/* ---------- list page ---------- */
+.page-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.page-head h1{font-size:20px;margin:0;display:flex;align-items:center;gap:8px}
+.page-sub{color:var(--text-3);margin-top:6px}
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.seg{display:inline-flex;background:var(--bg-sunken);border-radius:var(--radius);padding:3px;gap:2px}
+.seg button{height:28px;padding:0 12px;border-radius:6px;color:var(--text-2);display:inline-flex;align-items:center;gap:6px}
+.seg button.on{background:#fff;color:var(--brand);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.seg button .num{font-size:11px;color:var(--text-3)}
+.seg button.on .num{color:var(--brand)}
+.search{display:flex;align-items:center;gap:6px;height:32px;border:1px solid var(--border-strong);border-radius:var(--radius);background:#fff;padding:0 10px;width:230px}
+.search input{border:none;outline:none;flex:1;background:transparent}
+.eb-search{display:flex;align-items:center;gap:8px;height:35px;border:1px solid var(--border);border-radius:10px;background:#fff;padding:0 12px;width:40%;min-width:260px;transition:.15s}
+.eb-search:focus-within{border-color:var(--brand);box-shadow:0 0 0 3px rgba(7,193,96,.1)}
+.eb-search input{border:none;outline:none;flex:1;background:transparent;font-size:13.5px}
+.eb-filters{display:flex;gap:8px;flex-shrink:0}
+.eb-filters button{display:inline-flex;align-items:center;gap:5px;height:35px;padding:0 14px;font-size:13px;font-weight:500;color:var(--text-2);background:#fff;border:1px solid var(--border);border-radius:8px;transition:.15s;white-space:nowrap}
+.eb-filters button:hover{border-color:var(--brand);color:var(--brand)}
+.eb-filters button.on{color:var(--brand);background:var(--brand-weak);border-color:var(--brand-border)}
+.eb-filters button .num{font-size:11px;color:var(--text-3)}
+.eb-filters button.on .num{color:var(--brand)}
+.group-title{display:flex;align-items:center;gap:6px;color:var(--text-2);font-size:13px;margin:18px 0 10px}
+.group-title .cnt{color:var(--text-4);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.kb-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px 22px;cursor:pointer;transition:.15s;position:relative}
+.kb-card:hover{border-color:var(--brand-border);box-shadow:0 4px 16px rgba(7,193,96,.12);transform:translateY(-2px)}
+.kb-card .row1{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+.kb-ico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none;background:var(--brand-weak);color:var(--brand)}
+
+.kb-ico.owner{background:#fef3c7;color:#b45309}
+.member-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--line,#e5e7eb);border-radius:10px;margin-bottom:8px;background:#fff}
+.member-row b{font-size:13px;font-weight:500;display:block}
+.member-row i{font-style:normal;color:var(--text-4);font-size:12px;display:block}
+.perm-table table{width:100%;border-collapse:collapse;font-size:12.5px}
+.perm-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.perm-body{margin-top:12px}
+.perm-body.hidden{display:none}
+.transfer-warn{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:var(--radius);background:var(--warn-bg);color:var(--warn);font-size:12.5px;line-height:1.7}
+.transfer-warn.hidden{display:none}
+.transfer-warn .icon{margin-top:2px;flex:none}
+
+/* ---------- member picker ---------- */
+.member-picker{flex:1;display:flex;align-items:center;justify-content:space-between;gap:8px;height:32px;padding:0 10px;border:1px solid var(--border-strong);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;color:var(--text-1)}
+.member-picker:hover{border-color:var(--brand-border)}
+.member-picker .placeholder{color:var(--text-3)}
+.member-picker .icon{color:var(--text-3)}
+.picker{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;min-height:420px}
+.picker-left{border-right:1px solid var(--border);display:flex;flex-direction:column;min-width:0}
+.picker-search{display:flex;align-items:center;gap:6px;margin:12px;height:32px;padding:0 10px;border-radius:var(--radius);background:var(--bg-sunken)}
+.picker-search .icon{color:var(--text-3)}
+.picker-search input{flex:1;border:none;background:transparent;outline:none;font-size:13px;color:var(--text-1);min-width:0}
+.picker-tree{flex:1;overflow:auto;padding:0 8px 12px}
+.tree-node{display:flex;align-items:center;gap:8px;height:34px;padding:0 8px;border-radius:6px;font-size:13px;color:var(--text-2);cursor:pointer;white-space:nowrap}
+.tree-node:hover{background:var(--bg-hover)}
+.tree-node input[type=checkbox]{width:15px;height:15px;accent-color:var(--brand);flex:none;cursor:pointer}
+.tree-node .tree-caret{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;color:var(--text-3);flex:none;border-radius:3px}
+.tree-node .tree-caret:hover{background:var(--bg-page)}
+.tree-node .tree-caret.open .icon{transform:rotate(90deg)}
+.tree-node .tree-caret .icon{transition:transform .15s}
+.tree-all{font-weight:500;color:var(--text-1)}
+.tree-group{font-weight:500;color:var(--text-1);padding-left:0}
+.tree-dept-title{padding-left:20px}
+.tree-member{padding-left:44px;color:var(--text-2)}
+.tree-member i{font-style:normal;color:var(--text-4);font-size:11.5px;overflow:hidden;text-overflow:ellipsis}
+.tree-all-picked{padding:4px 8px 8px 44px;font-size:12px;color:var(--text-4)}
+.picker-empty{padding:28px 12px;text-align:center;color:var(--text-3);font-size:12.5px}
+.picker-right{display:flex;flex-direction:column;padding:12px;min-width:0}
+.picker-count{font-size:13px;color:var(--text-3);margin-bottom:10px}
+.picker-selected{flex:1;overflow:auto}
+.sel-group{font-size:13px;color:var(--text-2);margin-bottom:8px}
+.sel-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--border);font-size:13px}
+.sel-item .icon{color:var(--text-3);flex:none}
+.sel-item>div{flex:1;min-width:0}
+.sel-item b{display:block;font-weight:500;color:var(--text-1);font-size:13px}
+.sel-item i{font-style:normal;color:var(--text-4);font-size:11.5px}
+.sel-item .ibtn{width:24px;height:24px;flex:none}
+.perm-table th,.perm-table td{border:1px solid var(--line,#e5e7eb);padding:8px 10px;text-align:center}
+.perm-table th{background:#f6f8f7;font-weight:500;color:var(--text-2)}
+.perm-table td:first-child{text-align:left;color:var(--text-2)}
+.supported-formats{background:#fffbEB;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;margin-bottom:16px}
+.supported-formats .sfmt-title{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#92400e;margin-bottom:6px}
+.supported-formats .sfmt-list{font-size:12px;color:#b45309;line-height:1.8}
+.mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mode-card{border:1px solid var(--border-strong);border-radius:var(--radius-lg);padding:12px 14px;cursor:pointer;transition:.15s;background:#fff}
+.mode-card:hover{border-color:var(--brand-border)}
+.mode-card.on{border-color:var(--brand);background:var(--brand-weak)}
+.mode-card-top{display:flex;align-items:center;gap:6px}
+.mode-card-top b{font-size:13px;font-weight:600;color:var(--text-1)}
+.mode-ico{display:inline-flex;align-items:center;justify-content:center;color:var(--text-3)}
+.mode-card.on .mode-ico{color:var(--brand)}
+.mode-check{margin-left:auto;color:var(--brand);opacity:0;display:inline-flex}
+.mode-card.on .mode-check{opacity:1}
+.mode-card p{margin:6px 0 0;font-size:12px;line-height:1.65;color:var(--text-3)}
+.wiki-intro{margin-bottom:16px}
+.wiki-intro-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--text-1)}
+.wiki-intro-title .bar{width:4px;height:16px;background:var(--brand);border-radius:2px;flex:none}
+.wiki-intro-desc{margin-top:4px;font-size:12.5px;color:var(--text-3)}
+.wiki-intro-link{margin-left:8px;font-size:13px;font-weight:500;color:var(--info,#3b82f6);cursor:pointer}
+.wiz-icon-preview{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;overflow:hidden}
+.wiz-icon-preview img{width:100%;height:100%;object-fit:cover}
+.icon-picker-row{display:flex;align-items:center;gap:12px}
+.model-select{display:flex;align-items:center;justify-content:space-between;gap:8px;height:36px;padding:0 10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:13px;color:var(--text-1)}
+.model-select:hover{border-color:var(--brand-border)}
+.model-select .placeholder{color:var(--text-3)}
+.model-menu{width:340px;max-height:320px;overflow-y:auto}
+.model-menu .m-opt{display:block;width:100%;padding:10px 12px;border-radius:8px;text-align:left;cursor:pointer}
+.model-menu .m-opt:hover{background:var(--bg-hover)}
+.model-menu .m-opt.on{background:var(--brand-weak)}
+.model-menu .m-top{display:flex;align-items:center;gap:6px}
+.model-menu .m-name{font-size:13px;font-weight:500;color:var(--text-1)}
+.model-menu .m-tag{display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:4px;background:#eef2f1;color:var(--text-2);font-size:10.5px}
+.model-menu .m-tag.more{color:var(--text-3)}
+.model-menu .m-desc{margin-top:3px;font-size:11.5px;color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wiki-model-row{display:flex;align-items:center;gap:8px}
+.ctx-chips{display:flex;gap:4px;flex:none}
+.ctx-chip{display:inline-flex;align-items:center;gap:3px;height:22px;padding:0 8px;border-radius:5px;background:var(--bg-sunken,#f4f4f5);color:var(--text-2);font-size:11.5px;cursor:pointer}
+.ctx-chip:hover{background:#e8e8ea}
+.kb-card .name{font-size:15.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kb-card .name-row{display:flex;align-items:center;gap:8px;min-width:0}
+.kb-card .name-row .name{min-width:0;flex:0 1 auto}
+.kb-card .src-status{position:relative;display:inline-flex;align-items:center;flex:none;cursor:default}
+.kb-card .src-status .icon{width:14px;height:14px;stroke-width:0}
+.kb-card .src-status.ok{color:var(--brand)}
+.kb-card .src-status.warn{color:#f0a020}
+.kb-card .src-status.err{color:var(--err)}
+.kb-card .src-status[data-tip]:hover::after,
+.kb-card .src-status[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);z-index:6;
+  width:max-content;max-width:230px;white-space:normal;background:#1f2430;color:#fff;font-size:11.5px;line-height:1.6;font-weight:400;
+  padding:6px 10px;border-radius:5px;box-shadow:0 6px 20px rgba(0,0,0,.22);pointer-events:none}
+.kb-card .src-status[data-tip]:hover::before,
+.kb-card .src-status[data-tip]:focus-visible::before{content:"";position:absolute;left:50%;bottom:calc(100% + 3px);transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:#1f2430;z-index:6;pointer-events:none}
+/* 创建模式标签：快速版 / 进阶版 */
+.kb-card .mode-tag{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:4px;
+  font-size:11px;font-weight:400;white-space:nowrap;flex:none;line-height:1}
+.kb-card .mode-tag.quick{background:var(--brand-weak);color:#0a8f4d}
+.kb-card .mode-tag.full{background:#eef2ff;color:#4f46e5}
+.kb-card .mode-tag .icon{width:11px;height:11px;flex:none;stroke-width:1.8}
+.kb-card .src-owner{display:flex;align-items:center;gap:5px;margin-top:5px;font-size:12px;color:var(--text-3);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kb-card .src-owner .icon{width:13px;height:13px;flex:none}
+.kb-card .src-models{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;min-width:0}
+.kb-card .model-chip{display:inline-flex;align-items:center;gap:4px;height:21px;padding:0 6px;border-radius:4px;
+  background:var(--bg-sunken);color:var(--text-3);font-size:11px;white-space:nowrap;min-width:0;flex:0 1 auto;overflow:hidden;max-width:100%}
+.kb-card .model-chip>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kb-card .model-chip .icon{width:11px;height:11px;flex:none;color:var(--brand)}
+.kb-card .model-chip.vlm .icon{color:#7c5cff}
+.kb-card .model-chip.emb .icon{color:#0aa2c0}
+.kb-card .model-chip.rerank .icon{color:#e08a1e}
+.kb-card .acts{margin-left:auto;display:flex;gap:2px}
+.kb-card .star.on{color:#f5a623}
+.kb-card .desc{color:var(--text-2);margin:0 0 14px;min-height:18px;font-size:13px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.kb-card .foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:14px;border-top:1px solid var(--border-light)}
+.kb-card .foot .muted{font-size:12px}
+.kb-card .kb-stats{display:flex;flex-wrap:wrap;gap:6px 14px;width:100%}
+.kb-card .kb-stat{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text-3)}
+.kb-card .kb-stat .icon{width:13px;height:13px;flex:none}
+.kb-card .kb-stat span{white-space:nowrap}
+.kb-card .features{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+
+/* ---------- detail page ---------- */
+.detail-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+.detail-head h1{font-size:20px;margin:0;display:flex;align-items:center;gap:8px}
+.tabs{display:flex;gap:22px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tabs button{height:38px;color:var(--text-2);position:relative;padding:0 2px;font-size:13.5px}
+.tabs button.on{color:var(--brand);font-weight:500}
+.tabs button.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--brand);border-radius:2px}
+.tabs button .num{font-size:11px;color:var(--text-4);margin-left:4px}
+.info-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:18px}
+.info-strip .cell{background:#fff;padding:12px 14px}
+.info-strip .cell i{display:block;font-style:normal;font-size:12px;color:var(--text-3);margin-bottom:5px}
+.info-strip .cell b{font-size:13px;font-weight:500}
+.sub-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.sub-toolbar .spacer{flex:1}
+.batch-bar{display:flex;align-items:center;gap:10px;background:var(--brand-weak);border:1px solid var(--brand-border);border-radius:var(--radius);padding:8px 12px;margin-bottom:10px}
+.batch-bar b{color:#0a8f4d}
+.detail-body{display:flex;gap:16px;align-items:flex-start}
+.folder-tree{width:210px;flex:none;border:1px solid var(--border);border-radius:var(--radius-lg);background:#fff;padding:8px;max-height:560px;overflow:auto}
+.folder-tree .ft-row{display:flex;align-items:center;gap:6px;height:30px;padding:0 8px;border-radius:6px;color:var(--text-2);cursor:pointer}
+.folder-tree .ft-row:hover{background:var(--bg-hover)}
+.folder-tree .ft-row.on{background:var(--brand-weak);color:var(--brand)}
+.folder-tree .ft-row .c{margin-left:auto;font-size:11px;color:var(--text-4)}
+.folder-tree .ft-row.sub{padding-left:24px}
+.table-wrap{flex:1;min-width:0;border:1px solid var(--border);border-radius:var(--radius-lg);background:#fff;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-weight:500;color:var(--text-3);font-size:12.5px;padding:10px 12px;background:var(--bg-sunken);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:hover{background:#fafbfc}
+tbody tr.sel{background:var(--brand-weak)}
+td.name-cell{display:flex;align-items:center;gap:8px;max-width:340px}
+td.name-cell .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ficon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex:none;font-size:10px;font-weight:600;background:var(--gray-bg);color:var(--text-2)}
+.ficon.pdf{background:#fdecee;color:#e34d59}.ficon.doc{background:#eaf1ff;color:#0052d9}.ficon.md{background:#e8f8ef;color:#0a8f4d}
+.ficon.xls{background:#e9f7ef;color:#1a9c53}.ficon.ppt{background:#fff4e6;color:#ed7b2f}.ficon.url{background:#f0f2f5;color:#5a6472}
+.chk{width:15px;height:15px;accent-color:var(--brand);cursor:pointer;flex:none}
+.bar{height:5px;border-radius:5px;background:var(--gray-bg);overflow:hidden;width:90px}
+.bar>i{display:block;height:100%;background:var(--brand);transition:width .4s}
+.menu{position:absolute;z-index:160;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:4px;min-width:150px}
+.menu button{display:flex;align-items:center;gap:8px;width:100%;height:32px;padding:0 10px;border-radius:6px;color:var(--text-1);text-align:left}
+.menu button:hover{background:var(--bg-hover)}
+.menu button.danger{color:var(--err)}
+.menu button.danger:hover{background:var(--err-bg)}
+.menu .sep{height:1px;background:var(--border);margin:4px 6px}
+
+/* ---------- settings / activity ---------- */
+.set-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+.set-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px}
+.set-card h4{margin:0 0 4px;font-size:14px;display:flex;align-items:center;gap:8px}
+.set-card .kv{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed var(--border);font-size:12.5px}
+.set-card .kv:last-child{border-bottom:none}
+.set-card .kv span{color:var(--text-3)}
+.set-card .kv b{font-weight:500;text-align:right}
+.set-card .desc{color:var(--text-3);font-size:12.5px;line-height:1.7;margin:6px 0 10px}
+
+
+/* ---------- modal / drawer ---------- */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
+.modal{background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:760px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
+.modal.lg{max-width:900px}
+.modal-head{height:52px;flex:none;display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid var(--border)}
+.modal-head b{font-size:15px;font-weight:500}
+.modal-head .spacer{flex:1}
+.modal-body{flex:1;overflow:auto;padding:18px}
+.modal-foot{flex:none;display:flex;align-items:center;gap:10px;padding:12px 18px;border-top:1px solid var(--border);background:var(--bg-sunken)}
+.modal-foot .spacer{flex:1}
+.drawer-mask{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:90}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:640px;max-width:92vw;background:#fff;z-index:95;box-shadow:var(--shadow-lg);display:flex;flex-direction:column}
+.drawer-head{height:52px;flex:none;display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid var(--border)}
+.drawer-body{flex:1;overflow:auto;padding:16px 18px}
+.chunk{border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px;background:#fff}
+.chunk .top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.chunk .idx{font-size:11px;color:var(--text-3);background:var(--bg-sunken);border-radius:4px;padding:1px 6px}
+.chunk .chunk-text{color:var(--text-2);line-height:1.75;font-size:12.5px;white-space:pre-wrap}
+.chunk.off{opacity:.55}
+.chunk .editbox{width:100%;min-height:90px;border:1px solid var(--brand);border-radius:6px;padding:8px;line-height:1.7;font-size:12.5px;outline:none}
+
+/* ---------- chunk test drawer ---------- */
+#chunkTestDrawer{width:820px;max-width:96vw;z-index:110}
+.test-drawer-mask{z-index:105}
+.test-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.test-label>label{font-size:13px;color:var(--text-2)}
+.test-samples{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-3)}
+.test-samples button{color:var(--text-2);padding:1px 2px;border-radius:4px}
+.test-samples button:hover{color:var(--brand)}
+.test-samples button.on{color:var(--brand);font-weight:500}
+.test-editor{position:relative;margin-bottom:6px}
+.test-editor textarea{width:100%;height:230px;border:1px solid var(--border-strong);border-radius:var(--radius);padding:10px 12px 32px;font-size:12.5px;line-height:1.8;font-family:inherit;resize:vertical;outline:none;color:var(--text-1)}
+.test-editor textarea:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(7,193,96,.12)}
+.test-count{position:absolute;right:12px;bottom:10px;font-size:11px;color:var(--text-4)}
+.test-actions{display:flex;justify-content:flex-end;margin-bottom:16px}
+.test-actions .btn.primary{height:30px;font-size:12.5px}
+.test-strategy{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--text-3);margin-bottom:12px}
+.test-strategy .chip{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:4px;border:1px solid var(--brand-border);background:var(--brand-weak);color:var(--brand);font-weight:500;font-size:12.5px}
+.test-stats{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden}
+.test-stats>div{padding:12px 6px;text-align:center;border-right:1px solid var(--border)}
+.test-stats>div:last-child{border-right:none}
+.test-stats b{display:block;font-size:17px;font-weight:600;color:var(--text-1);margin-bottom:2px}
+.test-stats span{font-size:11.5px;color:var(--text-3)}
+.test-summary{background:var(--bg-sunken);border-radius:var(--radius);padding:9px 12px;font-size:12.5px;color:var(--text-2);margin-bottom:14px}
+.test-chunk{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;background:#fff;overflow:hidden}
+.test-chunk-head{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;user-select:none}
+.test-chunk-head:hover{background:var(--bg-hover)}
+.test-chunk-head .idx{font-size:11.5px;color:var(--text-3);background:var(--bg-sunken);border-radius:4px;padding:1px 7px;flex:none}
+.test-chunk-head .meta{font-size:12px;color:var(--text-3);flex:none}
+.test-chunk-head .seps{display:flex;gap:5px;flex-wrap:wrap;overflow:hidden;flex:1;min-width:0}
+.test-chunk-head .sep{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:4px;background:var(--brand-weak);color:#0a8f4d;font-size:11.5px;white-space:nowrap}
+.test-chunk-head .chev{color:var(--text-3);transition:.2s;flex:none}
+.test-chunk.open .chev{transform:rotate(180deg)}
+.test-chunk-body{display:none;padding:0 12px 14px;font-size:12.5px;line-height:1.85;color:var(--text-2);white-space:pre-wrap}
+.test-chunk.open .test-chunk-body{display:block}
+.test-chunk-body .h{color:var(--text-1);font-weight:600}
+
+/* ---------- wizard ---------- */
+.wizard{display:flex;flex:1;min-height:0}
+.wiz-nav{width:220px;flex:none;border-right:1px solid var(--border);padding:14px 10px;overflow:auto;background:var(--bg-sunken)}
+.wiz-nav .grp{font-size:11px;color:var(--text-4);padding:10px 10px 6px;letter-spacing:.5px}
+.wiz-nav button{display:flex;align-items:center;gap:8px;width:100%;height:34px;padding:0 10px;border-radius:6px;color:var(--text-2);text-align:left}
+.wiz-nav button:hover{background:#fff}
+.wiz-nav button.on{background:var(--brand-weak);color:var(--brand);font-weight:500}
+.wiz-nav button .n{width:18px;height:18px;border-radius:50%;background:#fff;border:1px solid var(--border-strong);font-size:10px;display:flex;align-items:center;justify-content:center;color:var(--text-3)}
+.wiz-nav button.on .n{background:var(--brand);border-color:var(--brand);color:#fff}
+.wiz-main{flex:1;overflow:auto;padding:20px 24px}
+.wiz-main h3{margin:0 0 4px;font-size:16px}
+.wiz-main .sub{color:var(--text-3);margin-bottom:20px}
+.wiz-step{max-width:660px}
+.radio-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rc{border:1px solid var(--border-strong);border-radius:var(--radius-lg);padding:14px;cursor:pointer;position:relative;transition:.15s}
+.rc:hover{border-color:var(--brand-border)}
+.rc.on{border-color:var(--brand);background:var(--brand-weak)}
+.rc b{display:block;margin-bottom:4px}
+.rc i{font-style:normal;color:var(--text-3);font-size:12px;line-height:1.6}
+.rc .tick{position:absolute;top:12px;right:12px;color:var(--brand);opacity:0}
+.rc.on .tick{opacity:1}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.inline{display:flex;align-items:center;gap:10px}
+.switch-row{display:flex;align-items:flex-start;gap:12px;padding:14px;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:12px;background:#fff}
+.switch-row .t{flex:1}
+.switch-row .t b{display:block;margin-bottom:4px}
+.switch-row .t i{font-style:normal;color:var(--text-3);font-size:12px;line-height:1.65}
+.code-box{background:#0f172a;color:#a8ffc4;border-radius:var(--radius);padding:12px;font-family:ui-monospace,Consolas,monospace;font-size:12px;line-height:1.7;white-space:pre-wrap}
+
+/* ---------- chunk settings ---------- */
+.wiz-step.wide{max-width:none}
+.chunk-row{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:36px;padding:20px 0;align-items:start;border-bottom:1px solid var(--border)}
+.chunk-row:last-child{border-bottom:none;padding-bottom:0}
+.chunk-row .info b{display:block;font-size:14px;font-weight:500;margin-bottom:6px;color:var(--text-1)}
+.chunk-row .info p{margin:0;font-size:12.5px;line-height:1.75;color:var(--text-3)}
+.chunk-row .ctrl{display:flex;flex-direction:column;gap:8px}
+.chunk-sub{border-left:2px solid var(--brand);padding-left:20px;margin:0 0 4px}
+.auto-note{background:var(--bg-sunken);border-left:3px solid var(--brand);border-radius:var(--radius);padding:10px 12px;margin-bottom:20px;font-size:12.5px;line-height:1.7;color:var(--text-2)}
+.auto-note b{font-weight:600;color:var(--text-1)}
+.link-btn{align-self:flex-end;display:inline-flex;align-items:center;gap:5px;color:var(--brand);font-size:12.5px;padding:2px 0}
+.link-btn:hover{color:var(--brand-hover)}
+.range-wrap{display:grid;grid-template-columns:1fr auto;gap:3px 10px;align-items:center}
+.num-field{display:flex;align-items:center;gap:8px}
+.num-input{width:110px;text-align:left;-moz-appearance:textfield}
+.num-input::-webkit-outer-spin-button,.num-input::-webkit-inner-spin-button{-webkit-appearance:none;appearance:none;margin:0}
+.num-field .unit{font-size:12.5px;color:var(--text-3);white-space:nowrap}
+.range{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:99px;background:linear-gradient(to right,var(--brand) 0 var(--p,0%),#e3e6eb var(--p,0%) 100%);outline:none;cursor:pointer;grid-column:1;grid-row:1}
+.range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--brand);box-shadow:0 1px 4px rgba(0,0,0,.18);cursor:pointer}
+.range::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--brand);cursor:pointer}
+.range:disabled{opacity:.45;cursor:not-allowed}
+.range-val{grid-column:2;grid-row:1;font-size:12.5px;color:var(--text-3);white-space:nowrap}
+.range-val b{color:var(--text-1);font-weight:500;margin-right:3px}
+.range-ticks{grid-column:1;grid-row:2;display:flex;justify-content:space-between;font-size:11px;color:var(--text-4)}
+.sep-box{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 30px 10px 10px;border:1px solid var(--border-strong);border-radius:var(--radius);background:#fff;position:relative;min-height:44px;cursor:pointer}
+.sep-box.empty{padding:0 30px 0 11px;min-height:38px}
+.sep-placeholder{font-size:12.5px;color:var(--text-3);line-height:36px;text-align:left;width:100%}
+.sep-box.open{border-color:var(--brand);box-shadow:0 0 0 2px rgba(7,193,96,.12)}
+.sep-chip{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 4px 0 9px;border-radius:5px;background:var(--bg-hover);color:var(--text-2);font-size:12px;white-space:nowrap}
+.sep-chip button{width:16px;height:16px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;color:var(--text-3)}
+.sep-chip button:hover{background:#e6e9ee;color:var(--text-1)}
+.sep-more{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;color:var(--text-3)}
+.sep-more:hover{background:var(--bg-hover)}
+.sep-more .icon{transition:transform .2s}
+.sep-box.open .sep-more .icon{transform:rotate(180deg)}
+.sep-wrap{position:relative}
+.sep-panel{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:20;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:6px 6px 0;max-height:300px;overflow:hidden;display:flex;flex-direction:column}
+.sep-opts{overflow:auto;flex:1;min-height:0;padding-bottom:4px}
+.sep-opt{display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;border-radius:6px;color:var(--text-2);font-size:12.5px;cursor:pointer;white-space:nowrap}
+.sep-opt:hover{background:var(--bg-hover)}
+.sep-opt .box{width:15px;height:15px;border-radius:3px;border:1px solid var(--border-strong);display:inline-flex;align-items:center;justify-content:center;flex:none;color:#fff}
+.sep-opt.on .box{background:var(--brand);border-color:var(--brand)}
+.sep-opt.on{color:var(--text-1)}
+.sep-custom{display:flex;gap:6px;align-items:center;padding:8px 0;margin-top:2px;border-top:1px solid var(--border);flex:none}
+.sep-custom-input{flex:1;height:28px;border:1px solid var(--border-strong);border-radius:5px;padding:0 8px;font-size:12px;outline:none;min-width:0;background:#fff;color:var(--text-1)}
+.sep-custom-input:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(7,193,96,.12)}
+.sep-custom-btn{height:28px;padding:0 10px;border-radius:5px;background:var(--brand);color:#fff;font-size:12px;white-space:nowrap;flex:none}
+.sep-custom-btn:hover{background:var(--brand-hover)}
+
+/* toast */
+#toastWrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:#fff;border:1px solid var(--border);box-shadow:var(--shadow-lg);border-radius:var(--radius);padding:9px 14px;display:flex;align-items:center;gap:8px;font-size:13px;animation:pop .2s ease}
+.toast.ok{border-left:3px solid var(--brand)}
+.toast.warn{border-left:3px solid var(--warn)}
+.toast.err{border-left:3px solid var(--err)}
+@keyframes pop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.spin{animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<svg style="display:none">
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4h7a3 3 0 013 3v13a2.5 2.5 0 00-2.5-2.5H4z"/><path d="M20 4h-7a3 3 0 00-3 3v13a2.5 2.5 0 012.5-2.5H20z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 01-8 8H7l-4 3v-7a8 8 0 018-8h2a8 8 0 018 4z"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 13h18M12 8v13"/><path d="M12 8S10 3 7.5 4.5 12 8 12 8zM12 8s2-5 4.5-3.5S12 8 12 8z"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/></symbol>
+  <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.5 5.5a3.5 3.5 0 004.6 4.6L21 12l-8 8-6.5-6.5L4 15 3 9l6 1 2-2z"/></symbol>
+  <symbol id="i-infi" viewBox="0 0 24 24"><path d="M6.5 15a3.5 3.5 0 010-7c3 0 4 7 7 7a3.5 3.5 0 000-7c-3 0-5.5 3.5-8.5 3.5A3.5 3.5 0 006.5 15z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 10l6.1-.9z"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></symbol>
+  <symbol id="i-check-cir" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor" stroke="none" style="fill:currentColor;stroke:none"/><path d="M7.5 12.2l3 3 6-6.2" stroke="#fff" stroke-width="2.2" style="stroke:#fff;fill:none"/></symbol>
+  <symbol id="i-warn-cir" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor" stroke="none" style="fill:currentColor;stroke:none"/><path d="M12 7v6" stroke="#fff" stroke-width="2.2" style="stroke:#fff;fill:none"/><circle cx="12" cy="16.6" r="1.2" fill="#fff" stroke="none" style="fill:#fff;stroke:none"/></symbol>
+  <symbol id="i-x-cir" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor" stroke="none" style="fill:currentColor;stroke:none"/><path d="M8.6 8.6l6.8 6.8M15.4 8.6l-6.8 6.8" stroke="#fff" stroke-width="2.2" style="stroke:#fff;fill:none"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007 0l2-2a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-2 2a5 5 0 007 7l1-1"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 11-2.3-5.6"/><path d="M20 4v4h-4"/></symbol>
+  <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L20 8l-4-4L4 16z"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/></symbol>
+  <symbol id="i-chip" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M4 18l5-5 4 3 3-2 4 4"/></symbol>
+  <symbol id="i-audio" viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 010 7"/></symbol>
+  <symbol id="i-graph" viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.5"/><circle cx="18" cy="7" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8 8.3l2.6 7.6M16 8.3l-2.6 7.6M8.5 7h7"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4.5l3 2"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0114 0"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></symbol>
+  <symbol id="i-folder-plus" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M12 12v5M9.5 14.5h5"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 11l8-8 9 1 1 9-8 8z"/><circle cx="15" cy="9" r="1.2"/></symbol>
+  <symbol id="i-move" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></symbol>
+  <symbol id="i-import" viewBox="0 0 24 24"><path d="M12 20V8M7 13l5-5 5 5M4 4h16"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+  <symbol id="i-broom" viewBox="0 0 24 24"><path d="M14 4l6 6M9 19l-4 -4 7-7 4 4-7 7z"/><path d="M5 15l-2 6 6-2"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z"/></symbol>
+</svg>
+
+<div class="app">
+  <main class="main">
+
+    <!-- ---------- 知识库列表页 ---------- -->
+    <div class="content" id="pageList">
+      <div class="toolbar">
+        <div class="eb-search"><svg class="icon sm"><use href="#i-search"/></svg>
+          <input id="kbSearch" placeholder="搜索知识库..." oninput="renderList()">
+        </div>
+        <div class="eb-filters" id="filterSeg"></div>
+        <div class="spacer" style="flex:1"></div>
+        <span class="muted" id="listMeta"></span>
+      </div>
+
+      <div id="kbGroups"></div>
+    </div>
+
+    <!-- ---------- 知识库详情页 ---------- -->
+    <div class="content hidden" id="pageDetail">
+      <div class="detail-head">
+        <button class="ibtn" onclick="goList()" title="返回"><svg class="icon"><use href="#i-chev" style="transform:rotate(180deg)"/></svg></button>
+        <div id="kbIcon" class="kb-ico"><svg class="icon lg"><use href="#i-book"/></svg></div>
+        <div style="flex:1">
+          <h1 id="kbName"></h1>
+          <div class="page-sub" id="kbDesc"></div>
+        </div>
+        <div class="inline">
+          <button class="btn" id="kbStarBtn" onclick="toggleStar(current())"></button>
+          <button class="btn" onclick="openDocDialog()"><svg class="icon sm"><use href="#i-upload"/></svg>上传文档</button>
+          <button class="btn" onclick="openLinkDialog()"><svg class="icon sm"><use href="#i-link"/></svg>添加链接</button>
+          <button class="btn"><svg class="icon sm"><use href="#i-gear"/></svg>知识库设置</button>
+        </div>
+      </div>
+
+      <div class="info-strip" id="infoStrip"></div>
+      <div class="tabs" id="detailTabs"></div>
+      <div id="detailPanel"></div>
+    </div>
+  </main>
+</div>
+
+<!-- ============ 新建知识库向导 ============ -->
+<div class="mask hidden" id="wizardMask">
+  <div class="modal lg" style="height:86vh">
+    <div class="modal-head">
+      <b id="wizTitle">新建企业知识库</b>
+      <div class="spacer"></div>
+      <button class="ibtn" onclick="closeWizard()"><svg class="icon"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="wizard">
+      <div class="wiz-nav" id="wizNav"></div>
+      <div class="wiz-main" id="wizMain"></div>
+    </div>
+    <div class="modal-foot">
+      <span class="muted" id="wizProgress"></span>
+      <div class="spacer"></div>
+      <button class="btn" onclick="closeWizard()">取消</button>
+      <button class="btn primary" id="wizNext" onclick="submitWizard()">创建知识库</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 通用弹窗（文档/链接/FAQ） ============ -->
+<div class="mask hidden" id="dialogMask">
+  <div class="modal" id="dialogModal">
+    <div class="modal-head"><b id="dlgTitle"></b><div class="spacer"></div>
+      <button class="ibtn" onclick="closeDialog()"><svg class="icon"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-body" id="dlgBody"></div>
+    <div class="modal-foot" id="dlgFoot"></div>
+  </div>
+</div>
+
+<!-- ============ 分块抽屉 ============ -->
+<div class="drawer-mask hidden" id="drawerMask" onclick="closeDrawer()"></div>
+<div class="drawer hidden" id="chunkDrawer">
+  <div class="drawer-head">
+    <svg class="icon" style="color:var(--brand)"><use href="#i-grid"/></svg>
+    <b id="chunkTitle">文档分块</b>
+    <div class="spacer" style="flex:1"></div>
+    <button class="ibtn" onclick="closeDrawer()"><svg class="icon"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="drawer-body" id="chunkBody"></div>
+</div>
+
+<!-- ============ 测试分块效果抽屉 ============ -->
+<div class="drawer-mask test-drawer-mask hidden" id="chunkTestMask" onclick="closeChunkTest()"></div>
+<div class="drawer hidden" id="chunkTestDrawer">
+  <div class="drawer-head">
+    <b>测试分块效果</b>
+    <div class="spacer" style="flex:1"></div>
+    <button class="ibtn" onclick="closeChunkTest()"><svg class="icon"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="drawer-body">
+    <div class="test-label">
+      <label>示例文本</label>
+      <div class="test-samples">
+        <span>载入示例：</span>
+        <button onclick="loadSample('md',this)">Markdown 文档</button>
+        <button onclick="loadSample('pdf',this)">PDF 章节</button>
+        <button onclick="loadSample('plain',this)">纯文本</button>
+      </div>
+    </div>
+    <div class="test-editor">
+      <textarea id="testSampleText" oninput="updateTestCount()" spellcheck="false"></textarea>
+      <div class="test-count" id="testCount">0/60000</div>
+    </div>
+    <div class="test-actions">
+      <button class="btn primary" onclick="runChunkTest()"><svg class="icon sm"><use href="#i-play"/></svg>运行预览</button>
+    </div>
+    <div id="testResult" class="hidden">
+      <div class="test-strategy">选定策略：<span class="chip" id="testStrategyChip">按标题切分</span></div>
+      <div class="test-stats" id="testStats"></div>
+      <div class="test-summary" id="testSummary"></div>
+      <div id="testChunkList"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toastWrap"></div>
+
+<script>
+/* ========================= 工具 ========================= */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const icon = (n, cls="icon") => `<svg class="${cls}"><use href="#${n}"/></svg>`;
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid = () => Math.random().toString(36).slice(2, 10);
+const now = () => new Date().toLocaleString("zh-CN", {hour12:false}).replace(/\//g,"-");
+function relTime(d){ const m=(Date.now()-d)/60000; if(m<1)return"刚刚"; if(m<60)return Math.floor(m)+" 分钟前"; const h=m/60; if(h<24)return Math.floor(h)+" 小时前"; const dd=Math.floor(h/24); if(dd<30)return dd+" 天前"; return d.toLocaleDateString("zh-CN"); }
+function fullTime(d){ const p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+function toast(msg, kind="ok"){
+  const t = document.createElement("div");
+  t.className = "toast " + kind;
+  t.innerHTML = icon(kind==="ok"?"i-check":kind==="err"?"i-x":"i-clock","icon sm") + `<span>${esc(msg)}</span>`;
+  $("#toastWrap").appendChild(t);
+  setTimeout(()=>{ t.style.opacity=0; t.style.transition=".3s"; setTimeout(()=>t.remove(),300); }, 2200);
+}
+
+/* ========================= 状态 / 数据 ========================= */
+const STATUS = {
+  queued:     {t:"待处理",  c:"gray"},
+  processing: {t:"解析中",  c:"info"},
+  finalizing: {t:"收尾中",  c:"info"},
+  completed:  {t:"已完成",  c:"brand"},
+  failed:     {t:"解析失败",c:"err"},
+  cancelled:  {t:"已取消",  c:"gray"},
+  draft:      {t:"草稿",    c:"warn"},
+  stalled:    {t:"已停滞",  c:"warn"},
+};
+const state = {
+  view: "list",
+  filter: "all",
+  sort: "recent",
+  currentKbId: null,
+  tab: "docs",
+  
+  docView: "list",
+  folderFilter: "all",
+  selectedDocs: new Set(),
+  query: "",
+};
+
+const TYPE = { doc:{t:"文档型", ico:"i-book", cls:""} };
+const SOURCE_STATUS = {
+  ok:      {t:"已完成处理",   c:"ok",   tip:"全部文件已解析完成。"},
+  partial: {t:"部分文件处理中", c:"warn", tip:"部分文件仍在解析中，通常数分钟内完成。"},
+  missing: {t:"存在解析失败文件", c:"err", tip:"存在解析失败文件"},
+};
+const STATUS_ICON = {ok:"i-check-cir", warn:"i-warn-cir", err:"i-x-cir"};
+
+
+let KBS = [
+  { id:"kb_product", name:"产品需求文档库", iconColor:"#07c160", type:"doc", desc:"PRD、竞品分析与版本规划", docs:14, wiki:false, features:["多模态","知识图谱"], pinned:true, star:true, mode:"full", owner:"赵楠", createdAt:Date.now()-90*24*3600e3, updated:Date.now()-3600e3, org:"产品中心",
+    sourcePath:"D:\\Documents\\ProductDesign", sourceStatus:"ok",
+    vlm:"Qwen-VL-Max",
+    cfg:{ llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", rerank:"qwen3-rerank", vector:"Qdrant", storage:"本地存储", chunk:{strategy:"按标题切分", size:512, overlap:64, parentChild:true, child:256, unit:"字符"}, multimodal:true, asr:false, autoTag:true } },
+  { id:"kb_contract", name:"合同", iconColor:"#3b82f6", type:"doc", desc:"无描述", docs:5, wiki:true, features:["Wiki","多模态"], pinned:false, star:false, mode:"quick", owner:"赵楠", createdAt:Date.now()-120*24*3600e3, updated:Date.now()-26*3600e3, org:"法务部",
+    sourcePath:"D:\\Legal\\Contracts", sourceStatus:"ok",
+    vlm:"Qwen-VL-Max",
+    cfg:{ llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", rerank:"bge-reranker-v2-m3", vector:"Qdrant", storage:"本地存储", chunk:{strategy:"按标题切分", size:800, overlap:120, parentChild:true, child:320, unit:"字符"}, multimodal:true, asr:false, autoTag:false } },
+  { id:"kb_rnd", name:"研发规范与架构", iconColor:"#8b5cf6", type:"doc", desc:"编码规范、架构设计与部署手册", docs:9, wiki:false, features:["知识图谱"], pinned:false, star:true, mode:"full", owner:"赵楠", createdAt:Date.now()-200*24*3600e3, updated:Date.now()-3*24*3600e3, org:"研发中心",
+    sourcePath:"D:\\Projects\\TechDocs", sourceStatus:"partial", sourceTip:"部分文件仍在解析中，通常数分钟内完成。",
+    vlm:"Qwen-VL-Max",
+    cfg:{ llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", vector:"Qdrant", storage:"本地存储", chunk:{strategy:"按标题切分", size:640, overlap:96, parentChild:true, child:256, unit:"字符"}, multimodal:false, asr:true, autoTag:true } },
+  { id:"kb_market", name:"市场资料", iconColor:"#ec4899", type:"doc", desc:"品牌物料与行业研究报告", docs:3, wiki:false, features:["多模态"], pinned:false, star:false, mode:"quick", owner:"李明", createdAt:Date.now()-45*24*3600e3, updated:Date.now()-6*24*3600e3, org:"市场部", shared:"可编辑",
+    sourcePath:"D:\\Research\\Finance", sourceStatus:"missing",
+    vlm:"Qwen-VL-Max",
+    cfg:{ llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", vector:"Qdrant", storage:"本地存储", chunk:{strategy:"按长度切分", size:400, overlap:50, parentChild:false, child:200, unit:"字符"}, multimodal:true, asr:false, autoTag:false } },
+];
+
+const DOCS = {
+  kb_product: [
+    {id:"d1", name:"WeKnora 产品需求文档 v2.3.pdf", kind:"pdf", size:"4.2 MB", status:"completed", chunks:186, tags:["PRD","v2.3"], source:"手动上传", channel:"channelUpload", time:Date.now()-2*3600e3, by:"赵楠"},
+    {id:"d2", name:"竞品分析：RAG 平台对比.md", kind:"md", size:"128 KB", status:"completed", chunks:42, tags:["竞品"], source:"手动上传", channel:"channelManual", time:Date.now()-5*3600e3, by:"赵楠"},
+    {id:"d3", name:"2026 版本规划.docx", kind:"doc", size:"860 KB", status:"processing", chunks:0, progress:64, tags:[], source:"手动上传", channel:"channelUpload", time:Date.now()-600e3, by:"赵楠"},
+    {id:"d4", name:"用户调研访谈纪要.pdf", kind:"pdf", size:"2.1 MB", status:"queued", chunks:0, tags:[], source:"手动上传", channel:"channelUpload", time:Date.now()-300e3, by:"赵楠"},
+    {id:"d5", name:"指标体系说明.xlsx", kind:"xls", size:"310 KB", status:"failed", chunks:0, tags:[], source:"手动上传", channel:"channelUpload", time:Date.now()-30*3600e3, by:"赵楠", err:"解析超时：OCR 服务无响应"},
+    {id:"d6", name:"https://weknora.tech/docs/architecture", kind:"url", size:"—", status:"completed", chunks:28, tags:["架构"], source:"网页导入", channel:"channelUrl", time:Date.now()-2*24*3600e3, by:"赵楠"},
+    {id:"d7", name:"历史需求归档（2025）.docx", kind:"doc", size:"1.4 MB", status:"cancelled", chunks:0, tags:[], source:"手动上传", channel:"channelUpload", time:Date.now()-4*24*3600e3, by:"赵楠"},
+    {id:"d8", name:"术语表草稿.md", kind:"md", size:"12 KB", status:"draft", chunks:0, tags:["草稿"], source:"手动上传", channel:"channelManual", time:Date.now()-6*24*3600e3, by:"赵楠"},
+  ],
+  kb_contract: [
+    {id:"c1", name:"技术服务框架协议.pdf", kind:"pdf", size:"3.6 MB", status:"completed", chunks:120, tags:["框架协议"], source:"手动上传", channel:"channelUpload", time:Date.now()-26*3600e3, by:"赵楠"},
+    {id:"c2", name:"保密协议模板.docx", kind:"doc", size:"220 KB", status:"completed", chunks:36, tags:["模板"], source:"手动上传", channel:"channelUpload", time:Date.now()-26*3600e3, by:"赵楠"},
+    {id:"c3", name:"供应商合同 · 云服务.pdf", kind:"pdf", size:"1.1 MB", status:"completed", chunks:54, tags:["供应商"], source:"手动上传", channel:"channelUpload", time:Date.now()-27*3600e3, by:"赵楠"},
+    {id:"c4", name:"供应商合同 · 硬件采购.pdf", kind:"pdf", size:"980 KB", status:"stalled", chunks:0, tags:["供应商"], source:"手动上传", channel:"channelUpload", time:Date.now()-27*3600e3, by:"赵楠", err:"已停滞：向量库写入超时"},
+    {id:"c5", name:"合同评审记录.md", kind:"md", size:"64 KB", status:"completed", chunks:18, tags:["评审"], source:"手动上传", channel:"channelManual", time:Date.now()-28*3600e3, by:"赵楠"},
+  ],
+  kb_rnd: [], kb_market: [],
+};
+function defaultDocs(kb){
+  const base = ["产品手册.pdf","技术白皮书.pdf","常见问题.md","部署指南.docx","指标说明.xlsx","安全合规说明.pdf","接口文档.md","版本发布记录.docx","培训材料.pdf"];
+  return base.slice(0, kb.docs).map((n,i)=>({
+    id:uid(), name:n, kind:n.endsWith(".pdf")?"pdf":n.endsWith(".md")?"md":n.endsWith(".xlsx")?"xls":"doc",
+    size:(0.2+Math.random()*4).toFixed(1)+" MB",
+    status:["completed","completed","completed","processing","queued"][i%5],
+    chunks: Math.floor(20+Math.random()*160), tags:i%3===0?["默认"]:[], source:"手动上传", channel:"channelUpload",
+    time:Date.now()-(i+1)*7200e3, by:"赵楠", progress: i%5===3?40:undefined,
+  }));
+}
+Object.keys(KBS).forEach(k=>{ const kb=KBS[k]; if(!DOCS[kb.id]) DOCS[kb.id]=[]; if(!DOCS[kb.id].length && kb.docs) DOCS[kb.id]=defaultDocs(kb); });
+
+const CHUNKS = {
+  d1: [
+    "第 1 章 概述\nWeKnora 是面向企业文档理解与语义检索的知识库平台。",
+    "第 2 章 目标用户\n产品经理、研发工程师、客户成功团队与运维工程师。",
+    "第 3 章 核心流程\n文档上传 → 解析 → 分块 → 向量化 → 入库 → 检索召回 → 引用追踪。",
+    "第 4 章 检索参数\n默认 topK = 8，相似度阈值 0.35，开启重排后显著提升端到端效果。",
+    "第 5 章 多模态\n开启后文档中的图片与表格由 VLM 生成结构化描述并参与检索。",
+    "第 6 章 权限\n知识库支持所有者 / 管理员 / 编辑者 / 只读四类角色，并支持共享到组织与共享空间。",
+  ],
+};
+const DEFAULT_CHUNKS = ["分块内容示例：该段落描述了功能的背景、目标与验收标准。","分块内容示例：包含字段说明、接口定义与返回示例。","分块内容示例：常见问题与对应的处理方式。","分块内容示例：配置项清单与默认值说明。"];
+
+/* ========================= 列表页 ========================= */
+const ICON_COLORS = ["#07c160","#3b82f6","#8b5cf6","#ec4899","#f59e0b","#06b6d4","#ef4444","#10b981","#6366f1","#d97706"];
+function kbAvatar(k){
+  if(k.iconImg) return `<div class="kb-ico" style="padding:0"><img src="${k.iconImg}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div>`;
+  const ch = esc((k.name||"？").trim().charAt(0).toUpperCase());
+  const c = k.iconColor || ICON_COLORS[0];
+  return `<div class="kb-ico" style="background:${c};color:#fff;font-size:20px;font-weight:600">${ch}</div>`;
+}
+function pickKbIcon(e, id){
+  e.stopPropagation();
+  const k = kbById(id);
+  popMenu(e.currentTarget, `
+    <button onclick="event.stopPropagation();document.getElementById('kbIconFile_${id}').click()">${icon("i-upload","icon sm")}上传图片</button>
+    <button onclick="shuffleKbIconColor('${id}')">${icon("i-spark","icon sm")}随机底色</button>
+    <input type="file" id="kbIconFile_${id}" accept=".jpg,.jpeg,.png,.gif" style="display:none" onchange="uploadKbIcon(event,'${id}')">`);
+}
+function shuffleKbIconColor(id){
+  closeMenu();
+  const k = kbById(id);
+  k.iconColor = ICON_COLORS[Math.floor(Math.random()*ICON_COLORS.length)];
+  k.iconImg = null;
+  toast("已更换图标底色","ok");
+  state.view==="list"?renderList():renderDetail();
+}
+function uploadKbIcon(e, id){
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 1024*1024){ toast("图片大小不能超过 1MB","err"); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    kbById(id).iconImg = ev.target.result;
+    toast("已更换知识库图标","ok");
+    state.view==="list"?renderList():renderDetail();
+  };
+  reader.readAsDataURL(file);
+}
+const FILTERS = [
+  {k:"all",     t:"全部"},
+  {k:"created", t:"我创建的"},
+  {k:"joined",  t:"我加入的"},
+];
+function current(){ return KBS.find(k=>k.id===state.currentKbId); }
+
+function renderList(){
+  const seg = $("#filterSeg");
+  seg.innerHTML = FILTERS.map(f=>{
+    const n = f.k==="all"?KBS.length
+            : f.k==="created"?KBS.filter(k=>!k.shared).length
+            : KBS.filter(k=>k.shared).length;
+    return `<button class="${state.filter===f.k?'on':''}" onclick="setFilter('${f.k}')">${f.t}<span class="num">${n}</span></button>`;
+  }).join("");
+
+  const q = $("#kbSearch").value.trim().toLowerCase();
+  state.query = q;
+  let list = KBS.filter(k=>{
+    if(state.filter==="created" && k.shared) return false;
+    if(state.filter==="joined" && !k.shared) return false;
+    if(q && !(k.name.toLowerCase().includes(q) || (k.desc||"").toLowerCase().includes(q))) return false;
+    return true;
+  });
+  const bySort = {
+    recent: (a,b)=>b.updated-a.updated,
+    created:(a,b)=>a.name.localeCompare(b.name,"zh"),
+    name:  (a,b)=>a.name.localeCompare(b.name,"zh"),
+  }[state.sort] || ((a,b)=>b.updated-a.updated);
+  list = list.slice().sort(bySort);
+
+  $("#kbGroups").innerHTML = list.length ? `
+    <div class="grid">${list.map(kbCard).join("")}</div>` : `
+    <div class="empty">
+      <div class="big">${icon("i-book","icon lg")}</div>
+      <b>暂无知识库</b><span>${q?"没有匹配的知识库，试试其它关键词":"还没有知识库，等待创建"}</span>
+    </div>`;
+
+  $("#listMeta").textContent = `共 ${list.length} 个知识库`;
+}
+
+function kbCard(k){
+  const srcStatus = k.sourceStatus || "ok";
+  const ss = SOURCE_STATUS[srcStatus] || SOURCE_STATUS.ok;
+  const missing = srcStatus === "missing";
+  const statusHTML = `<span class="src-status ${ss.c}" data-tip="${esc(k.sourceTip || ss.tip)}" tabindex="0" role="img" aria-label="${esc(ss.t)}" onclick="event.stopPropagation()">
+      ${icon(STATUS_ICON[ss.c] || "i-check-cir","icon sm")}</span>`;
+  return `<div class="kb-card" onclick="openEnterpriseDetail('${k.id}')">
+    <div class="row1">
+      <div onclick="pickKbIcon(event,'${k.id}')" title="点击更换图标" style="cursor:pointer">${kbAvatar(k)}</div>
+      <div style="min-width:0">
+        <div class="name-row"><div class="name">${esc(k.name)}</div>${statusHTML}</div>
+        <div class="src-owner">${icon("i-user","icon sm")}所有者：${esc(k.owner||"—")}</div>
+        <div class="src-models">
+          <span class="model-chip" title="大语言模型：${esc(k.cfg?.llm||"—")}">${icon("i-spark","icon sm")}<span>${esc(k.cfg?.llm||"—")}</span></span>
+          ${k.cfg?.multimodal||k.vlm?`<span class="model-chip vlm" title="视觉语言模型：${esc(k.vlm||"—")}">${icon("i-img","icon sm")}<span>${esc(k.vlm||"—")}</span></span>`:""}
+          <span class="model-chip emb" title="嵌入模型：${esc(k.cfg?.emb||"—")}">${icon("i-grid","icon sm")}<span>${esc(k.cfg?.emb||"—")}</span></span>
+          ${k.cfg?.rerank?`<span class="model-chip rerank" title="重排序模型：${esc(k.cfg.rerank)}">${icon("i-list","icon sm")}<span>${esc(k.cfg.rerank)}</span></span>`:""}
+        </div>
+      </div>
+      <div class="acts" onclick="event.stopPropagation()">
+        <button class="ibtn" title="更多" onclick="kbMenu(event,'${k.id}')">${icon("i-more","icon sm")}</button>
+      </div>
+    </div>
+    <div class="desc">${k.desc?esc(k.desc):'<span style="color:var(--text-4)">无描述</span>'}</div>
+    <div class="foot">
+      <div class="kb-stats">
+        <div class="kb-stat">${icon("i-doc","icon sm")}<span>${k.docs} 个文件</span></div>
+        <div class="kb-stat">${icon("i-clock","icon sm")}<span>创建：${k.createdAt?fullTime(new Date(k.createdAt)):"—"}</span></div>
+        <div class="kb-stat">${icon("i-clock","icon sm")}<span>更新：${k.updated?fullTime(new Date(k.updated)):"—"}</span></div>
+      </div>
+    </div>
+  </div>`;
+}
+const kbById = id => KBS.find(k=>k.id===id);
+function setFilter(k){ state.filter=k; renderList(); }
+function toggleStar(k){ if(!k) return; k.star=!k.star; toast(k.star?"已收藏":"已取消收藏"); state.view==="list"?renderList():renderDetail(); }
+
+function toggleSortMenu(e){
+  e.stopPropagation();
+  const opts = [["recent","最近更新"],["name","名称"],["created","创建时间"]];
+  popMenu(e.currentTarget, opts.map(([k,t])=>`<button onclick="setSort('${k}')">${icon(state.sort===k?"i-check":"i-clock","icon sm")}${t}</button>`).join(""));
+}
+function setSort(k){ state.sort=k; $("#sortLabel").textContent = {recent:"最近更新",name:"名称",created:"创建时间"}[k]; renderList(); }
+
+/* ---------- 弹出菜单 ---------- */
+function popMenu(anchor, html){
+  closeMenu();
+  const r = anchor.getBoundingClientRect();
+  const m = document.createElement("div");
+  m.className="menu"; m.id="popMenu"; m.innerHTML=html;
+  document.body.appendChild(m);
+  const w = m.offsetWidth, h = m.offsetHeight;
+  m.style.left = Math.min(r.left, innerWidth-w-10)+"px";
+  m.style.top  = (r.bottom+h>innerHeight-10 ? r.top-h-6 : r.bottom+6)+"px";
+  setTimeout(()=>document.addEventListener("click", closeMenu, {once:true}),0);
+}
+function closeMenu(){ const m=$("#popMenu"); if(m) m.remove(); }
+function kbMenu(e, id){
+  e.stopPropagation();
+  popMenu(e.currentTarget, `
+    <button onclick="openEnterpriseDetail('${id}', true)">${icon("i-edit","icon sm")}编辑知识库</button>
+    <button onclick="tryKbInChat('${id}')">${icon("i-chat","icon sm")}对话试一试</button>
+    <div class="sep"></div>
+    <button class="danger" onclick="delKb('${id}')">${icon("i-trash","icon sm")}删除</button>`);
+}
+/* 带上 edit 参数打开详情页，进入后自动弹出编辑弹窗 */
+function openEnterpriseDetail(id, edit){
+  const k = kbById(id);
+  if(!k) return;
+  const params = {
+    name: k.name,
+    desc: k.desc || "企业知识库，支持成员协作与权限管理。",
+    update: k.updated ? fullTime(new Date(k.updated)) : "",
+    owner: k.owner || "",
+    llm: k.cfg?.llm || "",
+    emb: k.cfg?.emb || "",
+    mode: k.mode || "quick",
+    scope: "enterprise"
+  };
+  if(edit) params.edit = "1";
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'openKbDetail', params }, '*');
+  } else {
+    window.location.href = "./detail-enterprise.html?" + new URLSearchParams(params).toString();
+  }
+}
+/* 从卡片菜单带着该知识库进入对话 */
+function tryKbInChat(id){
+  const k = kbById(id);
+  toast(`正在打开「${k ? k.name : ''}」对话`);
+}
+function delKb(id){
+  const k = kbById(id);
+  confirmDialog(`删除知识库「${k.name}」？`, "删除后该知识库下的文档与问答将一并移除，且不可恢复。", ()=>{
+    KBS = KBS.filter(x=>x.id!==id); delete DOCS[id]; toast("已删除");
+    state.view==="list"?renderList():goList();
+  });
+}
+
+/* ========================= 详情页 ========================= */
+function openKb(id){
+  state.currentKbId = id; state.view="detail"; state.tab="docs";
+  state.selectedDocs.clear(); state.folderFilter="all";
+  $("#pageList").classList.add("hidden"); $("#pageDetail").classList.remove("hidden");
+  renderDetail();
+}
+function goList(){
+  state.view="list"; $("#pageDetail").classList.add("hidden"); $("#pageList").classList.remove("hidden");
+  renderList();
+}
+function renderDetail(){
+  const k = current(); if(!k) return goList();
+  const T = TYPE[k.type];
+  $("#kbIcon").outerHTML = `<div id="kbIcon" class="kb-ico" style="cursor:pointer" onclick="pickKbIcon(event,'${k.id}')" title="点击更换图标">${kbAvatar(k).match(/^<div class="kb-ico"[^>]*>(.*)<\/div>$/s)?.[1]||""}</div>`;
+  $("#kbName").textContent = k.name;
+  $("#kbDesc").innerHTML = `${k.desc?esc(k.desc):'<span style="color:var(--text-4)">无描述</span>'}
+     <span class="tag brand" style="margin-left:8px">${T.t}</span>`;
+  $("#kbStarBtn").innerHTML = `${icon("i-star","icon sm")}${k.star?"已收藏":"收藏"}`;
+  $("#kbStarBtn").onclick = ()=>toggleStar(k);
+
+  const docCount = (DOCS[k.id]||[]).length;
+  $("#infoStrip").innerHTML = [
+    ["基本信息",  `${T.t} · 所有者 ${k.owner}`],
+    ["统计",      `${docCount} 个文档 / ${(DOCS[k.id]||[]).reduce((s,d)=>s+(d.chunks||0),0)} 个分块`],
+    ["能力",      [k.multimodal||k.cfg.multimodal?"多模态":"", k.features?.includes("知识图谱")?"知识图谱":"", k.wiki?"Wiki":""].filter(Boolean).join(" · ") || "—"],
+    ["分块设置",  `${k.cfg.chunk.strategy} · ${k.cfg.chunk.size}${k.cfg.chunk.unit}${k.cfg.chunk.parentChild?"（父子分块）":""}`],
+    ["向量库",    k.cfg.vector],
+    ["文件存储",  k.cfg.storage],
+    ["共享范围",  k.shared ? `共享给我（${k.shared}）` : "仅我可见"],
+    ["创建时间",  new Date(k.updated).toLocaleDateString("zh-CN")],
+  ].map(([a,b])=>`<div class="cell"><i>${a}</i><b>${esc(b)}</b></div>`).join("");
+
+  const tabs = [["docs","文档",docCount],["settings","设置"],["activity","操作日志"]];
+  $("#detailTabs").innerHTML = tabs.map(([id,t,n])=>
+    `<button class="${state.tab===id?'on':''}" onclick="setTab('${id}')">${t}${n!==undefined?`<span class="num">${n}</span>`:""}</button>`).join("");
+
+  renderPanel();
+}
+function setTab(t){ state.tab=t; state.selectedDocs.clear(); renderDetail(); }
+function renderPanel(){
+  const P = $("#detailPanel");
+  if(state.tab==="docs") P.innerHTML = viewDocs();
+  else if(state.tab==="settings") P.innerHTML = viewSettings();
+  else P.innerHTML = viewActivity();
+}
+
+/* ---------- 文档 Tab ---------- */
+function viewDocs(){
+  const k = current();
+  const docs = DOCS[k.id] || [];
+  const sel = state.selectedDocs.size;
+  return `
+  <div class="sub-toolbar">
+    <button class="btn primary" onclick="openDocDialog()">${icon("i-upload","icon sm")}上传文档</button>
+    <button class="btn" onclick="openLinkDialog()">${icon("i-link","icon sm")}添加链接</button>
+    <button class="btn" onclick="toast('已打开新建文件夹','ok')">${icon("i-folder-plus","icon sm")}新建文件夹</button>
+    <span style="width:8px"></span>
+    <select class="select" style="width:132px" onchange="toast('已按状态筛选')">
+      <option>全部状态</option>${Object.entries(STATUS).map(([v,s])=>`<option>${s.t}</option>`).join("")}
+    </select>
+    <select class="select" style="width:124px" onchange="toast('已按类型筛选')">
+      <option>全部类型</option><option>PDF</option><option>Word</option><option>Markdown</option><option>Excel</option><option>网页链接</option>
+    </select>
+    <select class="select" style="width:124px" onchange="toast('已按来源筛选')">
+      <option>全部来源</option><option>手动上传</option><option>网页导入</option><option>API 导入</option><option>飞书同步</option>
+    </select>
+    <div class="spacer"></div>
+    <button class="btn" onclick="toast('筛选已清空')">清空筛选</button>
+    <div class="search" style="width:200px">${icon("i-search","icon sm muted")}<input placeholder="搜索文档"></div>
+    <div class="seg">
+      <button class="${state.docView==='list'?'on':''}" onclick="setDocView('list')">${icon("i-list","icon sm")}</button>
+      <button class="${state.docView==='grid'?'on':''}" onclick="setDocView('grid')">${icon("i-grid","icon sm")}</button>
+    </div>
+  </div>
+  ${sel?`<div class="batch-bar">
+      <b>已选择 ${sel} 项</b>
+      <button class="btn sm" onclick="batchReparse()">${icon("i-refresh","icon sm")}批量重新解析</button>
+      <button class="btn sm" onclick="toast('已开始批量下载')">${icon("i-dl","icon sm")}批量下载</button>
+      <button class="btn sm" onclick="toast('已打开批量打标签','ok')">${icon("i-tag","icon sm")}批量打标签</button>
+      <button class="btn sm" onclick="batchDelete()">${icon("i-trash","icon sm")}批量删除</button>
+      <button class="btn sm text" onclick="clearSel()">取消选择</button>
+    </div>`:""}
+  <div class="detail-body">
+    <div class="folder-tree">
+      <div class="ft-row ${state.folderFilter==='all'?'on':''}" onclick="setFolder('all')">${icon("i-folder","icon sm")}全部文档<span class="c">${docs.length}</span></div>
+      <div class="ft-row sub ${state.folderFilter==='root'?'on':''}" onclick="setFolder('root')">${icon("i-doc","icon sm")}(根目录)<span class="c">${docs.length}</span></div>
+      <div class="ft-row sub ${state.folderFilter==='spec'?'on':''}" onclick="setFolder('spec')">${icon("i-folder","icon sm")}规格说明<span class="c">0</span></div>
+      <div class="ft-row sub ${state.folderFilter==='arch'?'on':''}" onclick="setFolder('arch')">${icon("i-folder","icon sm")}历史归档<span class="c">0</span></div>
+    </div>
+    <div class="table-wrap">
+      ${docs.length?`
+      <table>
+        <thead><tr>
+          <th style="width:34px"><input type="checkbox" class="chk" onclick="toggleAll(this)"></th>
+          <th>名称</th><th style="width:120px">状态</th><th style="width:170px">标签</th>
+          <th style="width:110px">来源</th><th style="width:120px">更新时间</th><th style="width:64px">操作</th>
+        </tr></thead>
+        <tbody>${docs.map(docRow).join("")}</tbody>
+      </table>` : `
+      <div class="empty" id="dropZone" ondragover="event.preventDefault();this.classList.add('hover')" ondragleave="this.classList.remove('hover')" ondrop="fakeDrop(event)">
+        <div class="big">${icon("i-upload","icon lg")}</div>
+        <b>将文件拖拽到此区域，或点击「上传文档」</b>
+        <span>支持 PDF / Word / Markdown / Excel / PPT / 图片 / 音频，单文件不超过 50MB</span>
+        <button class="btn primary" style="margin-top:6px" onclick="openDocDialog()">${icon("i-upload","icon sm")}上传文档</button>
+      </div>
+      `}
+    </div>
+  </div>`;
+}
+function setDocView(v){ state.docView=v; renderPanel(); }
+function setFolder(f){ state.folderFilter=f; toast(f==="all"?"显示全部文档":"已按目录筛选"); renderPanel(); }
+function clearSel(){ state.selectedDocs.clear(); renderPanel(); }
+function toggleAll(cb){ const docs=DOCS[current().id]||[]; state.selectedDocs.clear(); if(cb.checked) docs.forEach(d=>state.selectedDocs.add(d.id)); renderPanel(); }
+function toggleDoc(id){ state.selectedDocs.has(id)?state.selectedDocs.delete(id):state.selectedDocs.add(id); renderPanel(); }
+function docRow(d){
+  const S = STATUS[d.status] || STATUS.queued;
+  const on = state.selectedDocs.has(d.id);
+  const dotc = `var(--${S.c})`;
+  const prog = d.status==="processing" ? `<div class="inline" style="gap:6px"><div class="bar"><i style="width:${d.progress||20}%"></i></div><span class="muted" style="font-size:11px">${d.progress||20}%</span></div>` : "";
+  return `<tr class="${on?'sel':''}">
+    <td><input type="checkbox" class="chk" ${on?'checked':''} onclick="toggleDoc('${d.id}')"></td>
+    <td><div class="name-cell">
+      <div class="ficon ${d.kind}">${d.kind.toUpperCase()}</div>
+      <div style="min-width:0">
+        <div class="txt">${esc(d.name)}</div>
+        <div class="muted" style="font-size:11px">${d.size}${d.chunks?` · ${d.chunks} 个分块`:""}${d.err?` · ${esc(d.err)}`:""}</div>
+      </div>
+    </div></td>
+    <td><span class="tag ${S.c==='brand'?'brand':S.c==='err'?'err':S.c==='info'?'info':'warn'}" style="background:${S.c==='brand'?'var(--brand-weak)':S.c==='err'?'var(--err-bg)':S.c==='info'?'var(--info-bg)':'var(--gray-bg)'};color:${dotc}">
+      <span class="dot" style="background:${dotc}"></span>${S.t}</span>${prog}</td>
+    <td>${d.tags?.length?d.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join(" "):'<span class="muted">—</span>'}</td>
+    <td><span class="tag outline">${esc(d.source)}</span></td>
+    <td class="muted">${relTime(d.time)}</td>
+    <td><button class="ibtn" onclick="docMenu(event,'${d.id}')">${icon("i-more","icon sm")}</button></td>
+  </tr>`;
+}
+function docMenu(e, id){
+  e.stopPropagation();
+  const d = (DOCS[current().id]||[]).find(x=>x.id===id);
+  popMenu(e.currentTarget, `
+    <button onclick="openChunks('${id}')">${icon("i-grid","icon sm")}查看分块</button>
+    <button onclick="toast('已打开文档内容预览')">${icon("i-eye","icon sm")}查看内容</button>
+    <button onclick="reparse('${id}')">${icon("i-refresh","icon sm")}重新解析</button>
+    ${d.status==="processing"?`<button onclick="cancelParse('${id}')">${icon("i-x","icon sm")}取消解析</button>`:""}
+    <button onclick="toast('已打开移动对话框','ok')">${icon("i-move","icon sm")}移动</button>
+    <button onclick="toast('已开始下载')">${icon("i-dl","icon sm")}下载</button>
+    <div class="sep"></div>
+    <button class="danger" onclick="delDoc('${id}')">${icon("i-trash","icon sm")}删除</button>`);
+}
+function delDoc(id){
+  const d=(DOCS[current().id]||[]).find(x=>x.id===id);
+  confirmDialog(`删除文档「${d.name}」？`, "删除后该文档的分块与向量索引将一并清除，且不可恢复。", ()=>{
+    DOCS[current().id] = DOCS[current().id].filter(x=>x.id!==id);
+    const k=current(); if(k.type==="doc") k.docs=DOCS[k.id].length;
+    toast("已删除文档"); renderDetail();
+  });
+}
+function reparse(id){
+  const d=(DOCS[current().id]||[]).find(x=>x.id===id);
+  d.status="processing"; d.progress=8; d.err=""; d.chunks=0; toast("已提交重新解析");
+  renderPanel();
+  const t=setInterval(()=>{ d.progress=Math.min(100,(d.progress||8)+Math.round(12+Math.random()*22));
+    if(d.progress>=100){ clearInterval(t); d.status="completed"; d.chunks=Math.floor(30+Math.random()*150); d.progress=undefined; toast("解析完成","ok"); }
+    const k=current(); if(state.tab==="docs" && k && k.id) renderPanel(); }, 700);
+}
+function cancelParse(id){
+  const d=(DOCS[current().id]||[]).find(x=>x.id===id);
+  d.status="cancelled"; d.progress=undefined; toast("已取消解析","warn"); renderPanel();
+}
+function batchReparse(){ [...state.selectedDocs].forEach(id=>{ const d=(DOCS[current().id]||[]).find(x=>x.id===id); if(d){d.status="processing";d.progress=10;} }); toast("已提交批量重新解析"); renderPanel(); }
+function batchDelete(){ confirmDialog(`删除已选中的 ${state.selectedDocs.size} 个文档？`, "删除后分块与向量索引将一并清除，且不可恢复。", ()=>{ DOCS[current().id]=(DOCS[current().id]||[]).filter(d=>!state.selectedDocs.has(d.id)); state.selectedDocs.clear(); toast("已批量删除"); renderDetail(); }); }
+function fakeDrop(e){ e.preventDefault(); $("#dropZone")?.classList.remove("hover"); uploadDocs(["拖入的文件.pdf","拖入的文件.docx"]); }
+
+function openDocDialog(){
+  openDialog({
+    title:"上传文档",
+    body:`
+      <div class="empty" style="border:2px dashed var(--border-strong);border-radius:12px;padding:36px 20px;cursor:pointer;background:var(--bg-sunken)" onclick="fakePick()">
+        <div class="big">${icon("i-upload","icon lg")}</div>
+        <b>点击选择文件或将文件拖拽到此区域</b>
+        <span>支持 PDF / Word / Markdown / Excel / PPT / 图片 / 音频；单文件 ≤ 50MB，单次最多 50 个</span>
+      </div>
+      <div class="field" style="margin-top:16px">
+        <label>解析设置</label>
+        <div class="hint">将沿用知识库的分块设置（${esc(current().cfg.chunk.strategy)} · ${current().cfg.chunk.size}${current().cfg.chunk.unit}${current().cfg.chunk.parentChild?" · 父子分块":""}）。</div>
+      </div>
+      <div class="switch-row" style="margin-bottom:0">
+        <div class="t"><b>上传后立即解析</b><i>关闭时文档仅入库，需手动触发解析。</i></div>
+        <div class="switch on" onclick="this.classList.toggle('on')"></div>
+      </div>`,
+    foot:`<button class="btn" onclick="closeDialog()">取消</button><div class="spacer"></div>
+          <button class="btn" onclick="closeDialog();toast('已取消上传')">取消上传</button>
+          <button class="btn primary" onclick="pickFiles()">${icon("i-upload","icon sm")}选择文件并上传</button>`
+  });
+}
+function fakePick(){ pickFiles(); }
+function pickFiles(){
+  closeDialog();
+  const names = ["新上传-需求补充说明.pdf","新上传-调研问卷.docx"];
+  uploadDocs(names);
+}
+function uploadDocs(names){
+  const k=current();
+  names.forEach((n,i)=>{
+    const id=uid();
+    DOCS[k.id] = DOCS[k.id] || [];
+    DOCS[k.id].unshift({id, name:n, kind:n.endsWith(".pdf")?"pdf":n.endsWith(".md")?"md":"doc", size:(0.4+Math.random()*2).toFixed(1)+" MB",
+      status:"processing", progress:5, chunks:0, tags:[], source:"手动上传", channel:"channelUpload", time:Date.now(), by:"赵楠"});
+    const d=DOCS[k.id][0];
+    const t=setInterval(()=>{ d.progress=Math.min(100,(d.progress||5)+Math.round(10+Math.random()*20));
+      if(d.progress>=100){ clearInterval(t); d.status="completed"; d.chunks=Math.floor(20+Math.random()*120); d.progress=undefined; toast(`「${n}」解析完成`); }
+      const kk=current(); if(state.view==="detail" && state.tab==="docs" && kk && kk.id===k.id) renderPanel();
+    }, 650+i*220);
+  });
+  if(k.type==="doc") k.docs=DOCS[k.id].length;
+  toast(`已开始上传 ${names.length} 个文档`); renderDetail();
+}
+function openLinkDialog(){
+  openDialog({
+    title:"添加链接（网页导入）",
+    body:`<div class="field"><label>网页地址<span class="req">*</span></label>
+        <input class="input" placeholder="https://" id="urlInput">
+        <div class="hint">支持单页抓取与站点递归抓取，遵守 robots.txt。</div></div>
+      <div class="field"><label>抓取范围</label>
+        <select class="select"><option>仅当前页面</option><option>同域下最多 50 个页面</option></select></div>
+      <div class="field" style="margin-bottom:0"><label>标签</label><input class="input" placeholder="可选，回车分隔"></div>`,
+    foot:`<button class="btn" onclick="closeDialog()">取消</button><div class="spacer"></div>
+          <button class="btn primary" onclick="addLink()">${icon("i-link","icon sm")}导入</button>`
+  });
+}
+function addLink(){
+  const v = ($("#urlInput")?.value||"").trim() || "https://example.com/article";
+  closeDialog();
+  const k=current(); DOCS[k.id]=DOCS[k.id]||[];
+  DOCS[k.id].unshift({id:uid(), name:v, kind:"url", size:"—", status:"processing", progress:10, chunks:0, tags:["网页"], source:"网页导入", channel:"channelUrl", time:Date.now(), by:"赵楠"});
+  const d=DOCS[k.id][0];
+  const t=setInterval(()=>{ d.progress=Math.min(100,(d.progress||10)+18);
+    if(d.progress>=100){ clearInterval(t); d.status="completed"; d.chunks=Math.floor(8+Math.random()*30); d.progress=undefined; toast("网页导入完成"); }
+    const kk=current(); if(state.view==="detail" && state.tab==="docs" && kk && kk.id===k.id) renderPanel(); }, 600);
+  if(k.type==="doc") k.docs=DOCS[k.id].length;
+  toast("已开始抓取网页"); renderDetail();
+}
+function openChunks(id){
+  const k=current(); const d=(DOCS[k.id]||[]).find(x=>x.id===id);
+  const list = CHUNKS[id] || DEFAULT_CHUNKS;
+  $("#chunkTitle").textContent = `${d.name} · 分块`;
+  $("#chunkBody").innerHTML = `
+    <div class="sub-toolbar">
+      <span class="tag brand">共 ${d.chunks||list.length} 个分块</span>
+      <span class="tag outline">${esc(k.cfg.chunk.strategy)}</span>
+      <span class="tag outline">${k.cfg.chunk.size}${k.cfg.chunk.unit}${k.cfg.chunk.parentChild?" · 父子分块":""}</span>
+      <div class="spacer"></div>
+      <button class="btn sm" onclick="toast('已重建索引')">${icon("i-refresh","icon sm")}重建索引</button>
+      <button class="btn sm" onclick="toast('已开启全部启用分块')">全部启用</button>
+    </div>
+    ${list.map((c,i)=>`<div class="chunk" id="chunk-${i}">
+      <div class="top">
+        <span class="idx">#${i+1}</span>
+        <span class="tag brand">已启用</span>
+        <div class="spacer" style="flex:1"></div>
+        <button class="btn sm text" onclick="editChunk(${i})">${icon("i-edit","icon sm")}编辑</button>
+        <button class="btn sm text" onclick="toggleChunk(${i},this)">停用</button>
+      </div>
+      <div class="chunk-text">${esc(c)}</div>
+    </div>`).join("")}
+    <div class="hint muted" style="margin-top:10px">修改分块内容后仅对后续检索生效；支持查看历史版本与回滚。</div>`;
+  $("#drawerMask").classList.remove("hidden"); $("#chunkDrawer").classList.remove("hidden");
+}
+function closeDrawer(){ $("#drawerMask").classList.add("hidden"); $("#chunkDrawer").classList.add("hidden"); }
+function editChunk(i){
+  const box = $("#chunk-"+i);
+  const txt = box.querySelector(".chunk-text");
+  const raw = txt.textContent;
+  txt.outerHTML = `<textarea class="editbox" id="edit-${i}">${esc(raw)}</textarea>`;
+  box.querySelector(".top").innerHTML = `<span class="idx">#${i+1}</span><span class="tag warn">编辑中</span>
+    <div class="spacer" style="flex:1"></div>
+    <button class="btn sm" onclick="openChunks('${$("#chunk-"+i)?"":""}')">取消</button>
+    <button class="btn sm primary" onclick="toast('分块已保存')">保存</button>`;
+}
+function toggleChunk(i, btn){
+  const box=$("#chunk-"+i); box.classList.toggle("off");
+  const off = box.classList.contains("off");
+  btn.textContent = off?"启用":"停用";
+  toast(off?"已停用该分块":"已启用该分块","warn");
+}
+
+/* ---------- 设置 Tab ---------- */
+function viewSettings(){
+  const k=current(); const c=k.cfg;
+  const card=(title,ic,rows,desc)=>`<div class="set-card">
+    <h4>${icon(ic,"icon sm")}${title}</h4>${desc?`<div class="desc">${desc}</div>`:""}
+    ${rows.map(([a,b])=>`<div class="kv"><span>${a}</span><b>${esc(b)}</b></div>`).join("")}
+  </div>`;
+  return `<div class="set-grid">
+    ${card("模型配置","i-chip",[["LLM 大语言模型",c.llm],["Embedding 嵌入模型",c.emb]],"模型变更后需重新嵌入存量数据。")}
+    ${card("向量存储","i-db",[["引擎",c.vector],["实例","默认实例（系统默认）"],["绑定","已绑定 · 创建后不可更换"]],"查看其余实例请前往 平台设置 → 向量存储。")}
+    ${card("存储引擎","i-db",[["类型",c.storage],["默认标签","default"],["迁移","支持迁移至对象存储"]],"新建文档将写入当前存储实例。")}
+    ${card("分块设置","i-grid",[["分块策略",c.chunk.strategy],["分块大小",c.chunk.size+" "+c.chunk.unit],["重叠大小",c.chunk.overlap+" "+c.chunk.unit],["父子分块",c.chunk.parentChild?"已开启":"未开启"],["子分块大小",c.chunk.parentChild?c.chunk.child+" "+c.chunk.unit:"—"]],"修改后仅对新上传文档生效。")}
+    ${card("多模态 / 图像处理","i-img",[["多模态解析",c.multimodal?"已开启":"未开启"],["VLM 模型",c.multimodal?"gpt-4o-mini（默认）":"—"],["描述语言",c.multimodal?"跟随文档语言":"—"],["表格元数据","已开启"]],"开启后文档内图片与表格将生成结构化描述并参与检索。")}
+    ${card("音频处理","i-audio",[["ASR 语音识别",c.asr?"已开启":"未开启"],["ASR 模型",c.asr?"whisper-large-v3":"—"]],"上传音频文件需开启 ASR。")}
+    ${card("知识图谱","i-graph",[["状态",k.features?.includes("知识图谱")?"已开启":"未开启"],["抽取模型",k.features?.includes("知识图谱")?c.llm:"—"],["实体数量","1,284"]],"用于多跳问答与关系推理。")}
+    ${card("高级设置","i-spark",[["自动标签",c.autoTag?"已开启":"未开启"],["标签数量上限",c.autoTag?"5":"—"]],"自动标签会消耗额外 Token。")}
+    ${card("权限与成员","i-lock",[["我的角色","所有者"],["可见范围",k.shared?"共享给我："+k.shared:"仅我可见"],["共享成员",k.shared?"3 人 / 1 个组织":"—"]],"支持所有者 / 管理员 / 编辑者 / 只读四类角色。")}
+    ${card("数据源接入","i-link",[["已连接","飞书云文档 ×2"],["同步方式","增量 · 每 1 小时"],["最近同步","12 分钟前"]],"飞书 / Notion / Confluence / GitLab / Slack / 语雀 / 钉钉 / 企业微信 等连接器。")}
+  </div>`;
+}
+
+/* ---------- 操作日志 Tab ---------- */
+function viewActivity(){
+  const rows = [
+    ["刚刚","上传文档","新上传-需求补充说明.pdf","赵楠","成功"],
+    ["12 分钟前","重新解析","指标体系说明.xlsx","赵楠","成功"],
+    ["1 小时前","更新分块设置","分块大小 512 → 800","赵楠","成功"],
+    ["3 小时前","批量打标签","8 个文档 → 「PRD」","系统","成功"],
+    ["昨天 18:20","删除文档","历史需求归档（2025）.docx","赵楠","成功"],
+    ["昨天 15:04","修改权限","共享给 市场部（可编辑）","赵楠","成功"],
+    ["2 天前","解析失败","供应商合同 · 硬件采购.pdf","系统","失败"],
+    ["3 天前","批量打标签","8 个文档 → 「PRD」","系统","成功"],
+  ];
+  return `<div class="sub-toolbar">
+      <select class="select" style="width:130px" onchange="toast('已按操作类型筛选')"><option>全部操作</option><option>上传文档</option><option>删除文档</option><option>解析</option><option>权限变更</option></select>
+      <select class="select" style="width:120px" onchange="toast('已按结果筛选')"><option>全部结果</option><option>成功</option><option>失败</option></select>
+      <div class="spacer"></div><button class="btn" onclick="toast('已刷新日志')">${icon("i-refresh","icon sm")}刷新</button></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th style="width:130px">时间</th><th style="width:120px">操作</th><th>对象</th><th style="width:150px">操作者</th><th style="width:90px">结果</th></tr></thead>
+      <tbody>${rows.map(r=>`<tr>
+        <td class="muted">${r[0]}</td><td>${r[1]}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td>
+        <td><span class="tag ${r[4]==="成功"?"brand":"err"}">${r[4]}</span></td></tr>`).join("")}</tbody>
+    </table></div>`;
+}
+
+/* ========================= 新建知识库向导 ========================= */
+const WIZ_STEPS_FULL = [
+  {g:"基础",      steps:[
+    {k:"basic",   ic:"i-book",  t:"基本信息"},
+    {k:"model",   ic:"i-chip",  t:"模型配置"},
+  ]},
+  {g:"索引与解析", steps:[
+    {k:"chunk",   ic:"i-grid",  t:"分块设置"},
+    {k:"image",   ic:"i-img",   t:"图像处理"},
+    {k:"advanced",ic:"i-spark", t:"高级设置"},
+  ]},
+  {g:"召回与检索", steps:[
+    {k:"retrieval", ic:"i-search", t:"检索策略"},
+  ]},
+  {g:"权限管理", steps:[
+    {k:"members", ic:"i-user",  t:"成员管理"},
+  ]},
+];
+const WIZ_STEPS_QUICK = [
+  {g:"基础",      steps:[
+    {k:"basic",   ic:"i-book",  t:"基本信息"},
+  ]},
+  {g:"权限管理", steps:[
+    {k:"members", ic:"i-user",  t:"成员管理"},
+  ]},
+];
+function wizSteps(){ return wiz.mode==="quick" ? WIZ_STEPS_QUICK : WIZ_STEPS_FULL; }
+const wiz = { i:0, type:"doc", name:"", desc:"", strategy:"自动", size:512, overlap:80, parent:true, parentSize:4096, child:384,
+  llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", vector:"Qdrant", storage:"本地存储",
+  multimodal:false, asr:false, graph:false, autoTag:true, wikiGran:"标准", wikiModel:"qwen3.8-max", vlm:"",
+  aiQuestion:true, qCount:3,
+  retVector:true, retKeyword:true, retGraph:false, vecTopK:10, kwThreshold:0.3, vecThreshold:0.5,
+  rerankTopN:5, rerankThreshold:0.2, rerankEnabled:false, rerank:"qwen3-rerank",
+  mode:"quick",
+  owner:{name:"赵楠", dept:"产品部", phone:"138****2016"},
+  members:[{id:"u2", name:"李工", dept:"研发部", phone:"139****5723", role:"管理员"}],
+};
+const SEPARATORS = [
+  {l:"双换行 (\\n\\n)", v:"\\n\\n"},
+  {l:"单换行 (\\n)",    v:"\\n"},
+  {l:"中文句号 (。)",   v:"。"},
+  {l:"感叹号 (！)",     v:"！"},
+  {l:"问号 (？)",       v:"？"},
+  {l:"中文分号 (；)",   v:"；"},
+  {l:"英文分号 (;)",    v:";"},
+  {l:"空格 ( )",        v:" "},
+];
+wiz.seps = SEPARATORS.slice(0,7).map(s=>s.v);
+const CHUNK_STRATEGY_HINT = {
+  "自动":   "文档分析器根据内容结构自动在「按标题切分」「结构感知」「按长度切分」之间选择。",
+  "按标题切分": "在 Markdown 标题（#、##、###）边界处切分，每块自动带上所在标题路径。适合结构清晰的 Markdown 文档。",
+  "结构感知": "识别分页符、编号章节、多语言章节标记（DE/EN/ZH）、全大写标题等结构信号进行切分。适合没有 Markdown 标题的 PDF / 扫描件。",
+  "按长度切分": "忽略结构，仅按字符数和分隔符递归切分——原始行为。当上述策略对你的内容效果不佳时使用。",
+};
+function sepLabel(v){ return (SEPARATORS.find(s=>s.v===v)||{l:v}).l; }
+function sepChipHTML(v){
+  return `<span class="sep-chip" data-sep="${esc(v)}">${esc(sepLabel(v))}<button onclick="onSepChipRemove(event,this)" title="移除">${icon("i-x","icon sm")}</button></span>`;
+}
+function onNumInput(key, el){
+  const min = +el.min, max = +el.max;
+  let v = parseInt(el.value, 10);
+  if(isNaN(v)) return;
+  // 输入过程中只处理超过上限的情况，低于下限时允许继续输入
+  if(v > max){ v = max; el.value = max; }
+  wiz[key] = v;
+}
+function onNumBlur(key, el){
+  const min = +el.min, max = +el.max;
+  let v = parseFloat(el.value);
+  if(isNaN(v)) v = min;
+  v = Math.min(max, Math.max(min, v));
+  el.value = v;
+  wiz[key] = v;
+}
+function paintRange(el){
+  if(!el) return;
+  const min = +el.min || 0, max = +el.max || 100;
+  const p = max>min ? ((+el.value-min)/(max-min))*100 : 0;
+  el.style.setProperty("--p", p+"%");
+}
+function onRangeInput(key, val, el){
+  wiz[key] = +val;
+  const ids = {kwThreshold:"wzKwThresholdVal", vecThreshold:"wzVecThresholdVal", rerankThreshold:"wzRerankThresholdVal"};
+  const v = $("#"+ids[key]);
+  if(v) v.textContent = (+val).toFixed(2);
+  paintRange(el);
+}
+function toggleWizFlag(key, el){
+  el.classList.toggle("on");
+  wiz[key] = el.classList.contains("on");
+}
+function setWizMode(mode, el){
+  if(wiz.mode===mode) return;
+  wiz.mode = mode;
+  $$(".mode-card").forEach(c=>c.classList.toggle("on", c===el));
+  const total = wizSteps().flatMap(g=>g.steps).length;
+  if(wiz.i >= total) wiz.i = total - 1;
+  // 仅更新导航与进度，保留当前页面内容与输入
+  const steps = wizSteps();
+  let idx = 0;
+  $("#wizNav").innerHTML = steps.map(g=>{
+    const btns = g.steps.map(s=>{
+      const cur = idx++; const on = cur===wiz.i;
+      return `<button class="${on?'on':''}" onclick="wizGo(${cur})"><span class="n">${cur+1}</span>${s.t}</button>`;
+    }).join("");
+    return `<div class="grp">${g.g}</div>${btns}`;
+  }).join("");
+  $("#wizProgress").textContent = `第 ${wiz.i+1} / ${total} 步`;
+}
+function toggleRerank(el){
+  el.classList.toggle("on");
+  wiz.rerankEnabled = el.classList.contains("on");
+  $("#wzRerankPanel").style.display = wiz.rerankEnabled ? "" : "none";
+  if(wiz.rerankEnabled) $$("#wzRerankPanel .range").forEach(paintRange);
+}
+function toggleAiQuestion(el){
+  el.classList.toggle("on");
+  wiz.aiQuestion = el.classList.contains("on");
+  $("#wzAiQuestionPanel").style.display = wiz.aiQuestion ? "" : "none";
+}
+/* ---------- 成员选择（部门树） ---------- */
+const ORG_TREE = [
+  {id:"g1", name:"正凯集团总部", children:[
+    {id:"d1", name:"信息管理部", members:[
+      {id:"u1", name:"赵楠", phone:"138****2016"},
+      {id:"u2", name:"李工", phone:"139****5723"},
+      {id:"u3", name:"周颖", phone:"137****8841"},
+    ]},
+    {id:"d2", name:"集团办公室", members:[
+      {id:"u4", name:"王敏", phone:"136****3390"},
+      {id:"u5", name:"陈静", phone:"158****6627"},
+    ]},
+    {id:"d3", name:"风控内审部", members:[
+      {id:"u6", name:"刘洋", phone:"135****1174"},
+    ]},
+    {id:"d4", name:"集团工程管理中心", members:[
+      {id:"u7", name:"张伟", phone:"186****4408"},
+      {id:"u8", name:"孙磊", phone:"188****9025"},
+    ]},
+    {id:"d5", name:"集采中心", members:[
+      {id:"u9", name:"吴桐", phone:"133****7719"},
+    ]},
+    {id:"d6", name:"企业管理部", members:[
+      {id:"u10", name:"郑琳", phone:"159****2263"},
+      {id:"u11", name:"黄凯", phone:"187****5580"},
+    ]},
+    {id:"d7", name:"人力资源部", members:[
+      {id:"u12", name:"徐婷", phone:"132****6031"},
+    ]},
+    {id:"d8", name:"集团财务中心", members:[
+      {id:"u13", name:"何宇", phone:"189****7712"},
+      {id:"u14", name:"马妍", phone:"130****4456"},
+    ]},
+    {id:"d9", name:"战略投资部", members:[
+      {id:"u15", name:"罗成", phone:"131****9908"},
+    ]},
+  ]},
+];
+const _picker = { selected: new Set(), keyword: "", expanded: new Set(["g1","d1"]) };
+
+function flatMembers(){
+  const out = [];
+  ORG_TREE.forEach(g=>g.children.forEach(d=>d.members.forEach(m=>out.push({...m, dept:d.name, deptId:d.id}))));
+  return out;
+}
+// 可选择池：排除已是成员的人与所有者
+function selectableMembers(){
+  const taken = new Set(wiz.members.map(m=>m.id));
+  const ownerPhone = wiz.owner?.phone;
+  const ownerName = wiz.owner?.name;
+  return flatMembers().filter(m=>!taken.has(m.id) && m.phone!==ownerPhone && m.name!==ownerName);
+}
+function openMemberPicker(){
+  _picker.selected.clear();
+  _picker.keyword = "";
+  openDialog({
+    title:"添加成员",
+    size:"lg",
+    body:`<div class="picker">
+        <div class="picker-left">
+          <div class="picker-search">
+            ${icon("i-search","icon sm")}
+            <input id="pickerKeyword" placeholder="搜索姓名 / 手机号 / 工号" oninput="onPickerSearch(this.value)">
+          </div>
+          <div class="picker-tree" id="pickerTree"></div>
+        </div>
+        <div class="picker-right">
+          <div class="picker-count" id="pickerCount">已选 0 个</div>
+          <div class="picker-selected" id="pickerSelected"></div>
+        </div>
+      </div>`,
+    foot:`<button class="btn" onclick="closeDialog()">取消</button>
+      <button class="btn primary" onclick="confirmMemberPicker()">确认</button>`,
+  });
+  renderPicker();
+}
+function onPickerSearch(v){
+  _picker.keyword = v.trim().toLowerCase();
+  renderPicker();
+}
+function renderPicker(){
+  const kw = _picker.keyword;
+  const searching = kw.length > 0;
+  let rows = "";
+
+  if(searching){
+    const hits = selectableMembers().filter(m=>{
+      const hay = `${m.name} ${m.phone} ${m.dept}`.toLowerCase();
+      return hay.includes(kw);
+    });
+    if(!hits.length){
+      rows = `<div class="picker-empty">未找到匹配的成员</div>`;
+    } else {
+      rows = hits.map(m=>memberRowHTML(m)).join("");
+    }
+  } else {
+    // 全选
+    const all = selectableMembers();
+    const allOn = all.length>0 && all.every(m=>_picker.selected.has(m.id));
+    rows += `<label class="tree-node tree-all">
+        <input type="checkbox" ${allOn?"checked":""} onchange="togglePickAll(this.checked)">
+        <span>全选</span></label>`;
+    ORG_TREE.forEach(g=>{
+      const gOn = _picker.expanded.has(g.id);
+      rows += `<label class="tree-node tree-group">
+          <button class="tree-caret ${gOn?"open":""}" onclick="event.preventDefault();toggleGroup('${g.id}')">${icon("i-chev","icon sm")}</button>
+          <input type="checkbox" onchange="toggleGroupPick('${g.id}',this.checked)">
+          <span>${esc(g.name)}</span></label>`;
+      if(gOn) rows += g.children.map(d=>deptNodeHTML(d)).join("");
+    });
+  }
+  $("#pickerTree").innerHTML = rows;
+
+  const sel = selectableMembers().filter(m=>_picker.selected.has(m.id));
+  $("#pickerCount").textContent = `已选 ${sel.length} 个`;
+  $("#pickerSelected").innerHTML = sel.length
+    ? `<div class="sel-group">部门：</div>` + sel.map(m=>`
+        <div class="sel-item">
+          ${icon("i-user","icon sm")}
+          <div><b>${esc(m.name)}</b><i>${esc(m.dept)}</i></div>
+          <button class="ibtn" onclick="unpickMember('${m.id}')">${icon("i-x","icon sm")}</button>
+        </div>`).join("")
+    : `<div class="picker-empty">暂未选择成员</div>`;
+}
+function deptNodeHTML(d){
+  const open = _picker.expanded.has(d.id);
+  const availIds = new Set(selectableMembers().map(m=>m.id));
+  const avail = d.members.filter(m=>availIds.has(m.id));
+  const picked = avail.filter(m=>_picker.selected.has(m.id)).length;
+  const allOn = avail.length>0 && picked === avail.length;
+  if(open && avail.length===0){
+    return `<div class="tree-dept">
+        <label class="tree-node tree-dept-title">
+          <button class="tree-caret open" onclick="event.preventDefault();toggleGroup('${d.id}')">${icon("i-chev","icon sm")}</button>
+          <input type="checkbox" disabled onchange="toggleDeptPick('${d.id}',this.checked)">
+          <span>${esc(d.name)}</span>
+        </label>
+        <div class="tree-all-picked">该部门成员均已添加</div>
+      </div>`;
+  }
+  return `<div class="tree-dept">
+      <label class="tree-node tree-dept-title">
+        <button class="tree-caret ${open?"open":""}" onclick="event.preventDefault();toggleGroup('${d.id}')">${icon("i-chev","icon sm")}</button>
+        <input type="checkbox" ${allOn?"checked":""} ${picked&&!allOn?"data-indeterminate='1'":""} onchange="toggleDeptPick('${d.id}',this.checked)">
+        <span>${esc(d.name)}</span>
+      </label>
+      ${open ? avail.map(m=>`
+        <label class="tree-node tree-member">
+          <input type="checkbox" ${_picker.selected.has(m.id)?"checked":""} onchange="toggleMemberPick('${m.id}',this.checked)">
+          <span>${esc(m.name)}</span><i>${esc(m.phone)}</i>
+        </label>`).join("") : ""}
+    </div>`;
+}
+function memberRowHTML(m){
+  return `<label class="tree-node tree-member">
+      <input type="checkbox" ${_picker.selected.has(m.id)?"checked":""} onchange="toggleMemberPick('${m.id}',this.checked)">
+      <span>${esc(m.name)}</span><i>${esc(m.phone)} · ${esc(m.dept)}</i>
+    </label>`;
+}
+function toggleGroup(id){
+  _picker.expanded.has(id) ? _picker.expanded.delete(id) : _picker.expanded.add(id);
+  renderPicker();
+}
+function toggleMemberPick(id, on){
+  on ? _picker.selected.add(id) : _picker.selected.delete(id);
+  renderPicker();
+}
+function unpickMember(id){ _picker.selected.delete(id); renderPicker(); }
+function toggleDeptPick(deptId, on){
+  const d = ORG_TREE.flatMap(g=>g.children).find(x=>x.id===deptId);
+  if(!d) return;
+  const availIds = new Set(selectableMembers().map(m=>m.id));
+  d.members.filter(m=>availIds.has(m.id)).forEach(m=>on ? _picker.selected.add(m.id) : _picker.selected.delete(m.id));
+  renderPicker();
+}
+function toggleGroupPick(groupId, on){
+  const g = ORG_TREE.find(x=>x.id===groupId);
+  if(!g) return;
+  const availIds = new Set(selectableMembers().map(m=>m.id));
+  g.children.forEach(d=>d.members.filter(m=>availIds.has(m.id)).forEach(m=>on ? _picker.selected.add(m.id) : _picker.selected.delete(m.id)));
+  renderPicker();
+}
+function togglePickAll(on){
+  selectableMembers().forEach(m=>on ? _picker.selected.add(m.id) : _picker.selected.delete(m.id));
+  renderPicker();
+}
+function confirmMemberPicker(){
+  const picked = selectableMembers().filter(m=>_picker.selected.has(m.id));
+  if(!picked.length){ toast("请至少选择一位成员","err"); return; }
+  let added = 0;
+  picked.forEach(m=>{
+    if(wiz.members.some(x=>x.id===m.id)) return;
+    wiz.members.push({...m, role:"编辑者"});
+    added++;
+  });
+  closeDialog();
+  renderWizMembers();
+  toast(added ? `已添加 ${added} 位成员` : "所选成员已在列表中");
+}
+function renderWizMembers(){
+  const box = $("#wizMemberList");
+  if(!box) return;
+  const owner = wiz.owner || {name:"赵楠", dept:"产品部", phone:"138****2016"};
+  const ownerRow = `<div class="member-row">
+      <span class="kb-ico owner">${icon("i-user")}</span>
+      <div style="flex:1"><b>${esc(owner.name)}（我）</b><i>${esc(owner.dept)} · ${esc(owner.phone)}</i></div>
+      <span class="tag brand">所有者</span>
+      <button class="btn sm text" onclick="openTransferOwner()">转让</button>
+    </div>`;
+  const rows = wiz.members.map(m=>`<div class="member-row">
+      <span class="kb-ico">${icon("i-user")}</span>
+      <div style="flex:1"><b>${esc(m.name)}</b><i>${esc(m.dept)} · ${esc(m.phone)}</i></div>
+      <select class="select" style="width:110px" onchange="setWizMemberRole('${m.id}',this.value)">
+        ${["管理员","编辑者","只读"].map(r=>`<option ${m.role===r?"selected":""}>${r}</option>`).join("")}
+      </select>
+      <button class="ibtn" title="移除" onclick="removeWizMember('${m.id}')">${icon("i-x","icon sm")}</button>
+    </div>`).join("");
+  box.innerHTML = ownerRow + rows;
+}
+function setWizMemberRole(id, role){
+  const m = wiz.members.find(x=>x.id===id);
+  if(m){ m.role = role; toast(`已将 ${m.name} 设为${role}`); }
+}
+function removeWizMember(id){
+  const idx = wiz.members.findIndex(x=>x.id===id);
+  if(idx<0) return;
+  const name = wiz.members[idx].name;
+  wiz.members.splice(idx,1);
+  renderWizMembers();
+  toast(`已移除 ${name}`);
+}
+
+function openTransferOwner(){
+  const members = wiz.members.filter(m=>m.role==="管理员" || m.role==="编辑者");
+  if(!members.length){ toast("没有可转让的管理员或编辑者","err"); return; }
+  openDialog({
+    title:"转让所有者",
+    body:`<div class="field"><label>选择新的所有者</label>
+        <select class="select" id="transferTarget" onchange="updateTransferWarn()">
+          <option value="">请选择成员</option>
+          ${members.map(m=>`<option value="${esc(m.name)}">${esc(m.name)} · ${esc(m.dept)} · ${esc(m.role)}</option>`).join("")}
+        </select>
+        <div class="hint">仅管理员与编辑者可作为新的所有者。</div></div>
+      <div class="transfer-warn hidden" id="transferWarn">
+        ${icon("i-lock","icon sm")}
+        <span>转让后你将失去「删除知识库 / 转让所有者」的权限，并变为管理员。此操作不可撤销。</span>
+      </div>`,
+    foot:`<button class="btn" onclick="closeDialog()">取消</button>
+      <button class="btn primary" onclick="confirmTransferOwner()">确认转让</button>`,
+  });
+}
+function updateTransferWarn(){
+  const sel = $("#transferTarget");
+  const warn = $("#transferWarn");
+  if(!sel || !warn) return;
+  warn.classList.toggle("hidden", !sel.value);
+}
+function confirmTransferOwner(){
+  const sel = $("#transferTarget");
+  if(!sel || !sel.value){ toast("请选择新的所有者","err"); return; }
+  const newOwner = wiz.members.find(m=>m.name===sel.value);
+  if(!newOwner){ toast("该成员不在成员列表中","err"); return; }
+  const oldOwner = wiz.owner || {name:"赵楠", dept:"产品部", phone:"138****2016"};
+  wiz.owner = {name:newOwner.name, dept:newOwner.dept, phone:newOwner.phone};
+  wiz.members = wiz.members.filter(m=>m.id!==newOwner.id);
+  wiz.members.unshift({...oldOwner, id:"u_old_owner", role:"管理员"});
+  closeDialog();
+  renderWizMembers();
+  toast(`已转让给 ${newOwner.name}，你现在的角色为管理员`);
+}
+function togglePermInfo(el){
+  el.classList.toggle("on");
+  const open = el.classList.contains("on");
+  $("#wzPermBody").classList.toggle("hidden", !open);
+  el.setAttribute("aria-checked", open ? "true" : "false");
+}
+function updateFieldCount(inputId, countId, max){
+  const ta = $("#"+inputId), c = $("#"+countId);
+  if(ta && c) c.textContent = `${ta.value.length}/${max}`;
+}
+function toggleMultimodal(el){
+  el.classList.toggle("on");
+  wiz.multimodal = el.classList.contains("on");
+  ["wzVlmModelRow","wzImgPromptRow"].forEach(id=>{
+    const r = $("#"+id); if(r) r.style.display = wiz.multimodal ? "" : "none";
+  });
+}
+function updateImgPromptCount(){
+  const ta = $("#wzImgPrompt"); if(!ta) return;
+  const c = $("#wzImgPromptCount"); if(c) c.textContent = `${ta.value.length}/4000`;
+}
+function onChunkStrategy(v){
+  wiz.strategy = v;
+  $("#wzNoteTitle").textContent = v + "：";
+  $("#wzNoteText").textContent = CHUNK_STRATEGY_HINT[v] || "";
+}
+function toggleParentChunk(el){
+  el.classList.toggle("on");
+  wiz.parent = el.classList.contains("on");
+  $("#wzParentSizeRow").style.display = wiz.parent ? "" : "none";
+  $("#wzChildRow").style.display = wiz.parent ? "" : "none";
+}
+function removeSep(btn){
+  const chip = btn.closest(".sep-chip");
+  wiz.seps = wiz.seps.filter(v=>v!==chip.dataset.sep);
+  renderSepChips();
+  renderSepPanel();
+}
+function onSepChipRemove(e, btn){
+  e.stopPropagation();
+  removeSep(btn);
+}
+function toggleSepMenu(e){
+  e.stopPropagation();
+  const panel = $("#wzSepPanel");
+  if(!panel.classList.contains("hidden")){ closeSepPanel(); return; }
+  renderSepPanel();
+  panel.classList.remove("hidden");
+  $("#wzSepBox").classList.add("open");
+  setTimeout(()=>document.addEventListener("click", onDocClickCloseSep), 0);
+}
+function onDocClickCloseSep(e){
+  const panel = $("#wzSepPanel");
+  if(!panel || panel.classList.contains("hidden")){
+    document.removeEventListener("click", onDocClickCloseSep);
+    return;
+  }
+  // 面板内部点击不清除监听，外部点击才收起
+  if(panel.contains(e.target)) return;
+  closeSepPanel();
+}
+function closeSepPanel(){
+  $("#wzSepPanel")?.classList.add("hidden");
+  $("#wzSepBox")?.classList.remove("open");
+  document.removeEventListener("click", onDocClickCloseSep);
+}
+function renderSepPanel(){
+  $("#wzSepPanel").innerHTML = `<div class="sep-opts">${SEPARATORS.map((s,i)=>{
+    const on = wiz.seps.includes(s.v);
+    return `<div class="sep-opt ${on?'on':''}" onclick="onSepOptClick(event,${i})">
+      <span class="box">${on?icon("i-check","icon sm"):""}</span>${esc(s.l)}
+    </div>`;
+  }).join("")}</div>
+    <div class="sep-custom">
+      <input class="sep-custom-input" id="wzSepCustomInput" placeholder="自定义分隔符，回车添加" onkeydown="onSepCustomKey(event)">
+      <button class="sep-custom-btn" onclick="addCustomSep()">添加</button>
+    </div>`;
+}
+function onSepCustomKey(e){
+  e.stopPropagation();
+  if(e.key==="Enter"){ e.preventDefault(); addCustomSep(); }
+}
+function addCustomSep(){
+  const input = $("#wzSepCustomInput");
+  const v = input.value.trim();
+  if(!v){ toast("请输入自定义分隔符","err"); return; }
+  if(wiz.seps.includes(v)){ toast("该分隔符已存在"); return; }
+  if(!SEPARATORS.some(s=>s.v===v)) SEPARATORS.push({l:v, v});
+  wiz.seps.push(v);
+  input.value = "";
+  renderSepChips();
+  renderSepPanel();
+  $("#wzSepCustomInput")?.focus();
+}
+function onSepOptClick(e, i){
+  e.stopPropagation();
+  const s = SEPARATORS[i]; if(s) toggleSep(s.v);
+}
+function toggleSep(v){
+  if(wiz.seps.includes(v)) wiz.seps = wiz.seps.filter(x=>x!==v);
+  else wiz.seps.push(v);
+  renderSepChips();
+  renderSepPanel();
+}
+function renderSepChips(){
+  const box = $("#wzSepBox");
+  if(!box) return;
+  $$("#wzSepBox .sep-chip").forEach(el=>el.remove());
+  $("#wzSepBox .sep-placeholder")?.remove();
+  const empty = wiz.seps.length===0;
+  box.classList.toggle("empty", empty);
+  if(empty) box.insertAdjacentHTML("afterbegin", `<span class="sep-placeholder">选择或自定义分隔符</span>`);
+  else box.insertAdjacentHTML("afterbegin", wiz.seps.map(sepChipHTML).join(""));
+}
+/* ---------- 测试分块效果 ---------- */
+const TEST_SAMPLES = {
+  md: `# 智能产线数据采集系统技术方案
+
+本方案面向机加工车间的产线数字化改造，覆盖设备联网、数据采集与看板展示，目标是将产量、稼动率、报警等指标从人工统计升级为实时自动采集。
+
+## 一、项目背景
+
+车间现有加工中心 18 台、数控车床 12 台，设备品牌涵盖 FANUC、西门子、华中数控三类系统。目前产量数据依赖班组长手工填报，存在数据延迟、停机原因归类不准、班次口径不一致三个问题。
+## 二、总体架构
+
+系统采用「边缘采集 + 中心汇聚」的分层架构：
+
+\`\`\`
+┌─────────────┐     ┌──────────────┐     ┌──────────────┐
+│  设备层      │     │   边缘层      │     │   平台层      │
+│  CNC / 机床  │────▶│  边缘网关     │────▶│  MES / 看板   │
+│  传感器      │     │  OPC UA 采集  │     │  时序数据库   │
+└─────────────┘     └──────────────┘     └──────────────┘
+       ▼                    ▼                     ▼
+   PLC 寄存器         本地缓存 72h          Grafana 展示
+\`\`\`
+
+每 6 台设备部署一台边缘网关，负责协议转换与断网续传。
+
+## 三、采集指标与频率
+
+| 指标类别 | 采集频率 | 存储周期 | 用途 |
+|---------|---------|---------|------|
+| 运行状态 | 10 秒 | 3 年 | 稼动率计算 |
+| 产量计数 | 每件触发 | 3 年 | 产量统计 |
+| 工艺参数 | 1 秒 | 90 天 | 工艺追溯 |
+| 报警信息 | 事件触发 | 3 年 | 故障分析 |
+
+> 采集频率过高的工艺参数会带来存储压力，建议仅对关键工序开启 1 秒级采集。
+
+---
+
+## 四、数据模型
+
+设备状态机是稼动率计算的基础，判定逻辑由边缘网关执行：
+
+\`\`\`javascript
+const MachineState = {
+  RUNNING: 'running',  // 主轴运转且有进给
+  IDLE:    'idle',     // 通电但未加工
+  ALARM:   'alarm',    // 报警停机
+  OFFLINE: 'offline'   // 通讯中断
+};
+
+function evaluateState(s) {
+  if (!s.connected) return MachineState.OFFLINE;
+  if (s.alarmCode) return MachineState.ALARM;
+  if (s.spindleLoad > 5 && s.feedRate > 0) return MachineState.RUNNING;
+  return MachineState.IDLE;
+}
+\`\`\`
+
+稼动率 = 运行时长 / 计划生产时长 × 100%，计划时长需扣除保养与交接班停机。
+
+---
+
+## 五、部署要求
+
+车间网络与办公网络物理隔离，网关与平台仅做单向数据上报。采集设备须独立供电，禁止从数控柜内部取电。## 六、实施计划
+
+1. **第一阶段（1-4 周）**：完成 6 台试点设备改造
+2. **第二阶段（5-10 周）**：推广至全部 30 台设备，同步开发看板
+3. **第三阶段（11-14 周）**：联调 MES 接口，完成验收
+
+## 七、验收标准
+
+- 设备联网率 ≥ 95%
+- 产量数据与人工统计偏差 ≤ 1%
+- 连续运行 30 天无数据丢失`,
+  pdf: `第 1 章 引言
+
+1.1 文档目的
+
+本文档描述某制造车间生产执行系统（MES）的整体架构、功能划分与部署方案，面向生产主管、工艺工程师与设备运维人员。读者应熟悉工单管理、设备点检与质量追溯等基础流程。
+
+1.2 名词约定
+
+- 工单（Work Order）：承载一次生产任务的最小执行单元
+- 工序（Operation）：工单在单一工位上的加工步骤
+- 报工（Reporting）：操作员上报产出数量与工时的动作
+- 追溯（Traceability）：由成品反查原料批次与加工参数的过程
+
+第 2 章 系统范围
+
+2.1 功能边界
+
+系统覆盖计划下达、工单拆分、物料齐套检查、生产报工、质量检验与成品入库六个环节。设备控制与工艺编程仍由现有 CNC 系统负责，本系统仅做数据对接。
+
+2.2 使用角色
+
+- 计划员：下达工单并调整优先级
+- 班组长：拆分任务、派工与处理异常
+- 操作员：扫码开工、报工与申请首件检验
+- 质检员：录入检验结果与判定合格状态
+
+第 3 章 关键流程
+
+3.1 工单下达
+
+计划员在系统中创建工单，填写产品编号、数量与交期。系统自动校验物料齐套情况，缺料工单标记为「待齐套」，不允许下发到车间。
+
+3.2 生产报工
+
+操作员扫描工单条码开工，加工完成后录入合格数与不良数。不良品须选择缺陷代码，系统据此生成质量统计报表。若同一工单分多班次完成，每班次结束前须完成当班报工，避免跨班数据归属不清。
+
+3.3 质量追溯
+
+每批次物料在入库时生成唯一批次号，加工过程中与工单绑定。后续出现质量问题，可依据成品序列号反查到具体批次与操作人员。追溯链路需覆盖来料检验、首件检验、过程巡检与终检四个节点。
+
+第 4 章 部署要求
+
+4.1 环境要求
+
+系统部署于厂区内部机房，不与公网直连。车间终端采用工业平板，防护等级不低于 IP54，支持扫码枪与工卡读取。网络采用有线为主、无线备用，断网时终端可本地缓存报工数据，恢复后自动上传。
+
+4.2 数据留存
+
+工单与报工数据在线保留 3 年，质量检验记录保留 5 年。历史数据按月归档至独立存储，支持按批次号检索。归档数据仅保留只读权限，任何修改操作须经质量部审批后留痕。
+
+第 5 章 验收标准
+
+- 工单下发到车间终端可见的延迟不超过 3 秒
+- 报工数据与产线实际产出偏差不超过 0.5%
+- 质量追溯查询响应时间不超过 5 秒
+- 断网续传数据完整率不低于 99.9%
+- 系统连续运行 30 天无数据丢失`,
+  plain: `生产现场的效率提升，通常不取决于设备本身的速度，而取决于流程中等待与波动的多少。同一台设备在不同班组手中的产出差异，往往来自换型准备、物料配送和异常处理这些看似不起眼的环节。
+
+换型时间是离散制造中最容易被低估的损失。许多车间统计停机时只记录故障时间，却把换型当作正常作业，结果设备综合效率长期停留在六成左右，改善方向也因此跑偏。
+
+缩短换型的关键是把内部作业转为外部作业。所谓内部作业，指必须停机才能完成的操作，例如拆卸模具、更换刀具；外部作业则可以在设备运转时提前准备，例如预热模具、备齐物料、领用新刀具。
+
+物料配送的节奏同样影响产出。如果配送按固定时刻表执行，常常出现急需的物料没到、不缺的物料堆在工位旁的情况。按消耗拉动配送，配合线边库存上限，能显著减少工位拥堵与二次搬运。
+
+异常处理是波动的主要来源。设备报警、质量偏差、缺料停线，任何一类异常若没有明确的响应时限与责任人，都会演变成长时间的等待。建议为每类异常设定分级响应机制，并记录从报警到恢复的全过程时间。
+
+数据采集是持续改善的前提。人工报表通常滞后一个班次，且口径不一致，难以支撑当班决策。若能在关键工位实现自动采集，把产量、节拍、停机原因实时上屏，班组就能在问题发生的当下介入，而不是等到第二天复盘。
+
+设备点检也值得单独讨论。点检表如果只是让操作员机械打勾，实际上起不到预警作用。有效的点检应当聚焦在会随使用时间劣化的项目上，例如润滑状态、皮带张力、气压稳定性，并为每项设定明确的判定标准与处置动作。
+
+质量问题的追溯能力，决定了纠正措施能否落到根因。若每批次物料、每道工序的操作人员与参数都能完整记录，出现不良时可以快速锁定范围，避免整批召回。这种能力在客户投诉时尤其关键。
+
+人员培训不应停留在操作步骤的宣讲。新员工真正容易出错的，是异常判断与边界情况的处理。把常见异常的识别方法、处置流程和上报路径做成简明卡片放在工位，比集中授课更有效。
+
+排产计划的稳定性直接影响现场秩序。频繁插单会让已经备好的物料与工装失效，产线被迫反复调整。若能在接单环节预留缓冲产能，并对外承诺明确的交期规则，现场的被动局面会明显减少。
+
+最后需要强调，改善不是一次性项目。任何措施落地后都要观察一段时间，确认效果稳定再固化为标准作业。否则一旦人员轮换或订单结构变化，旧的浪费很快会以新的形式重新出现。
+
+这套方法在电子装配、机加工和包装等离散制造场景都适用，区别只在于关键损失项的权重不同，需要结合本车间的实际数据逐项测算后再确定优先级。`,
+};
+const TEST_SAMPLE_NAMES = {md:"Markdown 文档", pdf:"PDF 章节", plain:"纯文本"};
+const MARKDOWN_SAMPLES = ["md"];
+
+function openChunkTest(){
+  $("#testResult").classList.add("hidden");
+  if(!$("#testSampleText").value.trim()){
+    $("#testSampleText").value = TEST_SAMPLES.md;
+    $$(".test-samples button").forEach((b,i)=>b.classList.toggle("on", i===0));
+    updateTestCount();
+  }
+  $("#chunkTestMask").classList.remove("hidden");
+  $("#chunkTestDrawer").classList.remove("hidden");
+}
+function closeChunkTest(){
+  $("#chunkTestMask").classList.add("hidden");
+  $("#chunkTestDrawer").classList.add("hidden");
+}
+function loadSample(key, btn){
+  $("#testSampleText").value = TEST_SAMPLES[key];
+  $$(".test-samples button").forEach(b=>b.classList.toggle("on", b===btn));
+  updateTestCount();
+  $("#testResult").classList.add("hidden");
+}
+function updateTestCount(){
+  const ta = $("#testSampleText");
+  $("#testCount").textContent = `${ta.value.length}/60000`;
+}
+function splitBySep(text, sep){
+  const parts = text.split(sep);
+  return parts.map((p,i)=>i<parts.length-1 ? p+sep : p).filter(s=>s.trim()!=="");
+}
+function chunkText(text){
+  if(!text.trim()) return {chunks:[], strategy:"按长度切分"};
+  const max = wiz.size;
+  let strategy = wiz.strategy;
+  if(strategy==="自动"){
+    const heads = (text.match(/^#{1,6}\s+/gm)||[]).length;
+    const chapters = (text.match(/^第\s*[0-9一二三四五六七八九十百]+\s*[章节条]/gm)||[]).length;
+    strategy = heads>=2 ? "按标题切分" : chapters>=2 ? "结构感知" : "按长度切分";
+  }
+  let units;
+  if(strategy==="按标题切分"){
+    units = splitMarkdownSections(text);
+  } else if(strategy==="结构感知"){
+    units = splitStructureSections(text);
+  } else {
+    units = wiz.seps.length ? splitBySep(text, wiz.seps[0]) : text.split(/\n{2,}/).filter(s=>s.trim()!=="");
+  }
+  const chunks = [];
+  if(strategy==="按标题切分"){
+    units.forEach(u=>{
+      if(u.length <= max){ chunks.push(u.trim()); return; }
+      splitByLength(u, max, chunks);
+    });
+    return {chunks, strategy};
+  }
+  let cur = "";
+  units.forEach(u=>{
+    if(cur && (cur.length + u.length) > max){
+      chunks.push(cur.trim());
+      const ov = Math.min(wiz.overlap, cur.length);
+      cur = ov>0 ? cur.slice(-ov) + u : u;
+    } else {
+      cur += cur ? "\n\n" + u : u;
+    }
+  });
+  if(cur.trim()) chunks.push(cur.trim());
+  // 兜底：合并后仍超长的块按长度二次切分
+  const capped = [];
+  chunks.forEach(c=>{
+    if(c.length <= max) capped.push(c);
+    else splitByLength(c, max, capped);
+  });
+  return {chunks: capped, strategy};
+}
+function splitByLength(text, max, out){
+  let rest = text;
+  while(rest.length > max){
+    out.push(rest.slice(0, max).trim());
+    rest = rest.slice(max - Math.min(wiz.overlap, max));
+  }
+  if(rest.trim()) out.push(rest.trim());
+}
+function splitStructureSections(text){
+  const lines = text.split("\n");
+  const units = [];
+  let cur = "";
+  lines.forEach(l=>{
+    const isHead = /^\s*第\s*[0-9一二三四五六七八九十百]+\s*[章节条]\s*$/.test(l)
+      || /^\s*[0-9]+(\.[0-9]+)*\s+\S/.test(l);
+    if(isHead && cur.trim()){ units.push(cur.trim()); cur = l; }
+    else cur += (cur ? "\n" : "") + l;
+  });
+  if(cur.trim()) units.push(cur.trim());
+  return units;
+}
+function splitMarkdownSections(text){
+  const lines = text.split("\n");
+  const sections = [];
+  let cur = "", hasBody = false;
+  lines.forEach(l=>{
+    const m = l.match(/^(#{1,6})\s+/);
+    if(m){
+      // 当前块已是完整章节（有标题之外的正文）时才在此处断开
+      if(cur.trim() && hasBody){ sections.push(cur); cur = l; hasBody = false; }
+      else if(cur.trim()){ cur += "\n" + l; }
+      else { cur = l; }
+    } else {
+      if(l.trim()) hasBody = true;
+      cur += (cur ? "\n" : "") + l;
+    }
+  });
+  if(cur.trim()) sections.push(cur);
+  return sections.filter(s=>s.trim()!=="");
+}
+function headingPathFor(text){
+  const path = [];
+  const lines = text.split("\n");
+  lines.forEach(l=>{
+    const m = l.match(/^(#{1,6})\s+(.*)$/);
+    if(m){
+      const level = m[1].length;
+      path.length = level-1;
+      path[level-1] = m[2].trim();
+    }
+  });
+  return path.filter(Boolean);
+}
+function runChunkTest(){
+  const text = $("#testSampleText").value;
+  const result = chunkText(text);
+  const chunks = result.chunks;
+  const usedStrategy = result.strategy;
+  $("#testResult").classList.remove("hidden");
+  $("#testStrategyChip").textContent = usedStrategy;
+  const lines = text.split("\n").length;
+  const mdHeads = (text.match(/^#{1,6}\s+/gm)||[]).length;
+  const pageBreaks = (text.match(/\f/g)||[]).length;
+  const chapterCount = (text.match(/^第\s*[0-9一二三四五六七八九十百]+\s*[章节条]/gm)||[]).length;
+
+  $("#testStats").innerHTML = [
+    [lines, "行"],
+    [text.length, "字符"],
+    [mdHeads, "Markdown 标题"],
+    [pageBreaks, "分页符"],
+    [chapterCount, "章节标记"],
+  ].map(([n,l])=>`<div><b>${n}</b><span>${l}</span></div>`).join("");
+
+  if(!chunks.length){
+    $("#testSummary").textContent = "请先输入示例文本";
+    $("#testChunkList").innerHTML = "";
+    return;
+  }
+  const sizes = chunks.map(c=>c.length);
+  $("#testSummary").textContent =
+    `${chunks.length} 块 · min ${Math.min(...sizes)} · max ${Math.max(...sizes)}`;
+
+  $("#testChunkList").innerHTML = chunks.map((c,i)=>{
+    const start = text.indexOf(c.slice(0,20));
+    const end = start + c.length;
+    const heads = usedStrategy==="按标题切分" ? headingPathFor(c) : [];
+    const sepTags = usedStrategy==="按标题切分"
+      ? heads.map(h=>`<span class="sep"># ${esc(h)}</span>`).join("")
+      : "";
+    const full = esc(c);
+    return `<div class="test-chunk" id="tc-${i}">
+      <div class="test-chunk-head" onclick="toggleTestChunk(${i})">
+        <span class="idx">#${i}</span>
+        <span class="meta">${c.length} 字符 · ~${Math.round(c.length/2)} tok</span>
+        <span class="meta">${Math.max(0,start)}-${end}</span>
+        <span class="seps">${sepTags}</span>
+        <svg class="icon sm chev"><use href="#i-chev-d"/></svg>
+      </div>
+      <div class="test-chunk-body">${full}</div>
+    </div>`;
+  }).join("");
+}
+function toggleTestChunk(i){
+  $("#tc-"+i)?.classList.toggle("open");
+}
+function testChunkEffect(){ openChunkTest(); }
+const WIKI_GRAN_HINT = {
+  "聚焦":"只抽取文档的主角（如简历 → 人物和项目）。最干净，但可能漏掉次要实体。",
+  "标准":"抽取主角色 + 被详细描述的次要实体/概念。跳过一带而过的通用名词。适合大多数场景。",
+  "详尽":"抽取所有可识别的命名实体与概念，包括一带而过的技术栈。适合将知识库当作术语表使用。",
+};
+function setWikiGran(v, btn){
+  wiz.wikiGran = v;
+  btn.parentElement.querySelectorAll("button").forEach(b=>b.classList.remove("on"));
+  btn.classList.add("on");
+  const row = btn.closest(".chunk-row");
+  const p = row?.querySelector(".info p") || $("#wzWikiGranHint");
+  if(p) p.textContent = WIKI_GRAN_HINT[v];
+}
+function handleWizIcon(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 1024*1024){ toast("图片大小不能超过 1MB","err"); return; }
+  const reader = new FileReader();
+  reader.onload = ev => { $("#wizIconPreview").innerHTML = `<img src="${ev.target.result}" alt="icon">`; };
+  reader.readAsDataURL(file);
+}
+const LLM_MODELS = [
+  {name:"Qwen3.7-Max", tags:["工具调用","思考","+1"], desc:"百炼 Qwen3.7 旗舰推理模型，适合复杂推理与编码。", vision:false},
+  {name:"Qwen3.8-Max", tags:["工具调用","思考","+3"], desc:"百炼 Qwen3.8 旗舰多模态推理模型，适合复杂推理、编程、办公…", vision:true},
+  {name:"Qwen-VL-Max", tags:["视觉","多模态","+2"], desc:"百炼视觉语言模型，擅长图表、票据与截图理解。", vision:true},
+  {name:"GLM-4V", tags:["视觉","多模态","+1"], desc:"智谱多模态模型，中文场景下的图像理解表现稳定。", vision:true},
+  {name:"GPT-4o-mini", tags:["视觉","多模态"], desc:"OpenAI 轻量多模态模型，图片描述成本低，适合批量解析。", vision:true},
+  {name:"GPT-5.6 Luna", tags:["工具调用","思考","+2"], desc:"GPT-5.6 Luna 网关预设，适合复杂推理、编码和高难度 Agent 任务…", vision:false},
+  {name:"GPT-5.6 Sol", tags:["工具调用","思考","+2"], desc:"GPT-5.6 Sol 网关预设，适合复杂推理、编码和高难度 Agent 任务。", vision:false},
+  {name:"GPT-5.6 Terra", tags:["工具调用","思考","+2"], desc:"GPT-5.6 Terra 网关预设，适合复杂推理、编码和高难度 Agent 任务。", vision:false},
+];
+function toggleLlmMenu(e){
+  e.stopPropagation();
+  if($("#popMenu")){ closeMenu(); return; }
+  const html = LLM_MODELS.map(m=>`
+    <div class="m-opt ${wiz.llm===m.name?'on':''}" onclick="pickLlm('${m.name}')">
+      <div class="m-top"><span class="m-name">${m.name}</span>
+        ${m.tags.map((t,i)=>`<span class="m-tag ${t.startsWith('+')?'more':''}">${t}</span>`).join("")}</div>
+      <div class="m-desc">${m.desc}</div>
+    </div>`).join("");
+  popMenu(e.currentTarget, `<div class="model-menu">${html}</div>`);
+}
+function pickLlm(name){
+  wiz.llm = name;
+  closeMenu();
+  const sel = $("#llmSelect"); if(sel) sel.querySelector("span").textContent = name;
+}
+const EMB_MODELS = [
+  {name:"qwen3.7-text-embedding", tags:["文本","1024维"], desc:"百炼通文本向量模型，中英文效果均衡，适合大多数检索场景。"},
+  {name:"bge-large-zh-v1.5", tags:["文本","中文优化"], desc:"BGE 中文向量模型，短文本召回效果好，适合 FAQ 与客服场景。"},
+  {name:"text-embedding-3-large", tags:["文本","3072维"], desc:"OpenAI 旗舰向量模型，多语言支持强，适合跨语言检索。"},
+];
+function toggleEmbMenu(e){
+  e.stopPropagation();
+  if($("#popMenu")){ closeMenu(); return; }
+  const html = EMB_MODELS.map(m=>`
+    <div class="m-opt ${wiz.emb===m.name?'on':''}" onclick="pickEmb('${m.name}')">
+      <div class="m-top"><span class="m-name">${m.name}</span>
+        ${m.tags.map((t,i)=>`<span class="m-tag ${t.startsWith('+')?'more':''}">${t}</span>`).join("")}</div>
+      <div class="m-desc">${m.desc}</div>
+    </div>`).join("");
+  popMenu(e.currentTarget, `<div class="model-menu">${html}</div>`);
+}
+function pickEmb(name){
+  wiz.emb = name;
+  closeMenu();
+  const sel = $("#embSelect"); if(sel) sel.querySelector("span").textContent = name;
+}
+const RERANK_MODELS = [
+  {name:"qwen3-rerank", tags:["重排","中文优化"], desc:"通义千问重排模型，中文语义匹配效果好，适合中文知识库。"},
+  {name:"bge-reranker-v2-m3", tags:["重排","多语言"], desc:"BGE 多语言重排模型，支持中英混排场景。"},
+  {name:"cohere-rerank-v3", tags:["重排","多语言"], desc:"Cohere 重排模型，长文本相关性判断稳定。"},
+];
+function toggleRerankMenu(e){
+  e.stopPropagation();
+  if($("#popMenu")){ closeMenu(); return; }
+  const html = RERANK_MODELS.map(m=>`
+    <div class="m-opt ${wiz.rerank===m.name?'on':''}" onclick="pickRerank('${m.name}')">
+      <div class="m-top"><span class="m-name">${m.name}</span>
+        ${m.tags.map(t=>`<span class="m-tag">${t}</span>`).join("")}</div>
+      <div class="m-desc">${m.desc}</div>
+    </div>`).join("");
+  popMenu(e.currentTarget, `<div class="model-menu">${html}</div>`);
+}
+function pickRerank(name){
+  wiz.rerank = name;
+  closeMenu();
+  const sel = $("#rerankSelect");
+  if(sel){
+    const span = sel.querySelector("span");
+    span.textContent = name;
+    span.classList.remove("placeholder");
+  }
+}
+function toggleWikiModelMenu(e){
+  e.stopPropagation();
+  if($("#popMenu")){ closeMenu(); return; }
+  const html = LLM_MODELS.map(m=>`
+    <div class="m-opt ${wiz.wikiModel===m.name?'on':''}" onclick="pickWikiModel('${m.name}')">
+      <div class="m-top"><span class="m-name">${m.name}</span>
+        ${m.tags.map(t=>`<span class="m-tag ${t.startsWith('+')?'more':''}">${t}</span>`).join("")}</div>
+      <div class="m-desc">${m.desc}</div>
+    </div>`).join("");
+  popMenu(e.currentTarget, `<div class="model-menu">${html}</div>`);
+}
+function pickWikiModel(name){
+  wiz.wikiModel = name;
+  closeMenu();
+  const sel = $("#wikiModelSelect"); if(sel) sel.querySelector("span").textContent = name;
+}
+const VLM_MODELS = LLM_MODELS.filter(m=>m.vision);
+function toggleVlmMenu(e){
+  e.stopPropagation();
+  if($("#popMenu")){ closeMenu(); return; }
+  const list = VLM_MODELS.length ? VLM_MODELS : LLM_MODELS;
+  const html = list.map(m=>`
+    <div class="m-opt ${wiz.vlm===m.name?'on':''}" onclick="pickVlm('${m.name}')">
+      <div class="m-top"><span class="m-name">${m.name}</span>
+        ${m.tags.map(t=>`<span class="m-tag ${t.startsWith('+')?'more':''}">${t}</span>`).join("")}</div>
+      <div class="m-desc">${m.desc}</div>
+    </div>`).join("");
+  popMenu(e.currentTarget, `<div class="model-menu">${html}</div>`);
+}
+function pickVlm(name){
+  wiz.vlm = name;
+  closeMenu();
+  const sel = $("#vlmSelect");
+  if(sel){
+    const span = sel.querySelector("span");
+    span.textContent = name;
+    span.classList.remove("placeholder");
+  }
+}
+
+function openWizard(){
+  wiz.i = 0; $("#wizardMask").classList.remove("hidden");
+  document.body.style.overflow="hidden";
+  renderWizard();
+}
+function closeWizard(){ $("#wizardMask").classList.add("hidden"); document.body.style.overflow=""; }
+window.addEventListener('message', e=>{ if(e.data && e.data.type==='openWizard') openWizard(); });
+function collectWiz(){
+  const k = wizSteps().flatMap(g=>g.steps)[wiz.i].k;
+  if(k==="basic" && $("#wizName")){ wiz.name=$("#wizName").value.trim(); wiz.desc=$("#wizDesc").value.trim(); }
+  if(k==="chunk" && $("#wzStrategy")){ wiz.strategy=$("#wzStrategy").value; }
+}
+function submitWizard(){
+  const nameEl = $("#wizName");
+  if(nameEl) wiz.name = nameEl.value.trim();
+  collectWiz();
+  if(!(wiz.name||"").trim()){ toast("请填写知识库名称","err"); wiz.i=0; renderWizard(); return; }
+  createKb();
+}
+function renderWizard(){
+  const steps = wizSteps();
+  const flat = steps.flatMap(g=>g.steps);
+  let idx = 0;
+  $("#wizNav").innerHTML = steps.map(g=>{
+    const btns = g.steps.map(s=>{
+      const cur = idx++; const on = cur===wiz.i;
+      return `<button class="${on?'on':''}" onclick="wizGo(${cur})"><span class="n">${cur+1}</span>${s.t}</button>`;
+    }).join("");
+    return `<div class="grp">${g.g}</div>${btns}`;
+  }).join("");
+  $("#wizProgress").textContent = `第 ${wiz.i+1} / ${flat.length} 步`;
+  $("#wizMain").innerHTML = wizPane(flat[wiz.i].k);
+  $("#wizMain").scrollTop = 0;
+  $$("#wizMain .range").forEach(paintRange);
+  renderWizMembers();
+}
+function wizGo(i){ collectWiz(); wiz.i=i; renderWizard(); }
+
+function wizPane(k){
+  const P = {
+    basic: `<h3>基本信息</h3><div class="sub">选择知识库类型并填写相关信息</div>
+      <div class="wiz-step">
+        <div class="supported-formats">
+          <div class="sfmt-title">${icon("i-eye","icon sm")}支持的文件格式</div>
+          <div class="sfmt-list">Markdown · 文本文件 · PDF · Word · Excel · PPT · 图片</div>
+        </div>
+        <div class="field"><label>创建模式</label>
+          <div class="mode-cards">
+            <div class="mode-card ${wiz.mode==='quick'?'on':''}" onclick="setWizMode('quick',this)">
+              <div class="mode-card-top">
+                <span class="mode-ico">${icon("i-spark","icon sm")}</span>
+                <b>快速创建</b>
+                <span class="mode-check">${icon("i-check","icon sm")}</span>
+              </div>
+              <p>零配置，即刻使用。系统已为您预设基础参数，只需填写基本信息即可一键生成知识库，适合快速上手与轻量级应用。</p>
+            </div>
+            <div class="mode-card ${wiz.mode!=='quick'?'on':''}" onclick="setWizMode('full',this)">
+              <div class="mode-card-top">
+                <span class="mode-ico">${icon("i-gear","icon sm")}</span>
+                <b>进阶创建</b>
+                <span class="mode-check">${icon("i-check","icon sm")}</span>
+              </div>
+              <p>深度定制，精准控制。您可以一步步配置模型、分块规则、检索策略等底层参数，打造完全贴合您专属业务场景的高质量知识库。</p>
+            </div>
+          </div>
+        </div>
+        <div class="field"><label>名称<span class="req">*</span></label>
+          <input class="input" id="wizName" value="${esc(wiz.name)}" placeholder="例如：产品需求文档库">
+          <div class="hint">名称将用于识别与检索范围选择。</div></div>
+        <div class="field"><label>图标</label>
+          <div class="icon-picker-row">
+            <div class="wiz-icon-preview" id="wizIconPreview" style="background:#e11d74" onclick="document.getElementById('wizIconUpload').click()" title="点击上传图标">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px"><path d="M12 4v16m8-8H4"/></svg>
+            </div>
+            <span class="hint" style="margin:0">支持 JPG、PNG、GIF 格式，图片大小不超过 1MB，建议尺寸 128×128px</span>
+            <input type="file" id="wizIconUpload" accept=".jpg,.jpeg,.png,.gif" style="display:none" onchange="handleWizIcon(event)">
+          </div></div>
+        <div class="field"><label>描述</label>
+          <textarea class="textarea" id="wizDesc" placeholder="简要说明该知识库的内容范围与使用场景">${esc(wiz.desc)}</textarea></div>
+      </div>`,
+    model: `<h3>模型配置</h3><div class="sub">选择 Wiki 合成模型与嵌入所用的模型</div>
+      <div class="wiz-step">
+        <div class="field"><label>Embedding 嵌入模型<span class="req">*</span></label>
+          <div class="model-select" id="embSelect" onclick="toggleEmbMenu(event)">
+            <span>${esc(wiz.emb)}</span><svg class="icon sm" style="color:var(--text-3)"><use href="#i-chev-d"/></svg>
+          </div>
+          <div class="hint">用于文本向量化的嵌入模型</div></div>
+        <div class="field" style="margin-bottom:0"><label>Wiki 合成模型<span class="req">*</span></label>
+          <div class="model-select" id="wikiModelSelect" onclick="toggleWikiModelMenu(event)">
+            <span>${esc(wiz.wikiModel)}</span><svg class="icon sm" style="color:var(--text-3)"><use href="#i-chev-d"/></svg>
+          </div>
+          <div class="hint">用于提取 Wiki 摘要和索引关系的模型</div></div>
+      </div>`,
+    chunk: `<h3>分块设置</h3><div class="sub">控制上传文档在嵌入前的切分方式。默认值适用于大多数场景，仅在检索质量异常时调整。</div>
+      <div class="wiz-step wide">
+        <div class="chunk-row">
+          <div class="info"><b>分块策略</b><p>选择文档的分块方式。自动模式会分析每个文档的结构并选择最佳策略。</p></div>
+          <div class="ctrl">
+            <select class="select" id="wzStrategy" onchange="onChunkStrategy(this.value)">
+              <option ${wiz.strategy==="自动"?"selected":""}>自动</option>
+              <option ${wiz.strategy==="按标题切分"?"selected":""}>按标题切分</option>
+              <option ${wiz.strategy==="结构感知"?"selected":""}>结构感知</option>
+              <option ${wiz.strategy==="按长度切分"?"selected":""}>按长度切分</option>
+            </select>
+            <button class="link-btn" onclick="testChunkEffect()">${icon("i-spark","icon sm")}测试分块效果</button>
+          </div>
+        </div>
+        <div class="auto-note" id="wzAutoNote"><b id="wzNoteTitle">${esc(wiz.strategy)}：</b><span id="wzNoteText">${esc(CHUNK_STRATEGY_HINT[wiz.strategy]||"")}</span></div>
+        <div class="chunk-row">
+          <div class="info"><b>分块大小</b><p>每个分块的最大字符数（100-4000）。默认 512 ≈ 中文 300 tokens / 英文 100-130 tokens。</p></div>
+          <div class="ctrl">
+            <div class="num-field">
+              <input class="input num-input" type="number" id="wzSize" min="100" max="4000" step="1" value="${wiz.size}" oninput="onNumInput('size',this)" onblur="onNumBlur('size',this)">
+              <span class="unit">字符</span>
+            </div>
+          </div>
+        </div>
+        <div class="chunk-row">
+          <div class="info"><b>分块重叠</b><p>相邻分块之间共享的字符数（0-500）。默认 80 ≈ 分块大小的 15%，符合当前研究推荐。</p></div>
+          <div class="ctrl">
+            <div class="num-field">
+              <input class="input num-input" type="number" id="wzOverlap" min="0" max="500" step="1" value="${wiz.overlap}" oninput="onNumInput('overlap',this)" onblur="onNumBlur('overlap',this)">
+              <span class="unit">字符</span>
+            </div>
+          </div>
+        </div>
+        <div class="chunk-row">
+          <div class="info"><b>分隔符</b><p>切分时优先使用的字符或字符串。优先级高的分隔符先尝试；默认顺序优先段落 → 句子 → 标点。</p></div>
+          <div class="ctrl">
+            <div class="sep-wrap">
+              <div class="sep-box ${wiz.seps.length?"":"empty"}" id="wzSepBox" onclick="toggleSepMenu(event)">
+                ${wiz.seps.length ? wiz.seps.map(sepChipHTML).join("") : '<span class="sep-placeholder">选择或自定义分隔符</span>'}
+                <button class="sep-more" id="wzSepMore" title="展开可选分隔符">${icon("i-chev-d","icon sm")}</button>
+              </div>
+              <div class="sep-panel hidden" id="wzSepPanel"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chunk-row">
+          <div class="info"><b>父子分块</b><p>两级分块：小的子块用于向量匹配（精准命中），大的父块返回给 LLM（更丰富上下文）。建议用于长文档（&gt;10 页）。</p></div>
+          <div class="ctrl" style="align-items:flex-end">
+            <div class="switch ${wiz.parent?"on":""}" id="wzParentSwitch" onclick="toggleParentChunk(this)"></div>
+          </div>
+        </div>
+        <div class="chunk-row" id="wzParentSizeRow" style="${wiz.parent?"":"display:none"}">
+          <div class="info"><b>父块大小</b><p>返回给 LLM 的上下文块大小（512-8192）。默认 4096 ≈ 1000 英文 tokens，适合所有现代 LLM 上下文窗口。</p></div>
+          <div class="ctrl">
+            <div class="num-field">
+              <input class="input num-input" type="number" id="wzParentSize" min="512" max="8192" step="1" value="${wiz.parentSize}" oninput="onNumInput('parentSize',this)" onblur="onNumBlur('parentSize',this)">
+              <span class="unit">字符</span>
+            </div>
+          </div>
+        </div>
+        <div class="chunk-row" id="wzChildRow" style="${wiz.parent?"":"display:none"}">
+          <div class="info"><b>子块大小</b><p>用于向量匹配的嵌入块大小（64-2048）。默认 384 ≈ 80 tokens，是 BGE 类嵌入模型的最佳点。</p></div>
+          <div class="ctrl">
+            <div class="num-field">
+              <input class="input num-input" type="number" id="wzChild" min="64" max="2048" step="1" value="${wiz.child}" oninput="onNumInput('child',this)" onblur="onNumBlur('child',this)">
+              <span class="unit">字符</span>
+            </div>
+          </div>
+        </div>
+      </div>`,
+    image: `<h3>图像处理配置</h3><div class="sub">配置图像内容理解能力，启用后支持图片等非文本内容的解析和检索</div>
+      <div class="wiz-step wide">
+        <div class="chunk-row">
+          <div class="info"><b>多模态功能</b><p>启用图片等多模态内容的理解能力</p></div>
+          <div class="ctrl" style="align-items:flex-end">
+            <div class="switch ${wiz.multimodal?"on":""}" id="wzMultimodalSwitch" onclick="toggleMultimodal(this)"></div>
+          </div>
+        </div>
+        <div class="chunk-row" id="wzVlmModelRow" style="${wiz.multimodal?"":"display:none"}">
+          <div class="info"><b>VLLM 视觉模型<span class="req">*</span></b><p>用于多模态理解的视觉语言模型（必选）</p></div>
+          <div class="ctrl">
+            <div class="model-select" id="vlmSelect" onclick="toggleVlmMenu(event)">
+              <span class="${wiz.vlm?"":"placeholder"}">${wiz.vlm ? esc(wiz.vlm) : "请选择 VLLM 模型（必选）"}</span>
+              <svg class="icon sm" style="color:var(--text-3)"><use href="#i-chev-d"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="chunk-row" id="wzImgPromptRow" style="${wiz.multimodal?"":"display:none"}">
+          <div class="info"><b>图片解析要求</b><p>补充需要重点识别的视觉信息</p></div>
+          <div class="ctrl">
+            <div style="width:100%">
+              <textarea class="textarea" id="wzImgPrompt" maxlength="4000" placeholder="例如：重点识别设备铭牌、型号、告警代码和表格中的单位..." oninput="updateImgPromptCount()"></textarea>
+              <div class="hint" style="text-align:right" id="wzImgPromptCount">0/4000</div>
+            </div>
+          </div>
+        </div>
+      </div>`,
+    advanced: `<h3>高级设置</h3><div class="sub">配置问题生成等高级功能</div>
+      <div class="wiz-step wide">
+        <div class="chunk-row">
+          <div class="info"><b>AI 问题生成</b><p>解析文档时调用大模型为每个分块生成相关问题，提高检索召回率。启用后会增加文档解析耗时。</p></div>
+          <div class="ctrl" style="align-items:flex-end">
+            <div class="switch ${wiz.aiQuestion?"on":""}" id="wzAiQuestionSwitch" onclick="toggleAiQuestion(this)"></div>
+          </div>
+        </div>
+        <div class="chunk-sub" id="wzAiQuestionPanel" style="${wiz.aiQuestion?"":"display:none"}">
+          <div class="chunk-row">
+            <div class="info"><b>生成问题数量</b><p>每个文档分块生成的问题数量（1-10）</p></div>
+            <div class="ctrl">
+              <div class="num-field">
+                <input class="input num-input" type="number" id="wzQCount" min="1" max="10" step="1" value="${wiz.qCount}" oninput="onNumInput('qCount',this)" onblur="onNumBlur('qCount',this)">
+              </div>
+            </div>
+          </div>
+          <div class="chunk-row" style="border-bottom:none;padding-bottom:0">
+            <div class="info"><b>问题生成要求</b><p>指定问题面向的人群、场景和表达方式，系统仍维护稳定输出格式</p></div>
+            <div class="ctrl">
+              <div style="width:100%">
+                <textarea class="textarea" id="wzQPrompt" maxlength="4000" placeholder="例如：生成客服用户常问的自然语言问题，避免考试题式表达..." oninput="updateFieldCount('wzQPrompt','wzQPromptCount',4000)"></textarea>
+                <div class="hint" style="text-align:right" id="wzQPromptCount">0/4000</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chunk-row">
+          <div class="info"><b>Wiki 设置</b><p>自动生成互相关联的 Wiki 知识页面，构建结构化知识体系</p></div>
+        </div>
+        <div class="chunk-sub" id="wzWikiPanel">
+          <div class="chunk-row">
+            <div class="info"><b>Wiki 提取粒度</b><p id="wzWikiGranHint">${WIKI_GRAN_HINT[wiz.wikiGran||"标准"]}</p></div>
+            <div class="ctrl">
+              <div class="seg" id="wzWikiGran" style="width:100%">
+                <button type="button" class="${wiz.wikiGran==='聚焦'?'on':''}" style="flex:1;justify-content:center" onclick="setWikiGran('聚焦',this)">聚焦</button>
+                <button type="button" class="${wiz.wikiGran==='标准'?'on':''}" style="flex:1;justify-content:center" onclick="setWikiGran('标准',this)">标准</button>
+                <button type="button" class="${wiz.wikiGran==='详尽'?'on':''}" style="flex:1;justify-content:center" onclick="setWikiGran('详尽',this)">详尽</button>
+              </div>
+            </div>
+          </div>
+          <div class="chunk-row">
+            <div class="info"><b>Wiki 内容生成要求</b><p>控制摘要、页面和首页的表达重点；引用、合并与防幻觉规则由系统固定维护。修改后需重新解析才能影响已有内容。</p></div>
+            <div class="ctrl">
+              <div style="width:100%">
+                <textarea class="textarea" id="wzWikiReq" maxlength="4000" placeholder="例如：使用法务审阅口吻，优先展示责任主体、时间线和风险提示..." oninput="updateFieldCount('wzWikiReq','wzWikiReqCount',4000)"></textarea>
+                <div class="hint" style="text-align:right" id="wzWikiReqCount">0/4000</div>
+              </div>
+            </div>
+          </div>
+          <div class="chunk-row" style="border-bottom:none;padding-bottom:0">
+            <div class="info"><b>Wiki 提取重点</b><p>说明应重点识别的领域实体和概念，不会替换系统的 JSON 与引用协议。</p></div>
+            <div class="ctrl">
+              <div style="width:100%">
+                <textarea class="textarea" id="wzWikiFocus" maxlength="4000" placeholder="例如：重点识别产品、版本、组织、负责人和关键技术概念..." oninput="updateFieldCount('wzWikiFocus','wzWikiFocusCount',4000)"></textarea>
+                <div class="hint" style="text-align:right" id="wzWikiFocusCount">0/4000</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`,
+    retrieval: `<h3>检索策略</h3><div class="sub">配置召回数量与相关性阈值，以及检索结果的重排方式</div>
+      <div class="wiz-step wide">
+        <div class="chunk-row">
+          <div class="info"><b>向量召回数量</b><p>向量检索返回的最大结果数量</p></div>
+          <div class="ctrl">
+            <div class="num-field">
+              <input class="input num-input" type="number" id="wzVecTopK" min="0" max="100" step="1" value="${wiz.vecTopK}" oninput="onNumInput('vecTopK',this)" onblur="onNumBlur('vecTopK',this)">
+            </div>
+          </div>
+        </div>
+        <div class="chunk-row">
+          <div class="info"><b>关键词阈值</b><p>关键词检索的最低相关性分数</p></div>
+          <div class="ctrl">
+            <div class="range-wrap">
+              <input type="range" class="range" id="wzKwThreshold" min="0" max="1" step="0.01" value="${wiz.kwThreshold}" oninput="onRangeInput('kwThreshold',this.value,this)">
+              <span class="range-val"><b id="wzKwThresholdVal">${wiz.kwThreshold.toFixed(2)}</b></span>
+            </div>
+          </div>
+        </div>
+        <div class="chunk-row">
+          <div class="info"><b>向量阈值</b><p>向量检索的最低相似度分数</p></div>
+          <div class="ctrl">
+            <div class="range-wrap">
+              <input type="range" class="range" id="wzVecThreshold" min="0" max="1" step="0.01" value="${wiz.vecThreshold}" oninput="onRangeInput('vecThreshold',this.value,this)">
+              <span class="range-val"><b id="wzVecThresholdVal">${wiz.vecThreshold.toFixed(2)}</b></span>
+            </div>
+          </div>
+        </div>
+        <div class="chunk-row">
+          <div class="info"><b>重排序</b><p>对召回结果进行二次排序，提高回答准确性。启用后需配置重排数量、阈值与模型。</p></div>
+          <div class="ctrl" style="align-items:flex-end">
+            <div class="switch ${wiz.rerankEnabled?"on":""}" id="wzRerankSwitch" onclick="toggleRerank(this)"></div>
+          </div>
+        </div>
+        <div class="chunk-sub" id="wzRerankPanel" style="${wiz.rerankEnabled?"":"display:none"}">
+          <div class="chunk-row">
+            <div class="info"><b>ReRank 模型<span class="req">*</span></b><p>用于对知识库检索结果进行重排序，提高回答准确性</p></div>
+            <div class="ctrl">
+              <div class="model-select" id="rerankSelect" onclick="toggleRerankMenu(event)">
+                <span class="${wiz.rerank?"":"placeholder"}">${wiz.rerank ? esc(wiz.rerank) : "请选择 ReRank 模型"}</span>
+                <svg class="icon sm" style="color:var(--text-3)"><use href="#i-chev-d"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="chunk-row">
+            <div class="info"><b>重排数量</b><p>重排序后保留的最大结果数量</p></div>
+            <div class="ctrl">
+              <div class="num-field">
+                <input class="input num-input" type="number" id="wzRerankTopN" min="0" max="100" step="1" value="${wiz.rerankTopN}" oninput="onNumInput('rerankTopN',this)" onblur="onNumBlur('rerankTopN',this)">
+              </div>
+            </div>
+          </div>
+          <div class="chunk-row" style="border-bottom:none;padding-bottom:0">
+            <div class="info"><b>重排阈值</b><p>重排序的最低相关性分数</p></div>
+            <div class="ctrl">
+              <div class="range-wrap">
+                <input type="range" class="range" id="wzRerankThreshold" min="-10" max="10" step="0.1" value="${wiz.rerankThreshold}" oninput="onRangeInput('rerankThreshold',this.value,this)">
+                <span class="range-val"><b id="wzRerankThresholdVal">${wiz.rerankThreshold.toFixed(2)}</b></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`,
+    members: `<h3>成员管理</h3><div class="sub">添加成员并为其分配角色，创建后可在知识库设置中调整</div>
+      <div class="wiz-step">
+        <div class="field"><label>添加成员</label>
+          <div class="inline">
+            <div class="member-picker" id="memberPicker" onclick="openMemberPicker()">
+              <span class="placeholder">输入姓名 / 手机号 / 工号搜索，或按部门选择</span>
+              <svg class="icon sm"><use href="#i-user"/></svg>
+            </div>
+            <button class="btn sm primary" onclick="openMemberPicker()">${icon("i-plus","icon sm")}添加</button>
+          </div></div>
+        <div class="field"><label>成员列表</label>
+          <div id="wizMemberList"></div>
+          <div class="hint">所有者可将知识库转让给管理员或编辑者，转让后原所有者变为管理员。</div>
+        </div>
+        <div class="divider"></div>
+        <div class="field">
+          <div class="perm-head">
+            <div>
+              <label>权限说明</label>
+              <div class="hint" style="margin-top:4px">四类角色的能力边界一览</div>
+            </div>
+            <div class="switch" id="wzPermSwitch" role="switch" aria-checked="false" aria-label="展开权限说明" onclick="togglePermInfo(this)"></div>
+          </div>
+          <div class="perm-body hidden" id="wzPermBody">
+            <div class="perm-table">
+              <table>
+                <thead><tr><th>能力</th><th>所有者</th><th>管理员</th><th>编辑者</th><th>只读</th></tr></thead>
+                <tbody>
+                  <tr><td>查看 / 检索知识库内容</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                  <tr><td>上传 / 删除文档</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+                  <tr><td>修改知识库配置</td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
+                  <tr><td>管理成员与角色</td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
+                  <tr><td>删除知识库 / 转让所有者</td><td>✓</td><td>—</td><td>—</td><td>—</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="hint" style="margin-top:10px">所有者可随时在 知识库设置 → 权限与成员 中调整角色分配；转让所有者后原所有者变为管理员。</div>
+          </div>
+        </div>
+      </div>`,
+  };
+  return P[k] || "";
+}
+function createKb(){
+  const kb = {
+    id:"kb_"+uid(), name:wiz.name||"未命名知识库", type:"doc", desc:wiz.desc, docs:0, wiki:false,
+    mode:wiz.mode==="full"?"full":"quick",
+    iconColor: ICON_COLORS[Math.floor(Math.random()*ICON_COLORS.length)],
+    features:[wiz.multimodal?"多模态":""].filter(Boolean),
+    pinned:false, star:false, owner:"赵楠", createdAt:Date.now(), updated:Date.now(),
+    vlm:wiz.vlm||"",
+    cfg:{ llm:wiz.llm, emb:wiz.emb, rerank:wiz.rerankEnabled?(wiz.rerank||""):"", vector:wiz.vector, storage:wiz.storage,
+      chunk:{strategy:wiz.strategy, size:wiz.size, overlap:wiz.overlap, parentChild:wiz.parent, parentSize:wiz.parentSize, child:wiz.child, seps:wiz.seps.slice(), unit:"字符"},
+      multimodal:wiz.multimodal, autoTag:wiz.autoTag }
+  };
+  KBS.unshift(kb); DOCS[kb.id]=[];
+  saveCreatedKb(kb);
+  closeWizard();
+  toast(`知识库「${kb.name}」创建成功`);
+  openKbDetailPage(kb);
+}
+
+/* 新建的知识库写入会话存储，返回列表页时仍能看到该卡片 */
+const CREATED_KB_KEY = 'omniEnterpriseKbs';
+
+function saveCreatedKb(kb){
+  try{
+    const list = JSON.parse(sessionStorage.getItem(CREATED_KB_KEY) || '[]');
+    if(!list.some(x=>x.id===kb.id)) list.push(kb);
+    sessionStorage.setItem(CREATED_KB_KEY, JSON.stringify(list));
+  }catch(e){}
+}
+
+function restoreCreatedKbs(){
+  let list = [];
+  try{ list = JSON.parse(sessionStorage.getItem(CREATED_KB_KEY) || '[]'); }catch(e){}
+  if(!Array.isArray(list) || !list.length) return;
+  // 后创建的排前面
+  list.slice().reverse().forEach(kb=>{
+    if(KBS.some(x=>x.id===kb.id)) return;
+    KBS.unshift(kb);
+    DOCS[kb.id] = DOCS[kb.id] || [];
+  });
+}
+
+/* 从详情页返回时带回来的知识库信息：列表里没有就补一张卡片 */
+const RETURN_KB_KEY = 'omniReturnKb';
+
+function upsertReturnedKb(){
+  const p = new URLSearchParams(location.search);
+  const name = p.get('kbName');
+  if(!name) return;
+  const info = {
+    name,
+    desc: p.get('kbDesc') || '',
+    owner: p.get('kbOwner') || '赵楠',
+    mode: p.get('kbMode') === 'full' ? 'full' : 'quick',
+    llm: p.get('kbLlm') || 'qwen3-8b-max',
+    emb: p.get('kbEmb') || 'qwen3.7-text-embedding',
+    rerank: p.get('kbRerank') || ''
+  };
+
+  const existing = KBS.find(k=>k.name===info.name);
+  if(existing){
+    existing.desc = info.desc || existing.desc;
+    existing.owner = info.owner;
+    existing.updated = Date.now();
+    existing.cfg = existing.cfg || {};
+    existing.cfg.llm = info.llm;
+    existing.cfg.emb = info.emb;
+    existing.cfg.rerank = info.rerank;
+    return;
+  }
+
+  // 新卡片：沿用创建向导的字段结构
+  const kb = {
+    id: 'kb_' + Date.now().toString(36).slice(2, 8),
+    name: info.name,
+    type: 'doc',
+    desc: info.desc,
+    docs: 0,
+    wiki: false,
+    mode: info.mode,
+    iconColor: ICON_COLORS[Math.floor(Math.random()*ICON_COLORS.length)],
+    features: [],
+    pinned: false,
+    star: false,
+    owner: info.owner,
+    createdAt: Date.now(),
+    updated: Date.now(),
+    vlm: '',
+    cfg: {
+      llm: info.llm,
+      emb: info.emb,
+      rerank: info.rerank,
+      vector: 'Qdrant',
+      storage: '本地存储',
+      chunk: { strategy: '自动', size: 512, overlap: 80, parentChild: true, child: 384, unit: '字符' },
+      multimodal: false,
+      autoTag: true
+    }
+  };
+  KBS.unshift(kb);
+  DOCS[kb.id] = [];
+
+  // 同步写入会话存储，刷新后仍在
+  try{
+    const list = JSON.parse(sessionStorage.getItem(CREATED_KB_KEY) || '[]');
+    if(!list.some(x=>x.name===kb.name)) list.push(kb);
+    sessionStorage.setItem(CREATED_KB_KEY, JSON.stringify(list));
+    sessionStorage.setItem(RETURN_KB_KEY, kb.id);
+  }catch(e){}
+}
+
+/* 创建完成后跳转到知识库详情页（本地知识库样式）
+   本页通常嵌在 list.html 的 iframe 中，通过 postMessage 让父页面整页跳转；
+   单独打开本原型时则在本窗口内跳转。 */
+function openKbDetailPage(kb){
+  const params = {
+    name: kb.name,
+    desc: kb.desc || "企业知识库，支持成员协作与权限管理。",
+    update: fullTime(new Date(kb.updated)),
+    owner: kb.owner || "",
+    llm: kb.cfg?.llm || "",
+    emb: kb.cfg?.emb || "",
+    rerank: kb.cfg?.rerank || "",
+    mode: kb.mode || "quick",
+    scope: "enterprise"
+  };
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'openKbDetail', params }, '*');
+  } else {
+    window.location.href = "./detail-enterprise.html?" + new URLSearchParams(params).toString();
+  }
+}
+
+/* ========================= 弹窗 / 确认 ========================= */
+function openDialog({title, body, foot, size}){
+  $("#dlgTitle").textContent = title;
+  $("#dlgBody").innerHTML = body;
+  $("#dlgFoot").innerHTML = foot || `<button class="btn" onclick="closeDialog()">关闭</button>`;
+  $("#dialogModal").classList.toggle("lg", size==="lg");
+  $("#dialogMask").classList.remove("hidden");
+}
+function closeDialog(){ $("#dialogMask").classList.add("hidden"); }
+let __confirm = null;
+function confirmDialog(title, desc, onOk){
+  __confirm = onOk;
+  openDialog({
+    title:"操作确认",
+    body:`<div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="width:34px;height:34px;border-radius:50%;background:var(--err-bg);color:var(--err);display:flex;align-items:center;justify-content:center;flex:none">${icon("i-trash","icon")}</div>
+        <div><div style="font-size:14px;margin-bottom:6px">${esc(title)}</div>
+        <div class="muted" style="line-height:1.7">${esc(desc)}</div></div>
+      </div>`,
+    foot:`<button class="btn" onclick="closeDialog()">取消</button><div class="spacer"></div>
+          <button class="btn" style="background:var(--err);border-color:var(--err);color:#fff" onclick="runConfirm()">确认</button>`
+  });
+}
+function runConfirm(){ closeDialog(); if(__confirm) __confirm(); __confirm=null; }
+
+/* ========================= 初始化 ========================= */
+document.addEventListener("keydown", e=>{
+  if(e.key === "Escape"){ closeMenu(); closeDialog(); closeDrawer(); closeWizard(); closeChunkTest(); }
+});
+
+/* 让状态为「解析中」的文档初始即有进度，便于观察 */
+Object.values(DOCS).flat().forEach(d=>{ if(d.status==="processing" && !d.progress) d.progress = 42; });
+
+// 恢复此前创建的知识库（例如从详情页返回列表时）
+restoreCreatedKbs();
+upsertReturnedKb();
+
+renderList();
+</script>
+</body>
+</html>

@@ -50,6 +50,7 @@
     margin: 0 auto;
     padding: 20px;
   }
+  .view-container { display: block; }
   
   .header {
     display: flex;
@@ -66,6 +67,39 @@
     display: flex; align-items: center; justify-content: center;
   }
   .header h1 { font-size: 18px; font-weight: 600; }
+
+  /* ========== Header Tabs (个人 / 企业 切换) ========== */
+  .header-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 24px;
+    background: #f4f4f5;
+    border-radius: 10px;
+    padding: 3px;
+  }
+  .header-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 14px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .header-tab:hover { color: var(--text); }
+  .header-tab.active {
+    background: #fff;
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .header-tab svg { width: 15px; height: 15px; }
 
     .add-wrap { position: relative; }
     .btn-add {
@@ -89,6 +123,21 @@
       padding: 4px;
       z-index: 50;
     }
+    .menu-item {
+      display: flex; align-items: center; gap: 8px;
+      width: 100%;
+      padding: 9px 12px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      transition: background .15s;
+      text-align: left;
+    }
+    .menu-item:hover { background: #f4f4f5; }
+    .menu-item svg { color: var(--text-secondary); flex-shrink: 0; }
 
   /* ========== Page Title Bar ========== */
 
@@ -796,21 +845,42 @@
         <div class="logo-box">
           <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         </div>
-        <h1>个人知识库</h1>
+        <h1>知识库</h1>
+        <nav class="header-tabs">
+          <button class="header-tab active" id="tab-personal" onclick="switchView('personal')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+            个人知识库
+          </button>
+          <button class="header-tab" id="tab-enterprise" onclick="switchView('enterprise')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+            企业知识库
+          </button>
+        </nav>
       </div>
   
       <div class="add-wrap">
-        <button class="btn-add" id="add-skill-btn" onclick="openAddModal()">
+        <button class="btn-add" id="add-skill-btn" onclick="toggleNewKbMenu(event)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"></path></svg>
           新建知识库
         </button>
-
+        <div class="dropdown" id="newKbMenu" style="display:none;">
+          <button class="menu-item" onclick="chooseNewKb('personal')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+            个人知识库
+          </button>
+          <button class="menu-item" onclick="chooseNewKb('enterprise')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+            企业知识库
+          </button>
+        </div>
       </div>
     </header>
 	
+<!-- ===== Personal View ===== -->
+<div class="view-container" id="view-personal">
 <div class="page-container">
 
-	
+
 
   <!-- ===== Filter Row: Search + Status + Sort + New Button ===== -->
   <div class="filter-row">
@@ -848,12 +918,18 @@
   </div>
 
 </div>
+</div>
+
+<!-- ===== Enterprise View (空 iframe) ===== -->
+<div class="view-container" id="view-enterprise" style="display:none; height: calc(100vh - 64px);">
+  <iframe id="enterpriseFrame" src="about:blank" title="企业知识库" style="width:100%;height:100%;border:none;display:block;"></iframe>
+</div>
 
 <!-- ========== Add Knowledge Base Modal ========== -->
 <div class="modal-overlay" id="addModal">
   <div class="modal">
     <div class="modal-header">
-      <h3 class="modal-title">新建知识库</h3>
+      <h3 class="modal-title">新建个人知识库</h3>
       <button class="modal-close" onclick="closeAddModal()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -1070,6 +1146,7 @@ let currentStatus = 'all';
 let currentSort = 'update';
 let currentTab = 'all';
 let deleteTargetId = null;
+let lastCreatedKbId = null;
 
 // Icon colors pool for auto-generation
 const iconColors = [
@@ -1232,6 +1309,29 @@ function setSort(sort, btn) {
 }
 
 // ==================== Add Modal ====================
+function toggleNewKbMenu(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('newKbMenu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function chooseNewKb(type) {
+  document.getElementById('newKbMenu').style.display = 'none';
+  if (type === 'personal') {
+    openAddModal();
+  } else if (type === 'enterprise') {
+    // 切换到企业 tab，由 iframe 内的原型打开新建向导
+    switchView('enterprise');
+    const frame = document.getElementById('enterpriseFrame');
+    const openWizard = () => { frame.contentWindow.postMessage({ type: 'openWizard' }, '*'); };
+    if (frame.contentWindow && frame.contentWindow.document.readyState === 'complete') {
+      setTimeout(openWizard, 100);
+    } else {
+      frame.addEventListener('load', () => setTimeout(openWizard, 100), { once: true });
+    }
+  }
+}
+
 function openAddModal() {
   document.getElementById('addModal').classList.add('show');
   // Reset form
@@ -1345,6 +1445,7 @@ function startScanning(name, path) {
           updateTime: formatDateTime(new Date())
         };
         knowledgeBases.unshift(newKb);
+        lastCreatedKbId = newKb.id;
         renderCards();
         showToast(`知识库"${name}"创建成功`, 'success');
       }, 400);
@@ -1365,7 +1466,24 @@ function showScanResult(total, unsupported) {
 
 function closeResultModal() {
   document.getElementById('resultModal').classList.remove('show');
-  window.location.href = "./detail.html";
+  goToDetail(lastCreatedKbId);
+}
+
+// ==================== Navigate to Detail ====================
+function goToDetail(id) {
+  const kb = knowledgeBases.find(k => k.id === id) || knowledgeBases[0];
+  const params = new URLSearchParams();
+  if (kb) {
+    params.set('id', kb.id);
+    params.set('name', kb.name);
+    params.set('desc', kb.desc || '');
+    params.set('path', kb.path || '');
+    // 仅传纯文本图标，图片图标由详情页首字兜底
+    if (kb.icon && !/[<img]/.test(kb.icon)) params.set('icon', kb.icon);
+    if (kb.updateTime) params.set('update', kb.updateTime);
+  }
+  params.set('scope', 'personal');
+  window.location.href = './detail.html?' + params.toString();
 }
 
 // ==================== Delete ====================
@@ -1392,13 +1510,10 @@ function confirmDelete() {
   closeDeleteModal();
 }
 
-// ==================== Detail Page (Empty Link) ====================
+// ==================== Detail Page ====================
 function openDetail(id) {
   const kb = knowledgeBases.find(k => k.id === id);
-  if (kb) {
-    // Open detail in new tab (placeholder)
-    window.location.href = "./detail.html";
-  }
+  if (kb) goToDetail(id);
 }
 
 // ==================== Open Path ====================
@@ -1464,14 +1579,57 @@ function parentClick(url='') {
 	}
 }
 
+// ==================== View Switch (个人 / 企业) ====================
+let enterpriseLoaded = false;
+function switchView(view) {
+  const isPersonal = view === 'personal';
+  try { sessionStorage.setItem('omniKbScope', isPersonal ? 'personal' : 'enterprise'); } catch (e) {}
+
+  document.getElementById('view-personal').style.display = isPersonal ? '' : 'none';
+  document.getElementById('view-enterprise').style.display = isPersonal ? 'none' : '';
+
+  document.getElementById('tab-personal').classList.toggle('active', isPersonal);
+  document.getElementById('tab-enterprise').classList.toggle('active', !isPersonal);
+
+  // 首次切到企业页时才加载 iframe 内容
+  if (!isPersonal && !enterpriseLoaded) {
+    document.getElementById('enterpriseFrame').src = 'weknora-knowledge-base-prototype.html';
+    enterpriseLoaded = true;
+  }
+
+  // 切回个人页时重新渲染（模拟刷新数据）
+  if (isPersonal) renderCards();
+}
+
 // ==================== Init ====================
+// 企业知识库 iframe 内创建成功后，整页跳转到知识库详情页
+window.addEventListener('message', function (e) {
+  if (e.data && e.data.type === 'openKbDetail') {
+    const params = new URLSearchParams();
+    const d = e.data.params || {};
+    Object.keys(d).forEach(k => { if (d[k]) params.set(k, d[k]); });
+    window.location.href = './detail-enterprise.html?' + params.toString();
+  }
+});
+
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('newKbMenu');
+  if (menu && !menu.contains(e.target)) menu.style.display = 'none';
+});
+
 renderCards();
+
+// 从详情页「企业知识库」返回时，直接打开企业知识库列表；
+// 也从会话记录恢复上次所在的视图，避免详情页丢掉上下文
+let initialView = new URLSearchParams(window.location.search).get('view');
+if (!initialView) {
+  try { initialView = sessionStorage.getItem('omniKbScope'); } catch (e) {}
+}
+if (initialView === 'enterprise') {
+  switchView('enterprise');
+} else {
+  try { sessionStorage.setItem('omniKbScope', 'personal'); } catch (e) {}
+}
 </script>
-
-<style> .prd-fab-wrapper { position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; align-items: center; justify-content: center; }  .prd-fab-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #ffffff; box-shadow: 0 8px 28px rgba(79, 70, 229, 0.45); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; text-decoration: none; cursor: pointer; border: none; outline: none; position: relative; } .prd-fab-btn:hover { transform: scale(1.10); box-shadow: 0 12px 40px rgba(79, 70, 229, 0.60); } .prd-fab-btn:active { transform: scale(0.92); } .prd-fab-btn svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08)); } .prd-fab-tooltip { position: absolute; right: 50px; background: #1e293b; color: #f1f5f9; padding: 6px 16px; border-radius: 8px; font-family: -apple-system, 'Inter', 'Microsoft YaHei', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.3px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; transform: translateX(4px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); } .prd-fab-tooltip::after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); border-left: 6px solid #1e293b; border-top: 6px solid transparent; border-bottom: 6px solid transparent; } .prd-fab-btn:hover .prd-fab-tooltip { opacity: 1; transform: translateX(0); }  @media (max-width: 640px) { .prd-fab-wrapper { bottom: 20px; right: 20px; } .prd-fab-btn { width: 48px; height: 48px; } .prd-fab-btn svg { width: 22px; height: 22px; } .prd-fab-tooltip { right: 60px; font-size: 12px; padding: 4px 12px; } .prd-fab-tooltip::after { right: -5px; border-width: 5px; } }  @media (prefers-color-scheme: dark) { .prd-fab-tooltip { background: #0f172a; color: #e2e8f0; } .prd-fab-tooltip::after { border-left-color: #0f172a; } }</style>
-<div class="prd-fab-wrapper"> <a class="prd-fab-btn" href="./zsk_prd.html" target="_blank" rel="noopener noreferrer" aria-label="查看 PRD 文档">  <svg viewBox="0 0 24 24"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /> <polyline points="14 2 14 8 20 8" /> <line x1="8" y1="13" x2="16" y2="13" /> <line x1="8" y1="17" x2="16" y2="17" /> </svg> <span class="prd-fab-tooltip">PRD 文档</span></a></div>
-
-
-
 </body>
 </html>
