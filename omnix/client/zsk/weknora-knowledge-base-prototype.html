@@ -98,6 +98,17 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 .eb-filters button.on{color:var(--brand);background:var(--brand-weak);border-color:var(--brand-border)}
 .eb-filters button .num{font-size:11px;color:var(--text-3)}
 .eb-filters button.on .num{color:var(--brand)}
+/* 企业知识库总容量（1TB）进度条 */
+.cap-meter{width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:5px;padding:7px 12px;background:#fff;border:1px solid var(--border);border-radius:10px}
+.cap-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.cap-label{font-size:12px;color:var(--text-3)}
+.cap-val{font-size:12px;color:var(--text-1);font-weight:600;font-variant-numeric:tabular-nums}
+.cap-bar{height:8px;border-radius:4px;background:var(--bg-sunken);overflow:hidden}
+.cap-bar i{display:block;height:100%;width:0;min-width:4px;border-radius:4px;background:linear-gradient(90deg,#07c160,#3ecf8e);transition:width .4s ease}
+.cap-meter.warn .cap-bar i{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.cap-meter.danger .cap-bar i{background:linear-gradient(90deg,#e5484d,#f87171)}
+.cap-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:var(--text-4);font-variant-numeric:tabular-nums}
+.cap-foot .cap-free{color:var(--text-3)}
 .group-title{display:flex;align-items:center;gap:6px;color:var(--text-2);font-size:13px;margin:18px 0 10px}
 .group-title .cnt{color:var(--text-4);font-size:12px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
@@ -496,6 +507,18 @@ td.name-cell .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
         </div>
         <div class="eb-filters" id="filterSeg"></div>
         <div class="spacer" style="flex:1"></div>
+        <!-- 企业知识库总容量：1TB -->
+        <div class="cap-meter" id="capMeter" title="企业知识库总容量 1 TB">
+          <div class="cap-top">
+            <span class="cap-label">存储容量</span>
+            <span class="cap-val" id="capValText"></span>
+          </div>
+          <div class="cap-bar"><i id="capBarFill"></i></div>
+          <div class="cap-foot">
+            <span class="cap-used" id="capUsedText"></span>
+            <span class="cap-free" id="capFreeText"></span>
+          </div>
+        </div>
         <span class="muted" id="listMeta"></span>
       </div>
 
@@ -658,19 +681,19 @@ const STATUS_ICON = {ok:"i-check-cir", warn:"i-warn-cir", err:"i-x-cir"};
 
 
 let KBS = [
-  { id:"kb_product", name:"产品需求文档库", iconColor:"#07c160", type:"doc", desc:"PRD、竞品分析与版本规划", docs:14, wiki:false, features:["多模态","知识图谱"], pinned:true, star:true, mode:"full", owner:"赵楠", createdAt:Date.now()-90*24*3600e3, updated:Date.now()-3600e3, org:"产品中心",
+  { id:"kb_product", usedBytes:138.6 * 1024 * 1024 * 1024,  name:"产品需求文档库", iconColor:"#07c160", type:"doc", desc:"PRD、竞品分析与版本规划", docs:14, wiki:false, features:["多模态","知识图谱"], pinned:true, star:true, mode:"full", owner:"赵楠", createdAt:Date.now()-90*24*3600e3, updated:Date.now()-3600e3, org:"产品中心",
     sourcePath:"D:\\Documents\\ProductDesign", sourceStatus:"ok",
     vlm:"Qwen-VL-Max",
     cfg:{ llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", rerank:"qwen3-rerank", vector:"Qdrant", storage:"本地存储", chunk:{strategy:"按标题切分", size:512, overlap:64, parentChild:true, child:256, unit:"字符"}, multimodal:true, asr:false, autoTag:true } },
-  { id:"kb_contract", name:"合同", iconColor:"#3b82f6", type:"doc", desc:"无描述", docs:5, wiki:true, features:["Wiki","多模态"], pinned:false, star:false, mode:"quick", owner:"赵楠", createdAt:Date.now()-120*24*3600e3, updated:Date.now()-26*3600e3, org:"法务部",
+  { id:"kb_contract", usedBytes:42.3 * 1024 * 1024 * 1024,  name:"合同", iconColor:"#3b82f6", type:"doc", desc:"无描述", docs:5, wiki:true, features:["Wiki","多模态"], pinned:false, star:false, mode:"quick", owner:"赵楠", createdAt:Date.now()-120*24*3600e3, updated:Date.now()-26*3600e3, org:"法务部",
     sourcePath:"D:\\Legal\\Contracts", sourceStatus:"ok",
     vlm:"Qwen-VL-Max",
     cfg:{ llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", rerank:"bge-reranker-v2-m3", vector:"Qdrant", storage:"本地存储", chunk:{strategy:"按标题切分", size:800, overlap:120, parentChild:true, child:320, unit:"字符"}, multimodal:true, asr:false, autoTag:false } },
-  { id:"kb_rnd", name:"研发规范与架构", iconColor:"#8b5cf6", type:"doc", desc:"编码规范、架构设计与部署手册", docs:9, wiki:false, features:["知识图谱"], pinned:false, star:true, mode:"full", owner:"赵楠", createdAt:Date.now()-200*24*3600e3, updated:Date.now()-3*24*3600e3, org:"研发中心",
+  { id:"kb_rnd", usedBytes:96.8 * 1024 * 1024 * 1024,  name:"研发规范与架构", iconColor:"#8b5cf6", type:"doc", desc:"编码规范、架构设计与部署手册", docs:9, wiki:false, features:["知识图谱"], pinned:false, star:true, mode:"full", owner:"赵楠", createdAt:Date.now()-200*24*3600e3, updated:Date.now()-3*24*3600e3, org:"研发中心",
     sourcePath:"D:\\Projects\\TechDocs", sourceStatus:"partial", sourceTip:"部分文件仍在解析中，通常数分钟内完成。",
     vlm:"Qwen-VL-Max",
     cfg:{ llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", vector:"Qdrant", storage:"本地存储", chunk:{strategy:"按标题切分", size:640, overlap:96, parentChild:true, child:256, unit:"字符"}, multimodal:false, asr:true, autoTag:true } },
-  { id:"kb_market", name:"市场资料", iconColor:"#ec4899", type:"doc", desc:"品牌物料与行业研究报告", docs:3, wiki:false, features:["多模态"], pinned:false, star:false, mode:"quick", owner:"李明", createdAt:Date.now()-45*24*3600e3, updated:Date.now()-6*24*3600e3, org:"市场部", shared:"可编辑",
+  { id:"kb_market", usedBytes:27.5 * 1024 * 1024 * 1024,  name:"市场资料", iconColor:"#ec4899", type:"doc", desc:"品牌物料与行业研究报告", docs:3, wiki:false, features:["多模态"], pinned:false, star:false, mode:"quick", owner:"李明", createdAt:Date.now()-45*24*3600e3, updated:Date.now()-6*24*3600e3, org:"市场部", shared:"可编辑",
     sourcePath:"D:\\Research\\Finance", sourceStatus:"missing",
     vlm:"Qwen-VL-Max",
     cfg:{ llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", vector:"Qdrant", storage:"本地存储", chunk:{strategy:"按长度切分", size:400, overlap:50, parentChild:false, child:200, unit:"字符"}, multimodal:true, asr:false, autoTag:false } },
@@ -795,6 +818,46 @@ function renderList(){
     </div>`;
 
   $("#listMeta").textContent = `共 ${list.length} 个知识库`;
+  renderCapacityMeter();
+}
+
+/* ============ 企业知识库总容量（1 TB） ============ */
+const ENTERPRISE_CAPACITY_BYTES = 1024 * 1024 * 1024 * 1024;   // 1 TB
+/* 单个知识库：基础占用 + 每个文件平均占用，用于估算已用容量 */
+const KB_BASE_BYTES = 180 * 1024 * 1024;        // 约 180 MB（索引、向量、缩略图等）
+const KB_PER_DOC_BYTES = 42 * 1024 * 1024;      // 每个文档约 42 MB
+
+function fmtCapacity(bytes){
+  const gb = bytes / (1024 * 1024 * 1024);
+  if (gb >= 1024) return (gb / 1024).toFixed(2) + " TB";
+  if (gb >= 1) return gb.toFixed(1) + " GB";
+  return (bytes / (1024 * 1024)).toFixed(0) + " MB";
+}
+
+function enterpriseUsedBytes(){
+  // 优先使用知识库上记录的已占用容量；新建知识库没有该字段时按文档数估算
+  return KBS.reduce((sum, k) => {
+    if (typeof k.usedBytes === "number") return sum + k.usedBytes;
+    return sum + KB_BASE_BYTES + (k.docs || 0) * KB_PER_DOC_BYTES;
+  }, 0);
+}
+
+function renderCapacityMeter(){
+  const used = enterpriseUsedBytes();
+  const total = ENTERPRISE_CAPACITY_BYTES;
+  const free = Math.max(0, total - used);
+  const pct = Math.min(100, (used / total) * 100);
+  const meter = $("#capMeter");
+  if (!meter) return;
+  const fill = $("#capBarFill");
+  // 占比极小时也保留一小段可见宽度，避免进度条看起来是空的
+  if (fill) fill.style.width = (pct > 0 ? Math.max(pct, 1.5) : 0).toFixed(2) + "%";
+  $("#capValText").textContent = fmtCapacity(used) + " / 1 TB";
+  $("#capUsedText").textContent = "已用 " + fmtCapacity(used);
+  $("#capFreeText").textContent = "剩余 " + fmtCapacity(free);
+  meter.classList.toggle("warn", pct >= 75 && pct < 90);
+  meter.classList.toggle("danger", pct >= 90);
+  meter.title = `企业知识库总容量 1 TB\n已占用 ${fmtCapacity(used)}（${pct.toFixed(1)}%）\n剩余 ${fmtCapacity(free)}`;
 }
 
 function kbCard(k){
@@ -1314,10 +1377,6 @@ function onRangeInput(key, val, el){
   const v = $("#"+ids[key]);
   if(v) v.textContent = (+val).toFixed(2);
   paintRange(el);
-}
-function toggleWizFlag(key, el){
-  el.classList.toggle("on");
-  wiz[key] = el.classList.contains("on");
 }
 function setWizMode(mode, el){
   if(wiz.mode===mode) return;
@@ -2443,7 +2502,7 @@ function wizPane(k){
               </div>
             </div>
           </div>
-          <div class="chunk-row" style="border-bottom:none;padding-bottom:0">
+          <div class="chunk-row">
             <div class="info"><b>Wiki 提取重点</b><p>说明应重点识别的领域实体和概念，不会替换系统的 JSON 与引用协议。</p></div>
             <div class="ctrl">
               <div style="width:100%">

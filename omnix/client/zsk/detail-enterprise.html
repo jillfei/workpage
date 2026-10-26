@@ -139,6 +139,27 @@
   }
   .add-doc-menu > div { padding: 9px 12px; font-size: 13px; gap: 10px; }
   .add-doc-menu > div svg { width: 16px; height: 16px; color: #6b7280; }
+  /* 演示入口：原型专用，弱化显示避免与真实功能混淆 */
+  .add-doc-menu .menu-sub { position: relative; }
+  .add-doc-menu .menu-sub .sub-arrow { margin-left: auto; width: 12px; height: 12px; color: #b0b4ba; }
+  .add-doc-menu .sub-menu {
+    left: auto; right: calc(100% + 4px); top: -5px; min-width: 208px; padding: 5px;
+  }
+  .add-doc-menu .sub-menu > div { padding: 8px 12px; font-size: 13px; }
+  .add-doc-menu .sub-menu .demo { color: var(--text-light); font-size: 12.5px; }
+  .add-doc-menu .sub-menu .demo svg { color: #c7cad1; width: 14px; height: 14px; }
+  .add-doc-menu .sub-menu .dropdown-divider { margin: 4px 0; }
+  .add-doc-menu .menu-sub:hover > .sub-menu { display: block; }
+  /* 弹窗内的演示入口：原型专用，弱化显示 */
+  .demo-row {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+    margin-top: 8px; font-size: 12px; color: var(--text-light);
+  }
+  .demo-chip {
+    padding: 3px 9px; border: 1px dashed #d5d8de; border-radius: 12px;
+    background: #fff; font-family: inherit; font-size: 12px; color: var(--text-secondary); cursor: pointer;
+  }
+  .demo-chip:hover { border-color: #93b4f5; color: var(--primary); background: #f5f8ff; }
   .kb-desc { margin: 20px 0 26px; font-size: 13.5px; color: #4b5563; line-height: 1.75; }
 
   /* ========== Section head ========== */
@@ -147,6 +168,7 @@
   .section-actions { display: flex; align-items: center; gap: 6px; }
   .capacity { font-size: 12.5px; color: var(--text-secondary); cursor: pointer; margin-right: 4px; }
   .capacity:hover { color: var(--primary); }
+  .capacity.critical { color: #d97706; }
   .section-actions .icon-btn { width: 30px; height: 30px; border-color: transparent; }
   .section-actions .icon-btn:hover { border-color: var(--border); background: #f9fafb; }
 
@@ -759,10 +781,8 @@
   }
   th {
     font-size: 12.5px; font-weight: 500; color: var(--text-light);
-    background: #fff; position: sticky; top: 0; z-index: 2; cursor: pointer; user-select: none;
+    background: #fff; position: sticky; top: 0; z-index: 2; user-select: none;
   }
-  th:hover { color: var(--text-secondary); }
-  th.active { color: #374151; }
   td { color: #374151; }
   tbody tr:hover { background: #fafafa; }
   tbody tr:last-child td { border-bottom: none; }
@@ -1023,6 +1043,20 @@
   }
   .fd-head-title svg { width: 16px; height: 16px; color: #6b7280; flex-shrink: 0; }
   .fd-head-title span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fd-head-actions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+  /* 详情弹窗右上角「下载」：复用列表行菜单的下载逻辑 */
+  .fd-download-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 30px; padding: 0 12px; border: 1px solid var(--border); border-radius: 6px;
+    background: #fff; font-family: inherit; font-size: 13px; color: var(--text);
+    cursor: pointer; white-space: nowrap; transition: .15s;
+  }
+  .fd-download-btn svg { width: 14px; height: 14px; color: #4b5563; }
+  .fd-download-btn:hover { border-color: #07c160; color: #07c160; background: #f3fdf7; }
+  .fd-download-btn:hover svg { color: #07c160; }
+  .fd-download-btn[disabled] { opacity: .45; cursor: not-allowed; }
+  .fd-download-btn[disabled]:hover { border-color: var(--border); color: var(--text); background: #fff; }
+  .fd-download-btn[disabled]:hover svg { color: #4b5563; }
   .fd-body { flex: 1; display: flex; min-height: 0; }
 
   /* 顶部信息条：基本信息 / 自定义元数据 / 摘要 横向三栏 */
@@ -1305,6 +1339,26 @@
   .fd-faq-item:hover .fd-faq-del { opacity: 1; }
   .fd-faq-item .fd-faq-del:hover { color: var(--danger); }
   .fd-faq-item .fd-faq-del svg { width: 13px; height: 13px; }
+  /* 问题项操作按钮：编辑 / 删除 */
+  .fd-faq-item .fd-faq-act {
+    border: none; background: none; color: #b8bcc4; cursor: pointer;
+    display: inline-flex; padding: 3px; border-radius: 4px; flex-shrink: 0;
+    opacity: 0; transition: opacity .12s, color .12s, background .12s;
+  }
+  .fd-faq-item:hover .fd-faq-act { opacity: 1; }
+  .fd-faq-item .fd-faq-act:hover { background: #f2f3f5; color: #374151; }
+  .fd-faq-item .fd-faq-act.del:hover { color: var(--danger); background: #fef2f2; }
+  .fd-faq-item .fd-faq-act.ok { color: #07c160; opacity: 1; }
+  .fd-faq-item .fd-faq-act.ok:hover { background: #e8f8ef; }
+  .fd-faq-item .fd-faq-act svg { width: 14px; height: 14px; }
+  .fd-faq-item.editing { border-color: #b7e9cd; box-shadow: 0 0 0 3px rgba(7,193,96,.08); }
+  /* 编辑态下的保存 / 取消按钮常驻显示 */
+  .fd-faq-item.editing .fd-faq-act { opacity: 1; }
+  .fd-faq-edit-input {
+    flex: 1; min-width: 0; height: 24px; padding: 0 6px;
+    border: none; outline: none; background: transparent;
+    font-family: inherit; font-size: 12.5px; color: #374151;
+  }
   .fd-faq-empty { padding: 14px 12px; text-align: center; font-size: 12.5px; color: var(--text-light); }
 
   /* 分块编辑 */
@@ -1601,6 +1655,8 @@
     display: none; align-items: center; justify-content: center; z-index: 200;
   }
   .modal-overlay.show { display: flex; }
+  /* 确认框需要压在其它弹窗之上（如添加文档弹窗内触发的配额确认） */
+  #confirmModal { z-index: 300; }
   .modal {
     background: #fff; border-radius: 12px; width: 720px; max-width: 90vw; max-height: 90vh;
     overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-lg);
@@ -1685,6 +1741,15 @@
   }
   .doc-picked-item .doc-picked-remove:hover { color: var(--danger); background: #fef2f2; }
   .doc-picked-item .doc-picked-remove svg { width: 13px; height: 13px; }
+  /* 不支持的类型：整行置灰 + 行内提示，仍保留在列表中可手动移除 */
+  .doc-picked-item .picked-sub { color: var(--text-light); font-size: 12px; }
+  .doc-picked-item.unsupported { background: #fafafa; color: var(--text-light); }
+  .doc-picked-item.unsupported svg { color: #c7cad1; }
+  .doc-picked-item.unsupported .doc-picked-name { color: var(--text-light); }
+  .doc-picked-item .picked-bad-tip {
+    flex-shrink: 0; font-size: 11.5px; color: #dc2626;
+    background: #fef2f2; border: 1px solid #fecaca; border-radius: 4px; padding: 1px 6px;
+  }
 
   /* Move modal */
   .move-folder {
@@ -1824,9 +1889,34 @@
             添加文档
           </button>
           <div class="dropdown-menu add-doc-menu" id="addDocMenu">
-            <div onclick="pickDocFiles()">
+            <div class="menu-sub">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
               上传文件
+              <svg class="sub-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              <div class="dropdown-menu sub-menu">
+                <div onclick="pickDocFiles()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  选择本地文件
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="demo" onclick="demoPickUnsupported(false)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v6L5 19a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 19l-5-10V3"/><path d="M7 15h10"/></svg>
+                  演示：含不支持的文件
+                </div>
+                <div class="demo" onclick="demoPickUnsupported(true)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v6L5 19a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 19l-5-10V3"/><path d="M7 15h10"/></svg>
+                  演示：全部不支持
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="demo" onclick="demoQuotaCritical()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 2.4 17a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+                  演示：存储空间即将用尽
+                </div>
+                <div class="demo" onclick="demoQuotaFull()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M7 8V5a5 5 0 0 1 10 0v3"/><path d="M9 14h6"/></svg>
+                  演示：配额已满
+                </div>
+              </div>
             </div>
             <div onclick="pickDocFolder()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
@@ -1929,10 +2019,10 @@
             <thead>
               <tr>
                 <th class="col-check"><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)" title="全选" /></th>
-                <th data-key="name" onclick="sortTable('name')">文件名</th>
-                <th data-key="sizeNum" onclick="sortTable('sizeNum')">文档大小</th>
-                <th data-key="status" onclick="sortTable('status')">文档状态</th>
-                <th data-key="time" onclick="sortTable('time')">更新时间</th>
+                <th data-key="name">文件名</th>
+                <th data-key="sizeNum">文档大小</th>
+                <th data-key="status">文档状态</th>
+                <th data-key="time">更新时间</th>
                 <th class="col-actions"></th>
               </tr>
             </thead>
@@ -2547,14 +2637,6 @@
               <span class="wiki-type-name">概念<i>concept</i></span>
               <svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            <div class="wiki-type-option" data-type="mixed" onmouseenter="showWikiTypeTip(event,'mixed')" onmouseleave="hideWikiTypeTip()" onclick="pickNewWikiPageType('mixed', event)">
-              <span class="wiki-type-name">综合<i>synthesis</i></span>
-              <svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div class="wiki-type-option" data-type="compare" onmouseenter="showWikiTypeTip(event,'compare')" onmouseleave="hideWikiTypeTip()" onclick="pickNewWikiPageType('compare', event)">
-              <span class="wiki-type-name">对比<i>comparison</i></span>
-              <svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
           </div>
         </div>
       </div>
@@ -2578,7 +2660,13 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         <span id="fdFileName">劳动合同·护士</span>
       </div>
-      <span class="modal-close" onclick="closeFileDetail()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+      <div class="fd-head-actions">
+        <button class="fd-download-btn" id="fdDownloadBtn" onclick="downloadFdFile()" title="下载该文件的原始文档">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          下载
+        </button>
+        <span class="modal-close" onclick="closeFileDetail()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+      </div>
     </div>
     <!-- 顶部信息区：基本信息 / 自定义元数据 / 摘要 横向排列 -->
     <div class="fd-info-strip">
@@ -2810,6 +2898,13 @@
         <div class="dropzone-title">点击或拖拽文件到此处上传</div>
         <div class="dropzone-hint">支持 Markdown · 文本文件 · PDF · Word · Excel · PPT · 图片，单个文件不超过 100MB</div>
       </div>
+      <div class="demo-row">
+        <span>演示：</span>
+        <button type="button" class="demo-chip" onclick="demoPickUnsupported(false)">含不支持的文件</button>
+        <button type="button" class="demo-chip" onclick="demoPickUnsupported(true)">全部不支持</button>
+        <button type="button" class="demo-chip" onclick="demoQuotaCritical()">空间即将用尽</button>
+        <button type="button" class="demo-chip" onclick="demoQuotaFull()">配额已满</button>
+      </div>
       <div class="doc-picked hidden" id="docPicked">
         <div class="doc-picked-head">
           <span>待添加 <strong id="docPickedCount">0</strong> 个文件</span>
@@ -2841,7 +2936,7 @@
 <div class="wiki-type-tip" id="wikiTypeTip"></div>
 
 <!-- 上传用的隐藏 input 放在 body 顶层，避免隐藏在弹窗内导致的浏览器限制 -->
-<input type="file" id="docFileInput" multiple style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0" onchange="handleDocFiles(event)" />
+<input type="file" id="docFileInput" multiple accept=".md,.markdown,.txt,.pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp,.bmp" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0" onchange="handleDocFiles(event)" />
 <input type="file" id="docFolderInput" webkitdirectory directory multiple style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0" onchange="handleDocFolderInput(event)" />
 
 <!-- ===== Upload Progress Panel ===== -->
@@ -2891,7 +2986,9 @@
     '解析完成', '解析完成', '解析完成', '解析完成', '解析完成',
     '索引中', '解析中', '待解析', '处理失败', '解析完成',
     '解析完成', '解析完成', '解析完成', '解析中', '解析完成',
-    '索引中', '解析完成', '解析完成', '解析完成', '解析完成'
+    '索引中', '解析完成', '解析完成', '解析完成', '解析完成',
+    /* 新增的 5 份来源文档均已解析完成 */
+    '解析完成', '解析完成', '解析完成', '解析完成', '解析完成'
   ];
 
   // 各文件类型的大小（KB），用于列表展示与容量统计
@@ -2915,10 +3012,17 @@
     { name: '劳动合同·护士（2026年07月）.md', sizeNum: 99.40, type: 'md' },
     { name: '劳动合同·护士（2026年08月）.md', sizeNum: 99.40, type: 'md' },
     { name: '劳动合同·护士（2026年09月）.md', sizeNum: 99.40, type: 'md' },
-    { name: '劳动合同·护士（2026年10月）.md', sizeNum: 99.40, type: 'md' }
+    { name: '劳动合同·护士（2026年10月）.md', sizeNum: 99.40, type: 'md' },
+    /* Wiki 词条「来源文档」里引用的岗位合同，需能在文件列表中打开详情 */
+    { name: '劳动合同·中学教师.docx', sizeNum: 186.2 * 1024, type: 'docx' },
+    { name: '劳动合同·市场专员.docx', sizeNum: 172.5 * 1024, type: 'docx' },
+    { name: '劳动合同·软件工程师.docx', sizeNum: 204.8 * 1024, type: 'docx' },
+    { name: '劳动合同·护士.docx', sizeNum: 158.4 * 1024, type: 'docx' },
+    { name: '劳动合同·销售经理.docx', sizeNum: 196.7 * 1024, type: 'docx' }
   ];
 
-  /* 初始文件归属的目录（与左侧文件夹树对应；空字符串表示未分类） */
+
+  /* 初始文件归属的目录（与左侧文件夹树对应；空字符串表示直属根目录） */
   const INITIAL_FOLDERS = [
     '劳动合同 / 2026年 / 护士岗',   // 劳动合同·护士（试用期）.md
     '劳动合同 / 2026年 / 护士岗',   // 劳动合同·护士（正式）.pdf
@@ -2939,8 +3043,14 @@
     '劳动合同 / 2026年 / 护士岗',   // 劳动合同·护士（2026年07月）.md
     '劳动合同 / 2026年 / 护士岗',   // 劳动合同·护士（2026年08月）.md
     '劳动合同 / 2026年 / 护士岗',   // 劳动合同·护士（2026年09月）.md
-    '劳动合同 / 2026年 / 护士岗'    // 劳动合同·护士（2026年10月）.md
+    '劳动合同 / 2026年 / 护士岗',   // 劳动合同·护士（2026年10月）.md
+    '劳动合同',                     // 劳动合同·中学教师.docx
+    '劳动合同',                     // 劳动合同·市场专员.docx
+    '劳动合同',                     // 劳动合同·软件工程师.docx
+    '劳动合同',                     // 劳动合同·护士.docx
+    '劳动合同'                      // 劳动合同·销售经理.docx
   ];
+
 
   let files = STATUS_SEQ.map(function (status, i) {
     const meta = FILE_META[i % FILE_META.length];
@@ -2964,12 +3074,16 @@
     return kb.toFixed(2) + ' KB';
   }
 
-  let sortKey = null;
-  let sortAsc = true;
   let currentPage = 1;
   let pageSize = 10;
   let currentRows = [];
   const selected = new Set();
+
+  /* 企业配额（KB）：真实实现由管理端下发，这里固定 1TB；演示时可临时压缩为小配额 */
+  const KB_PER_TB = 1024 * 1024 * 1024;
+  let quotaKB = KB_PER_TB;
+  let quotaDemoMode = false;      // 是否处于「配额演示」状态（用于复原）
+  let submittingDocs = false;     // 提交中：此时关闭弹窗不复原演示配额
 
   // ==================== Header from query ====================
   let kbDisplayName = '劳动合同库';
@@ -3052,8 +3166,7 @@
               ]
             }
           ]
-        },
-        { name: '未分类', count: 0 }
+        }
       ]
     }
   ];
@@ -3154,7 +3267,6 @@
     const nameEl = node.querySelector('.tree-name');
     const name = nameEl ? nameEl.textContent : (node.dataset.folder || '');
     if (!name) return '';
-    if (isUnclassifiedNode(node)) return UNCLASSIFIED_PATH;
     const indent = parseInt(node.style.paddingLeft, 10) || 8;
     const level = Math.max(0, Math.round((indent - 8) / 18));
     if (level === 0) return '';   // 根节点 = 全部文件
@@ -3174,18 +3286,9 @@
     return parts.join(' / ');
   }
 
-  /* 「未分类」是内置节点：代表不属于任何文件夹的文件 */
-  const UNCLASSIFIED_PATH = '__unclassified__';
-
-  function isUnclassifiedNode(node) {
-    const nameEl = node && node.querySelector('.tree-name');
-    return !!nameEl && nameEl.textContent === '未分类';
-  }
-
   /* 文件是否属于该文件夹（含所有子文件夹） */
   function fileBelongsToFolder(file, folderPath) {
     if (!folderPath) return true;
-    if (folderPath === UNCLASSIFIED_PATH) return !(file.folder || '');
     const f = file.folder || '';
     return f === folderPath || f.indexOf(folderPath + ' / ') === 0;
   }
@@ -3213,13 +3316,39 @@
     } else if (action === 'newsub') {
       startNewSubfolder(node);
     } else if (action === 'delete') {
-      showConfirm('删除文件夹', '确定删除文件夹「' + name + '」吗？其中的文件不会被删除，会移动到「未分类」。', function () {
+      const folderPath = treeNodePath(node);
+      // 根节点即整个知识库，不提供删除
+      if (folderPath === '') {
+        showToast('根目录不可删除');
+        return;
+      }
+      // 级联删除：该目录及所有子目录下的文件一并删除
+      const victims = files.filter(function (f) { return fileBelongsToFolder(f, folderPath); });
+      const n = victims.length;
+      const msg = n
+        ? '确定删除文件夹「' + name + '」吗？其中的 ' + n + ' 个文件将一并删除，且无法恢复。'
+        : '确定删除文件夹「' + name + '」吗？该文件夹下暂无文件。';
+      showConfirm('删除文件夹', msg, function () {
+        const removed = {};
+        victims.forEach(function (f) { removed[f.id] = true; selected.delete(f.id); });
+        files = files.filter(function (f) { return !removed[f.id]; });
+
         const kids = node.nextElementSibling;
         const isKids = kids && kids.classList.contains('tree-children');
         if (isKids) kids.remove();
         node.remove();
-        showToast('已删除文件夹「' + name + '」');
-      });
+
+        // 正在浏览被删目录内的文件时，回到根目录
+        if (activeFolderPath === folderPath || activeFolderPath.indexOf(folderPath + ' / ') === 0) {
+          const root = document.querySelector('#treeBody .tree-node');
+          if (root) selectTreeNode(root);
+        } else {
+          currentPage = 1;
+          renderTable();
+        }
+        syncTreeCountsFromFiles();
+        showToast(n ? '已删除文件夹「' + name + '」及其中 ' + n + ' 个文件' : '已删除文件夹「' + name + '」');
+      }, { warnIcon: true, okText: '删除' });
     }
   }
 
@@ -3308,7 +3437,12 @@
     renderTree(body, TREE_DATA, 0);
     // 根节点默认选中（展示全部文件），选中态同时驱动右侧列表
     const first = body.querySelector('.tree-node');
-    if (first) first.classList.add('active');
+    if (first) {
+      first.classList.add('active');
+      // 根节点代表整个知识库，不提供删除入口
+      const delItem = first.querySelector('.tree-menu .danger');
+      if (delItem) delItem.remove();
+    }
     syncTreeCountsFromFiles();
   }
 
@@ -3347,28 +3481,8 @@
     });
   }
 
-  function sortRows(rows) {
-    if (!sortKey) return rows;
-    return rows.sort(function (a, b) {
-      let va, vb;
-      if (sortKey === 'status') { va = STATUS_ORDER[a.status]; vb = STATUS_ORDER[b.status]; }
-      else if (sortKey === 'sizeNum') { va = a.sizeNum; vb = b.sizeNum; }
-      else { va = a[sortKey]; vb = b[sortKey]; }
-      let r;
-      if (typeof va === 'string') r = va.localeCompare(vb, 'zh');
-      else r = va - vb;
-      return sortAsc ? r : -r;
-    });
-  }
-
   function onFilterChange() {
     currentPage = 1;
-    renderTable();
-  }
-
-  function sortTable(key) {
-    if (sortKey === key) sortAsc = !sortAsc;
-    else { sortKey = key; sortAsc = true; }
     renderTable();
   }
 
@@ -3468,7 +3582,7 @@
   }
 
   function renderTable() {
-    const rows = sortRows(getFilteredRows());
+    const rows = getFilteredRows();
     const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
     if (currentPage > totalPages) currentPage = totalPages;
 
@@ -3486,18 +3600,45 @@
     document.getElementById('prevBtn').disabled = currentPage <= 1;
     document.getElementById('nextBtn').disabled = currentPage >= totalPages;
 
-    document.querySelectorAll('th[data-key]').forEach(function (th) {
-      th.classList.toggle('active', th.dataset.key === sortKey);
-    });
-
     renderCapacity();
     updateSelectionUI();
   }
 
   function renderCapacity() {
-    const totalKB = files.reduce(function (sum, f) { return sum + f.sizeNum; }, 0);
-    document.getElementById('capacityText').textContent =
-      '知识库使用容量：' + formatFileSizeUnit(totalKB);
+    const totalKB = usedKB();
+    const el = document.getElementById('capacityText');
+    el.textContent = '知识库使用容量：' + formatFileSizeUnit(totalKB);
+    // 配额演示时把剩余量一起显示出来，否则 1TB 下看不出临界状态
+    if (quotaDemoMode) {
+      el.textContent += '（剩余 ' + formatFileSizeUnit(quotaRemainKB()) + '）';
+    }
+    el.classList.toggle('critical', quotaDemoMode && isQuotaCritical());
+  }
+
+  /* ==================== 配额（容量阈值）判断 ==================== */
+  function usedKB() {
+    return files.reduce(function (sum, f) { return sum + f.sizeNum; }, 0);
+  }
+
+  function quotaRemainKB() {
+    return Math.max(0, quotaKB - usedKB());
+  }
+
+  function quotaUsedPct() {
+    return quotaKB > 0 ? (usedKB() / quotaKB) * 100 : 0;
+  }
+
+  // ≥90% 视为即将用尽，需要二次确认
+  function isQuotaCritical() {
+    return quotaUsedPct() >= 90;
+  }
+
+  function isQuotaFull() {
+    return quotaRemainKB() <= 0;
+  }
+
+  function quotaWarnText() {
+    return '存储空间即将用尽，剩余 ' + formatFileSizeUnit(quotaRemainKB());
   }
 
   // ==================== Selection & batch ====================
@@ -3621,6 +3762,7 @@
   let fdEditIndex = -1;      // 正在编辑的分块索引
   let fdOpenParent = -1;     // 展开父分块的分块索引
   let fdOpenFaq = -1;        // 展开辅助召回问题的分块索引
+  let fdFileId = null;       // 当前详情弹窗对应的文件 id，供「下载」使用
 
   function buildFdChunks() {
     const parts = FD_SOURCE_TEXT.split('\n');
@@ -3683,6 +3825,7 @@
     fdOpenParent = -1;
     fdOpenFaq = -1;
     document.getElementById('fdFileName').textContent = f.name;
+    fdFileId = f.id;
 
     // 基本信息
     document.getElementById('fdUploadTime').textContent = f.time + ':00';
@@ -3916,6 +4059,7 @@
     plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
     refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>',
     close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
     collapse: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"/></svg>'
   };
 
@@ -3992,6 +4136,7 @@
   function toggleFdFaq(i) {
     if (!fdChunks[i]) return;
     fdOpenFaq = i;
+    fdFaqEditing = -1;
     renderFdFaqModal();
     document.getElementById('fdFaqModal').classList.add('show');
   }
@@ -3999,7 +4144,11 @@
   function closeFdFaqModal() {
     document.getElementById('fdFaqModal').classList.remove('show');
     fdOpenFaq = -1;
+    fdFaqEditing = -1;
   }
+
+  /* 弹窗中正在编辑的问题下标（-1 表示没有在编辑） */
+  let fdFaqEditing = -1;
 
   function renderFdFaqModal() {
     const c = fdChunks[fdOpenFaq];
@@ -4007,12 +4156,52 @@
     document.getElementById('fdFaqModalCount').textContent = c.faqs.length;
     document.getElementById('fdFaqModalList').innerHTML = c.faqs.length
       ? c.faqs.map(function (q, qi) {
+          if (qi === fdFaqEditing) {
+            return '<div class="fd-faq-item editing">' + FD_ICONS.faq +
+              '<input class="fd-faq-edit-input" id="fdFaqEditInput" value="' + escapeHtml(q) + '" ' +
+                'onkeydown="onFdFaqEditKey(event, ' + qi + ')" />' +
+              '<button class="fd-faq-act ok" title="保存" onclick="saveFdFaqEdit(' + qi + ')">' + FD_ICONS.check + '</button>' +
+              '<button class="fd-faq-act" title="取消" onclick="cancelFdFaqEdit()">' + FD_ICONS.close + '</button>' +
+            '</div>';
+          }
           return '<div class="fd-faq-item">' + FD_ICONS.faq +
-            '<span class="fd-faq-text">' + q + '</span>' +
-            '<button class="fd-faq-del" title="删除问题" onclick="removeFdFaq(' + fdOpenFaq + ', ' + qi + ')">' + FD_ICONS.close + '</button>' +
+            '<span class="fd-faq-text">' + escapeHtml(q) + '</span>' +
+            '<button class="fd-faq-act" title="编辑问题" onclick="startFdFaqEdit(' + qi + ')">' + FD_ICONS.edit + '</button>' +
+            '<button class="fd-faq-act del" title="删除问题" onclick="removeFdFaq(' + fdOpenFaq + ', ' + qi + ')">' + FD_ICONS.close + '</button>' +
           '</div>';
         }).join('')
       : '<div class="fd-faq-empty">暂无辅助召回问题</div>';
+
+    const input = document.getElementById('fdFaqEditInput');
+    if (input) { input.focus(); input.select(); }
+  }
+
+  function startFdFaqEdit(qi) {
+    fdFaqEditing = qi;
+    renderFdFaqModal();
+  }
+
+  function cancelFdFaqEdit() {
+    fdFaqEditing = -1;
+    renderFdFaqModal();
+  }
+
+  function onFdFaqEditKey(e, qi) {
+    if (e.key === 'Enter') { e.preventDefault(); saveFdFaqEdit(qi); }
+    else if (e.key === 'Escape') { e.preventDefault(); cancelFdFaqEdit(); }
+  }
+
+  function saveFdFaqEdit(qi) {
+    const c = fdChunks[fdOpenFaq];
+    const input = document.getElementById('fdFaqEditInput');
+    if (!c || !input) return;
+    const q = (input.value || '').trim();
+    if (!q) { showToast('问题内容不能为空'); input.focus(); return; }
+    c.faqs[qi] = q;
+    fdFaqEditing = -1;
+    renderFdFaqModal();
+    renderFdChunks();
+    showToast('问题已保存');
   }
 
   /* 点「+」展开行内输入框 */
@@ -4095,7 +4284,10 @@
     const c = fdChunks[i];
     if (!c) return;
     c.faqs.splice(qi, 1);
+    if (fdFaqEditing >= c.faqs.length) fdFaqEditing = -1;
     renderFdChunks();
+    if (fdOpenFaq === i) renderFdFaqModal();
+    showToast('已删除 1 个辅助召回问题');
   }
 
   function refreshFdFaq(i) {
@@ -4165,6 +4357,12 @@
     setTimeout(function () {
       showToast('已下载「' + f.name + '」到本地下载目录');
     }, 600);
+  }
+
+  /* 文件详情弹窗右上角「下载」：复用列表行菜单的下载逻辑 */
+  function downloadFdFile() {
+    if (fdFileId === null) return;
+    downloadFile(fdFileId);
   }
 
   function copyPath(id) {
@@ -4300,7 +4498,11 @@
     document.getElementById('confirmTitle').textContent = title;
     document.getElementById('confirmMsg').textContent = msg;
     document.getElementById('confirmWarn').classList.toggle('hidden', !options.warnIcon);
-    document.getElementById('confirmOkBtn').textContent = options.okText || '确定';
+    const okBtn = document.getElementById('confirmOkBtn');
+    okBtn.textContent = options.okText || '确定';
+    // 删除类操作用红色按钮；提示类（如配额提醒）用主色按钮
+    okBtn.classList.toggle('btn-danger', options.variant !== 'primary');
+    okBtn.classList.toggle('btn-primary', options.variant === 'primary');
     confirmAction = onConfirm;
     document.getElementById('confirmModal').classList.add('show');
   }
@@ -7188,11 +7390,7 @@
     entity: { label: '实体', type: 'entity', en: 'entity',
       desc: '一个具名的具体事物：人、组织、产品、地点、技术、事件' },
     concept: { label: '概念', type: 'concept', en: 'concept',
-      desc: '一个抽象的主题/方法/理论：方法论、框架、领域概念' },
-    mixed: { label: '综合', type: 'concept', en: 'synthesis',
-      desc: '跨文档的分析、趋势、洞察，不是原文里现成的一段' },
-    compare: { label: '对比', type: 'concept', en: 'comparison',
-      desc: '两个或多个对象的对照：差异维度、优劣、结论' }
+      desc: '一个抽象的主题/方法/理论：方法论、框架、领域概念' }
   };
   let newWikiPageType = 'concept';
 
@@ -7973,12 +8171,101 @@
     input.click();
   }
 
+  /* ===== 演示用：浏览器选文件时无法真的"选中"任意扩展名，这里用假的 File 对象模拟 =====
+     参数 allBad=false：合法文件 + 不支持文件混合；allBad=true：全部为不支持的类型 */
+  const DEMO_GOOD_FILES = [
+    { name: '劳动合同·护士（补充条款）.docx', size: 186 * 1024 },
+    { name: '岗位说明书·护士岗.pdf', size: 2.4 * 1024 * 1024 }
+  ];
+  const DEMO_BAD_FILES = [
+    { name: '体检报告扫描件.rar', size: 18.6 * 1024 * 1024 },
+    { name: '排班系统导出.xlsm', size: 640 * 1024 },
+    { name: '护士站监控片段.mp4', size: 42.8 * 1024 * 1024 },
+    { name: '试用期考核脚本.exe', size: 3.2 * 1024 * 1024 }
+  ];
+  /* 配额演示：文件都较小，方便观察「第几条开始超额」 */
+  const DEMO_QUOTA_FILES = [
+    { name: '劳动合同·护士（10月版本）.docx', size: 420 * 1024 },
+    { name: '岗位排班表·2026年10月.xlsx', size: 680 * 1024 },
+    { name: '护理部会议纪要.docx', size: 1.8 * 1024 * 1024 },
+    { name: '新员工入职指引.pdf', size: 2.4 * 1024 * 1024 }
+  ];
+
+  /* 把配额临时压缩到「当前占用 + reserveKB」，用于演示 90% 提示与超额失败 */
+  function applyDemoQuota(reserveKB) {
+    quotaKB = usedKB() + reserveKB;
+    quotaDemoMode = true;
+    renderCapacity();
+  }
+
+  /* 复原为正式配额（1TB）；关闭添加文档弹窗时自动调用 */
+  function resetDemoQuota() {
+    quotaKB = KB_PER_TB;
+    quotaDemoMode = false;
+    renderCapacity();
+  }
+
+  /* 演示：配额接近用尽 —— 剩余 1.2MB，前两份小文件可以过、第 3 份开始超额 */
+  function demoQuotaCritical() {
+    closeAllDropdowns();
+    applyDemoQuota(1228);
+    pickedDocs = [];
+    pickedFolderRoot = '';
+    pickedFolderPaths = [];
+    uploadPickMode = 'demo';
+    DEMO_QUOTA_FILES.forEach(function (d) {
+      pickedDocs.push({ name: d.name, size: d.size, unsupported: false });
+    });
+    showToast('演示：配额已压缩至剩余 1.20 MB');
+    openAddDocDialog();
+  }
+
+  /* 演示：配额已满 —— 提交时直接拦截 */
+  function demoQuotaFull() {
+    closeAllDropdowns();
+    applyDemoQuota(0);
+    pickedDocs = [{ name: '劳动合同·护士（补充条款）.docx', size: 186 * 1024, unsupported: false }];
+    pickedFolderRoot = '';
+    pickedFolderPaths = [];
+    uploadPickMode = 'demo';
+    showToast('演示：配额已用尽，剩余 0 KB');
+    openAddDocDialog();
+  }
+
+  function demoPickUnsupported(allBad) {
+    closeAllDropdowns();
+    // 弹窗已打开时视为「继续添加」，追加到待添加列表；否则重新开始并打开弹窗
+    const modal = document.getElementById('addDocModal');
+    const inModal = modal && modal.classList.contains('show');
+    if (!inModal) {
+      pickedDocs = [];
+      pickedFolderRoot = '';
+      pickedFolderPaths = [];
+      uploadPickMode = 'demo';
+    }
+    const list = allBad ? DEMO_BAD_FILES.slice() : DEMO_GOOD_FILES.concat(DEMO_BAD_FILES);
+    const bad = [];
+    list.forEach(function (d) {
+      const dup = pickedDocs.some(function (x) { return x.name === d.name && x.size === d.size; });
+      if (dup) return;
+      const unsupported = !isAllowedFileType(d.name);
+      pickedDocs.push({ name: d.name, size: d.size, unsupported: unsupported });
+      if (unsupported) bad.push(d.name);
+    });
+    if (bad.length) toastUnsupported(bad);
+    else if (inModal) showToast('演示文件已在待添加列表中');
+    if (inModal) renderPickedDocs();
+    else openAddDocDialog();
+  }
+
   function handleDocFolderInput(e) {
     const list = Array.from(e.target.files || []);
-    if (!list.length) { e.target.value = ''; return; }
+    e.target.value = '';
+    if (!list.length) return;
     pickedFolderRoot = '';
     pickedFolderPaths = [];
     const dirSet = {};
+    const bad = [];
 
     list.forEach(function (file) {
       // webkitRelativePath 形如「合同/子目录/接口说明.md」
@@ -7989,11 +8276,17 @@
       if (!pickedFolderRoot && parts.length > 1) pickedFolderRoot = parts[0];
       if (subPath) dirSet[subPath] = true;
       const dup = pickedDocs.some(function (d) { return d.rel === rel; });
-      if (!dup) pickedDocs.push({ name: displayName, size: file.size, rel: rel, sub: subPath });
+      if (dup) return;
+      // 文件夹里常有系统文件、临时文件，保留在列表中但置灰，提交时跳过
+      const unsupported = !isAllowedFileType(displayName);
+      pickedDocs.push({
+        name: displayName, size: file.size, rel: rel, sub: subPath, unsupported: unsupported
+      });
+      if (unsupported) bad.push(displayName);
     });
 
     pickedFolderPaths = Object.keys(dirSet).sort();
-    e.target.value = '';
+    toastUnsupported(bad);
     if (pickedDocs.length > 0) openAddDocDialog();
   }
 
@@ -8115,6 +8408,8 @@
 
   function closeAddDocDialog() {
     document.getElementById('addDocModal').classList.remove('show');
+    // 取消 / 关闭时复原演示用的临时配额；提交时不复原，避免上传面板中途配额跳回 1TB
+    if (quotaDemoMode && !submittingDocs) resetDemoQuota();
   }
 
   /* 弹窗内点击拖拽区：选择文件后追加到已选列表 */
@@ -8133,12 +8428,17 @@
 
   function handleDocFiles(e) {
     const list = Array.from(e.target.files || []);
+    e.target.value = '';
     if (!list.length) return;
+    const bad = [];
     list.forEach(function (file) {
       const dup = pickedDocs.some(function (d) { return d.name === file.name && d.size === file.size; });
-      if (!dup) pickedDocs.push({ name: file.name, size: file.size });
+      if (dup) return;
+      const unsupported = !isAllowedFileType(file.name);
+      pickedDocs.push({ name: file.name, size: file.size, unsupported: unsupported });
+      if (unsupported) bad.push(file.name);
     });
-    e.target.value = '';
+    toastUnsupported(bad);
 
     if (uploadPickMode === 'dropzone') {
       // 弹窗内追加：只刷新已选列表
@@ -8167,24 +8467,63 @@
 
     listEl.innerHTML = pickedDocs.map(function (d, i) {
       const subLine = d.sub
-        ? ' <span style="color:var(--text-light);font-size:12px">· ' + d.sub + '</span>'
+        ? ' <span class="picked-sub">· ' + d.sub + '</span>'
         : '';
-      return '<div class="doc-picked-item">' +
+      const badTip = d.unsupported
+        ? '<span class="picked-bad-tip" title="仅支持 ' + ALLOWED_EXT_LABEL + '">暂不支持该类型文件，无法上传</span>'
+        : '';
+      return '<div class="doc-picked-item' + (d.unsupported ? ' unsupported' : '') + '">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
         '<span class="doc-picked-name" title="' + (d.rel || d.name) + '">' + d.name + subLine + '</span>' +
+        badTip +
         '<span class="doc-picked-size">' + formatFileSize(d.size) + '</span>' +
         '<button class="doc-picked-remove" onclick="removePickedDoc(' + i + ')" title="移除">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
         '</button>' +
       '</div>';
     }).join('');
+
+    // 有不可上传的文件时，底部按钮同步给出数量提示
+    const btn = document.getElementById('addDocSubmitBtn');
+    const badN = unsupportedCount();
+    if (btn) {
+      const allBad = pickedDocs.length > 0 && badN === pickedDocs.length;
+      btn.textContent = allBad
+        ? '添加到知识库（无可上传文件）'
+        : badN ? '添加到知识库（跳过 ' + badN + ' 个不支持的文件）'
+        : '添加到知识库';
+    }
   }
 
   function submitAddDocs() {
+    const validDocs = pickedDocs.filter(function (d) { return !d.unsupported; });
     if (pickedDocs.length === 0) {
       showToast('请先选择要添加的文件');
       return;
     }
+    if (validDocs.length === 0) {
+      showToast('所选文件均不支持上传，仅支持 ' + ALLOWED_EXT_LABEL);
+      return;
+    }
+    // 配额校验：≥90% 二次确认；已满直接拦截
+    if (isQuotaFull()) {
+      showToast('存储空间已满，请清理后重试');
+      return;
+    }
+    if (isQuotaCritical()) {
+      showConfirm(
+        '存储空间即将用尽',
+        '当前剩余 ' + formatFileSizeUnit(quotaRemainKB()) + '，继续上传可能失败，是否仍要继续？',
+        function () { doSubmitAddDocs(validDocs); },
+        { warnIcon: true, okText: '继续上传', variant: 'primary' }
+      );
+      return;
+    }
+    doSubmitAddDocs(validDocs);
+  }
+
+  function doSubmitAddDocs(validDocs) {
+    const skipped = pickedDocs.length - validDocs.length;
     const folder = document.getElementById('docTargetFolder').value;
     const keepStructure = pickedFolderRoot &&
       document.getElementById('keepFolderStructure').checked;
@@ -8210,9 +8549,12 @@
       structureNote = '，已创建文件夹「' + pickedFolderRoot + '」';
     }
 
+    // 插入文件前先记下剩余配额，供上传进度面板逐条扣减
+    const prevQuotaLeftKB = quotaRemainKB();
+
     const startId = files.reduce(function (max, f) { return Math.max(max, f.id); }, 0) + 1;
     const createdFiles = [];
-    pickedDocs.forEach(function (d, i) {
+    validDocs.forEach(function (d, i) {
       // 文件归属目录：保留结构时带上源目录相对路径
       let fileFolder = baseFolder;
       if (keepStructure && d.sub) {
@@ -8237,20 +8579,24 @@
     // 根目录也计入
     bumpTreeCounts(baseFolder, 0);
 
+    submittingDocs = true;
     closeAddDocDialog();
+    submittingDocs = false;
     currentPage = 1;
     selected.clear();
     renderTable();
     pickedFolderRoot = '';
     pickedFolderPaths = [];
-    startUploadPanel(createdFiles, baseFolder);
+    startUploadPanel(createdFiles, baseFolder, prevQuotaLeftKB);
     if (structureNote) showToast('已导入文件夹' + structureNote);
+    else if (skipped) showToast('已跳过 ' + skipped + ' 个不支持的文件');
   }
 
   /* ========== 上传进度浮层 ========== */
   let uploadTimer = null;
   let uploadItems = [];
   let uploadFailed = false;
+  let uploadQuotaLeftKB = Infinity;   // 本批上传可用的剩余配额（KB）
 
   function uploadFileIcon(name) {
     const ext = (name.split('.').pop() || '').toLowerCase();
@@ -8268,11 +8614,13 @@
     return { md: '文档', txt: '文本', pdf: 'PDF', docx: '文档', xlsx: '数据分析', pptx: '演示', image: '图片' }[t] || '文档';
   }
 
-  function startUploadPanel(list, folder) {
+  function startUploadPanel(list, folder, quotaLeftKB) {
     clearTimeout(uploadTimer);
     uploadFailed = false;
+    // 本批上传可用的剩余配额：调用方在插入文件前算好并传入，逐条扣减
+    uploadQuotaLeftKB = typeof quotaLeftKB === 'number' ? quotaLeftKB : quotaRemainKB();
     uploadItems = list.map(function (f) {
-      return { id: f.id, name: f.name, state: 'queued' };
+      return { id: f.id, name: f.name, sizeNum: f.sizeNum, state: 'queued' };
     });
 
     const panel = document.getElementById('uploadPanel');
@@ -8284,7 +8632,7 @@
     advanceUpload();
   }
 
-  /* 逐条推进：排队 → 解析中 → 解析完成 */
+  /* 逐条推进：排队 → 解析中 →（空间不足则失败）→ 解析完成 */
   function advanceUpload() {
     const panel = document.getElementById('uploadPanel');
     if (!panel.classList.contains('show') || uploadFailed) return;
@@ -8295,8 +8643,27 @@
     renderUploadPanel();
 
     uploadTimer = setTimeout(function () {
-      next.state = 'done';
       const rec = files.find(function (f) { return f.id === next.id; });
+      const needKB = next.sizeNum || 0;
+      // 超出剩余配额：该条失败，并移除已登记的记录，容量不增加
+      if (needKB > uploadQuotaLeftKB) {
+        next.state = 'failed';
+        next.failReason = '存储空间已满，请清理后重试';
+        if (rec) {
+          files = files.filter(function (f) { return f.id !== next.id; });
+          renderTable();
+          syncTreeCountsFromFiles();
+        }
+        renderUploadPanel();
+        if (uploadItems.some(function (it) { return it.state === 'queued'; })) {
+          advanceUpload();
+        } else {
+          finishUploadPanel(true);
+        }
+        return;
+      }
+      uploadQuotaLeftKB -= needKB;
+      next.state = 'done';
       if (rec && rec.status === '待解析') {
         rec.status = '解析完成';
         renderTable();
@@ -8310,9 +8677,25 @@
     }, 700);
   }
 
-  function finishUploadPanel() {
+  function finishUploadPanel(hasFailure) {
     const panel = document.getElementById('uploadPanel');
     const total = uploadItems.length;
+    const failed = uploadItems.filter(function (it) { return it.state === 'failed'; }).length;
+    const done = total - failed;
+
+    if (hasFailure || failed) {
+      // 部分失败：进度条按完成比例，标题体现未成功数，面板不自动收起
+      document.getElementById('upTitle').textContent = done + ' 个完成，' + failed + ' 个未成功';
+      document.getElementById('upDot').style.background = '#dc2626';
+      document.getElementById('upStatusText').textContent = '失败 ' + failed;
+      const bar = document.getElementById('upBar');
+      bar.style.width = Math.max(Math.round((done / total) * 100), 6) + '%';
+      bar.style.background = '#dc2626';
+      panel.classList.add('error');
+      document.getElementById('upIcon').classList.add('error');
+      return;
+    }
+
     document.getElementById('upTitle').textContent = total + ' 个完成，0 个未成功';
     document.getElementById('upDot').style.background = '#07c160';
     document.getElementById('upStatusText').textContent = '已完成 ' + total;
@@ -8329,32 +8712,43 @@
   function renderUploadPanel() {
     const total = uploadItems.length;
     const done = uploadItems.filter(function (it) { return it.state === 'done'; }).length;
+    const failed = uploadItems.filter(function (it) { return it.state === 'failed'; }).length;
     const bar = document.getElementById('upBar');
     const percent = total ? Math.round((done / total) * 100) : 0;
+    const panel = document.getElementById('uploadPanel');
 
-    if (!uploadFailed) {
+    // 已结束（有失败且无排队项）时保留 finishUploadPanel 设置的标题/进度，不覆盖
+    const finished = failed > 0 && !uploadItems.some(function (it) { return it.state === 'queued' || it.state === 'parsing'; });
+
+    if (!uploadFailed && !finished) {
       document.getElementById('upTitle').textContent = '正在解析 ' + done + '/' + total;
       document.getElementById('upBar').style.width = Math.max(percent, 6) + '%';
       document.getElementById('upBar').style.background = '#07c160';
       document.getElementById('upDot').style.background = '#07c160';
       document.getElementById('upStatusText').textContent =
-        '处理中 ' + (total - done) + '';
+        '处理中 ' + (total - done - failed);
+      panel.classList.remove('error');
     }
 
     document.getElementById('upList').innerHTML = uploadItems.map(function (it) {
       const stateText = it.state === 'done' ? '解析完成'
+        : it.state === 'failed' ? ('解析失败 · ' + (it.failReason || '存储空间已满，请清理后重试'))
         : it.state === 'parsing' ? '解析中…'
         : '排队解析';
+      const stateCls = it.state === 'failed' ? ' error' : '';
+      const action = it.state === 'done'
+        ? '<button class="up-item-action arrow" title="查看"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>'
+        : it.state === 'failed'
+          ? '<button class="up-item-action danger" title="重新上传"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="7" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>'
+          : '<button class="up-item-action" title="重新上传"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>';
       return '<div class="up-item">' +
         '<span class="up-item-icon">' + uploadFileIcon(it.name) + '</span>' +
         '<div class="up-item-main">' +
           '<div class="up-item-name"><span class="nm">' + it.name + '</span>' +
             '<span class="up-item-tag">' + uploadTypeTag(it.name) + '</span></div>' +
-          '<div class="up-item-state">' + stateText + '</div>' +
+          '<div class="up-item-state' + stateCls + '">' + stateText + '</div>' +
         '</div>' +
-        (it.state === 'done'
-          ? '<button class="up-item-action arrow" title="查看"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>'
-          : '<button class="up-item-action" title="重新上传"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>') +
+        action +
       '</div>';
     }).join('');
   }
@@ -8408,6 +8802,33 @@
   function hideUploadPanel() {
     clearTimeout(uploadTimer);
     document.getElementById('uploadPanel').classList.remove('show');
+  }
+
+  /* 允许上传的文件类型白名单（与「支持的文件格式」文案一致） */
+  const ALLOWED_EXT = ['md', 'markdown', 'txt', 'pdf', 'doc', 'docx',
+    'xls', 'xlsx', 'csv', 'ppt', 'pptx',
+    'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+  const ALLOWED_EXT_LABEL = 'Markdown、文本文件、PDF、Word、Excel、PPT、图片';
+
+  function fileExtOf(name) {
+    return (String(name).split('.').pop() || '').toLowerCase();
+  }
+
+  function isAllowedFileType(name) {
+    const ext = fileExtOf(name);
+    return !!ext && ext !== String(name).toLowerCase() && ALLOWED_EXT.indexOf(ext) !== -1;
+  }
+
+  /* 不支持的文件保留在待添加列表里（置灰标记），提交时跳过 */
+  function unsupportedCount() {
+    return pickedDocs.filter(function (d) { return d.unsupported; }).length;
+  }
+
+  function toastUnsupported(names) {
+    if (!names.length) return;
+    const show = names.slice(0, 2).join('、') +
+      (names.length > 2 ? ' 等 ' + names.length + ' 个文件' : '');
+    showToast('不支持的格式：' + show + '，仅支持 ' + ALLOWED_EXT_LABEL);
   }
 
   function inferFileType(name) {
@@ -8542,10 +8963,15 @@
     });
     dz.addEventListener('drop', function (e) {
       const dropped = Array.from((e.dataTransfer && e.dataTransfer.files) || []);
+      const bad = [];
       dropped.forEach(function (file) {
         const dup = pickedDocs.some(function (d) { return d.name === file.name && d.size === file.size; });
-        if (!dup) pickedDocs.push({ name: file.name, size: file.size });
+        if (dup) return;
+        const unsupported = !isAllowedFileType(file.name);
+        pickedDocs.push({ name: file.name, size: file.size, unsupported: unsupported });
+        if (unsupported) bad.push(file.name);
       });
+      toastUnsupported(bad);
       renderPickedDocs();
     });
   })();

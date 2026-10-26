@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企业知识库 - 功能说明 PRD</title>
+<style>
+  :root {
+    --brand: #07c160;
+    --brand-weak: #e8f8ef;
+    --brand-border: #b7e9cd;
+    --primary: #2563eb;
+    --text: #1f2329;
+    --text-2: #4b5563;
+    --text-3: #6b7280;
+    --text-4: #9ca3af;
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --border-light: #f0f0f1;
+    --success: #059669;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --radius: 12px;
+    --sidebar-w: 268px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.75; font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0; width: var(--sidebar-w);
+    background: #fff; border-right: 1px solid var(--border);
+    overflow-y: auto; padding: 22px 0 40px; z-index: 20;
+  }
+  .sb-title { padding: 0 22px 16px; margin-bottom: 8px; border-bottom: 1px solid var(--border-light); }
+  .sb-title b { display: block; font-size: 15px; }
+  .sb-title span { font-size: 12px; color: var(--text-4); }
+  .nav-list { list-style: none; }
+  .nav-list a {
+    display: block; padding: 6px 22px; font-size: 13px; color: var(--text-2);
+    text-decoration: none; border-left: 2px solid transparent;
+  }
+  .nav-list a:hover { background: #fafbfc; color: var(--brand); }
+  .nav-list a.active { color: var(--brand); background: var(--brand-weak); border-left-color: var(--brand); font-weight: 500; }
+  .nav-sub a { padding-left: 38px; font-size: 12.5px; color: var(--text-3); }
+  .nav-group { padding: 12px 22px 4px; font-size: 11.5px; color: var(--text-4); letter-spacing: .3px; }
+
+  /* ===== Main ===== */
+  .main { margin-left: var(--sidebar-w); padding: 34px 40px 80px; max-width: 1180px; }
+  .hero { margin-bottom: 26px; }
+  .hero h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+
+  section.block { margin-bottom: 38px; }
+  h2 { font-size: 19px; font-weight: 700; margin: 0 0 6px; padding-bottom: 9px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 15px; font-weight: 600; margin: 24px 0 10px; }
+  h4 { font-size: 13.5px; font-weight: 600; margin: 16px 0 8px; color: var(--text-2); }
+  p { margin-bottom: 9px; color: var(--text-2); }
+  .sub { color: var(--text-3); font-size: 13px; margin-bottom: 16px; }
+
+  ul.plain { margin: 6px 0 12px 20px; color: var(--text-2); }
+  ul.plain li { margin-bottom: 5px; }
+
+  /* ===== Cards / panels ===== */
+  .panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px; }
+  .panel-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+  .panel-title .dot { width: 4px; height: 14px; border-radius: 2px; background: var(--brand); }
+
+  /* ===== Table ===== */
+  table { width: 100%; border-collapse: collapse; background: #fff; font-size: 13px; margin-bottom: 14px; }
+  th, td { border: 1px solid var(--border); padding: 9px 12px; text-align: left; vertical-align: top; }
+  th { background: #fafbfc; font-weight: 600; color: var(--text-2); font-size: 12.5px; white-space: nowrap; }
+  td { color: var(--text-2); }
+  td code, p code, li code {
+    background: #f4f5f7; padding: 1px 5px; border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; color: #b44d12;
+  }
+  tr:last-child td { border-bottom: 1px solid var(--border); }
+
+  /* ===== Tags ===== */
+  .tag { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 11.5px; line-height: 18px; white-space: nowrap; }
+  .tag.ok { background: #e8f8ef; color: #0a8f4d; }
+  .tag.warn { background: #fef3ec; color: #d97706; }
+  .tag.err { background: #fef2f2; color: #dc2626; }
+  .tag.info { background: #eef2ff; color: #4338ca; }
+  .tag.gray { background: #f4f4f5; color: #52525b; }
+
+  /* ===== Toast list ===== */
+  .toast-list { display: flex; flex-direction: column; gap: 8px; }
+  .toast-row { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; }
+  .toast-pill {
+    flex-shrink: 0; min-width: 190px; padding: 5px 11px; border-radius: 6px;
+    background: #1f2430; color: #fff; font-size: 12.5px;
+  }
+
+  /* ===== Note ===== */
+  .note {
+    display: flex; gap: 9px; padding: 11px 14px; border-radius: 8px;
+    background: #f6f8ff; border: 1px solid #dbe4ff; font-size: 12.5px; color: #3b4a6b; margin: 12px 0;
+  }
+  .note.warn { background: #fffbeb; border-color: #fde68a; color: #78500f; }
+  .note b { font-weight: 600; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 22px 18px 60px; }
+    table { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sb-title">
+    <b>企业知识库 · 功能说明</b>
+    <span>PRD v1.0 · 给开发</span>
+  </div>
+  <ul class="nav-list">
+    <li class="nav-group">列表页</li>
+    <li><a href="#s2" data-t="s2">一、知识库列表</a></li>
+    <li><a href="#s3" data-t="s3">二、卡片更多操作</a></li>
+    <li><a href="#s4" data-t="s4">三、容量进度条</a></li>
+
+    <li class="nav-group">创建与配置</li>
+    <li><a href="#s5" data-t="s5">四、新建知识库向导</a></li>
+
+    <li class="nav-group">详情页</li>
+    <li><a href="#s6" data-t="s6">五、文件管理</a></li>
+    <li><a href="#s7" data-t="s7">六、Wiki 知识库</a></li>
+    <li><a href="#s8" data-t="s8">七、文件详情</a></li>
+    <li><a href="#s9" data-t="s9">八、编辑知识库</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+
+  <div class="hero">
+    <h1>企业知识库 · 功能说明</h1>
+  </div>
+
+  <!-- ============ 二 ============ -->
+  <section class="block" id="s2">
+    <h2>一、知识库列表</h2>
+    <p class="sub">入口：顶部「知识库」→「企业知识库」标签</p>
+
+    <h3>1.1 搜索与筛选</h3>
+    <table>
+      <tr><th style="width:20%">元素</th><th style="width:26%">规则</th><th>说明</th></tr>
+      <tr><td>搜索框</td><td>输入即时过滤，无需回车</td><td>按知识库<b>名称</b>模糊匹配，忽略大小写；对当前筛选结果再过滤</td></tr>
+      <tr><td>筛选项</td><td>全部 / 我创建的 / 我加入的</td><td>数字为各分组实时计数；切换筛选后搜索关键词<b>保留</b></td></tr>
+      <tr><td>空结果</td><td>无匹配项</td><td>展示空状态：「没有找到匹配的知识库」，不显示卡片网格</td></tr>
+      <tr><td>右上角计数</td><td>—</td><td>「共 N 个知识库」随筛选结果变化</td></tr>
+    </table>
+
+    <h3>1.2 卡片信息</h3>
+    <table>
+      <tr><th style="width:22%">字段</th><th>规则</th></tr>
+      <tr><td>图标</td><td>首字色块；点击可更换图标（增强功能，可后续迭代）；颜色从预设色板随机分配</td></tr>
+      <tr><td>名称 + 状态点</td><td>状态三态：<span class="tag ok">已完成处理</span> <span class="tag warn">部分文件处理中</span> <span class="tag err">存在解析失败文件</span>，悬浮显示具体提示文案</td></tr>
+      <tr><td>所有者</td><td>显示「所有者：姓名」，无所有者时显示横杠「—」</td></tr>
+      <tr><td>模型标签</td><td>依次为 大语言模型 / 视觉语言模型（可选）/ 嵌入模型 / 重排序模型（可选），悬浮显示完整模型名</td></tr>
+      <tr><td>描述</td><td>最多 2 行，超出省略；无描述时显示灰色「无描述」</td></tr>
+      <tr><td>底部统计</td><td>「N 个文件」「创建：2026-07-25 14:43」「更新：2026-10-23 13:43」（日期精确到分钟）</td></tr>
+      <tr><td>点击卡片主体</td><td>进入知识库详情页（带上 name / desc / owner / 模型 / mode 参数）</td></tr>
+    </table>
+  </section>
+
+  <!-- ============ 三 ============ -->
+  <section class="block" id="s3">
+    <h2>二、卡片更多操作</h2>
+    <p class="sub">入口：卡片右上角「⋯」按钮</p>
+
+    <h3>2.1 菜单项</h3>
+    <table>
+      <tr><th style="width:8%">序</th><th style="width:22%">菜单项</th><th style="width:38%">动作</th><th>说明</th></tr>
+      <tr><td>1</td><td>编辑知识库</td><td>跳转到详情页后<b>自动打开编辑弹窗</b></td><td>核心功能</td></tr>
+      <tr><td>2</td><td>对话试一试</td><td>进入对话页并携带当前知识库上下文</td><td>重要功能</td></tr>
+      <tr><td>3</td><td class="tag err" style="display:table-cell">删除</td><td>弹出二次确认框，确认后删除知识库</td><td><b>核心功能</b>，红色文字，与上方用分隔线隔开</td></tr>
+    </table>
+
+    <h3>2.2 删除知识库</h3>
+    <div class="panel">
+      <div class="panel-title"><span class="dot"></span>确认框文案</div>
+      <p>标题：「删除知识库」</p>
+      <p>正文：「删除知识库「<b>{名称}</b>」？删除后该知识库下的文档与问答将一并移除，且不可恢复。」</p>
+    </div>
+    <table>
+      <tr><th style="width:26%">操作</th><th style="width:34%">结果</th><th>提示文案</th></tr>
+      <tr><td>点「取消」/ 遮罩 / ×</td><td>关闭确认框，数据不变</td><td>无</td></tr>
+      <tr><td>点「删除」成功</td><td>卡片从列表移除，计数同步减 1，容量占用同步释放</td><td>「已删除」</td></tr>
+      <tr><td>删除失败（后端异常）</td><td>卡片保留，界面不变化</td><td><span class="tag err">删除失败，请稍后重试</span></td></tr>
+    </table>
+    <div class="note warn"><b>注意：</b>删除为不可逆操作，前端需在请求返回前禁用「删除」按钮防止重复提交。</div>
+  </section>
+
+  <!-- ============ 四 ============ -->
+  <section class="block" id="s4">
+    <h2>三、容量进度条</h2>
+    <p class="sub">位置：列表页工具栏右侧、「共 N 个知识库」左侧</p>
+
+    <h3>3.1 展示规则</h3>
+    <table>
+      <tr><th style="width:26%">元素</th><th>内容</th></tr>
+      <tr><td>总容量</td><td>由管理端分配固定配额（如 <b>1 TB</b>）</td></tr>
+      <tr><td>第一行</td><td>左「存储容量」；右「已用 / 1 TB」，保留 1 位小数</td></tr>
+      <tr><td>进度条</td><td>宽度 = 已用 / 总量 × 100%；实际占比 &gt; 0 但极小时至少保留约 1.5% 的可见宽度</td></tr>
+      <tr><td>第二行</td><td>左「已用 xx GB」；右「剩余 xx GB」</td></tr>
+      <tr><td>悬浮提示</td><td>三行：总量、已占用（含百分比，1 位小数）、剩余</td></tr>
+    </table>
+
+    <h3>3.2 阈值配色与提示文案</h3>
+    <table>
+      <tr><th style="width:14%">占用率</th><th style="width:14%">颜色</th><th style="width:16%">说明</th><th>提示文案</th></tr>
+      <tr>
+        <td>&lt; 75%</td>
+        <td><span class="tag ok">绿色渐变</span></td>
+        <td>正常</td>
+        <td>不提示，仅通过进度条颜色暗示</td>
+      </tr>
+      <tr>
+        <td>75% ~ 90%</td>
+        <td><span class="tag warn">橙色渐变</span></td>
+        <td>提醒存储将满</td>
+        <td>进度条上方常驻一行橙色提示：「存储空间已使用 {已用百分比}%，请留意容量」</td>
+      </tr>
+      <tr>
+        <td>&ge; 90%</td>
+        <td><span class="tag err">红色渐变</span></td>
+        <td>高风险；<b>上传文档前需二次提示</b></td>
+        <td>
+          <div>① 常驻提示（红色）：「<b>存储空间即将用尽</b>，剩余 {剩余容量}」</div>
+          <div>② 上传 / 新建文档前二次确认：标题「存储空间即将用尽」；正文「当前剩余 {剩余容量}，继续上传可能失败，是否仍要继续？」；按钮「取消」/「继续上传」</div>
+          <div>③ 用户确认后允许继续；上传过程中超出配额时提示 <span class="tag err">存储空间已满，请清理后重试</span></div>
+        </td>
+      </tr>
+    </table>
+    <div class="note"><b>文案占位：</b>「{已用百分比}」保留 1 位小数（如 <b>92.4%</b>）；「{剩余容量}」按 KB / MB / GB / TB 自动取合适单位，保留 1 位小数（如 <b>78.6 GB</b>）。</div>
+
+    <h3>3.3 数据来源</h3>
+    <ul class="plain">
+      <li>已用容量 = 所有知识库的已占用容量之和。</li>
+      <li>知识库删除、文档增删后需重新拉取并刷新进度条与三个文案。</li>
+    </ul>
+  </section>
+
+  <!-- ============ 五 ============ -->
+  <section class="block" id="s5">
+    <h2>四、新建知识库向导</h2>
+    <p class="sub">入口：右上角「新建知识库」→ 下拉选择「企业知识库」</p>
+
+    <h3>4.1 弹窗结构与两种创建模式</h3>
+    <div class="panel">
+      <div class="panel-title"><span class="dot"></span>弹窗骨架</div>
+      <ul class="plain">
+        <li>标题：「新建企业知识库」；右上角提供「×」关闭。</li>
+        <li>左侧步骤导航：按「基础 / 索引与解析 / 召回与检索 / 权限管理」分组，每项显示序号与步骤名，当前步骤高亮；<b>可点击任意步骤直接跳转</b>。</li>
+        <li>底部：左侧显示进度「第 N / M 步」，右侧「取消」「创建知识库」。</li>
+        <li>点「×」或「取消」直接关闭弹窗，不弹二次确认。</li>
+      </ul>
+    </div>
+    <table>
+      <tr><th style="width:16%">创建模式</th><th style="width:10%">步骤数</th><th style="width:32%">步骤构成</th><th>适用场景</th></tr>
+      <tr>
+        <td><b>快速创建</b><br><span class="tag gray">默认</span></td>
+        <td>2 步</td>
+        <td>基本信息 → 成员管理</td>
+        <td>零配置，即刻使用。系统已为您预设基础参数，只需填写基本信息即可一键生成知识库，适合快速上手与轻量级应用。</td>
+      </tr>
+      <tr>
+        <td><b>进阶创建</b></td>
+        <td>7 步</td>
+        <td>基本信息 → 模型配置 → 分块设置 → 图像处理 → 高级设置 → 检索策略 → 成员管理</td>
+        <td>深度定制，精准控制。您可以一步步配置模型、分块规则、检索策略等底层参数，打造完全贴合您专属业务场景的高质量知识库。</td>
+      </tr>
+    </table>
+    <div class="note"><b>模式切换规则：</b>两张卡片为单选，选中卡片显示绿色描边＋右上角勾选标记。切换时只更新左侧导航数量与底部「第 N / M 步」，<b>当前页面内容与已填输入全部保留</b>；若当前停留的步骤在新模式下不存在，自动回到最后一步。默认进入为快速创建（第 1 / 2 步），选择进阶创建后为第 1 / 7 步。</div>
+
+    <h3>4.2 基本信息（第 1 步）</h3>
+    <p class="sub">页面标题「基本信息」，副标题「选择知识库类型并填写相关信息」</p>
+    <table>
+      <tr><th style="width:16%">字段</th><th style="width:10%">必填</th><th>说明</th></tr>
+      <tr>
+        <td>支持的文件格式</td>
+        <td>—</td>
+        <td>页面顶部浅黄提示条，只读。内容：<b>Markdown · 文本文件 · PDF · Word · Excel · PPT · 图片</b>，用于提前说明该知识库可上传的文件范围。</td>
+      </tr>
+      <tr>
+        <td>创建模式</td>
+        <td>是</td>
+        <td>两张并排单选卡片：快速创建 / 进阶创建，卡片内含标题、图标、勾选态与一段说明文案（见 4.1）。切换规则见 4.1 提示。</td>
+      </tr>
+      <tr>
+        <td>名称</td>
+        <td>是</td>
+        <td>单行输入框，占位符「例如：产品需求文档库」；下方灰色说明「名称将用于识别与检索范围选择。」</td>
+      </tr>
+      <tr>
+        <td>图标</td>
+        <td>否</td>
+        <td>默认显示玫红色圆角方块＋白色加号，点击打开本地文件选择，选中后立即在预览位显示图片。右侧说明：「支持 JPG、PNG、GIF 格式，图片大小不超过 1MB，建议尺寸 128×128px」。</td>
+      </tr>
+      <tr>
+        <td>描述</td>
+        <td>否</td>
+        <td>多行文本框，占位符「简要说明该知识库的内容范围与使用场景」。</td>
+      </tr>
+    </table>
+    <div class="note"><b>图标上传校验：</b>文件超过 1MB 时拒绝并提示 <span class="tag err">图片大小不能超过 1MB</span>；文件选择框默认只过滤 JPG / PNG / GIF。</div>
+
+    <h3>4.3 模型配置与分块设置（进阶创建）</h3>
+    <h4>模型配置</h4>
+    <table>
+      <tr><th style="width:24%">字段</th><th style="width:20%">默认值</th><th>说明</th></tr>
+      <tr><td>Embedding 嵌入模型 <span class="tag err">*</span></td><td>qwen3.7-text-embedding</td><td>用于文本向量化的嵌入模型。</td></tr>
+      <tr><td>Wiki 合成模型 <span class="tag err">*</span></td><td>qwen3.8-max</td><td>用于提取 Wiki 摘要和索引关系的模型。</td></tr>
+    </table>
+
+    <h4>分块设置</h4>
+    <table>
+      <tr><th style="width:24%">字段</th><th style="width:20%">默认值 / 范围</th><th>说明</th></tr>
+      <tr><td>分块策略</td><td>自动</td><td>可选 自动 / 按标题切分 / 结构感知 / 按长度切分；选「自动」时下方展示该模式的说明。旁附「测试分块效果」入口。</td></tr>
+      <tr><td>分块大小</td><td>512 字符（100 ~ 4000）</td><td>每个分块的最大字符数，默认 512 ≈ 中文 300 tokens。</td></tr>
+      <tr><td>分块重叠</td><td>80 字符（0 ~ 500）</td><td>相邻分块共享的字符数，默认 80 ≈ 分块大小的 15%。</td></tr>
+      <tr><td>分隔符</td><td>默认 7 个</td><td>切分时优先使用的字符。默认选中双换行、单换行、中文句号、感叹号、问号、中文分号、英文分号；支持增删与自定义，<b>按选中顺序决定优先级</b>（段落 → 句子 → 标点）。</td></tr>
+      <tr><td>父子分块</td><td>开启</td><td>两级分块：小的子块用于向量匹配，大的父块返回给 LLM 补足上下文。建议用于长文档（&gt; 10 页）。</td></tr>
+      <tr><td>父块大小</td><td>4096 字符（512 ~ 8192）</td><td>开启父子分块后显示，返回给 LLM 的上下文块大小。</td></tr>
+      <tr><td>子块大小</td><td>384 字符（64 ~ 2048）</td><td>开启父子分块后显示，用于向量匹配的嵌入块大小。</td></tr>
+    </table>
+
+    <h3>4.4 图像处理（进阶创建）</h3>
+    <table>
+      <tr><th style="width:24%">字段</th><th style="width:20%">默认值</th><th>说明</th></tr>
+      <tr><td>多模态功能</td><td>关闭</td><td>开启后支持图片等非文本内容的解析与检索。</td></tr>
+      <tr><td>VLLM 视觉模型 <span class="tag err">*</span></td><td>未选择</td><td>开启多模态后显示且必选，下拉仅展示带视觉能力的模型。</td></tr>
+      <tr><td>图片解析要求</td><td>空</td><td>开启多模态后显示。补充需重点识别的视觉信息，≤ 4000 字符，右下角实时显示字数（如 120/4000）。</td></tr>
+    </table>
+
+    <h3>4.5 高级设置（进阶创建）</h3>
+    <h4>AI 问题生成</h4>
+    <ul class="plain">
+      <li>开关默认<b>开启</b>；开启后展开「生成问题数量」与「问题生成要求」。</li>
+      <li>生成问题数量：整数 1~10，默认 3。</li>
+      <li>问题生成要求：≤ 4000 字符，右下角实时显示已输入字数（如 120/4000）。</li>
+    </ul>
+
+    <h4>Wiki 设置</h4>
+    <table>
+      <tr><th style="width:24%">字段</th><th style="width:20%">默认值</th><th>说明</th></tr>
+      <tr><td>Wiki 提取粒度</td><td>标准</td><td>三选一分段按钮：聚焦 / 标准 / 详尽。下方随选择切换说明：聚焦＝只抽取文档主角，最干净但可能漏掉次要实体；标准＝抽取主角＋被详细描述的次要实体，适合大多数场景；详尽＝抽取所有命名实体与概念，适合把知识库当术语表使用。</td></tr>
+      <tr><td>Wiki 内容生成要求</td><td>空</td><td>≤ 4000 字符，控制摘要、页面与首页的表达重点；引用、合并与防幻觉规则由系统固定维护，修改后需重新解析才对已有内容生效。</td></tr>
+      <tr><td>Wiki 提取重点</td><td>空</td><td>≤ 4000 字符，说明应重点识别的领域实体与概念，不会替换系统的 JSON 与引用协议。</td></tr>
+    </table>
+
+    <h3>4.6 检索策略（进阶创建）</h3>
+    <table>
+      <tr><th style="width:24%">字段</th><th style="width:20%">默认值 / 范围</th><th>说明</th></tr>
+      <tr><td>向量召回数量</td><td>10（0 ~ 100）</td><td>向量检索返回的最大结果数量。</td></tr>
+      <tr><td>关键词阈值</td><td>0.30（0 ~ 1，步长 0.01）</td><td>关键词检索的最低相关性分数，滑块调节并实时回显数值。</td></tr>
+      <tr><td>向量阈值</td><td>0.50（0 ~ 1，步长 0.01）</td><td>向量检索的最低相似度分数。</td></tr>
+      <tr><td>重排序</td><td>关闭</td><td>对召回结果二次排序，提高回答准确性；开启后展开以下三项。</td></tr>
+      <tr><td>ReRank 模型 <span class="tag err">*</span></td><td>未选择</td><td>开启重排序后必选。</td></tr>
+      <tr><td>重排数量</td><td>5（0 ~ 100）</td><td>重排序后保留的最大结果数量。</td></tr>
+      <tr><td>重排阈值</td><td>0.2（-10 ~ 10，步长 0.1）</td><td>重排序的最低相关性分数。</td></tr>
+    </table>
+
+    <h3>4.7 成员管理</h3>
+    <table>
+      <tr><th style="width:24%">区域</th><th>说明</th></tr>
+      <tr><td>添加成员</td><td>点击输入框或「添加」按钮打开成员选择弹窗：支持按姓名 / 手机号 / 工号搜索，或按部门勾选，可多选，确认后加入列表。</td></tr>
+      <tr><td>成员列表</td><td>首行为当前创建人，标注「（我）」与「所有者」标签，并提供「转让」入口；其余成员显示姓名、部门、手机号，行内下拉选择角色（管理员 / 编辑者 / 只读），右侧「×」移除。</td></tr>
+      <tr><td>说明文案</td><td>列表下方提示：「所有者可将知识库转让给管理员或编辑者，转让后原所有者变为管理员。」</td></tr>
+      <tr><td>权限说明</td><td>右侧开关展开权限对照表（能力 × 所有者 / 管理员 / 编辑者 / 只读）：查看检索、上传删除文档、修改配置、管理成员与角色、删除知识库与转让所有者。</td></tr>
+    </table>
+
+    <h3>4.8 校验与提示</h3>
+    <table>
+      <tr><th style="width:22%">字段</th><th style="width:26%">规则</th><th>失败提示</th></tr>
+      <tr><td>知识库名称</td><td>必填，1~50 字符，同名不允许</td><td><span class="tag err">请填写知识库名称</span> / <span class="tag err">知识库名称已存在</span></td></tr>
+      <tr><td>知识库描述</td><td>可选，≤ 500 字符</td><td>超长时禁止输入（不弹提示）</td></tr>
+      <tr><td>图标</td><td>JPG / PNG / GIF，≤ 1MB</td><td><span class="tag err">图片大小不能超过 1MB</span></td></tr>
+      <tr><td>分块大小</td><td>整数，100~4000</td><td>输入中超过上限自动回到 4000；失焦时低于下限自动置为 100</td></tr>
+      <tr><td>分块重叠</td><td>整数，0~500</td><td>同上，按边界自动纠正</td></tr>
+      <tr><td>父块大小</td><td>整数，512~8192</td><td>同上，按边界自动纠正</td></tr>
+      <tr><td>子块大小</td><td>整数，64~2048</td><td>同上，按边界自动纠正</td></tr>
+      <tr><td>生成问题数量</td><td>整数，1~10</td><td>输入框自动纠正到边界值</td></tr>
+      <tr><td>向量召回数量 / 重排数量</td><td>整数，0~100</td><td>输入框自动纠正到边界值</td></tr>
+      <tr><td>重排阈值</td><td>范围 <b>-10 ~ 10</b>，步长 0.1，默认 <b>0.2</b></td><td>滑块限制，无需提示</td></tr>
+      <tr><td>关键词 / 向量阈值</td><td>范围 0 ~ 1，步长 0.01</td><td>滑块限制，无需提示</td></tr>
+      <tr><td>VLLM 视觉模型</td><td>开启「多模态功能」时必填</td><td><span class="tag err">请选择 VLLM 模型</span></td></tr>
+      <tr><td>ReRank 模型</td><td>开启「重排序」时必填</td><td><span class="tag err">请选择 ReRank 模型</span></td></tr>
+      <tr><td>成员</td><td>至少保留 1 名所有者</td><td><span class="tag err">知识库至少需要一名所有者</span></td></tr>
+    </table>
+    <div class="note"><b>校验时机：</b>仅「名称」在点击「创建知识库」时校验；其余字段通过输入框上下限与滑块区间在输入阶段约束，<b>不做逐步拦截</b>，允许自由跳转任意步骤。</div>
+
+    <h3>4.9 提交创建</h3>
+    <table>
+      <tr><th style="width:26%">场景</th><th style="width:30%">结果</th><th>提示文案</th></tr>
+      <tr><td>名称未填</td><td>停留在向导，自动回到第 1 步基本信息，名称输入框获得焦点</td><td><span class="tag err">请填写知识库名称</span></td></tr>
+      <tr><td>校验通过</td><td>关闭向导，跳转该知识库详情页，列表页同步新增卡片</td><td>「知识库「{名称}」创建成功」</td></tr>
+      <tr><td>后端失败</td><td>停留在向导，已填内容全部保留</td><td><span class="tag err">创建失败：{原因}</span></td></tr>
+      <tr><td>创建中</td><td>「创建知识库」按钮置灰并显示「加载中」，防止重复提交</td><td>—</td></tr>
+    </table>
+  </section>
+
+  <!-- ============ 六 ============ -->
+  <section class="block" id="s6">
+    <h2>五、文件管理</h2>
+    <p class="sub">详情页「知识库文件」标签</p>
+
+    <h3>5.1 区域结构</h3>
+    <table>
+      <tr><th style="width:20%">区域</th><th>内容</th></tr>
+      <tr><td>顶部标签</td><td>「知识库文件」「Wiki」两个标签页；Wiki 处理中时标签旁显示转圈标识</td></tr>
+      <tr><td>右上容量</td><td>「知识库使用容量：xx」，点击文字或右侧柱状图标打开容量统计弹窗（见 5.11）</td></tr>
+      <tr><td>左侧文件夹栏</td><td>标题「文件夹」+ 实时计数「N 个」；下方为目录树</td></tr>
+      <tr><td>右侧文件区</td><td>过滤栏 →（勾选后出现）批量操作栏 → 文件表格 → 分页</td></tr>
+      <tr><td>添加文档</td><td>右上角「添加文档」按钮，点击展开下拉菜单：「上传文件」「上传文件夹」（见 5.6）</td></tr>
+    </table>
+
+    <h3>5.2 文件夹树与文件列表联动</h3>
+    <table>
+      <tr><th style="width:26%">点击对象</th><th style="width:34%">列表结果</th><th>说明</th></tr>
+      <tr><td>根节点（知识库名）</td><td>显示全部文件</td><td>默认选中；不提供删除入口</td></tr>
+      <tr><td>父文件夹</td><td>包含其下所有子文件夹中的文件</td><td>计数为递归总数</td></tr>
+      <tr><td>子文件夹</td><td>仅该文件夹内的文件</td><td>有子节点时点击同时展开 / 收起</td></tr>
+      <tr><td>展开箭头</td><td>只展开 / 收起，<b>不切换</b>选中项</td><td>无子节点时箭头隐藏</td></tr>
+    </table>
+    <ul class="plain">
+      <li>文件夹过滤可与「文档状态」「文件类型」「搜索」叠加生效，四项条件为<b>与</b>关系。</li>
+      <li>切换文件夹、改筛选、改每页条数时<b>分页重置到第 1 页</b>。</li>
+      <li>文件夹计数与左上角「N 个」均按当前实际文件数实时统计：目录计数 = 自身及全部子目录下的文件数。</li>
+    </ul>
+
+    <h3>5.3 文件夹「更多」菜单</h3>
+    <table>
+      <tr><th style="width:24%">菜单项</th><th style="width:34%">交互</th><th>校验 / 提示</th></tr>
+      <tr><td>重命名</td><td>节点就地变为输入框，预填原名并全选；Enter 确认、Esc 取消、失焦即保存</td><td>清空则回退原名；同级重名拒绝并提示 <span class="tag err">已存在同名文件夹「{名}」</span></td></tr>
+      <tr><td>新建子文件夹</td><td>节点下方就地插入输入框，Enter 确认 / Esc 取消</td><td>清空则回退为「未命名文件夹」；同级重名同上</td></tr>
+      <tr><td>删除</td><td>二次确认，正文提示「其中的 N 个文件将<b>一并删除</b>，且无法恢复」；N 为含全部子目录的递归文件数</td><td>确认后该目录、其全部子目录及目录内所有文件<b>一并删除</b>，不可恢复；计数与容量占用同步刷新；若正在浏览该目录（或其子目录）内文件则自动返回根目录；文件夹为空时正文提示「该文件夹下暂无文件」</td></tr>
+    </table>
+    <div class="note"><b>根节点保护：</b>知识库根节点代表整个知识库，菜单中<b>不显示「删除」</b>；若绕过菜单触发删除，提示 <span class="tag warn">根目录不可删除</span>。</div>
+
+    <h3>5.4 过滤与分页</h3>
+    <table>
+      <tr><th style="width:22%">控件</th><th>规则</th></tr>
+      <tr><td>文档状态</td><td>下拉：全部 / 解析完成 / 索引中 / 解析中 / 待解析 / 处理失败，单选，选中即过滤</td></tr>
+      <tr><td>文件类型</td><td>下拉：全部 / Markdown / 文本文件 / PDF / Word / Excel / PPT / 图片</td></tr>
+      <tr><td>搜索</td><td>「搜索文档名称」，输入即时过滤，无需回车；按文件名模糊匹配</td></tr>
+      <tr><td>分页</td><td>每页 10 / 20 / 50 条可选；底部显示「共 N 个文件」与上一页 / 当前页 / 下一页，首页与末页按钮置灰</td></tr>
+      <tr><td>空结果</td><td>表格区显示「没有匹配的文件」，分页显示「共 0 个文件」</td></tr>
+    </table>
+
+    <h3>5.5 文件表格</h3>
+    <table>
+      <tr><th style="width:22%">列</th><th>呈现</th></tr>
+      <tr><td>勾选框</td><td>表头为全选（可半选态）；单行勾选进入批量操作</td></tr>
+      <tr><td>文件名</td><td>文件图标 + 名称，超长省略并悬浮显示全名；<b>仅「解析完成」的文件可点击</b>，点击打开文件详情弹窗，悬浮变绿并显示下划线</td></tr>
+      <tr><td>文档大小</td><td>按量级自动取 KB / MB / GB，保留 2 位小数</td></tr>
+      <tr><td>文档状态</td><td>彩色圆点 + 文字：解析完成（绿）/ 索引中（浅绿）/ 解析中（蓝）/ 待解析（紫）/ 处理失败（红）</td></tr>
+      <tr><td>更新时间</td><td>格式 <code>YYYY-MM-DD HH:mm</code></td></tr>
+      <tr><td>操作</td><td>行尾「⋯」打开行内菜单（见 5.8）</td></tr>
+    </table>
+    <div class="note"><b>处理失败行：</b>状态右侧额外显示一个「重新处理」圆形按钮，悬浮提示「处理失败：{失败原因}，点击重新处理」；点击后状态置为「待解析」并提示「已加入重新处理队列」。</div>
+
+    <h3>5.6 上传文件 / 文件夹</h3>
+    <p class="sub">入口：右上角「添加文档」→ 上传文件 / 上传文件夹；或「添加文档」弹窗内的拖拽区</p>
+    <table>
+      <tr><th style="width:22%">区域</th><th>说明</th></tr>
+      <tr><td>拖拽区</td><td>支持点击选择或拖入文件；说明文案「支持 Markdown · 文本文件 · PDF · Word · Excel · PPT · 图片，单个文件不超过 100MB」</td></tr>
+      <tr><td>支持的文件类型</td><td><b>白名单校验</b>，仅以下扩展名可上传：<code>md</code> <code>markdown</code> <code>txt</code> <code>pdf</code> <code>doc</code> <code>docx</code> <code>xls</code> <code>xlsx</code> <code>csv</code> <code>ppt</code> <code>pptx</code> <code>jpg</code> <code>jpeg</code> <code>png</code> <code>gif</code> <code>webp</code> <code>bmp</code>。不在白名单内的文件<b>仍保留在待添加列表</b>，但整行置灰并标记「暂不支持该类型文件，无法上传」，提交时自动跳过</td></tr>
+      <tr><td>待添加列表</td><td>显示「待添加 N 个文件」与「清空」；每行列出文件图标、名称、（上传文件夹时）相对路径、大小与移除「×」；不支持的文件行内额外显示红色标签</td></tr>
+      <tr><td>添加到文件夹</td><td>下拉列出目录树中的全部路径，<b>默认定位到当前选中的文件夹</b></td></tr>
+      <tr><td>保留文件夹结构</td><td><b>仅上传文件夹时出现</b>，默认勾选；说明文案「将在所选文件夹下新建「{源文件夹名}」，并按原层级放入文件」</td></tr>
+      <tr><td>底部按钮</td><td>「取消」/「添加到知识库」；存在不支持的文件时按钮文案变为「添加到知识库（跳过 N 个不支持的文件）」</td></tr>
+    </table>
+    <table>
+      <tr><th style="width:26%">场景</th><th>结果 / 提示</th></tr>
+      <tr><td>重复选择同一文件</td><td>按「文件名 + 大小」去重，不重复加入待添加列表</td></tr>
+      <tr><td>选择了不支持的文件类型</td><td><b>保留在待添加列表并置灰</b>，行内标记「暂不支持该类型文件，无法上传」，同时提示 <span class="tag err">不支持的格式：{文件名}，仅支持 Markdown、文本文件、PDF、Word、Excel、PPT、图片</span>；多个不支持时取前 2 个文件名，其余合并为「等 N 个文件」。用户可手动移除，提交时不支持的文件自动跳过</td></tr>
+      <tr><td>上传文件夹时含不支持的文件</td><td>逐个按扩展名判断，系统文件 / 临时文件等不支持项同样置灰保留在列表，其余文件与目录结构照常导入；给出一次与上方一致的提示</td></tr>
+      <tr><td>选中的文件全部不支持</td><td>按钮文案变为「添加到知识库（无可上传文件）」；点击后不提交，提示 <span class="tag err">所选文件均不支持上传，仅支持 Markdown、文本文件、PDF、Word、Excel、PPT、图片</span></td></tr>
+      <tr><td>部分文件不支持时提交</td><td>仅上传合法文件；若本次未同时导入文件夹，提示「已跳过 N 个不支持的文件」</td></tr>
+      <tr><td>未选文件就提交</td><td>提示 <span class="tag warn">请先选择要添加的文件</span></td></tr>
+      <tr><td>提交成功</td><td>文件以「待解析」状态插入列表顶部，分页回到第 1 页，表格与左侧计数同步刷新，并打开上传进度面板（见 5.7）</td></tr>
+      <tr><td>上传文件夹且保留结构</td><td>按原层级自动创建目录，完成后额外提示「已导入文件夹，已创建文件夹「{名}」」</td></tr>
+      <tr><td>文件归属规则</td><td>勾选保留结构时文件放入对应子目录；未勾选时全部直接放入所选目标文件夹；目标为根目录时不记录层级</td></tr>
+    </table>
+
+    <h3>5.7 上传进度面板</h3>
+    <table>
+      <tr><th style="width:22%">元素</th><th>说明</th></tr>
+      <tr><td>位置</td><td>页面右下角浮层，不遮挡表格操作；可收起 / 展开、可手动关闭</td></tr>
+      <tr><td>标题</td><td>「正在解析 {已完成}/{总数}」，副标题「上传至「{目标文件夹}」」</td></tr>
+      <tr><td>进度条</td><td>按完成比例推进，最小保留 6% 可见宽度；底部圆点 + 「处理中 {未完成数}」</td></tr>
+      <tr><td>文件列表</td><td>逐条展示文件名、类型标签与状态：排队解析 → 解析中… → 解析完成；完成项右侧为「查看」箭头，未完成项为「重新上传」按钮</td></tr>
+      <tr><td>说明文案</td><td>「文件已全部上传，解析在后台继续，可以放心离开此页面」</td></tr>
+      <tr><td>完成态</td><td>标题变为「{N} 个完成，0 个未成功」，进度条转绿并拉满；约 2.6 秒后自动收起</td></tr>
+      <tr><td>失败态</td><td>标题「0 个完成，{N} 个未成功」，进度条转红；顶部出现「全部 {N} / 未成功 {N}」页签，每条显示「解析失败 · {失败原因}」，右侧为重新解析按钮；面板不自动收起，需手动关闭</td></tr>
+    </table>
+
+    <h3>5.8 行内「⋯」菜单</h3>
+    <table>
+      <tr><th style="width:20%">菜单项</th><th style="width:20%">出现条件</th><th>行为 / 提示</th></tr>
+      <tr><td>重新处理</td><td>仅「处理失败」</td><td>状态置为待解析，提示「已加入重新处理队列」</td></tr>
+      <tr><td>添加到会话</td><td>始终</td><td>提示「已将「{文件名}」添加到会话」，随后跳转对话页并带入该文件上下文</td></tr>
+      <tr><td>下载文件</td><td>始终</td><td>提示「正在下载「{文件名}」」，完成后提示「已下载「{文件名}」到本地下载目录」</td></tr>
+      <tr><td>重命名</td><td>始终</td><td>打开重命名弹窗（见 5.10）</td></tr>
+      <tr><td>移动</td><td>始终</td><td>悬浮展开二级菜单，列出目录树中全部文件夹（含根节点）；选择后移动，提示「已移动「{文件名}」到「{目标}」」</td></tr>
+      <tr><td>删除</td><td>始终</td><td>红色文字，二次确认「确认删除文档「{文件名}」，删除后将无法恢复」；确认后提示「已删除「{文件名}」」，容量同步释放</td></tr>
+    </table>
+
+    <h3>5.9 文件批量操作</h3>
+    <table>
+      <tr><th style="width:22%">操作</th><th style="width:26%">前置条件</th><th>结果 / 提示文案</th></tr>
+      <tr><td>批量栏出现</td><td>已勾选 ≥ 1 个文件</td><td>顶部显示「已选择 N 个文件」及操作按钮；取消勾选后隐藏</td></tr>
+      <tr><td>添加到会话</td><td>已勾选 ≥ 1 个文件</td><td>提示「已将 N 个文件添加到会话」，跳转对话页，勾选清空</td></tr>
+      <tr><td>批量移动</td><td>已勾选 ≥ 1 个文件</td><td>弹窗选择目标文件夹后移动；提示「已移动 N 个文件到「{目标}」」</td></tr>
+      <tr><td>批量删除</td><td>已勾选 ≥ 1 个文件</td><td>二次确认「确认删除文档「已选中的 N 个文档」，删除后将无法恢复」；确认后提示「已批量删除 N 个文件」，容量同步释放</td></tr>
+      <tr><td>取消选择</td><td>—</td><td>清空勾选，批量栏隐藏</td></tr>
+    </table>
+    <div class="note"><b>移动弹窗：</b>目标为根节点时文件回到根目录（不记录层级）；未选择目标就点确定时提示 <span class="tag warn">请选择目标文件夹</span>。</div>
+
+    <h3>5.10 重命名文件</h3>
+    <table>
+      <tr><th style="width:22%">项</th><th>说明</th></tr>
+      <tr><td>入口</td><td>行内「⋯」→ 重命名</td></tr>
+      <tr><td>弹窗</td><td>标题「重命名文件」；输入框预填原文件名，<b>默认只选中扩展名之前的部分</b>便于改名；限长 120 字符</td></tr>
+      <tr><td>说明文案</td><td>「仅修改知识库中的文件名，本地原文件不受影响。」</td></tr>
+      <tr><td>校验</td><td>为空提示 <span class="tag err">文件名不能为空</span>；同一目录内重名提示 <span class="tag err">当前目录已存在同名文件</span>；与原名相同则直接关闭不提示</td></tr>
+      <tr><td>成功</td><td>提示「已将「{原名}」重命名为「{新名}」」，文件类型按新扩展名重新识别</td></tr>
+    </table>
+
+    <h3>5.11 容量统计</h3>
+    <table>
+      <tr><th style="width:22%">区域</th><th>说明</th></tr>
+      <tr><td>入口</td><td>「知识库使用容量：xx」文字 / 右侧柱状图标</td></tr>
+      <tr><td>汇总</td><td>左侧「知识库总容量」，中间「共 N 个文件」，右侧总占用（自动取 KB / MB / GB，保留 2 位小数）</td></tr>
+      <tr><td>堆积容量条</td><td>按文件类型分段堆叠，段宽 = 该类型占比，占比极小时至少保留 0.6% 可见宽度；悬浮显示「类型 + 百分比」</td></tr>
+      <tr><td>图例</td><td>列出当前有文件的类型与对应色块</td></tr>
+      <tr><td>容量占比列表</td><td>每行：类型图标、名称、扩展名、文件数、占用大小、占比百分数（整数）</td></tr>
+    </table>
+    <p>类型归类与配色：Markdown（黑）/ 文本文件（灰）/ PDF（红）/ Word文档（蓝，doc·docx）/ 表格（绿，xlsx·xls·csv）/ 演示文档（橙，pptx·ppt）/ 图片（靛蓝，jpg·png·webp·gif）。</p>
+  </section>
+
+  <!-- ============ 七 ============ -->
+  <section class="block" id="s7">
+    <h2>六、Wiki 知识库</h2>
+    <p class="sub">详情页「Wiki」标签 · 左侧为知识树/摘要列表，右侧为索引页与词条页</p>
+
+    <h3>6.1 左侧栏</h3>
+    <table>
+      <tr><th style="width:22%">元素</th><th>行为</th></tr>
+      <tr><td>知识 / 摘要 切换</td><td><b>只切换左侧栏</b>，右侧内容保持不变；只有点击具体条目才切换右侧。若当前右侧是词条页，切到「摘要」后右侧仍停留在该词条页，点击摘要条目才跳到摘要详情</td></tr>
+      <tr><td>索引</td><td>搜索框下方固定入口「索引」；点击后<b>右侧展示索引详情</b>（Wiki Index 概览页），左侧栏保持当前模式不变。当前处于索引页时该入口高亮</td></tr>
+      <tr><td>搜索框</td><td>知识模式按页面名过滤（保留父级目录）；摘要模式按摘要名称过滤</td></tr>
+      <tr><td>目录节点</td><td>点击展开/收起；「⋯」菜单含 新建子目录 / 重命名目录 / 删除目录</td></tr>
+      <tr><td>页面节点</td><td>点击打开词条页；「⋯」菜单含 删除 / 移动 / 重命名</td></tr>
+      <tr><td>工具栏按钮</td><td>展开全部、收起全部、新建目录、新建页面</td></tr>
+    </table>
+
+    <h3>6.2 新建 / 编辑 Wiki 页面</h3>
+    <table>
+      <tr><th style="width:20%">字段</th><th style="width:24%">规则</th><th>提示</th></tr>
+      <tr><td>标题</td><td>必填，全局唯一</td><td><span class="tag err">请输入页面标题</span> / <span class="tag err">页面「{名}」已存在</span></td></tr>
+      <tr><td>页面类型</td><td>仅 <b>实体</b> 和 <b>概念</b> 两种，默认选中概念</td><td>选项悬浮显示类型说明</td></tr>
+      <tr><td>正文</td><td>可选，支持 Markdown 写法：二级标题转为章节、短横线开头转为要点、双方括号包裹的页面名转为内链</td><td>—</td></tr>
+      <tr><td>页面地址</td><td>由标题自动生成，无需填写；冲突时自动加序号</td><td>—</td></tr>
+    </table>
+
+    <h3>6.3 版本历史</h3>
+    <table>
+      <tr><th style="width:26%">场景</th><th>展示</th></tr>
+      <tr><td>仅初始版本</td><td>标题「初始 → v1」，副标题「初始创建内容」；类型/摘要/正文全部标绿为新增；<b>无操作按钮</b>；左侧提示「暂无历史版本，页面内容变化后会自动记录快照」</td></tr>
+      <tr><td>已有历史版本（当前版）</td><td>标题「上一版 → 本版」（如 v1 → v2）；按钮「版本变更」</td></tr>
+      <tr><td>选中历史版本</td><td>按钮「版本变更 / 对比当前 / 回滚到此版本」</td></tr>
+      <tr><td>回滚</td><td>二次确认；回滚后当前内容先记入历史，版本号 +1</td></tr>
+    </table>
+
+    <h3>6.4 删除类提示</h3>
+    <table>
+      <tr><th style="width:30%">操作</th><th>确认文案</th><th style="width:22%">成功提示</th></tr>
+      <tr><td>删除 Wiki 页面</td><td>「确认删除「{名}」页面吗？删除后引用该页面的内链将失效。」</td><td>页面「{名}」已删除</td></tr>
+      <tr><td>删除目录</td><td>「确认删除目录「{名}」吗？目录下的 N 个页面将一并删除（引用这些页面的内链会失效）。」</td><td>目录「{名}」已删除</td></tr>
+    </table>
+    <div class="note"><b>一致性要求：</b>右上角删除按钮与左侧「⋯」菜单的删除，必须调用<b>同一个</b>删除函数，文案与清理逻辑（页面地址、版本历史、目录引用、数量统计）完全一致。</div>
+  </section>
+
+  <!-- ============ 八 ============ -->
+  <section class="block" id="s8">
+    <h2>七、文件详情</h2>
+    <p class="sub">入口：文件列表点击文件名 / Wiki 词条页「来源文档」链接</p>
+
+    <h3>7.1 区块结构</h3>
+    <table>
+      <tr><th style="width:24%">区块</th><th>内容</th></tr>
+      <tr><td>弹窗标题栏</td><td>左侧文件名（过长省略，悬浮显示全名）；右侧「下载」按钮与关闭「×」</td></tr>
+      <tr><td>基本信息</td><td>上传时间、类型、上传人</td></tr>
+      <tr><td>自定义元数据</td><td>键值对列表，可编辑（文本 / 数字 / 布尔值 / 空值四种类型）</td></tr>
+      <tr><td>摘要</td><td>可编辑、可重新生成、可删除</td></tr>
+      <tr><td>文件预览</td><td>原文件渲染</td></tr>
+      <tr><td>文件分块</td><td>片段列表，每个片段可启用/停用、编辑、查看父块、管理辅助召回问题</td></tr>
+    </table>
+
+    <h3>7.2 文件下载</h3>
+    <div class="panel">
+      <div class="panel-title"><span class="dot"></span>位置与样式</div>
+      <ul class="plain">
+        <li>位置：详情弹窗标题栏<b>右侧、关闭「×」左侧</b>，与列表行菜单「下载文件」为同一功能入口。</li>
+        <li>样式：浅色描边按钮，下载图标 + 文字「下载」；悬浮时描边与文字变绿（品牌色 #07C160），背景转为浅绿。</li>
+        <li>点击：直接下载该文件的<b>原始文档</b>，不关闭详情弹窗，不影响当前分块浏览与编辑状态。</li>
+        <li>下载的是用户上传的源文件本体，不是预览渲染结果或分块内容。</li>
+      </ul>
+    </div>
+    <table>
+      <tr><th style="width:26%">交互</th><th style="width:30%">触发条件</th><th>结果</th></tr>
+      <tr><td>点击「下载」</td><td>按钮可用</td><td>立即开始下载，提示「正在下载「{文件名}」」；完成后提示「已下载「{文件名}」到本地下载目录」；弹窗保持打开</td></tr>
+      <tr><td>下载失败</td><td>源文件缺失 / 网络异常</td><td>提示 <span class="tag err">下载失败，请稍后重试</span>；按钮恢复可点</td></tr>
+      <tr><td>下载中重复点击</td><td>请求未结束</td><td>按钮置灰不可点，避免重复发起</td></tr>
+      <tr><td>源文件已被清理</td><td>仅有索引与分块、无原始文件</td><td>按钮置灰并悬浮提示「源文件已失效」</td></tr>
+    </table>
+
+    <h3>7.3 辅助召回问题</h3>
+    <table>
+      <tr><th style="width:24%">操作</th><th style="width:34%">交互</th><th>提示</th></tr>
+      <tr><td>新增</td><td>点「+」展开输入框，Enter 确认</td><td>「已添加 1 个辅助召回问题」</td></tr>
+      <tr><td>编辑</td><td>行内变输入框，预填并全选；Enter 保存、Esc 取消；编辑态常驻显示 ✓/×</td><td>空内容 <span class="tag err">问题内容不能为空</span>；成功「问题已保存」</td></tr>
+      <tr><td>删除</td><td>无需二次确认，点击即删；弹窗内列表与标题计数立即刷新</td><td>「已删除 1 个辅助召回问题」</td></tr>
+      <tr><td>重新生成</td><td>覆盖该片段全部问题</td><td>「已重新生成辅助召回问题」</td></tr>
+    </table>
+
+    <h3>7.4 来源文档链接</h3>
+    <ul class="plain">
+      <li>Wiki 词条页「来源文档」中的链接，点击后<b>打开对应文件的详情弹窗</b>，而非跳转新页面。</li>
+      <li>若文档名在文件库中不存在，提示 <span class="tag warn">原型演示：打开文档 {名}</span>（正式环境应提示「源文件已删除」并置灰）。</li>
+    </ul>
+  </section>
+
+  <!-- ============ 九 ============ -->
+  <section class="block" id="s9">
+    <h2>八、编辑知识库</h2>
+    <p class="sub">入口：详情页「编辑知识库」按钮 / 卡片菜单「编辑知识库」</p>
+
+    <h3>8.1 结构</h3>
+    <p>与新建向导的步骤一致（7 步，左侧导航），区别仅在于：所有字段预填当前值，底部按钮为「取消 / 保存」。</p>
+
+    <h3>8.2 字段可编辑范围</h3>
+    <div class="panel">
+      <div class="panel-title"><span class="dot"></span>总原则</div>
+      <p>除 <b>Embedding 嵌入模型</b> 外，其余参数<b>全部可编辑</b>。</p>
+    </div>
+    <table>
+      <tr><th style="width:22%">步骤</th><th style="width:36%">可编辑字段</th><th>说明</th></tr>
+      <tr><td>1 基本信息</td><td>名称、图标、描述</td><td>均可改；名称变更后，左侧目录树的根节点名称与已有文件的归属路径同步更新</td></tr>
+      <tr>
+        <td>2 模型配置</td>
+        <td>Wiki 合成模型<br><span class="tag gray">Embedding 嵌入模型（不可编辑）</span></td>
+        <td>嵌入模型<b>置灰不可点</b>，下拉箭头保留但为禁用态，悬浮/下方说明文案「嵌入模型在创建后不可修改」。原因：更换嵌入模型需要全量重新向量化存量数据，创建后不允许变更</td>
+      </tr>
+      <tr><td>3 分块设置</td><td>分块策略、分块大小、分块重叠、分隔符、父子分块开关、父块大小、子块大小</td><td>改动后需重新解析才对已有文档生效</td></tr>
+      <tr><td>4 图像处理</td><td>多模态功能开关、VLLM 视觉模型、图片解析要求</td><td>关闭多模态后，模型选择与解析要求两项隐藏</td></tr>
+      <tr><td>5 高级设置</td><td>AI 问题生成开关、生成问题数量、问题生成要求、Wiki 提取粒度、Wiki 内容生成要求、Wiki 提取重点</td><td>同新建向导的字段与范围限制</td></tr>
+      <tr><td>6 检索策略</td><td>向量召回数量、关键词阈值、向量阈值、重排序开关、ReRank 模型、重排数量、重排阈值</td><td>阈值类为滑块；改动即时生效，无需重新解析</td></tr>
+      <tr><td>7 成员管理</td><td>添加成员、成员角色、移除成员、转让所有者</td><td>至少保留 1 名所有者</td></tr>
+    </table>
+    <div class="note"><b>嵌入模型锁定说明：</b>该字段在编辑弹窗中始终展示当前值，用户可读但不可改；保存时也不会提交该字段。若业务上确需更换嵌入模型，应通过「重建知识库」或管理端迁移流程处理，不在此弹窗内提供入口。</div>
+
+    <h3>8.3 校验与提示</h3>
+    <table>
+      <tr><th style="width:26%">场景</th><th style="width:30%">结果</th><th>提示文案</th></tr>
+      <tr><td>名称清空</td><td>停留当前步骤，输入框聚焦</td><td><span class="tag err">知识库名称不能为空</span></td></tr>
+      <tr><td>保存成功</td><td>关闭弹窗，详情页头部信息立即刷新</td><td>「知识库已保存」</td></tr>
+      <tr><td>保存失败</td><td>弹窗保持打开，已改内容保留</td><td><span class="tag err">保存失败，请稍后重试</span></td></tr>
+      <tr><td>有未保存修改时点取消</td><td>二次确认「放弃未保存的修改？」</td><td>—</td></tr>
+      <tr><td>修改分块/检索配置</td><td>提示需重新解析才生效</td><td><span class="tag warn">配置已保存，重新解析后生效</span></td></tr>
+    </table>
+  </section>
+
+</main>
+
+<script>
+  // 侧边导航高亮
+  (function () {
+    const links = Array.prototype.slice.call(document.querySelectorAll('.nav-list a[data-t]'));
+    const targets = links.map(function (a) { return document.getElementById(a.dataset.t); }).filter(Boolean);
+
+    function setActive(id) {
+      links.forEach(function (a) { a.classList.toggle('active', a.dataset.t === id); });
+    }
+
+    function onScroll() {
+      const y = window.scrollY + 120;
+      let active = targets[0];
+      targets.forEach(function (el) { if (el.offsetTop <= y) active = el; });
+      // 滚到底部时强制高亮最后一项（末节较短，可能永远滚不到顶部）
+      if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) {
+        active = targets[targets.length - 1];
+      }
+      setActive(active.id);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // 平滑滚动，避免被固定侧栏遮挡
+    links.forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        const el = document.getElementById(a.dataset.t);
+        if (!el) return;
+        e.preventDefault();
+        setActive(a.dataset.t);   // 立即高亮，不等滚动的 scroll 事件
+        window.scrollTo({ top: el.offsetTop - 20, behavior: 'smooth' });
+        history.replaceState(null, '', '#' + a.dataset.t);
+      });
+    });
+
+    // 带 hash 直接打开时定位到对应小节
+    if (location.hash) {
+      const el = document.getElementById(location.hash.slice(1));
+      if (el) {
+        setTimeout(function () {
+          window.scrollTo(0, el.offsetTop - 20);
+          onScroll();
+        }, 0);
+      }
+    }
+  })();
+</script>
+</body>
+</html>

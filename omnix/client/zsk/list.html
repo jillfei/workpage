@@ -102,6 +102,32 @@
   .header-tab svg { width: 15px; height: 15px; }
 
     .add-wrap { position: relative; }
+    /* 悬浮 PRD 按钮：可拖动，位置记忆 */
+    .prd-fab {
+      position: fixed; right: 24px; bottom: 28px; z-index: 900;
+      display: flex; align-items: center; gap: 6px;
+      user-select: none; touch-action: none;
+    }
+    .prd-fab-tip {
+      display: inline-flex; align-items: center; height: 30px; padding: 0 12px;
+      background: #1f2430; color: #fff; border-radius: 6px;
+      font-size: 12.5px; white-space: nowrap;
+      opacity: 0; transform: translateX(6px); pointer-events: none;
+      transition: opacity .16s, transform .16s;
+    }
+    .prd-fab:hover .prd-fab-tip, .prd-fab.show-tip .prd-fab-tip { opacity: 1; transform: translateX(0); }
+    .prd-fab-btn {
+      width: 40px; height: 40px; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: none; border-radius: 50%; cursor: grab;
+      background: linear-gradient(135deg, #6d5efc 0%, #8b7cff 100%);
+      color: #fff; box-shadow: 0 6px 18px rgba(109,94,252,.38);
+      transition: box-shadow .16s, transform .16s;
+    }
+    .prd-fab-btn:hover { box-shadow: 0 8px 22px rgba(109,94,252,.5); transform: translateY(-1px); }
+    .prd-fab.dragging .prd-fab-btn { cursor: grabbing; transform: none; box-shadow: 0 10px 26px rgba(109,94,252,.55); }
+    .prd-fab.dragging .prd-fab-tip { opacity: 0; }
+    .header-right { display: flex; align-items: center; }
     .btn-add {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 6px 10px;
@@ -858,6 +884,7 @@
         </nav>
       </div>
   
+      <div class="header-right">
       <div class="add-wrap">
         <button class="btn-add" id="add-skill-btn" onclick="toggleNewKbMenu(event)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"></path></svg>
@@ -873,6 +900,7 @@
             企业知识库
           </button>
         </div>
+      </div>
       </div>
     </header>
 	
@@ -1630,6 +1658,121 @@ if (initialView === 'enterprise') {
 } else {
   try { sessionStorage.setItem('omniKbScope', 'personal'); } catch (e) {}
 }
+</script>
+
+<!-- ===== 悬浮 PRD 入口（可拖动） ===== -->
+<div class="prd-fab" id="prdFab">
+  <span class="prd-fab-tip">PRD 文档</span>
+  <button class="prd-fab-btn" id="prdFabBtn" type="button" title="企业知识库功能说明 PRD" aria-label="企业知识库功能说明 PRD">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+      <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+/* ===== 悬浮 PRD 按钮：拖动定位 + 位置记忆 + 点击打开 ===== */
+(function () {
+  var FAB_POS_KEY = 'omniPrdFabPos';
+  var fab = document.getElementById('prdFab');
+  var btn = document.getElementById('prdFabBtn');
+  if (!fab || !btn) return;
+
+  var DRAG_THRESHOLD = 4;   // 移动超过 4px 视为拖动，不触发跳转
+  var dragging = false, moved = false;
+  var startX = 0, startY = 0, originLeft = 0, originTop = 0;
+
+  /* 恢复上次位置（相对视口右下角的偏移），并限制在可视区内 */
+  function clamp(left, top) {
+    var w = fab.offsetWidth, h = fab.offsetHeight;
+    var maxLeft = window.innerWidth - w - 8;
+    var maxTop = window.innerHeight - h - 8;
+    return {
+      left: Math.max(8, Math.min(left, Math.max(8, maxLeft))),
+      top: Math.max(8, Math.min(top, Math.max(8, maxTop)))
+    };
+  }
+
+  function applyPos(left, top) {
+    var p = clamp(left, top);
+    fab.style.left = p.left + 'px';
+    fab.style.top = p.top + 'px';
+    fab.style.right = 'auto';
+    fab.style.bottom = 'auto';
+    return p;
+  }
+
+  function restorePos() {
+    var saved = null;
+    try { saved = JSON.parse(sessionStorage.getItem(FAB_POS_KEY) || 'null'); } catch (e) {}
+    if (saved && typeof saved.left === 'number' && typeof saved.top === 'number') {
+      applyPos(saved.left, saved.top);
+    }
+  }
+
+  function savePos() {
+    try {
+      sessionStorage.setItem(FAB_POS_KEY, JSON.stringify({
+        left: parseInt(fab.style.left, 10) || 0,
+        top: parseInt(fab.style.top, 10) || 0
+      }));
+    } catch (e) {}
+  }
+
+  function onPointerDown(e) {
+    if (e.button !== undefined && e.button !== 0) return;
+    dragging = true;
+    moved = false;
+    var rect = fab.getBoundingClientRect();
+    originLeft = rect.left;
+    originTop = rect.top;
+    startX = e.clientX;
+    startY = e.clientY;
+    btn.setPointerCapture && btn.setPointerCapture(e.pointerId);
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp);
+  }
+
+  function onPointerMove(e) {
+    if (!dragging) return;
+    var dx = e.clientX - startX;
+    var dy = e.clientY - startY;
+    if (!moved && Math.abs(dx) + Math.abs(dy) > DRAG_THRESHOLD) {
+      moved = true;
+      fab.classList.add('dragging');
+    }
+    if (!moved) return;
+    e.preventDefault();
+    applyPos(originLeft + dx, originTop + dy);
+  }
+
+  function onPointerUp() {
+    if (!dragging) return;
+    dragging = false;
+    fab.classList.remove('dragging');
+    document.removeEventListener('pointermove', onPointerMove);
+    document.removeEventListener('pointerup', onPointerUp);
+    if (moved) savePos();
+  }
+
+  btn.addEventListener('pointerdown', onPointerDown);
+
+  /* 点击：只有没拖动过才打开 PRD */
+  btn.addEventListener('click', function (e) {
+    if (moved) { e.preventDefault(); moved = false; return; }
+    window.open('./kb-enterprise-prd.html', '_blank', 'noopener');
+  });
+
+  /* 视口变化时把按钮拉回可视区 */
+  window.addEventListener('resize', function () {
+    if (!fab.style.left) return;
+    var p = applyPos(parseInt(fab.style.left, 10), parseInt(fab.style.top, 10));
+    savePos();
+  });
+
+  restorePos();
+})();
 </script>
 </body>
 </html>
