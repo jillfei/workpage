@@ -1,0 +1,2483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OmniX</title>
+    <style>
+		:root {
+		  --primary: #4F46E5;
+		  --primary-light: #EEF2FF;
+		  --text: #1F2937;
+		  --text-secondary: #6B7280;
+		  --bg: #F9FAFB;
+		  --card-bg: #FFFFFF;
+		  --border: #E5E7EB;
+		  --success: #059669;
+		  --warning: #D97706;
+		  --danger: #DC2626;
+		  --sidebar-width: 260px;
+		}
+        /* ===== reset & base ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f5f5f5;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            height: 100vh;
+            background: #f7f7f7;
+            border-right: 1px solid #e8e8e8;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: transparent;
+        }
+        .sidebar:hover::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        /* --- Header --- */
+        .sidebar-header {
+            padding: 12px 16px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .window-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .window-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+        .dot-red {
+            background: #ff5f56;
+            border: 1px solid #e0443e;
+        }
+        .dot-yellow {
+            background: #ffbd2e;
+            border: 1px solid #dea123;
+        }
+        .dot-green {
+            background: #27ca40;
+            border: 1px solid #1aab29;
+        }
+        .header-icons {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        .header-icon {
+            width: 15px;
+            height: 15px;
+            color: #666;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.15s;
+        }
+        .header-icon:hover {
+            opacity: 1;
+        }
+        .notification-trigger {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            color: #666;
+            cursor: pointer;
+            opacity: 0.75;
+            border: 0;
+            padding: 0;
+            background: transparent;
+        }
+        .notification-trigger:hover,
+        .notification-trigger:focus-visible {
+            opacity: 1;
+            outline: none;
+        }
+        .notification-trigger::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 8px;
+            border-radius: 4px;
+            color: #fff;
+            background: #333;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+            z-index: 1002;
+        }
+        .notification-trigger:hover::after,
+        .notification-trigger:focus-visible::after {
+            opacity: 1;
+        }
+        .notification-trigger svg {
+            width: 16px;
+            height: 16px;
+        }
+        .notification-count {
+            position: absolute;
+            top: -7px;
+            right: -9px;
+            min-width: 15px;
+            height: 15px;
+            padding: 0 4px;
+            border: 1px solid #f7f7f7;
+            border-radius: 8px;
+            color: #fff;
+            background: #ef4444;
+            font-size: 10px;
+            font-weight: 600;
+            line-height: 13px;
+            text-align: center;
+        }
+
+        /* ===== Message Center ===== */
+        .notification-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1001;
+        }
+        .notification-overlay.show {
+            display: block;
+        }
+        .notification-panel {
+            position: absolute;
+            top: 36px;
+            left: 12px;
+            width: 420px;
+            max-width: calc(100vw - 24px);
+            overflow: hidden;
+            border: 1px solid #e6eaf0;
+            border-radius: 9px;
+            background: #fff;
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+        }
+        .notification-panel::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: var(--notification-arrow-left, 201px);
+            width: 10px;
+            height: 10px;
+            border-top: 1px solid #e6eaf0;
+            border-left: 1px solid #e6eaf0;
+            background: #fff;
+            transform: rotate(45deg);
+        }
+        .notification-header {
+            display: flex;
+            align-items: center;
+            padding: 24px 24px 14px;
+            border-bottom: 1px solid #e8ecf1;
+        }
+        .notification-title {
+            color: #172554;
+            font-size: 17px;
+            font-weight: 700;
+        }
+        .mark-all-read {
+            width: 24px;
+            height: 24px;
+            margin-left: 8px;
+            border: 0;
+            border-radius: 5px;
+            color: #2563eb;
+            background: transparent;
+            cursor: pointer;
+        }
+        .mark-all-read:hover {
+            background: #eff6ff;
+        }
+        .mark-all-read svg {
+            width: 17px;
+            height: 17px;
+            vertical-align: middle;
+        }
+        .notification-close {
+            width: 24px;
+            height: 24px;
+            margin-left: auto;
+            border: 0;
+            color: #334155;
+            background: transparent;
+            font-size: 23px;
+            font-weight: 300;
+            line-height: 20px;
+            cursor: pointer;
+        }
+        .notification-close:hover {
+            color: #0f172a;
+        }
+        .notification-list {
+            padding: 2px 0 7px;
+        }
+        .notification-item {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 12px 48px 11px 24px;
+            border: 0;
+            color: #1e3a6b;
+            background: transparent;
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .notification-item:hover {
+            color: #2563eb;
+            background: #f8fafc;
+        }
+        .notification-item:hover .notification-delete-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .notification-delete-btn {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border: 0;
+            border-radius: 4px;
+            color: #94a3b8;
+            background: transparent;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .notification-delete-btn:hover {
+            color: #dc2626;
+            background: #fee2e2;
+        }
+        .notification-delete-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        .notification-item-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+            font-size: 14px;
+            line-height: 20px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .notification-date {
+            margin-top: 1px;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+        .notification-unread-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #f43f5e;
+            flex-shrink: 0;
+        }
+        .notification-item.read {
+            color: #64748b;
+        }
+        .notification-item.read .notification-unread-dot {
+            display: none;
+        }
+        .notification-empty {
+            display: none;
+            padding: 28px 0 30px;
+            color: #94a3b8;
+            font-size: 13px;
+            text-align: center;
+        }
+        .notification-empty.show {
+            display: block;
+        }
+        .notification-detail-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1003;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.48);
+            backdrop-filter: blur(3px);
+        }
+        .notification-detail-overlay.show {
+            display: flex;
+        }
+        .notification-detail {
+            position: relative;
+            width: 420px;
+            max-width: 100%;
+            padding: 38px 25px 24px;
+            border-radius: 10px;
+            color: #64748b;
+            background: #fff;
+            box-shadow: 0 20px 44px rgba(15, 23, 42, 0.28);
+        }
+        .notification-detail h2 {
+            margin-bottom: 7px;
+            color: #172554;
+            font-size: 19px;
+            line-height: 1.45;
+        }
+        .notification-detail time {
+            display: block;
+            margin-bottom: 16px;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+        .notification-detail-content {
+            font-size: 14px;
+            line-height: 1.85;
+            white-space: pre-line;
+        }
+        .notification-detail-close {
+            position: absolute;
+            top: 17px;
+            right: 18px;
+            width: 24px;
+            height: 24px;
+            border: 0;
+            color: #64748b;
+            background: transparent;
+            font-size: 22px;
+            cursor: pointer;
+        }
+        .notification-detail-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .notification-detail-confirm {
+            flex: 1;
+            padding: 10px;
+            border: 0;
+            border-radius: 7px;
+            color: #fff;
+            background: #4169f5;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .notification-detail-confirm:hover {
+            background: #3157e6;
+        }
+        .notification-detail-delete {
+            flex: 1;
+            padding: 10px;
+            border: 0;
+            border-radius: 7px;
+            color: #dc2626;
+            background: #fee2e2;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .notification-detail-delete:hover {
+            background: #fecaca;
+        }
+        .notification-confirm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1004;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.48);
+            backdrop-filter: blur(3px);
+        }
+        .notification-confirm-overlay.show {
+            display: flex;
+        }
+        .notification-confirm-dialog {
+            position: relative;
+            width: 360px;
+            max-width: 100%;
+            padding: 24px;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 20px 44px rgba(15, 23, 42, 0.28);
+        }
+        .notification-confirm-title {
+            color: #172554;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .notification-confirm-content {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .notification-confirm-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .notification-confirm-btn {
+            padding: 8px 20px;
+            border: 0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .notification-confirm-cancel {
+            color: #64748b;
+            background: #f1f5f9;
+        }
+        .notification-confirm-cancel:hover {
+            background: #e2e8f0;
+        }
+        .notification-confirm-delete {
+            color: #fff;
+            background: #dc2626;
+        }
+        .notification-confirm-delete:hover {
+            background: #b91c1c;
+        }
+
+        .app-title {
+            font-size: 13px;
+            color: #aaa;
+            padding: 0 16px 10px;
+            user-select: none;
+        }
+
+        /* --- Nav Items --- */
+        .nav-list {
+            list-style: none;
+            padding: 0 8px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 13.5px;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.12s;
+            user-select: none;
+        }
+        .nav-item:hover {
+            background: #eaeaea;
+        }
+        .nav-item.active {
+            background: #e4e4e4;
+        }
+
+        /* ---- disabled state for MCP & 技能 ---- */
+        .item-disabled {
+            color: #bbb !important;
+            cursor: not-allowed;
+            pointer-events: none;
+            /* 完全阻止点击、悬停等交互 */;
+        }
+        .item-disabled .nav-icon {
+            color: #ccc !important;
+        }
+        .item-disabled:hover {
+            background: transparent;
+        }
+        .item-disabled:focus-visible {
+            outline: none;
+        }
+
+        /* --- focus-visible (non-disabled only) --- */
+        .nav-item:not(.item-disabled):focus-visible,
+        .section-header:not(.item-disabled):focus-visible,
+        .section-item:not(.item-disabled):focus-visible,
+        .sub-item:not(.item-disabled):focus-visible,
+        .user-profile:focus-visible {
+            outline: 2px solid #4a6cf7;
+            outline-offset: -2px;
+        }
+
+        .nav-icon {
+            width: 17px;
+            height: 17px;
+            flex-shrink: 0;
+            color: #555;
+        }
+
+        /* --- Section --- */
+        .section {
+            margin-top: 18px;
+            padding: 0 8px;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px 6px;
+            font-size: 12px;
+            color: #999;
+            cursor: pointer;
+            user-select: none;
+        }
+        .section-header svg {
+            width: 12px;
+            height: 12px;
+            color: #bbb;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        .section-header.open svg {
+            transform: rotate(90deg);
+        }
+        .section-title {
+            flex: 1;
+        }
+
+        .section-list {
+            list-style: none;
+            overflow: hidden;
+        }
+        .section-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 6px 12px 6px 40px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #444;
+            cursor: pointer;
+            transition: background 0.12s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            user-select: none;
+        }
+        .section-item:hover {
+            background: #eaeaea;
+        }
+        .section-item.active {
+            background: #e4e4e4;
+        }
+        .section-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            color: #777;
+        }
+
+        /* Project expandable row + nested sub-list */
+        .project-row {
+            font-weight: 500;
+        }
+        .project-chevron {
+            width: 16px;
+            height: 16px;
+            color: #999;
+            margin-left: auto;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .project-row.expanded .project-chevron {
+            transform: rotate(180deg);
+        }
+        .sub-group {
+            list-style: none;
+            margin: 2px 0 2px 20px;
+            overflow: hidden;
+        }
+        .sub-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 5px 12px 5px 32px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #444;
+            cursor: pointer;
+            transition: background 0.12s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            user-select: none;
+        }
+        .sub-item:hover {
+            background: #eaeaea;
+        }
+        .sub-item.active {
+            background: #e4e4e4;
+        }
+
+        /* --- Footer --- */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 10px 8px 12px;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.12s;
+            user-select: none;
+        }
+        .user-profile:hover {
+            background: #ebebeb;
+        }
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .user-name {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #222;
+            flex: 1;
+        }
+        .user-chevron {
+            width: 14px;
+            height: 14px;
+            color: #999;
+        }
+
+        /* ===== User Popup ===== */
+        .user-popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+        }
+        .user-popup-overlay.show {
+            display: block;
+        }
+        .user-popup {
+            position: absolute;
+            bottom: 70px;
+            left: 12px;
+            width: 340px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            border: 1px solid #e8e8e8;
+            padding: 0;
+            overflow: hidden;
+        }
+        .popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px 14px;
+        }
+        .popup-username {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111;
+        }
+        .popup-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            background: #222;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .popup-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background 0.12s;
+            gap: 12px;
+        }
+        .popup-row:hover {
+            background: #f5f5f5;
+        }
+        .popup-row-icon {
+            width: 20px;
+            height: 20px;
+            color: #555;
+            flex-shrink: 0;
+        }
+        .popup-row-label {
+            font-size: 14px;
+            color: #333;
+            flex: 1;
+        }
+        .popup-row-value {
+            font-size: 13px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .popup-row-value .arrow {
+            font-size: 12px;
+            color: #bbb;
+        }
+        .popup-divider {
+            height: 1px;
+            background: #eee;
+            margin: 4px 20px;
+        }
+        .popup-arrow-right {
+            width: 16px;
+            height: 16px;
+            color: #999;
+            flex-shrink: 0;
+        }
+        .popup-question {
+            width: 16px;
+            height: 16px;
+            color: #bbb;
+            cursor: pointer;
+        }
+        .popup-token-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        .popup-update-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #27ca40;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .popup-update-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+        .popup-company-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #f0f0f0;
+            color: #555;
+            font-size: 12px;
+        }
+        .popup-theme-toggle {
+            display: flex;
+            align-items: center;
+            background: #f0f0f0;
+            border-radius: 20px;
+            padding: 3px;
+            gap: 2px;
+        }
+        .popup-theme-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 18px;
+            font-size: 12px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: none;
+            background: transparent;
+        }
+        .popup-theme-btn.active {
+            background: #fff;
+            color: #333;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .popup-theme-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+        .popup-exit {
+            color: #e74c3c;
+        }
+        .popup-exit .popup-row-icon {
+            color: #e74c3c;
+        }
+        .popup-exit .popup-row-label {
+            color: #e74c3c;
+        }
+
+        /* ===== Update Popup ===== */
+        .update-popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+        }
+        .update-popup-overlay.show {
+            display: block;
+        }
+        .update-popup {
+            position: absolute;
+            bottom: 70px;
+            left: 12px;
+            width: 320px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            border: 1px solid #e8e8e8;
+            padding: 20px;
+        }
+        .update-popup-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .update-popup-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #f0f4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .update-popup-icon svg {
+            width: 20px;
+            height: 20px;
+            color: #4a6cf7;
+        }
+        .update-popup-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+        }
+        .update-popup-version {
+            font-size: 12px;
+            color: #999;
+        }
+        .update-popup-content {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .update-popup-content h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        .update-popup-content ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+        .update-popup-content li {
+            margin-bottom: 4px;
+        }
+        .update-popup-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+			float: left;
+        }
+        .update-btn {
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+        .update-btn-later {
+            background: #f5f5f5;
+            color: #666;
+        }
+        .update-btn-later:hover {
+            background: #ebebeb;
+        }
+        .update-btn-now {
+            background: #242424;
+            color: #fff;
+        }
+        .update-btn-now:hover {
+            background: #000;
+        }
+        .update-btn-restart {
+            background: #27ca40;
+            color: #fff;
+        }
+        .update-btn-restart:hover {
+            background: #1aab29;
+        }
+
+        /* 更新进度动画 */
+        .update-spinner {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #f0f4ff;
+            color: #4a6cf7;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .update-spinner svg {
+            width: 14px;
+            height: 14px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .update-complete {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #27ca40;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .update-complete:hover {
+            background: #1aab29;
+        }
+
+        /* ===== Main Content Area (iframe) ===== */
+        .main-area {
+            flex: 1;
+            height: 100vh;
+            overflow: hidden;
+            background: #ffffff;
+        }
+        .main-area iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ===== 工具提示 ===== */
+        .item-disabled .disabled-tooltip {
+            display: none;
+        }
+        /* 不用 tooltip，保持简洁，灰色 + 不可点击已经足够表达 */
+		
+		
+		
+		.status-dot{
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			flex-shrink: 0;
+		}
+		.status-dot.success{
+			background: var(--success);
+		}
+		.status-dot.failed{
+			background: var(--danger);
+		}
+		.status-dot.pending{
+			background: #d1d5db;
+		}
+
+		/* ====== Feedback Modal ====== */
+		.feedback-overlay {
+			display: none;
+			position: fixed;
+			inset: 0;
+			background: rgba(0, 0, 0, 0.45);
+			z-index: 2000;
+			align-items: center;
+			justify-content: center;
+		}
+		.feedback-overlay.show {
+			display: flex;
+		}
+		.feedback-modal {
+			width: 520px;
+			max-width: calc(100vw - 48px);
+			max-height: calc(100vh - 48px);
+			background: #fff;
+			border-radius: 16px;
+			box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+			overflow: hidden;
+			animation: feedbackModalIn 0.2s ease;
+		}
+		@keyframes feedbackModalIn {
+			from { opacity: 0; transform: scale(0.95) translateY(10px); }
+			to { opacity: 1; transform: scale(1) translateY(0); }
+		}
+		.feedback-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 20px 24px 16px;
+		}
+		.feedback-title {
+			font-size: 17px;
+			font-weight: 600;
+			color: #1a1a1a;
+		}
+		.feedback-history-trigger,
+		.feedback-back-btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+			border: 0;
+			background: transparent;
+			color: #4F46E5;
+			font: inherit;
+			font-size: 13px;
+			cursor: pointer;
+		}
+		.feedback-history-trigger:hover,
+		.feedback-back-btn:hover {
+			color: #4338CA;
+		}
+		.feedback-header-actions {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+		.feedback-close {
+			width: 28px;
+			height: 28px;
+			border: none;
+			background: none;
+			cursor: pointer;
+			color: #999;
+			font-size: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 6px;
+			transition: background 0.15s;
+		}
+		.feedback-close:hover {
+			background: #f0f0f0;
+			color: #333;
+		}
+		.feedback-body {
+			padding: 0 24px 16px;
+		}
+		.feedback-textarea {
+			width: 100%;
+			min-height: 180px;
+			padding: 14px 16px;
+			border: 1px solid #e0e0e0;
+			border-radius: 10px;
+			font-size: 14px;
+			font-family: inherit;
+			color: #333;
+			resize: vertical;
+			outline: none;
+			transition: border-color 0.15s;
+			line-height: 1.6;
+		}
+		.feedback-textarea:focus {
+			border-color: #4F46E5;
+		}
+		.feedback-textarea::placeholder {
+			color: #bbb;
+		}
+		.feedback-footer {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-top: 12px;
+		}
+		.feedback-upload-btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 7px 14px;
+			border: 1px solid #e0e0e0;
+			border-radius: 8px;
+			background: #fff;
+			cursor: pointer;
+			font-size: 13px;
+			color: #555;
+			transition: all 0.15s;
+		}
+		.feedback-upload-btn:hover {
+			background: #f5f5f5;
+			border-color: #d0d0d0;
+		}
+		.feedback-upload-btn svg {
+			width: 15px;
+			height: 15px;
+		}
+		.feedback-count {
+			font-size: 13px;
+			color: #999;
+		}
+		.feedback-thumbnails {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			margin-top: 12px;
+		}
+		.feedback-thumbnail {
+			position: relative;
+			width: 72px;
+			height: 72px;
+			border-radius: 8px;
+			overflow: hidden;
+			border: 1px solid #e0e0e0;
+		}
+		.feedback-thumbnail img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+		.feedback-thumbnail-remove {
+			position: absolute;
+			top: 4px;
+			right: 4px;
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			background: rgba(0, 0, 0, 0.6);
+			border: none;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #fff;
+			font-size: 12px;
+			transition: background 0.15s;
+		}
+		.feedback-thumbnail-remove:hover {
+			background: rgba(0, 0, 0, 0.8);
+		}
+		.feedback-thumbnail-remove svg {
+			width: 12px;
+			height: 12px;
+		}
+		.feedback-checkbox {
+			display: flex;
+			align-items: flex-start;
+			gap: 10px;
+			margin-top: 16px;
+			cursor: pointer;
+		}
+		.feedback-checkbox input[type="checkbox"] {
+			width: 16px;
+			height: 16px;
+			margin-top: 2px;
+			accent-color: #4F46E5;
+			cursor: pointer;
+		}
+		.feedback-checkbox-text {
+			font-size: 13px;
+			color: #888;
+			line-height: 1.5;
+		}
+		.feedback-privacy-link {
+			color: #4F46E5;
+			text-decoration: none;
+		}
+		.feedback-privacy-link:hover {
+			text-decoration: underline;
+		}
+		.feedback-actions {
+			padding: 16px 24px 20px;
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+			border-top: 1px solid #f0f0f0;
+		}
+		.feedback-actions.with-history {
+			justify-content: space-between;
+		}
+		.feedback-submit-btn {
+			padding: 9px 24px;
+			border: none;
+			border-radius: 8px;
+			background: #e0e0e0;
+			color: #fff;
+			font-size: 14px;
+			font-weight: 500;
+			cursor: not-allowed;
+			transition: all 0.15s;
+		}
+		.feedback-submit-btn.active {
+			background: #4F46E5;
+			cursor: pointer;
+		}
+		.feedback-submit-btn.active:hover {
+			background: #4338CA;
+		}
+		.feedback-submit-btn:disabled {
+			cursor: not-allowed;
+		}
+		.feedback-view[hidden] {
+			display: none;
+		}
+		.feedback-list-body,
+		.feedback-detail-body {
+			max-height: min(520px, calc(100vh - 176px));
+			overflow-y: auto;
+		}
+		.feedback-detail-group {
+			padding: 20px 24px;
+		}
+		.feedback-detail-group + .feedback-detail-group {
+			border-top: 8px solid #f7f7f7;
+		}
+		.feedback-detail-group-title {
+			margin-bottom: 16px;
+			color: #1a1a1a;
+			font-size: 15px;
+			font-weight: 600;
+		}
+		.feedback-list-intro {
+			padding: 0 24px 14px;
+			color: #888;
+			font-size: 13px;
+		}
+		.feedback-records {
+			border-top: 1px solid #f0f0f0;
+		}
+		.feedback-record {
+			display: flex;
+			width: 100%;
+			align-items: flex-start;
+			gap: 12px;
+			padding: 16px 24px;
+			border: 0;
+			border-bottom: 1px solid #f0f0f0;
+			background: #fff;
+			font: inherit;
+			text-align: left;
+			cursor: pointer;
+		}
+		.feedback-record:hover {
+			background: #fafafa;
+		}
+		.feedback-record-content {
+			min-width: 0;
+			flex: 1;
+		}
+		.feedback-record-title {
+			display: -webkit-box;
+			overflow: hidden;
+			color: #333;
+			font-size: 14px;
+			line-height: 1.55;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 1;
+		}
+		.feedback-record-meta {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-top: 6px;
+			color: #999;
+			font-size: 12px;
+		}
+		.feedback-status {
+			padding: 2px 7px;
+			border-radius: 10px;
+			font-size: 11px;
+			line-height: 1.35;
+		}
+		.feedback-status.pending {
+			color: #B45309;
+			background: #FEF3C7;
+		}
+		.feedback-status.handled {
+			color: #047857;
+			background: #D1FAE5;
+		}
+		.feedback-record-arrow {
+			width: 18px;
+			height: 18px;
+			margin-top: 7px;
+			flex-shrink: 0;
+			color: #bbb;
+		}
+		.feedback-empty {
+			padding: 56px 24px;
+			color: #999;
+			font-size: 13px;
+			text-align: center;
+		}
+		.feedback-detail-section {
+			padding: 0;
+			border: 0;
+		}
+		.feedback-detail-section + .feedback-detail-section {
+			margin-top: 18px;
+		}
+		.feedback-detail-label {
+			margin-bottom: 8px;
+			color: #999;
+			font-size: 12px;
+		}
+		.feedback-detail-content {
+			color: #333;
+			font-size: 14px;
+			line-height: 1.7;
+			white-space: pre-wrap;
+		}
+		.feedback-detail-time {
+			margin-bottom: 10px;
+			color: #666;
+			font-size: 13px;
+		}
+		.feedback-pending-note {
+			color: #999;
+			font-size: 13px;
+			line-height: 1.6;
+		}
+		.feedback-image-list {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+		}
+		.feedback-image-placeholder {
+			position: relative;
+			width: 104px;
+			height: 78px;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: 5px;
+			border: 1px solid #dedede;
+			border-radius: 8px;
+			color: #777;
+			background: linear-gradient(135deg, #f7f7f7, #ececec);
+			font: inherit;
+			font-size: 11px;
+			cursor: zoom-in;
+		}
+		.feedback-image-placeholder::after {
+			content: '';
+			position: absolute;
+			inset: 8px;
+			border: 1px solid rgba(255, 255, 255, 0.7);
+			border-radius: 4px;
+			pointer-events: none;
+		}
+		.feedback-image-placeholder svg {
+			width: 20px;
+			height: 20px;
+		}
+		.feedback-image-placeholder:hover {
+			border-color: #9f9bea;
+			color: #4F46E5;
+		}
+		.feedback-image-preview-overlay {
+			display: none;
+			position: fixed;
+			inset: 0;
+			z-index: 2001;
+			align-items: center;
+			justify-content: center;
+			padding: 24px;
+			background: rgba(0, 0, 0, 0.7);
+		}
+		.feedback-image-preview-overlay.show {
+			display: flex;
+		}
+		.feedback-image-preview {
+			position: relative;
+			width: min(680px, 100%);
+			aspect-ratio: 16 / 10;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: 12px;
+			border-radius: 12px;
+			color: #666;
+			background: linear-gradient(135deg, #f8f8f8, #e7e7e7);
+			box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+		}
+		.feedback-image-preview svg {
+			width: 48px;
+			height: 48px;
+			color: #999;
+		}
+		.feedback-image-preview-title {
+			font-size: 14px;
+		}
+		.feedback-image-preview-close {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			width: 32px;
+			height: 32px;
+			border: 0;
+			border-radius: 6px;
+			color: #666;
+			background: rgba(255, 255, 255, 0.82);
+			font-size: 21px;
+			cursor: pointer;
+		}
+		@media (max-width: 560px) {
+			.feedback-modal {
+				max-width: calc(100vw - 24px);
+				max-height: calc(100vh - 24px);
+			}
+			.feedback-header,
+			.feedback-actions {
+				padding-right: 18px;
+				padding-left: 18px;
+			}
+			.feedback-body,
+			.feedback-list-intro,
+			.feedback-detail-group {
+				padding-right: 18px;
+				padding-left: 18px;
+			}
+			.feedback-record {
+				padding-right: 18px;
+				padding-left: 18px;
+			}
+		}
+
+    </style>
+</head>
+<body>
+
+    <!-- ====== Sidebar ====== -->
+    <aside class="sidebar">
+
+        <!-- Header -->
+        <div class="sidebar-header">
+            <div class="window-controls">
+                <div class="window-dot dot-red"></div>
+                <div class="window-dot dot-yellow"></div>
+                <div class="window-dot dot-green"></div>
+            </div>
+            <div class="header-icons">
+                <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="4" width="14" height="14" rx="2" />
+                    <line x1="9" y1="4" x2="9" y2="21" />
+                </svg>
+                <button class="notification-trigger" id="notificationTrigger" type="button" aria-label="消息中心" aria-expanded="false" data-tooltip="消息中心">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+                    <span class="notification-count" id="notificationCount">2</span>
+                </button>
+                <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="app-title">OmniX v0.3.3</div>
+
+        <!-- Primary nav -->
+        <ul class="nav-list">
+            <li class="nav-item" data-src="../changelog.html">
+                📜 版本日志
+                <span style="font-size:10px;color:#999;margin-left:auto;">prd文档，无需开发</span>
+            </li>
+            <li class="nav-item active" data-src="content.html">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+                新会话
+            </li>
+            <li class="nav-item" data-src="./zjgc/list.html">
+                ⚕️ 专家广场
+            </li>
+			<li class="nav-item" data-src="./zsk/list.html">
+			    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
+			    知识库
+			</li>
+            <!-- MCP — 未开发，置灰不可点击 -->
+            <li class="nav-item" data-src="./mcp/list.html">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
+                连接器
+            </li>
+            <!-- 技能 — 未开发，置灰不可点击 -->
+            <li class="nav-item" data-src="./skill/list.html">
+                🔨 技能
+            </li>
+            <li class="nav-item" data-src="./automation/list.html">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+                自动化
+            </li>
+        </ul>
+
+        <!-- 会话 Section -->
+        <div class="section">
+            <div class="section-header open" aria-expanded="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+                <span class="section-title">💬 会话 (3)</span>
+            </div>
+            <ul class="section-list">
+                <li class="section-item" data-src="./session/agents.html">
+					<svg class="loading-spin" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#007aff" stroke-width="1.8">
+					  <style>.loading-spin{margin:-4px; animation:spin 0.8s linear infinite}@keyframes spin{100%{transform:rotate(360deg)}}</style>
+					  <path d="M16 10A6 6 0 1 1 10 4" stroke-linecap="round"></path>
+					</svg>
+					每日AI新闻推送...<span style="font-size:11px;color:#b8860b;background:#fdf6e3;padding:1px 8px;border-radius:10px;margin-left:auto;">等待回复</span>
+				</li>
+                <li class="section-item" data-src="./session/agents-zsk.html"><span class="status-dot success"></span> 公司的请假制度（知识库引用）</li>
+                <li class="section-item" data-src="./session/agents-error.html"><span class="status-dot failed"></span> 设计一个人个、...<span style="font-size:11px;color:var(--danger);background:#fee2e2;padding:1px 8px;border-radius:10px;margin-left:auto;">失败</span></li>
+                <li class="section-item" data-src="content.html"><span class="status-dot pending"></span> 了解 OmniX 通用场景</li>
+            </ul>
+        </div>
+
+        <!-- 项目 Section -->
+        <div class="section">
+            <div class="section-header open" aria-expanded="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+                <span class="section-title">📂️ 项目 (1)</span>
+            </div>
+            <ul class="section-list">
+                <li class="section-item project-row expanded" data-src="content.html?view=neoomni">
+                    📋 NeoOmni官网设计
+                    <svg class="project-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                </li>
+                <ul class="sub-group">
+                    <li class="sub-item" data-src="content.html?view=neoomni-1"><span class="status-dot success"></span> 设计一个企业管理经营首...</li>
+                    <li class="sub-item" data-src="content.html?view=neoomni-3"><span class="status-dot pending"></span> 了解 NeoOmni官方产品</li>
+                </ul>
+				
+				<li class="section-item project-row expanded" data-src="content.html?view=autu1">
+					📋 提醒我下班
+                    <svg class="project-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+
+				</li>
+                <ul class="sub-group">
+                    <li class="sub-item" data-src="content.html?view=neoomni-1"><span class="status-dot pending"></span> 提醒下班...</li>
+                </ul>
+				<li class="section-item project-row expanded" data-src="content.html?view=autu2">
+					📋 每日新闻推送
+                    <svg class="project-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+				</li>
+                <ul class="sub-group">
+                    <li class="sub-item" data-src="content.html?view=neoomni-1"><span class="status-dot pending"></span> 今日新闻推送...</li>
+                </ul>
+            </ul>
+        </div>
+
+
+
+        <!-- User Profile -->
+        <div class="sidebar-footer">
+            <div class="user-profile" role="button" tabindex="0">
+                <div class="user-avatar">👾</div>
+                <span class="user-name">J1hyo</span>
+                <span class="user-updating-tag" id="userUpdatingTag" style="display:none;font-size:11px;color:#4a6cf7;background:#f0f4ff;padding:2px 8px;border-radius:10px;">更新中</span>
+                <svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15" /></svg>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ====== Update Popup ====== -->
+    <div class="update-popup-overlay" id="updatePopupOverlay">
+        <div class="update-popup" id="updatePopup">
+            <div class="update-popup-header">
+                <div class="update-popup-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                </div>
+                <div>
+                    <div class="update-popup-title">发现新版本</div>
+                    <div class="update-popup-version">v0.3.4</div>
+                </div>
+            </div>
+            <div class="update-popup-content">
+                <ul>
+                    <li>支持配置多个邮箱账号</li>
+                    <li>新增 XAI 模型供应商，可使用 SuperGrok 额度调用 Grok 模型</li>
+                    <li>新增 MCP JSON 配置导入</li>
+                    <li>优化定时任务与通知，可选择具体 IM 会话或不通知优化专家套件与技能管理，新增已安装套件视图和 “立即使用”</li>
+                </ul>
+            </div>
+            <div class="update-popup-actions">
+                <button class="update-btn update-btn-now" id="updateBtnNow">立即更新</button>
+                <button class="update-btn update-btn-later" id="updateBtnLater">跳过本次更新</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== User Popup ====== -->
+    <div class="user-popup-overlay" id="userPopupOverlay">
+        <div class="user-popup" id="userPopup">
+            <div class="popup-header">
+                <span class="popup-username">J1hyo</span>
+                <span class="popup-badge">个人版</span>
+            </div>
+
+            <div class="popup-row" onclick="goUrl('../index.html',true)">
+                <svg class="popup-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
+                <span class="popup-row-label">管理后台</span>
+                <svg class="popup-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg>
+            </div>
+
+            <div class="popup-divider"></div>
+
+            <div class="popup-row">
+                <svg class="popup-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10" /><polyline points="12 6 12 12 16 14" /></svg>
+                <span class="popup-row-label">可用Token</span>
+                <svg style="display: none;" class="popup-question" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                <span class="popup-token-value">20,000</span>
+                <span class="popup-row-value"><span class="arrow">›</span></span>
+            </div>
+
+            <div class="popup-divider"></div>
+
+            <div class="popup-row" onclick="window.location.href='./setting/account-management.html'">
+                <svg class="popup-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
+                <span class="popup-row-label">设置</span>
+            </div>
+
+            <div class="popup-row">
+                <svg class="popup-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
+                <span class="popup-row-label">外观</span>
+                <div class="popup-theme-toggle">
+                    <button class="popup-theme-btn active" data-theme="light">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
+                        浅色
+                    </button>
+                    <button class="popup-theme-btn" data-theme="dark">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+                        深色
+                    </button>
+                </div>
+            </div>
+
+            <div class="popup-row">
+                <svg class="popup-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
+                <span class="popup-row-label">检查更新</span>
+                <span class="popup-update-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                    有可用更新
+                </span>
+            </div>
+
+            <div class="popup-row" onclick="openFeedbackModal()">
+                <svg class="popup-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                <span class="popup-row-label">意见反馈</span>
+            </div>
+
+            <div class="popup-divider"></div>
+
+            <div class="popup-row">
+                <svg class="popup-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><polyline points="7 23 3 19 7 15" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /></svg>
+                <span class="popup-row-label">切换到企业版</span>
+                <span class="popup-company-badge">思维特数字科技</span>
+            </div>
+
+            <div class="popup-row popup-exit" onclick="goUrl('./login.html')">
+                <svg class="popup-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+                <span class="popup-row-label">退出登录</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== Message Center ====== -->
+    <div class="notification-overlay" id="notificationOverlay">
+        <section class="notification-panel" id="notificationPanel" aria-label="消息中心">
+            <div class="notification-header">
+                <span class="notification-title">消息中心</span>
+                <button class="mark-all-read" id="markAllRead" type="button" title="全部标为已读" aria-label="全部标为已读">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11 3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+                </button>
+                <button class="notification-close" id="notificationClose" type="button" aria-label="关闭消息中心">×</button>
+            </div>
+            <div class="notification-list" id="notificationList">
+                <button class="notification-item" type="button" data-title="OmniX 正式上线" data-date="2026-09-30" data-content="OmniX 已正式上线,欢迎前往应用市场下载体验。\n\n新版支持随时随地处理会话、查看任务进度,并持续优化移动端使用体验。">
+                    <div class="notification-item-title">
+                        <span class="notification-unread-dot"></span>
+                        OmniX 正式上线
+                    </div>
+                    <div class="notification-date">2026-09-30</div>
+                    <span class="notification-delete-btn" title="删除消息">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                    </span>
+                </button>
+                <button class="notification-item" type="button" data-title="邀请好友,共享积分福利!" data-date="2026-08-21 18:31" data-content="🎉 邀请共享积分礼活动已上线!即日起至2026年9月30日23:59,邀请用户注册且7日内登录 OmniX,您和好友均可获得积分奖励:\n\n• 邀请人:每邀请1位好友,得500积分(每月最高累计3万积分),积分有效期1年\n• 被邀请人:注册并登录桌面端后,立得3000积分,积分有效期1个月\n• 参与方式:点击「头像 - 积分福利社 - 邀请共享积分 - 前往活动」进入活动页面,查看详情并分享邀请\n\n📍温馨提示:邀请功能长期有效,奖励细则请以积分福利社活动说明为准。">
+                    <div class="notification-item-title">
+                        <span class="notification-unread-dot"></span>
+                        邀请好友,共享积分福利!
+                    </div>
+                    <div class="notification-date">2026-08-21</div>
+                    <span class="notification-delete-btn" title="删除消息">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                    </span>
+                </button>
+            </div>
+            <div class="notification-empty" id="notificationEmpty">全部消息已读</div>
+        </section>
+    </div>
+
+    <!-- ====== Message Detail ====== -->
+    <div class="notification-detail-overlay" id="notificationDetailOverlay">
+        <section class="notification-detail" id="notificationDetail" role="dialog" aria-modal="true" aria-labelledby="notificationDetailTitle">
+            <button class="notification-detail-close" id="notificationDetailClose" type="button" aria-label="关闭消息详情">×</button>
+            <h2 id="notificationDetailTitle"></h2>
+            <time id="notificationDetailDate"></time>
+            <div class="notification-detail-content" id="notificationDetailContent"></div>
+            <div class="notification-detail-actions">
+                <button class="notification-detail-confirm" id="notificationDetailConfirm" type="button">我知道了</button>
+                <button class="notification-detail-delete" id="notificationDetailDelete" type="button">删除此消息</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- ====== Delete Confirm Dialog ====== -->
+    <div class="notification-confirm-overlay" id="notificationConfirmOverlay">
+        <div class="notification-confirm-dialog" id="notificationConfirmDialog">
+            <div class="notification-confirm-title">确认删除</div>
+            <div class="notification-confirm-content">删除后将无法恢复，确定要删除这条消息吗？</div>
+            <div class="notification-confirm-actions">
+                <button class="notification-confirm-btn notification-confirm-cancel" id="notificationConfirmCancel" type="button">取消</button>
+                <button class="notification-confirm-btn notification-confirm-delete" id="notificationConfirmDelete" type="button">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== Main Content (iframe) ====== -->
+    <main class="main-area">
+        <iframe id="content-frame" src="content.html?view=new-chat" title="OmniX 内容区"></iframe>
+    </main>
+
+    <script>
+        (function() {
+            const iframe = document.getElementById('content-frame');
+
+            // 唯一选中态管理
+            function setActive(el) {
+                document
+                    .querySelectorAll('.nav-item, .section-item, .sub-item')
+                    .forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            }
+
+            // iframe 链接切换
+            function switchTo(src) {
+                if (iframe && src) iframe.src = src;
+            }
+
+            // 可点击条目（菜单 + 会话 + 项目 + 子项 + IP）
+            document.querySelectorAll('[data-src]').forEach(el => {
+                // 如果带有 disabled 类，跳过交互绑定
+                if (el.classList.contains('item-disabled')) return;
+
+                // project-row 类型：点击切换展开/收起，不跳转
+                if (el.classList.contains('project-row')) {
+                    el.setAttribute('role', 'button');
+                    el.setAttribute('tabindex', '0');
+
+                    const toggleExpand = () => {
+                        const expanded = el.classList.toggle('expanded');
+                        const subGroup = el.nextElementSibling;
+                        if (subGroup && subGroup.classList.contains('sub-group')) {
+                            subGroup.style.display = expanded ? 'block' : 'none';
+                        }
+                    };
+
+                    el.addEventListener('click', toggleExpand);
+                    el.addEventListener('keydown', e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            toggleExpand();
+                        }
+                    });
+                    return;
+                }
+
+                el.setAttribute('role', 'button');
+                el.setAttribute('tabindex', '0');
+
+                const activate = () => {
+                    setActive(el);
+                    switchTo(el.getAttribute('data-src'));
+                };
+
+                el.addEventListener('click', activate);
+                el.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        activate();
+                    }
+                });
+            });
+
+            // 分区折叠 / 展开
+            document.querySelectorAll('.section-header').forEach(header => {
+                header.setAttribute('role', 'button');
+                header.setAttribute('tabindex', '0');
+                const toggle = () => {
+                    const open = header.classList.toggle('open');
+                    header.setAttribute('aria-expanded', String(open));
+                    const list = header.parentElement.querySelector(':scope > .section-list, :scope > .sub-group');
+                    if (list) list.style.display = open ? 'block' : 'none';
+                };
+                header.addEventListener('click', toggle);
+                header.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggle();
+                    }
+                });
+            });
+
+            window.addEventListener('message', function(e) {
+                if (e.data && e.data.type === 'navigate' && e.data.src) {
+                    var target = document.querySelector('[data-src="' + e.data.src + '"]');
+                    if (target && !target.classList.contains('item-disabled')) {
+                        setActive(target);
+                        switchTo(e.data.src);
+                    }
+                }
+                if (e.data && e.data.type === 'openFeedback') {
+                    openFeedbackModal(e.data.content || '');
+                }
+            });
+
+            // 消息中心
+            var notificationTrigger = document.getElementById('notificationTrigger');
+            var notificationCount = document.getElementById('notificationCount');
+            var notificationOverlay = document.getElementById('notificationOverlay');
+            var notificationPanel = document.getElementById('notificationPanel');
+            var notificationClose = document.getElementById('notificationClose');
+            var markAllRead = document.getElementById('markAllRead');
+            var notificationItems = document.querySelectorAll('.notification-item');
+            var notificationEmpty = document.getElementById('notificationEmpty');
+            var notificationDetailOverlay = document.getElementById('notificationDetailOverlay');
+            var notificationDetail = document.getElementById('notificationDetail');
+            var notificationDetailTitle = document.getElementById('notificationDetailTitle');
+            var notificationDetailDate = document.getElementById('notificationDetailDate');
+            var notificationDetailContent = document.getElementById('notificationDetailContent');
+            var notificationConfirmOverlay = document.getElementById('notificationConfirmOverlay');
+            var notificationConfirmDialog = document.getElementById('notificationConfirmDialog');
+            var notificationConfirmCancel = document.getElementById('notificationConfirmCancel');
+            var notificationConfirmDelete = document.getElementById('notificationConfirmDelete');
+            var pendingDeleteItem = null;
+
+            function updateNotificationCount() {
+                var unreadCount = document.querySelectorAll('.notification-item:not(.read)').length;
+                notificationCount.textContent = unreadCount;
+                notificationCount.style.display = unreadCount ? 'block' : 'none';
+                notificationEmpty.classList.toggle('show', unreadCount === 0);
+            }
+
+            function positionNotificationPanel() {
+                var triggerRect = notificationTrigger.getBoundingClientRect();
+                var panelWidth = Math.min(420, window.innerWidth - 24);
+                var panelLeft = Math.max(12, Math.min(triggerRect.left - panelWidth / 2 + triggerRect.width / 2, window.innerWidth - panelWidth - 12));
+                var arrowLeft = Math.max(16, Math.min(triggerRect.left - panelLeft + triggerRect.width / 2 - 5, panelWidth - 16));
+                notificationPanel.style.top = (triggerRect.bottom + 8) + 'px';
+                notificationPanel.style.left = panelLeft + 'px';
+                notificationPanel.style.setProperty('--notification-arrow-left', arrowLeft + 'px');
+            }
+
+            function closeNotificationPanel() {
+                notificationOverlay.classList.remove('show');
+                notificationTrigger.setAttribute('aria-expanded', 'false');
+            }
+
+            function closeNotificationDetail() {
+                notificationDetailOverlay.classList.remove('show');
+            }
+
+            notificationTrigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var visible = notificationOverlay.classList.toggle('show');
+                notificationTrigger.setAttribute('aria-expanded', String(visible));
+                if (visible) positionNotificationPanel();
+            });
+
+            notificationClose.addEventListener('click', closeNotificationPanel);
+            notificationOverlay.addEventListener('click', function(e) {
+                if (!notificationPanel.contains(e.target)) closeNotificationPanel();
+            });
+
+            markAllRead.addEventListener('click', function() {
+                notificationItems.forEach(function(item) {
+                    item.classList.add('read');
+                });
+                updateNotificationCount();
+            });
+
+            notificationItems.forEach(function(item) {
+                item.addEventListener('click', function() {
+                    item.classList.add('read');
+                    updateNotificationCount();
+                    notificationDetailTitle.textContent = item.getAttribute('data-title');
+                    notificationDetailDate.textContent = item.getAttribute('data-date');
+                    notificationDetailContent.textContent = item.getAttribute('data-content');
+                    closeNotificationPanel();
+                    notificationDetailOverlay.classList.add('show');
+                });
+            });
+
+            document.querySelectorAll('.notification-delete-btn').forEach(function(deleteBtn) {
+                deleteBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    pendingDeleteItem = deleteBtn.closest('.notification-item');
+                    notificationConfirmOverlay.classList.add('show');
+                });
+            });
+
+            notificationConfirmCancel.addEventListener('click', function() {
+                notificationConfirmOverlay.classList.remove('show');
+                pendingDeleteItem = null;
+            });
+
+            notificationConfirmDelete.addEventListener('click', function() {
+                if (pendingDeleteItem) {
+                    pendingDeleteItem.style.transition = 'opacity 0.3s, transform 0.3s';
+                    pendingDeleteItem.style.opacity = '0';
+                    pendingDeleteItem.style.transform = 'translateX(-20px)';
+                    setTimeout(function() {
+                        pendingDeleteItem.remove();
+                        pendingDeleteItem = null;
+                        updateNotificationCount();
+                    }, 300);
+                }
+                notificationConfirmOverlay.classList.remove('show');
+            });
+
+            notificationConfirmOverlay.addEventListener('click', function(e) {
+                if (!notificationConfirmDialog.contains(e.target)) {
+                    notificationConfirmOverlay.classList.remove('show');
+                    pendingDeleteItem = null;
+                }
+            });
+
+            document.getElementById('notificationDetailDelete').addEventListener('click', function() {
+                var currentTitle = notificationDetailTitle.textContent;
+                var currentContent = notificationDetailContent.textContent;
+                var items = document.querySelectorAll('.notification-item');
+                items.forEach(function(item) {
+                    if (item.getAttribute('data-title') === currentTitle && item.getAttribute('data-content') === currentContent) {
+                        pendingDeleteItem = item;
+                    }
+                });
+                closeNotificationDetail();
+                notificationConfirmOverlay.classList.add('show');
+            });
+
+            document.getElementById('notificationDetailClose').addEventListener('click', closeNotificationDetail);
+            document.getElementById('notificationDetailConfirm').addEventListener('click', closeNotificationDetail);
+            notificationDetailOverlay.addEventListener('click', function(e) {
+                if (!notificationDetail.contains(e.target)) closeNotificationDetail();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key !== 'Escape') return;
+                notificationConfirmOverlay.classList.remove('show');
+                pendingDeleteItem = null;
+                closeNotificationDetail();
+                closeNotificationPanel();
+            });
+            window.addEventListener('resize', function() {
+                if (notificationOverlay.classList.contains('show')) positionNotificationPanel();
+            });
+            updateNotificationCount();
+
+            // 用户弹窗
+            var userProfile = document.querySelector('.user-profile');
+            var popupOverlay = document.getElementById('userPopupOverlay');
+            var popup = document.getElementById('userPopup');
+            var updateBadge = document.querySelector('.popup-update-badge');
+
+            userProfile.addEventListener('click', function(e) {
+                e.stopPropagation();
+                popupOverlay.classList.toggle('show');
+                // 重置更新徽章状态
+                updateBadge.className = 'popup-update-badge';
+                updateBadge.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg> 有可用更新';
+            });
+
+            popupOverlay.addEventListener('click', function(e) {
+                if (!popup.contains(e.target)) {
+                    popupOverlay.classList.remove('show');
+                }
+            });
+
+            // 外观主题切换
+            document.querySelectorAll('.popup-theme-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.popup-theme-btn').forEach(function(b) {
+                        b.classList.remove('active');
+                    });
+                    btn.classList.add('active');
+                });
+            });
+
+            // 更新弹窗
+            var allPopupRows = document.querySelectorAll('.popup-row');
+            var checkUpdateRow = null;
+            allPopupRows.forEach(function(row) {
+                if (row.querySelector('.popup-row-label') && row.querySelector('.popup-row-label').textContent === '检查更新') {
+                    checkUpdateRow = row;
+                }
+            });
+            var updateOverlay = document.getElementById('updatePopupOverlay');
+            var updatePopup = document.getElementById('updatePopup');
+            var updateBtnLater = document.getElementById('updateBtnLater');
+            var updateBtnNow = document.getElementById('updateBtnNow');
+
+            checkUpdateRow.addEventListener('click', function(e) {
+                e.stopPropagation();
+                popupOverlay.classList.remove('show');
+                updateOverlay.classList.add('show');
+            });
+
+            updateOverlay.addEventListener('click', function(e) {
+                if (!updatePopup.contains(e.target)) {
+                    updateOverlay.classList.remove('show');
+                }
+            });
+
+            updateBtnLater.addEventListener('click', function() {
+                updateOverlay.classList.remove('show');
+            });
+
+            updateBtnNow.addEventListener('click', function() {
+                updateOverlay.classList.remove('show');
+                // 显示用户名旁的"更新中"标签
+                document.getElementById('userUpdatingTag').style.display = 'inline';
+                // 替换徽章为进度动画
+                updateBadge.className = 'update-spinner';
+                updateBadge.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> 更新中 10%';
+
+                var progress = 10;
+                var timer = setInterval(function() {
+                    progress += 10;
+                    if (progress <= 100) {
+                        updateBadge.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> 更新中 ' + progress + '%';
+                    }
+                    if (progress >= 100) {
+                        clearInterval(timer);
+                        updateBadge.className = 'update-complete';
+                        updateBadge.innerHTML = '✓ 更新完成，点击重启';
+                        // 隐藏"更新中"标签
+                        document.getElementById('userUpdatingTag').style.display = 'none';
+                        updateBadge.addEventListener('click', function() {
+                            location.reload();
+                        });
+                    }
+                }, 500);
+            });
+
+            // 项目行子列表折叠逻辑已移至上方统一处理
+
+        })();
+	
+	//打开网页
+    function goUrl(url,isnew=false) {
+		if(isnew){
+			window.open(url, '_blank');
+		}else{
+			window.location.href=url;
+		}
+    }
+
+	// ====== Feedback Modal ======
+	let feedbackFiles = [];
+	const feedbackHistory = [
+		{
+			id: 'feedback-001',
+			content: '希望知识库支持按文件夹批量导入文档，并显示每个文件的解析进度。',
+			submittedAt: '2026-10-24 14:36',
+			uploadedLog: true,
+			status: 'handled',
+			handledAt: '2026-10-25 10:18',
+			handleDescription: '感谢反馈。批量导入和文件级解析进度已纳入后续版本计划，当前可先通过多选文件方式逐批上传。'
+		},
+		{
+			id: 'feedback-002',
+			content: '生成图片时希望能保存常用的尺寸和风格设置，减少重复配置。',
+			submittedAt: '2026-10-18 09:52',
+			uploadedLog: false,
+			status: 'handled',
+			handledAt: '2026-10-20 16:42',
+			handleDescription: '已在 v0.3.4 中支持保存最近使用的图片生成参数，常用预设功能正在持续完善。'
+		},
+		{
+			id: 'feedback-003',
+			content: '会话较多时，侧边栏搜索结果希望能按最近更新时间排序。',
+			submittedAt: '2026-10-12 20:08',
+			uploadedLog: true,
+			status: 'pending'
+		}
+	];
+	let feedbackView = 'form';
+	let currentFeedbackId = null;
+
+	function setFeedbackView(view, feedbackId) {
+		feedbackView = view;
+		currentFeedbackId = feedbackId || null;
+		document.querySelectorAll('.feedback-view').forEach(function(element) {
+			element.hidden = element.id !== 'feedback' + view.charAt(0).toUpperCase() + view.slice(1) + 'View';
+		});
+		if (view === 'list') renderFeedbackHistory();
+		if (view === 'detail') renderFeedbackDetail();
+	}
+
+	function openFeedbackModal(content) {
+		var textarea = document.getElementById('feedbackTextarea');
+		var charCount = document.getElementById('feedbackCharCount');
+		document.getElementById('feedbackOverlay').classList.add('show');
+		document.body.style.overflow = 'hidden';
+		setFeedbackView('form');
+		if (content && textarea && charCount) {
+			textarea.value = content;
+			charCount.textContent = content.length;
+			updateSubmitBtnState();
+		}
+	}
+
+	function closeFeedbackModal() {
+		document.getElementById('feedbackOverlay').classList.remove('show');
+		document.body.style.overflow = '';
+		feedbackTextarea.value = '';
+		feedbackFiles = [];
+		feedbackCharCount.textContent = '0';
+		document.getElementById('feedbackFileCount').textContent = '0';
+		document.getElementById('feedbackThumbnails').innerHTML = '';
+		updateSubmitBtnState();
+	}
+
+	function openFeedbackHistory() {
+		setFeedbackView('list');
+	}
+
+	function openFeedbackForm() {
+		setFeedbackView('form');
+		setTimeout(function() { feedbackTextarea.focus(); }, 0);
+	}
+
+	function openFeedbackDetail(id) {
+		setFeedbackView('detail', id);
+	}
+
+	function openFeedbackImagePreview() {
+		document.getElementById('feedbackImagePreviewOverlay').classList.add('show');
+	}
+
+	function closeFeedbackImagePreview() {
+		document.getElementById('feedbackImagePreviewOverlay').classList.remove('show');
+	}
+
+	function renderFeedbackHistory() {
+		const records = document.getElementById('feedbackRecords');
+		const empty = document.getElementById('feedbackHistoryEmpty');
+		if (!feedbackHistory.length) {
+			records.innerHTML = '';
+			empty.hidden = false;
+			return;
+		}
+		empty.hidden = true;
+		records.innerHTML = feedbackHistory.map(function(item) {
+			const handled = item.status === 'handled';
+			return '<button class="feedback-record" type="button" onclick="openFeedbackDetail(\'' + item.id + '\')">' +
+				'<span class="feedback-record-content">' +
+				'<span class="feedback-record-title">' + escapeFeedbackHtml(item.content) + '</span>' +
+				'<span class="feedback-record-meta"><span>' + item.submittedAt + '</span><span class="feedback-status ' + (handled ? 'handled' : 'pending') + '">' + (handled ? '已处理' : '已提交') + '</span></span>' +
+				'</span>' +
+				'<svg class="feedback-record-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>' +
+				'</button>';
+		}).join('');
+	}
+
+	function renderFeedbackDetail() {
+		const item = feedbackHistory.find(function(record) { return record.id === currentFeedbackId; });
+		if (!item) {
+			setFeedbackView('list');
+			return;
+		}
+		document.getElementById('feedbackDetailContent').textContent = item.content;
+		document.getElementById('feedbackDetailSubmittedAt').textContent = item.submittedAt;
+		document.getElementById('feedbackDetailLogStatus').textContent = item.uploadedLog ? '已上传' : '未上传';
+		const handleSection = document.getElementById('feedbackHandleSection');
+		const pendingNote = document.getElementById('feedbackPendingNote');
+		if (item.status === 'handled') {
+			handleSection.hidden = false;
+			pendingNote.hidden = true;
+			document.getElementById('feedbackHandledAt').textContent = item.handledAt;
+			document.getElementById('feedbackHandleDescription').textContent = item.handleDescription;
+		} else {
+			handleSection.hidden = true;
+			pendingNote.hidden = false;
+		}
+	}
+
+	function escapeFeedbackHtml(value) {
+		return value.replace(/[&<>"']/g, function(character) {
+			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character];
+		});
+	}
+
+	let feedbackTextarea;
+	let feedbackCharCount;
+	let feedbackSubmitBtn;
+
+	document.addEventListener('DOMContentLoaded', function() {
+		const feedbackOverlay = document.getElementById('feedbackOverlay');
+		feedbackTextarea = document.getElementById('feedbackTextarea');
+		feedbackCharCount = document.getElementById('feedbackCharCount');
+		feedbackSubmitBtn = document.getElementById('feedbackSubmitBtn');
+
+		feedbackOverlay.addEventListener('click', function(e) {
+			if (e.target === this) closeFeedbackModal();
+		});
+		feedbackTextarea.addEventListener('input', function() {
+			feedbackCharCount.textContent = this.value.length;
+			updateSubmitBtnState();
+		});
+		document.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape' && feedbackOverlay.classList.contains('show')) closeFeedbackModal();
+		});
+		updateSubmitBtnState();
+	});
+
+	function handleFeedbackFiles(event) {
+		const files = Array.from(event.target.files);
+		const remaining = 6 - feedbackFiles.length;
+		const newFiles = files.slice(0, remaining);
+		newFiles.forEach(function(file) {
+			if (file.type.startsWith('image/')) {
+				const reader = new FileReader();
+				reader.onload = function(e) {
+					feedbackFiles.push({ file: file, url: e.target.result });
+					renderThumbnails();
+				};
+				reader.readAsDataURL(file);
+			}
+		});
+		event.target.value = '';
+	}
+
+	function renderThumbnails() {
+		const container = document.getElementById('feedbackThumbnails');
+		document.getElementById('feedbackFileCount').textContent = feedbackFiles.length;
+		if (feedbackFiles.length === 0) {
+			container.innerHTML = '';
+			updateSubmitBtnState();
+			return;
+		}
+		container.innerHTML = feedbackFiles.map(function(item, index) {
+			return '<div class="feedback-thumbnail">' +
+				'<img src="' + item.url + '" alt="预览" />' +
+				'<button class="feedback-thumbnail-remove" onclick="removeThumbnail(' + index + ')" title="删除">' +
+				'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+				'</button></div>';
+		}).join('');
+		updateSubmitBtnState();
+	}
+
+	function removeThumbnail(index) {
+		feedbackFiles.splice(index, 1);
+		renderThumbnails();
+	}
+
+	function updateSubmitBtnState() {
+		if (!feedbackTextarea || !feedbackSubmitBtn) return;
+		const hasContent = feedbackTextarea.value.trim().length > 0 || feedbackFiles.length > 0;
+		feedbackSubmitBtn.disabled = !hasContent;
+		feedbackSubmitBtn.classList.toggle('active', hasContent);
+	}
+
+	function submitFeedback() {
+		if (feedbackSubmitBtn.disabled) return;
+		const content = feedbackTextarea.value.trim();
+		const uploadLog = document.getElementById('feedbackUploadLog').checked;
+		console.log('提交反馈:', { content, files: feedbackFiles.length, uploadLog });
+		feedbackHistory.unshift({
+			id: 'feedback-' + Date.now(),
+			content: content || '已提交图片反馈',
+			submittedAt: new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-'),
+			uploadedLog: uploadLog,
+			status: 'pending'
+		});
+		feedbackTextarea.value = '';
+		feedbackFiles = [];
+		feedbackCharCount.textContent = '0';
+		document.getElementById('feedbackFileCount').textContent = '0';
+		document.getElementById('feedbackThumbnails').innerHTML = '';
+		updateSubmitBtnState();
+		alert('反馈已提交，感谢您的支持！');
+		setFeedbackView('list');
+	}
+
+    </script>
+
+    <!-- ====== Feedback Modal ====== -->
+    <div class="feedback-overlay" id="feedbackOverlay">
+        <div class="feedback-modal">
+            <section class="feedback-view" id="feedbackFormView" aria-label="提交意见反馈">
+                <div class="feedback-header">
+                    <h3 class="feedback-title">意见反馈</h3>
+                    <div class="feedback-header-actions">
+                        <button class="feedback-close" onclick="closeFeedbackModal()" aria-label="关闭">×</button>
+                    </div>
+                </div>
+                <div class="feedback-body">
+                    <textarea class="feedback-textarea" id="feedbackTextarea" placeholder="描述你遇到的问题" maxlength="10000"></textarea>
+                    <div class="feedback-footer">
+                        <div class="feedback-upload">
+                            <input type="file" id="feedbackFileInput" multiple accept="image/*" style="display:none" onchange="handleFeedbackFiles(event)" />
+                            <button class="feedback-upload-btn" type="button" onclick="document.getElementById('feedbackFileInput').click()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
+                                上传图片 (<span id="feedbackFileCount">0</span>/6)
+                            </button>
+                        </div>
+                        <div class="feedback-count"><span id="feedbackCharCount">0</span>/10000</div>
+                    </div>
+                    <div class="feedback-thumbnails" id="feedbackThumbnails"></div>
+                    <label class="feedback-checkbox">
+                        <input type="checkbox" id="feedbackUploadLog" checked />
+                        <span class="feedback-checkbox-text">上传日志，仅用于排查问题，可能包含对话记录、设备信息等数据。详情请查阅 <a href="https://www.neoomni.cn/omnix-privacy-policy.html" target="_blank" class="feedback-privacy-link">隐私保护声明</a></span>
+                    </label>
+                </div>
+                <div class="feedback-actions with-history">
+                    <button class="feedback-history-trigger" type="button" onclick="openFeedbackHistory()">我的反馈</button>
+                    <button class="feedback-submit-btn" id="feedbackSubmitBtn" type="button" onclick="submitFeedback()" disabled>提交反馈</button>
+                </div>
+            </section>
+
+            <section class="feedback-view" id="feedbackListView" aria-label="我的反馈" hidden>
+                <div class="feedback-header">
+                    <h3 class="feedback-title">我的反馈</h3>
+                    <div class="feedback-header-actions">
+                        <button class="feedback-close" onclick="closeFeedbackModal()" aria-label="关闭">×</button>
+                    </div>
+                </div>
+                <div class="feedback-list-body">
+                    <p class="feedback-list-intro">查看历史反馈和处理进度</p>
+                    <div class="feedback-records" id="feedbackRecords"></div>
+                    <div class="feedback-empty" id="feedbackHistoryEmpty" hidden>暂时没有历史反馈</div>
+                </div>
+                <div class="feedback-actions">
+                    <button class="feedback-submit-btn active" type="button" onclick="openFeedbackForm()">提交意见反馈</button>
+                </div>
+            </section>
+
+            <section class="feedback-view" id="feedbackDetailView" aria-label="反馈详情" hidden>
+                <div class="feedback-header">
+                    <button class="feedback-back-btn" type="button" onclick="openFeedbackHistory()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+                        返回列表
+                    </button>
+                    <div class="feedback-header-actions">
+                        <button class="feedback-close" onclick="closeFeedbackModal()" aria-label="关闭">×</button>
+                    </div>
+                </div>
+                <div class="feedback-detail-body">
+                    <section class="feedback-detail-group">
+                        <h4 class="feedback-detail-group-title">我的反馈</h4>
+                        <div class="feedback-detail-section">
+                            <div class="feedback-detail-label">反馈内容</div>
+                            <div class="feedback-detail-content" id="feedbackDetailContent"></div>
+                        </div>
+                        <div class="feedback-detail-section">
+                            <div class="feedback-detail-label">反馈图片</div>
+                            <div class="feedback-image-list">
+                                <button class="feedback-image-placeholder" type="button" onclick="openFeedbackImagePreview()" aria-label="放大查看反馈图片">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" /></svg>
+                                    图片占位符
+                                </button>
+                            </div>
+                        </div>
+                        <div class="feedback-detail-section">
+                            <div class="feedback-detail-label">日志数据</div>
+                            <div class="feedback-detail-time" id="feedbackDetailLogStatus"></div>
+                        </div>
+                        <div class="feedback-detail-section">
+                            <div class="feedback-detail-label">提交时间</div>
+                            <div class="feedback-detail-time" id="feedbackDetailSubmittedAt"></div>
+                        </div>
+                    </section>
+                    <section class="feedback-detail-group">
+                        <h4 class="feedback-detail-group-title">处理详情</h4>
+                        <div class="feedback-detail-section" id="feedbackHandleSection">
+                            <div class="feedback-detail-label">处理时间</div>
+                            <div class="feedback-detail-time" id="feedbackHandledAt"></div>
+                            <div class="feedback-detail-label">处理说明</div>
+                            <div class="feedback-detail-content" id="feedbackHandleDescription"></div>
+                        </div>
+                        <div class="feedback-detail-section" id="feedbackPendingNote" hidden>
+                            <div class="feedback-detail-label">处理状态</div>
+                            <div class="feedback-pending-note">反馈已收到，平台会尽快处理，请耐心等待。</div>
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="feedback-image-preview-overlay" id="feedbackImagePreviewOverlay" onclick="if (event.target === this) closeFeedbackImagePreview()">
+        <div class="feedback-image-preview" role="dialog" aria-modal="true" aria-label="反馈图片预览">
+            <button class="feedback-image-preview-close" type="button" onclick="closeFeedbackImagePreview()" aria-label="关闭图片预览">×</button>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" /></svg>
+            <div class="feedback-image-preview-title">反馈图片预览占位符</div>
+        </div>
+    </div>
+
+</body>
+</html>
