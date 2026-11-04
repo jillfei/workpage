@@ -918,6 +918,10 @@
                     模型配置
                 </li>
                 <li class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 5.5a3 3 0 0 1 5 0 3 3 0 0 1 4.2 4.24 3 3 0 0 1 0 5.52 3 3 0 0 1-4.2 4.24 3 3 0 0 1-5 0 3 3 0 0 1-4.2-4.24 3 3 0 0 1 0-5.52A3 3 0 0 1 9.5 5.5Z"></path><path d="M12 7.5v9M9 10.2l3 1.8 3-1.8M9 13.8l3-1.8 3 1.8"></path></svg>
+                    记忆
+                </li>
+                <li class="nav-item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
                         <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
@@ -1109,6 +1113,28 @@
                 </div>
             </div>
 
+            <!-- 运行时防止系统休眠 -->
+            <div class="card">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <span class="setting-label">运行时防止系统休眠</span>
+                        <span class="setting-desc">在 OmniX 运行任务时，让电脑保持唤醒状态。</span>
+                    </div>
+                    <div class="toggle active" id="preventSleepToggle" onclick="togglePreference(this, 'preventSleep')" role="switch" aria-checked="true"></div>
+                </div>
+            </div>
+
+            <!-- 开机自动启动 -->
+            <div class="card">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <span class="setting-label">开机自动启动</span>
+                        <span class="setting-desc">开启后 OmniX 会在你登录电脑后自动启动。</span>
+                    </div>
+                    <div class="toggle active" id="launchAtLoginToggle" onclick="togglePreference(this, 'launchAtLogin')" role="switch" aria-checked="true"></div>
+                </div>
+            </div>
+
             <!-- 默认工作空间存储路径 -->
             <div class="card">
                 <div class="setting-item" style="display: block;">
@@ -1143,6 +1169,11 @@
             <!-- 模型配置内容区 -->
             <div class="tab-content" id="tab-model" style="display: none; flex: 1; overflow: hidden;">
                 <iframe src="./model-config.html" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+
+            <!-- 记忆内容区 -->
+            <div class="tab-content" id="tab-memory" style="display: none; flex: 1; overflow: hidden;">
+                <iframe src="./memory.html" style="width: 100%; height: 100%; border: none;"></iframe>
             </div>
 
             <!-- 插件内容区 -->
@@ -1400,6 +1431,23 @@
             element.classList.toggle('active');
         }
 
+        // 运行偏好在切换后立即写入本地配置，刷新页面后保持当前状态。
+        function togglePreference(element, preference) {
+            const isActive = element.classList.toggle('active');
+            element.setAttribute('aria-checked', String(isActive));
+            localStorage.setItem(preference, String(isActive));
+        }
+
+        ['preventSleep', 'launchAtLogin'].forEach(preference => {
+            const toggle = document.getElementById(`${preference}Toggle`);
+            const savedValue = localStorage.getItem(preference);
+            if (toggle && savedValue !== null) {
+                const isActive = savedValue === 'true';
+                toggle.classList.toggle('active', isActive);
+                toggle.setAttribute('aria-checked', String(isActive));
+            }
+        });
+
         // 切换密码显示
         function togglePassword(button) {
             const input = button.parentElement.querySelector('input');
@@ -1418,9 +1466,10 @@
         // 为每个导航项添加data-tab属性
         navItems[0].dataset.tab = 'tab-account';
         navItems[1].dataset.tab = 'tab-model';
-        navItems[2].dataset.tab = 'tab-plugin';
-        navItems[3].dataset.tab = 'tab-token';
-        navItems[4].dataset.tab = 'tab-hotkey';
+        navItems[2].dataset.tab = 'tab-memory';
+        navItems[3].dataset.tab = 'tab-plugin';
+        navItems[4].dataset.tab = 'tab-token';
+        navItems[5].dataset.tab = 'tab-hotkey';
         
         navItems.forEach(item => {
             item.addEventListener('click', function() {
@@ -1435,7 +1484,7 @@
                 const tabId = this.dataset.tab;
                 document.getElementById(tabId).style.display = 'block';
                 
-                if (tabId === 'tab-token' || tabId === 'tab-model' || tabId === 'tab-hotkey') {
+                if (tabId === 'tab-token' || tabId === 'tab-model' || tabId === 'tab-memory' || tabId === 'tab-hotkey') {
                     mainContent.classList.add('tab-active-fullscreen');
                     document.body.style.overflow = 'hidden';
                 }

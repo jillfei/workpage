@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>记忆 - OmniX</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        :root {
+            --page-bg: #f5f5f5;
+            --surface: #ffffff;
+            --soft-surface: #f7f7f7;
+            --border: #e8e8e8;
+            --text: #202020;
+            --muted: #858585;
+            --subtle: #a8a8a8;
+            --primary: #171717;
+            --success: #35cf78;
+        }
+
+        body {
+            margin: 0;
+            min-width: 320px;
+            background: var(--page-bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        button, textarea { font: inherit; }
+        button { cursor: pointer; }
+        button:focus-visible, textarea:focus-visible { outline: 2px solid #424242; outline-offset: 2px; }
+
+        .container { min-height: 100vh; }
+
+        .main-content {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            padding: 32px 40px 56px;
+        }
+
+        .main-content-inner { width: 100%; max-width: 900px; }
+
+        .page-title {
+            margin: 0 0 8px;
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.35;
+        }
+
+        .page-subtitle {
+            margin: 0 0 32px;
+            color: #777;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .memory-switch-panel {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-height: 82px;
+            padding: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .feature-icon {
+            display: grid;
+            flex: 0 0 auto;
+            width: 48px;
+            height: 48px;
+            place-items: center;
+            border-radius: 12px;
+            background: #fff;
+            color: #555;
+        }
+
+        .feature-icon svg { width: 22px; height: 22px; }
+
+        .feature-copy { flex: 1; min-width: 0; }
+        .feature-title { margin: 0 0 3px; font-size: 15px; font-weight: 600; }
+        .feature-desc { margin: 0; color: #888; font-size: 13px; line-height: 1.45; }
+
+        .switch {
+            position: relative;
+            display: inline-flex;
+            flex: 0 0 auto;
+            width: 44px;
+            height: 24px;
+            padding: 0;
+            border: 0;
+            border-radius: 999px;
+            background: #c9c9c9;
+            transition: background-color 160ms ease;
+        }
+
+        .switch::after {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            content: "";
+            box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
+            transition: transform 160ms ease;
+        }
+
+        .switch[aria-checked="true"] { background: var(--success); }
+        .switch[aria-checked="true"]::after { transform: translateX(20px); }
+
+        .settings-section { margin-top: 16px; }
+
+        .section-card {
+            padding: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .section-card + .section-card { margin-top: 12px; }
+
+        .section-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 16px;
+        }
+
+        .section-title { margin: 0 0 4px; font-size: 16px; font-weight: 600; line-height: 1.4; }
+        .section-desc { margin: 0; color: #888; font-size: 13px; line-height: 1.5; }
+        .section-title-row { display: flex; align-items: center; gap: 6px; }
+        .memory-help { position: relative; display: inline-flex; }
+        .memory-help-button {
+            display: grid;
+            width: 17px;
+            height: 17px;
+            place-items: center;
+            padding: 0;
+            border: 1px solid #a8a8a8;
+            border-radius: 50%;
+            background: #fff;
+            color: #858585;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1;
+        }
+        .memory-help-button:hover, .memory-help-button:focus-visible { border-color: #555; color: #333; }
+        .memory-help-tooltip {
+            position: absolute;
+            z-index: 2;
+            top: calc(100% + 8px);
+            left: 50%;
+            width: min(360px, calc(100vw - 64px));
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: #303030;
+            color: #fff;
+            font-size: 12px;
+            line-height: 1.6;
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -4px);
+            transition: opacity 160ms ease, transform 160ms ease;
+        }
+        .memory-help-tooltip::before {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: #303030;
+            content: "";
+            transform: translateX(-50%) rotate(45deg);
+        }
+        .memory-help:hover .memory-help-tooltip,
+        .memory-help:focus-within .memory-help-tooltip { opacity: 1; transform: translate(-50%, 0); }
+        .memory-help-tooltip p { margin: 0; }
+        .memory-help-tooltip p + p { margin-top: 6px; }
+
+        .outline-button, .solid-button, .secondary-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 36px;
+            padding: 0 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .outline-button { border: 1px solid #dedede; background: #fff; color: #252525; }
+        .outline-button:hover { background: #f7f7f7; border-color: #c8c8c8; }
+        .solid-button { border: 1px solid var(--primary); background: var(--primary); color: #fff; }
+        .solid-button:hover { background: #343434; }
+        .secondary-button { border: 1px solid transparent; background: #ededed; color: #454545; }
+        .secondary-button:hover { background: #e1e1e1; }
+
+        .memory-content {
+            display: block;
+            width: 100%;
+            min-height: 120px;
+            max-height: 182px;
+            resize: vertical;
+            overflow: auto;
+            padding: 13px 14px;
+            border: 1px solid #e3e3e3;
+            border-radius: 8px;
+            background: #fff;
+            color: #262626;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .memory-content[readonly] { cursor: default; }
+        .empty-content { color: #aaa; }
+
+        .storage-label { margin: 0 0 14px; font-size: 15px; font-weight: 600; }
+        .storage-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-height: 76px;
+            padding: 14px 16px;
+            background: var(--soft-surface);
+            border-radius: 12px;
+        }
+
+        .storage-copy { flex: 1; min-width: 0; }
+        .storage-title { margin: 0 0 4px; font-size: 14px; font-weight: 600; }
+        .storage-desc, .storage-path { margin: 0; color: #969696; font-size: 12px; line-height: 1.45; }
+        .storage-path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .folder-button { gap: 6px; min-height: 36px; }
+        .folder-button svg { width: 16px; height: 16px; }
+
+        .is-disabled { opacity: .46; }
+        .is-disabled .outline-button, .is-disabled .memory-content { pointer-events: none; }
+
+        .toast {
+            position: fixed;
+            z-index: 20;
+            top: 24px;
+            left: 50%;
+            padding: 11px 15px;
+            border-radius: 8px;
+            background: #262626;
+            color: #fff;
+            font-size: 13px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -8px);
+            transition: opacity 160ms ease, transform 160ms ease;
+        }
+
+        .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+        dialog {
+            width: min(680px, calc(100vw - 40px));
+            max-height: min(720px, calc(100vh - 48px));
+            padding: 0;
+            border: 0;
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 20px 60px rgb(0 0 0 / 18%);
+        }
+
+        dialog::backdrop { background: rgb(0 0 0 / 28%); }
+
+        .dialog-body { display: flex; flex-direction: column; min-height: 500px; padding: 24px; }
+        .dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+        .dialog-title { margin: 0 0 4px; font-size: 18px; font-weight: 600; }
+        .dialog-desc { margin: 0; color: #8a8a8a; font-size: 13px; line-height: 1.5; }
+        .close-button {
+            display: grid;
+            flex: 0 0 auto;
+            width: 32px;
+            height: 32px;
+            place-items: center;
+            padding: 0;
+            border: 0;
+            border-radius: 7px;
+            background: transparent;
+            color: #343434;
+        }
+        .close-button:hover { background: #f2f2f2; }
+        .close-button svg { width: 17px; height: 17px; }
+
+        .preset-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0px; }
+        .preset-button {
+            min-height: 32px;
+            padding: 0 14px;
+            border: 0;
+            border-radius: 9px;
+            background: #eeeeee;
+            color: #666;
+            font-size: 13px;
+        }
+        .preset-button:hover, .preset-button.is-active { background: #dedede; color: #252525; }
+
+        .dialog-textarea {
+            flex: 1;
+            width: 100%;
+            min-height: 300px;
+            margin-top: 0;
+            padding: 16px;
+            resize: none;
+            border: 1px solid #dedede;
+            border-radius: 12px;
+            color: #262626;
+            font-size: 14px;
+            line-height: 1.75;
+			margin-top:10px;
+        }
+
+        .dialog-textarea::placeholder { color: #a6a6a6; }
+        .textarea-wrapper { position: relative; display: flex; flex: 1; min-height: 300px; padding-top: 10px; }
+        .textarea-wrapper .dialog-textarea { flex: 1; min-height: 100%; margin-top: 0; padding-bottom: 34px; }
+        .character-count { position: absolute; right: 14px; bottom: 10px; color: #999; font-size: 12px; line-height: 18px; pointer-events: none; }
+        .dialog-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+
+        @media (max-width: 640px) {
+            .main-content { padding: 24px 16px 40px; }
+            .page-subtitle { margin-bottom: 24px; }
+            .memory-switch-panel, .storage-row { align-items: flex-start; }
+            .section-card { padding: 18px; }
+            .section-heading { gap: 12px; }
+            .storage-row { flex-wrap: wrap; }
+            .folder-button { width: 100%; }
+            .dialog-body { min-height: min(500px, calc(100vh - 48px)); padding: 20px; }
+            .textarea-wrapper { min-height: 220px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .switch, .switch::after, .toast { transition: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" data-design-id="memory-page">
+        <main class="main-content" data-design-id="memory-main-content">
+            <div class="main-content-inner" data-design-id="memory-content-inner">
+                <h1 class="page-title" data-design-id="memory-page-title">记忆</h1>
+                <p class="page-subtitle" data-design-id="memory-page-subtitle">让 OmniX 在合适的时机记住你，并在未来对话中提供更连贯、个性化的回应。记忆遵循隐私政策，仅你本人可见。</p>
+
+                <section class="memory-switch-panel" data-design-id="global-memory-panel" aria-labelledby="global-memory-title">
+                    <div class="feature-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 5.5a3 3 0 0 1 5 0 3 3 0 0 1 4.2 4.24 3 3 0 0 1 0 5.52 3 3 0 0 1-4.2 4.24 3 3 0 0 1-5 0 3 3 0 0 1-4.2-4.24 3 3 0 0 1 0-5.52A3 3 0 0 1 9.5 5.5Z"/><path d="M12 7.5v9M9 10.2l3 1.8 3-1.8M9 13.8l3-1.8 3 1.8"/></svg>
+                    </div>
+                    <div class="feature-copy">
+                        <h2 class="feature-title" data-design-id="global-memory-title">全局记忆</h2>
+                        <p class="feature-desc" data-design-id="global-memory-description">开启后，OmniX 会在所有会话中读取和更新你的个人偏好、习惯与长期上下文；关闭后不会使用或更新全局记忆。</p>
+                    </div>
+                    <button class="switch" id="memorySwitch" data-design-id="global-memory-switch" type="button" role="switch" aria-checked="true" aria-label="全局记忆已开启"></button>
+                </section>
+
+                <div class="settings-section" data-design-id="memory-settings-sections">
+                    <section class="section-card" id="personaSection" data-design-id="persona-section" aria-labelledby="persona-title">
+                        <div class="section-heading">
+                            <div>
+                                <h2 class="section-title" id="persona-title" data-design-id="persona-title">人设设定</h2>
+                                <p class="section-desc" data-design-id="persona-description">设定 OmniX 的身份、性格与表达风格，对所有回复生效。</p>
+                            </div>
+                            <button class="outline-button" id="editPersonaButton" data-design-id="edit-persona-button" type="button">编辑</button>
+                        </div>
+                        <textarea class="memory-content empty-content" id="personaPreview" data-design-id="persona-preview" readonly aria-label="人设设定内容" placeholder="暂未设置人设。点击编辑，选择预设或输入自定义设定。"></textarea>
+                    </section>
+
+                    <section class="section-card" id="longMemorySection" data-design-id="long-memory-section" aria-labelledby="long-memory-title">
+                        <div class="section-heading">
+                            <div>
+                                <div class="section-title-row" data-design-id="long-memory-title-row">
+                                    <h2 class="section-title" id="long-memory-title" data-design-id="long-memory-title">长期记忆</h2>
+                                    <span class="memory-help" data-design-id="long-memory-help">
+                                        <button class="memory-help-button" type="button" data-design-id="long-memory-help-button" aria-label="长期记忆说明" aria-describedby="long-memory-help-tooltip">?</button>
+                                        <span class="memory-help-tooltip" id="long-memory-help-tooltip" data-design-id="long-memory-help-tooltip" role="tooltip">
+                                            <p>1、自动记录用户长期偏好、习惯、身份信息</p>
+                                            <p>2、根据用户明确要求记住某事，例如：“以后都这样处理”、“记住我的偏好是...”</p>
+                                            <p>3、长期记忆定期提炼内容，压缩过时或低优先级条目，确保长期记忆不超容量。</p>
+                                        </span>
+                                    </span>
+                                </div>
+                                <p class="section-desc" data-design-id="long-memory-description">跨会话保存的重要信息与结论，可随时查看和修改。</p>
+                            </div>
+                            <button class="outline-button" id="editLongMemoryButton" data-design-id="edit-long-memory-button" type="button">编辑</button>
+                        </div>
+                        <textarea class="memory-content" id="longMemoryPreview" data-design-id="long-memory-preview" readonly aria-label="长期记忆内容">用户正在负责集团资产咨询顾问、产品调研总结、向总经理汇报等工作，关注 SRM 对接、采购流程调研与产品规划。后续对话中优先结合这些长期目标提供连贯建议。</textarea>
+                    </section>
+
+                    <section class="section-card" data-design-id="storage-section" aria-labelledby="storage-title">
+                        <h2 class="storage-label" id="storage-title" data-design-id="storage-title">存储</h2>
+                        <div class="storage-row" data-design-id="storage-row">
+                            <div class="feature-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5h6l1.8 2H21v8.8A2.7 2.7 0 0 1 18.3 21H5.7A2.7 2.7 0 0 1 3 18.3Z"/><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H9l1.8 2.5"/></svg>
+                            </div>
+                            <div class="storage-copy">
+                                <h3 class="storage-title" data-design-id="storage-location-title">存储位置</h3>
+                                <p class="storage-desc" data-design-id="storage-location-description">所有记忆文件的根目录</p>
+                                <p class="storage-path" data-design-id="storage-location-path" title="~&#92;.omnix&#92;awareness&#92;memory">~&#92;.omnix&#92;awareness&#92;memory</p>
+                            </div>
+                            <button class="solid-button folder-button" id="openFolderButton" data-design-id="open-folder-button" type="button">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5h6l1.8 2H21v8.8A2.7 2.7 0 0 1 18.3 21H5.7A2.7 2.7 0 0 1 3 18.3Z"/><path d="M12 12h6M15 9l3 3-3 3"/></svg>
+                                打开所在文件夹
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <dialog id="personaDialog" data-design-id="persona-dialog" aria-labelledby="persona-dialog-title">
+        <form class="dialog-body" method="dialog" data-design-id="persona-dialog-form">
+            <div class="dialog-header">
+                <div>
+                    <h2 class="dialog-title" id="persona-dialog-title" data-design-id="persona-dialog-title">人设设定</h2>
+                    <p class="dialog-desc" data-design-id="persona-dialog-description">设定 OmniX 的身份、性格与表达风格，对所有回复生效。</p>
+                </div>
+                <button class="close-button" data-design-id="close-persona-dialog-button" type="button" aria-label="关闭人设设定弹窗">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                </button>
+            </div>
+            <div class="preset-list" data-design-id="persona-preset-list" aria-label="人设预设">
+                <button class="preset-button" data-design-id="persona-preset-efficient" type="button" data-preset="高效极简">高效极简</button>
+                <button class="preset-button" data-design-id="persona-preset-insightful" type="button" data-preset="深思熟虑">深思熟虑</button>
+                <button class="preset-button" data-design-id="persona-preset-warm" type="button" data-preset="温和耐心">温和耐心</button>
+                <button class="preset-button" data-design-id="persona-preset-decisive" type="button" data-preset="果断执行">果断执行</button>
+            </div>
+            <div class="textarea-wrapper" data-design-id="persona-editor-wrapper">
+                <textarea class="dialog-textarea" id="personaEditor" data-design-id="persona-editor" aria-label="编辑人设设定" placeholder="输入你希望 OmniX 呈现的身份、性格和表达方式..." maxlength="4000"></textarea>
+                <span class="character-count" id="personaCount" data-design-id="persona-character-count" aria-live="polite">0/4000</span>
+            </div>
+            <div class="dialog-footer" data-design-id="persona-dialog-actions">
+                <button class="secondary-button" data-design-id="cancel-persona-button" type="button">取消</button>
+                <button class="solid-button" data-design-id="save-persona-button" type="submit">保存</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="longMemoryDialog" data-design-id="long-memory-dialog" aria-labelledby="long-memory-dialog-title">
+        <form class="dialog-body" method="dialog" data-design-id="long-memory-dialog-form">
+            <div class="dialog-header">
+                <div>
+                    <h2 class="dialog-title" id="long-memory-dialog-title" data-design-id="long-memory-dialog-title">长期记忆</h2>
+                    <p class="dialog-desc" data-design-id="long-memory-dialog-description">仅自己可见。跨会话持久保存的重要知识和结论，由 OmniX 自动维护。</p>
+                </div>
+                <button class="close-button" data-design-id="close-long-memory-dialog-button" type="button" aria-label="关闭长期记忆弹窗">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                </button>
+            </div>
+            <div class="textarea-wrapper" data-design-id="long-memory-editor-wrapper">
+                <textarea class="dialog-textarea" id="longMemoryEditor" data-design-id="long-memory-editor" aria-label="编辑长期记忆" maxlength="20000"></textarea>
+                <span class="character-count" id="longMemoryCount" data-design-id="long-memory-character-count" aria-live="polite">0/20000</span>
+            </div>
+            <div class="dialog-footer" data-design-id="long-memory-dialog-actions">
+                <button class="secondary-button" data-design-id="cancel-long-memory-button" type="button">取消</button>
+                <button class="solid-button" data-design-id="save-long-memory-button" type="submit">保存</button>
+            </div>
+        </form>
+    </dialog>
+
+    <div class="toast" id="toast" data-design-id="memory-toast" role="status" aria-live="polite"></div>
+
+    <script>
+        const state = {
+            enabled: true,
+            persona: `# 协作风格 - 高效极简
+
+_用最少的话把事情做好。_
+
+## 核心原则
+
+- **直接给结果。** 代码优于描述。能用一行说清的不用三段。
+- **不要复述问题。** 我知道我问了什么，直接回答。
+- **默认执行。** 方案明确时直接做，不用每步都确认。
+- **不确定时一句话确认。** 不要列出一堆选项让我选，给出你的判断，问我对不对。
+
+## 沟通风格
+
+- 回复尽可能简短
+- 跳过寒暄、过渡句和总结性废话
+- 代码注释只在逻辑不明显时添加
+- 用列表而非段落
+
+## 边界
+
+- 高风险操作前简短确认
+- 私密信息不外泄`,
+            longMemory: document.getElementById('longMemoryPreview').value
+        };
+
+        const personaPresets = {
+            '高效极简': `# 协作风格 - 高效极简
+
+_用最少的话把事情做好。_
+
+## 核心原则
+
+- **直接给结果。** 代码优于描述。能用一行说清的不用三段。
+- **不要复述问题。** 我知道我问了什么，直接回答。
+- **默认执行。** 方案明确时直接做，不用每步都确认。
+- **不确定时一句话确认。** 不要列出一堆选项让我选，给出你的判断，问我对不对。
+
+## 沟通风格
+
+- 回复尽可能简短
+- 跳过寒暄、过渡句和总结性废话
+- 代码注释只在逻辑不明显时添加
+- 用列表而非段落
+
+## 边界
+
+- 高风险操作前简短确认
+- 私密信息不外泄`,
+            '深思熟虑': `# 协作风格 - 深思熟虑
+
+_想清楚再动手，做对比做快重要。_
+
+## 核心原则
+
+- **先理解再行动。** 复杂任务先梳理全貌，避免方向错误返工。
+- **说明推理过程。** 重要决策时展示你的思路，让我能判断逻辑是否正确。
+- **权衡利弊。** 有多种方案时列出各自优劣，给出你的倾向但让我做最终决定。
+- **指出风险。** 看到潜在问题或边界情况时主动提醒，即使我没有问。
+
+## 沟通风格
+
+- 结论先行，再展开细节
+- 区分"确定的事实"和"我的判断"
+- 必要时画出思路链条
+- 不确定的地方明确标注
+
+## 边界
+
+- 不为速度牺牲正确性
+- 承认不确定，不编造信息
+- 私密信息不外泄`,
+            '温和耐心': `# 协作风格 - 温和耐心
+
+_像一位好搭档一样，确保我们在同一频道上。_
+
+## 核心原则
+
+- **用通俗语言。** 技术概念用日常用语解释，避免不必要的术语堆砌。
+- **分步引导。** 复杂任务拆成小步骤，不一次性堆砌所有信息。
+- **主动确认意图。** 不确定我想要什么时，先确认再动手，避免做了一堆结果方向不对。
+- **做完后说明。** 完成操作后简要说明做了什么和为什么这样做。
+
+## 沟通风格
+
+- 回复有清晰的结构，便于阅读
+- 主动提供有用的背景知识
+- 语气友好自然，不过度正式
+- 犯错时坦然承认并修正
+
+## 边界
+
+- 操作前确认，特别是涉及删除或外部调用时
+- 不假设我的技术水平，该解释时就解释
+- 私密信息不外泄`,
+            '果断执行': `# 协作风格 - 果断执行
+
+_你来判断，你来做，我来验收。_
+
+## 核心原则
+
+- **自己做决定。** 方案有多种时选最优的直接执行，不要列选项等我拍板。
+- **只在高风险时才确认。** 日常操作不要问我，只有破坏性操作或架构级变更时才暂停确认。
+- **发现问题主动修。** 看到 bug、坏味道或可优化的地方，直接修复，事后告知即可。
+- **有观点就说。** 我的方案有问题时直接指出，不要委婉暗示。给明确的建议，不给模棱两可的"你可以考虑..."。
+
+## 沟通风格
+
+- 以行动为主，解释为辅
+- 汇报用简短总结：做了什么、结果如何
+- 不需要征询式的语气
+- 有把握的事情断言，不加"可能"、"也许"
+
+## 边界
+
+- 涉及资金、数据删除、对外发布时必须确认
+- 不替我做需要人类判断的商业决策
+- 私密信息不外泄`
+        };
+
+        const memorySwitch = document.getElementById('memorySwitch');
+        const personaSection = document.getElementById('personaSection');
+        const longMemorySection = document.getElementById('longMemorySection');
+        const personaPreview = document.getElementById('personaPreview');
+        const longMemoryPreview = document.getElementById('longMemoryPreview');
+        const personaDialog = document.getElementById('personaDialog');
+        const longMemoryDialog = document.getElementById('longMemoryDialog');
+        const personaEditor = document.getElementById('personaEditor');
+        const longMemoryEditor = document.getElementById('longMemoryEditor');
+        const personaCount = document.getElementById('personaCount');
+        const longMemoryCount = document.getElementById('longMemoryCount');
+        const toast = document.getElementById('toast');
+        let toastTimer;
+
+        function updateCharacterCount(editor, counter) {
+            counter.textContent = `${editor.value.length}/${editor.maxLength}`;
+        }
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('is-visible');
+            window.clearTimeout(toastTimer);
+            toastTimer = window.setTimeout(() => toast.classList.remove('is-visible'), 2200);
+        }
+
+        function updatePreview(element, value, emptyText) {
+            element.value = value;
+            element.placeholder = emptyText;
+            element.classList.toggle('empty-content', !value.trim());
+        }
+
+        function renderState() {
+            memorySwitch.setAttribute('aria-checked', String(state.enabled));
+            memorySwitch.setAttribute('aria-label', state.enabled ? '全局记忆已开启' : '全局记忆已关闭');
+            personaSection.classList.toggle('is-disabled', !state.enabled);
+            longMemorySection.classList.toggle('is-disabled', !state.enabled);
+            document.getElementById('editPersonaButton').disabled = !state.enabled;
+            document.getElementById('editLongMemoryButton').disabled = !state.enabled;
+            updatePreview(personaPreview, state.persona, '暂未设置人设。点击编辑，选择预设或输入自定义设定。');
+            updatePreview(longMemoryPreview, state.longMemory, '暂无长期记忆。');
+        }
+
+        function openDialog(dialog) {
+            if (!state.enabled) return;
+            dialog.showModal();
+        }
+
+        memorySwitch.addEventListener('click', () => {
+            state.enabled = !state.enabled;
+            renderState();
+            showToast(state.enabled ? '全局记忆已开启' : '全局记忆已关闭，内容将停止更新');
+        });
+
+        document.getElementById('editPersonaButton').addEventListener('click', () => {
+            personaEditor.value = state.persona;
+            updateCharacterCount(personaEditor, personaCount);
+            document.querySelectorAll('.preset-button').forEach(button => {
+                button.classList.toggle('is-active', personaPresets[button.dataset.preset] === state.persona);
+            });
+            openDialog(personaDialog);
+        });
+
+        document.getElementById('editLongMemoryButton').addEventListener('click', () => {
+            longMemoryEditor.value = state.longMemory;
+            updateCharacterCount(longMemoryEditor, longMemoryCount);
+            openDialog(longMemoryDialog);
+        });
+
+        document.querySelectorAll('.preset-button').forEach(button => {
+            button.addEventListener('click', () => {
+                personaEditor.value = personaPresets[button.dataset.preset];
+                updateCharacterCount(personaEditor, personaCount);
+                document.querySelectorAll('.preset-button').forEach(item => item.classList.toggle('is-active', item === button));
+                personaEditor.focus();
+            });
+        });
+
+        personaEditor.addEventListener('input', () => updateCharacterCount(personaEditor, personaCount));
+        longMemoryEditor.addEventListener('input', () => updateCharacterCount(longMemoryEditor, longMemoryCount));
+
+        function closeDialog(dialog) { dialog.close(); }
+
+        document.querySelector('[data-design-id="close-persona-dialog-button"]').addEventListener('click', () => closeDialog(personaDialog));
+        document.querySelector('[data-design-id="cancel-persona-button"]').addEventListener('click', () => closeDialog(personaDialog));
+        document.querySelector('[data-design-id="close-long-memory-dialog-button"]').addEventListener('click', () => closeDialog(longMemoryDialog));
+        document.querySelector('[data-design-id="cancel-long-memory-button"]').addEventListener('click', () => closeDialog(longMemoryDialog));
+
+        personaDialog.addEventListener('submit', event => {
+            event.preventDefault();
+            state.persona = personaEditor.value.trim();
+            renderState();
+            closeDialog(personaDialog);
+            showToast('人设设定已保存');
+        });
+
+        longMemoryDialog.addEventListener('submit', event => {
+            event.preventDefault();
+            state.longMemory = longMemoryEditor.value.trim();
+            renderState();
+            closeDialog(longMemoryDialog);
+            showToast('长期记忆已保存');
+        });
+
+        document.getElementById('openFolderButton').addEventListener('click', () => {
+            showToast('已请求打开记忆文件夹');
+        });
+
+        renderState();
+        updateCharacterCount(personaEditor, personaCount);
+        updateCharacterCount(longMemoryEditor, longMemoryCount);
+    </script>
+</body>
+</html>

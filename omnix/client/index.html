@@ -243,24 +243,66 @@
             color: #0f172a;
         }
         .notification-list {
-            padding: 2px 24px 7px;
+            padding: 2px 0 7px;
         }
+        .notification-pagination { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 20px 14px; border-top: 1px solid #f1f5f9; color: #94a3b8; font-size: 12px; }
+        .notification-pagination-controls { display: flex; align-items: center; gap: 5px; }
+        .notification-page-btn { min-width: 26px; height: 26px; padding: 0 7px; border: 1px solid #e2e8f0; border-radius: 5px; background: #fff; color: #64748b; font: inherit; font-size: 12px; cursor: pointer; }
+        .notification-page-btn:hover:not(:disabled):not(.active) { border-color: #93c5fd; color: #2563eb; background: #eff6ff; }
+        .notification-page-btn.active { border-color: #2563eb; background: #2563eb; color: #fff; }
+        .notification-page-btn:disabled { color: #cbd5e1; background: #f8fafc; cursor: not-allowed; }
         .notification-item {
             position: relative;
             display: block;
             width: 100%;
-            padding: 12px 20px 11px 0;
+            padding: 12px 48px 11px 24px;
             border: 0;
             color: #1e3a6b;
             background: transparent;
             font: inherit;
             text-align: left;
             cursor: pointer;
+            transition: background 0.2s;
         }
         .notification-item:hover {
             color: #2563eb;
+            background: #f8fafc;
+        }
+        .notification-item:hover .notification-delete-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .notification-delete-btn {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border: 0;
+            border-radius: 4px;
+            color: #94a3b8;
+            background: transparent;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .notification-delete-btn:hover {
+            color: #dc2626;
+            background: #fee2e2;
+        }
+        .notification-delete-btn svg {
+            width: 16px;
+            height: 16px;
         }
         .notification-item-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             overflow: hidden;
             font-size: 14px;
             line-height: 20px;
@@ -273,13 +315,11 @@
             font-size: 13px;
         }
         .notification-unread-dot {
-            position: absolute;
-            top: 17px;
-            right: 0;
             width: 8px;
             height: 8px;
             border-radius: 50%;
             background: #f43f5e;
+            flex-shrink: 0;
         }
         .notification-item.read {
             color: #64748b;
@@ -350,9 +390,13 @@
             font-size: 22px;
             cursor: pointer;
         }
-        .notification-detail-confirm {
-            width: 100%;
+        .notification-detail-actions {
+            display: flex;
+            gap: 10px;
             margin-top: 18px;
+        }
+        .notification-detail-confirm {
+            flex: 1;
             padding: 10px;
             border: 0;
             border-radius: 7px;
@@ -364,6 +408,84 @@
         }
         .notification-detail-confirm:hover {
             background: #3157e6;
+        }
+        .notification-detail-delete {
+            flex: 1;
+            padding: 10px;
+            border: 0;
+            border-radius: 7px;
+            color: #dc2626;
+            background: #fee2e2;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .notification-detail-delete:hover {
+            background: #fecaca;
+        }
+        .notification-confirm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1004;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.48);
+            backdrop-filter: blur(3px);
+        }
+        .notification-confirm-overlay.show {
+            display: flex;
+        }
+        .notification-confirm-dialog {
+            position: relative;
+            width: 360px;
+            max-width: 100%;
+            padding: 24px;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 20px 44px rgba(15, 23, 42, 0.28);
+        }
+        .notification-confirm-title {
+            color: #172554;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .notification-confirm-content {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .notification-confirm-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .notification-confirm-btn {
+            padding: 8px 20px;
+            border: 0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .notification-confirm-cancel {
+            color: #64748b;
+            background: #f1f5f9;
+        }
+        .notification-confirm-cancel:hover {
+            background: #e2e8f0;
+        }
+        .notification-confirm-delete {
+            color: #fff;
+            background: #dc2626;
+        }
+        .notification-confirm-delete:hover {
+            background: #b91c1c;
         }
 
         .app-title {
@@ -919,7 +1041,509 @@
 		.status-dot.pending{
 			background: #d1d5db;
 		}
-		
+
+		/* ====== Feedback Modal ====== */
+		.feedback-overlay {
+			display: none;
+			position: fixed;
+			inset: 0;
+			background: rgba(0, 0, 0, 0.45);
+			z-index: 2000;
+			align-items: center;
+			justify-content: center;
+		}
+		.feedback-overlay.show {
+			display: flex;
+		}
+		.feedback-modal {
+			width: 520px;
+			max-width: calc(100vw - 48px);
+			max-height: calc(100vh - 48px);
+			background: #fff;
+			border-radius: 16px;
+			box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+			overflow: hidden;
+			animation: feedbackModalIn 0.2s ease;
+		}
+		@keyframes feedbackModalIn {
+			from { opacity: 0; transform: scale(0.95) translateY(10px); }
+			to { opacity: 1; transform: scale(1) translateY(0); }
+		}
+		.feedback-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 20px 24px 16px;
+		}
+		.feedback-title {
+			font-size: 17px;
+			font-weight: 600;
+			color: #1a1a1a;
+		}
+		.feedback-history-trigger,
+		.feedback-back-btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+			border: 0;
+			background: transparent;
+			color: #4F46E5;
+			font: inherit;
+			font-size: 13px;
+			cursor: pointer;
+		}
+		.feedback-history-trigger:hover,
+		.feedback-back-btn:hover {
+			color: #4338CA;
+		}
+		.feedback-header-actions {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+		.feedback-close {
+			width: 28px;
+			height: 28px;
+			border: none;
+			background: none;
+			cursor: pointer;
+			color: #999;
+			font-size: 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 6px;
+			transition: background 0.15s;
+		}
+		.feedback-close:hover {
+			background: #f0f0f0;
+			color: #333;
+		}
+		.feedback-body {
+			padding: 0 24px 16px;
+		}
+		.feedback-textarea {
+			width: 100%;
+			min-height: 180px;
+			padding: 14px 16px;
+			border: 1px solid #e0e0e0;
+			border-radius: 10px;
+			font-size: 14px;
+			font-family: inherit;
+			color: #333;
+			resize: vertical;
+			outline: none;
+			transition: border-color 0.15s;
+			line-height: 1.6;
+		}
+		.feedback-textarea:focus {
+			border-color: #4F46E5;
+		}
+		.feedback-textarea::placeholder {
+			color: #bbb;
+		}
+		.feedback-footer {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-top: 12px;
+		}
+		.feedback-upload-btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 7px 14px;
+			border: 1px solid #e0e0e0;
+			border-radius: 8px;
+			background: #fff;
+			cursor: pointer;
+			font-size: 13px;
+			color: #555;
+			transition: all 0.15s;
+		}
+		.feedback-upload-btn:hover {
+			background: #f5f5f5;
+			border-color: #d0d0d0;
+		}
+		.feedback-upload-btn svg {
+			width: 15px;
+			height: 15px;
+		}
+		.feedback-count {
+			font-size: 13px;
+			color: #999;
+		}
+		.feedback-thumbnails {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			margin-top: 12px;
+		}
+		.feedback-thumbnail {
+			position: relative;
+			width: 72px;
+			height: 72px;
+			border-radius: 8px;
+			overflow: hidden;
+			border: 1px solid #e0e0e0;
+		}
+		.feedback-thumbnail img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+		.feedback-thumbnail-remove {
+			position: absolute;
+			top: 4px;
+			right: 4px;
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			background: rgba(0, 0, 0, 0.6);
+			border: none;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #fff;
+			font-size: 12px;
+			transition: background 0.15s;
+		}
+		.feedback-thumbnail-remove:hover {
+			background: rgba(0, 0, 0, 0.8);
+		}
+		.feedback-thumbnail-remove svg {
+			width: 12px;
+			height: 12px;
+		}
+		.feedback-checkbox {
+			display: flex;
+			align-items: flex-start;
+			gap: 10px;
+			margin-top: 16px;
+			cursor: pointer;
+		}
+		.feedback-checkbox input[type="checkbox"] {
+			width: 16px;
+			height: 16px;
+			margin-top: 2px;
+			accent-color: #4F46E5;
+			cursor: pointer;
+		}
+		.feedback-checkbox-text {
+			font-size: 13px;
+			color: #888;
+			line-height: 1.5;
+		}
+		.feedback-privacy-link {
+			color: #4F46E5;
+			text-decoration: none;
+		}
+		.feedback-privacy-link:hover {
+			text-decoration: underline;
+		}
+		.feedback-actions {
+			padding: 16px 24px 20px;
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+			border-top: 1px solid #f0f0f0;
+		}
+		.feedback-actions.with-history {
+			justify-content: space-between;
+		}
+		.feedback-submit-btn {
+			padding: 9px 24px;
+			border: none;
+			border-radius: 8px;
+			background: #e0e0e0;
+			color: #fff;
+			font-size: 14px;
+			font-weight: 500;
+			cursor: not-allowed;
+			transition: all 0.15s;
+		}
+		.feedback-submit-btn.active {
+			background: #4F46E5;
+			cursor: pointer;
+		}
+		.feedback-submit-btn.active:hover {
+			background: #4338CA;
+		}
+		.feedback-submit-btn:disabled {
+			cursor: not-allowed;
+		}
+		.feedback-view[hidden] {
+			display: none;
+		}
+		.feedback-list-body,
+		.feedback-detail-body {
+			max-height: min(520px, calc(100vh - 176px));
+			overflow-y: auto;
+		}
+		.feedback-detail-group {
+			padding: 20px 24px;
+		}
+		.feedback-detail-group + .feedback-detail-group {
+			border-top: 8px solid #f7f7f7;
+		}
+		.feedback-detail-group-title {
+			margin-bottom: 16px;
+			color: #1a1a1a;
+			font-size: 15px;
+			font-weight: 600;
+		}
+		.feedback-list-intro {
+			padding: 0 24px 14px;
+			color: #888;
+			font-size: 13px;
+		}
+		.feedback-records {
+			border-top: 1px solid #f0f0f0;
+		}
+		.feedback-record {
+			display: flex;
+			width: 100%;
+			align-items: flex-start;
+			gap: 12px;
+			padding: 16px 24px;
+			border: 0;
+			border-bottom: 1px solid #f0f0f0;
+			background: #fff;
+			font: inherit;
+			text-align: left;
+			cursor: pointer;
+		}
+		.feedback-record:hover {
+			background: #fafafa;
+		}
+		.feedback-record-content {
+			min-width: 0;
+			flex: 1;
+		}
+		.feedback-record-title {
+			display: -webkit-box;
+			overflow: hidden;
+			color: #333;
+			font-size: 14px;
+			line-height: 1.55;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 1;
+		}
+		.feedback-record-meta {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-top: 6px;
+			color: #999;
+			font-size: 12px;
+		}
+		.feedback-status {
+			padding: 2px 7px;
+			border-radius: 10px;
+			font-size: 11px;
+			line-height: 1.35;
+		}
+		.feedback-status.pending {
+			color: #B45309;
+			background: #FEF3C7;
+		}
+		.feedback-status.handled {
+			color: #047857;
+			background: #D1FAE5;
+		}
+		.feedback-record-arrow {
+			width: 18px;
+			height: 18px;
+			margin-top: 7px;
+			flex-shrink: 0;
+			color: #bbb;
+		}
+		.feedback-empty {
+			padding: 56px 24px;
+			color: #999;
+			font-size: 13px;
+			text-align: center;
+		}
+		.feedback-pagination {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			padding: 14px 24px 4px;
+			color: #9CA3AF;
+			font-size: 12px;
+		}
+		.feedback-pagination-controls {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+		.feedback-page-btn {
+			min-width: 28px;
+			height: 28px;
+			padding: 0 8px;
+			border: 1px solid #E5E7EB;
+			border-radius: 6px;
+			color: #6B7280;
+			background: #fff;
+			font: inherit;
+			font-size: 12px;
+			cursor: pointer;
+			transition: all 0.15s;
+		}
+		.feedback-page-btn:hover:not(:disabled):not(.active) {
+			border-color: #A5B4FC;
+			color: #4F46E5;
+			background: #F5F3FF;
+		}
+		.feedback-page-btn.active {
+			border-color: #4F46E5;
+			color: #fff;
+			background: #4F46E5;
+		}
+		.feedback-page-btn:disabled {
+			color: #D1D5DB;
+			background: #F9FAFB;
+			cursor: not-allowed;
+		}
+		.feedback-detail-section {
+			padding: 0;
+			border: 0;
+		}
+		.feedback-detail-section + .feedback-detail-section {
+			margin-top: 18px;
+		}
+		.feedback-detail-label {
+			margin-bottom: 8px;
+			color: #999;
+			font-size: 12px;
+		}
+		.feedback-detail-content {
+			color: #333;
+			font-size: 14px;
+			line-height: 1.7;
+			white-space: pre-wrap;
+		}
+		.feedback-detail-time {
+			margin-bottom: 10px;
+			color: #666;
+			font-size: 13px;
+		}
+		.feedback-pending-note {
+			color: #999;
+			font-size: 13px;
+			line-height: 1.6;
+		}
+		.feedback-image-list {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+		}
+		.feedback-image-placeholder {
+			position: relative;
+			width: 104px;
+			height: 78px;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: 5px;
+			border: 1px solid #dedede;
+			border-radius: 8px;
+			color: #777;
+			background: linear-gradient(135deg, #f7f7f7, #ececec);
+			font: inherit;
+			font-size: 11px;
+			cursor: zoom-in;
+		}
+		.feedback-image-placeholder::after {
+			content: '';
+			position: absolute;
+			inset: 8px;
+			border: 1px solid rgba(255, 255, 255, 0.7);
+			border-radius: 4px;
+			pointer-events: none;
+		}
+		.feedback-image-placeholder svg {
+			width: 20px;
+			height: 20px;
+		}
+		.feedback-image-placeholder:hover {
+			border-color: #9f9bea;
+			color: #4F46E5;
+		}
+		.feedback-image-preview-overlay {
+			display: none;
+			position: fixed;
+			inset: 0;
+			z-index: 2001;
+			align-items: center;
+			justify-content: center;
+			padding: 24px;
+			background: rgba(0, 0, 0, 0.7);
+		}
+		.feedback-image-preview-overlay.show {
+			display: flex;
+		}
+		.feedback-image-preview {
+			position: relative;
+			width: min(680px, 100%);
+			aspect-ratio: 16 / 10;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: 12px;
+			border-radius: 12px;
+			color: #666;
+			background: linear-gradient(135deg, #f8f8f8, #e7e7e7);
+			box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+		}
+		.feedback-image-preview svg {
+			width: 48px;
+			height: 48px;
+			color: #999;
+		}
+		.feedback-image-preview-title {
+			font-size: 14px;
+		}
+		.feedback-image-preview-close {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			width: 32px;
+			height: 32px;
+			border: 0;
+			border-radius: 6px;
+			color: #666;
+			background: rgba(255, 255, 255, 0.82);
+			font-size: 21px;
+			cursor: pointer;
+		}
+		@media (max-width: 560px) {
+			.feedback-modal {
+				max-width: calc(100vw - 24px);
+				max-height: calc(100vh - 24px);
+			}
+			.feedback-header,
+			.feedback-actions {
+				padding-right: 18px;
+				padding-left: 18px;
+			}
+			.feedback-body,
+			.feedback-list-intro,
+			.feedback-detail-group {
+				padding-right: 18px;
+				padding-left: 18px;
+			}
+			.feedback-record {
+				padding-right: 18px;
+				padding-left: 18px;
+			}
+		}
+
     </style>
 </head>
 <body>
@@ -962,6 +1586,9 @@
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
                 新会话
             </li>
+            <li class="nav-item" data-src="./assistant/detail.html">
+                📑 个人助理
+            </li>
             <li class="nav-item" data-src="./zjgc/list.html">
                 ⚕️ 专家广场
             </li>
@@ -999,7 +1626,7 @@
 					每日AI新闻推送...<span style="font-size:11px;color:#b8860b;background:#fdf6e3;padding:1px 8px;border-radius:10px;margin-left:auto;">等待回复</span>
 				</li>
                 <li class="section-item" data-src="./session/agents-zsk.html"><span class="status-dot success"></span> 公司的请假制度（知识库引用）</li>
-                <li class="section-item" data-src="content.html?view=conv-2"><span class="status-dot failed"></span> 设计一个人个、...<span style="font-size:11px;color:var(--danger);background:#fee2e2;padding:1px 8px;border-radius:10px;margin-left:auto;">失败</span></li>
+                <li class="section-item" data-src="./session/agents-error.html"><span class="status-dot failed"></span> 设计一个人个、...<span style="font-size:11px;color:var(--danger);background:#fee2e2;padding:1px 8px;border-radius:10px;margin-left:auto;">失败</span></li>
                 <li class="section-item" data-src="content.html"><span class="status-dot pending"></span> 了解 OmniX 通用场景</li>
             </ul>
         </div>
@@ -1134,6 +1761,11 @@
                 </span>
             </div>
 
+            <div class="popup-row" onclick="openFeedbackModal()">
+                <svg class="popup-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                <span class="popup-row-label">意见反馈</span>
+            </div>
+
             <div class="popup-divider"></div>
 
             <div class="popup-row">
@@ -1160,16 +1792,36 @@
                 <button class="notification-close" id="notificationClose" type="button" aria-label="关闭消息中心">×</button>
             </div>
             <div class="notification-list" id="notificationList">
-                <button class="notification-item" type="button" data-title="TeleAgent Android APP 正式上线" data-date="2026-09-30" data-content="TeleAgent Android APP 已正式上线，欢迎前往应用市场下载体验。\n\n新版支持随时随地处理会话、查看任务进度，并持续优化移动端使用体验。">
-                    <div class="notification-item-title">TeleAgent Android APP 正式上线</div>
+                <button class="notification-item" type="button" data-title="OmniX 正式上线" data-date="2026-09-30" data-content="OmniX 已正式上线,欢迎前往应用市场下载体验。\n\n新版支持随时随地处理会话、查看任务进度,并持续优化移动端使用体验。">
+                    <div class="notification-item-title">
+                        <span class="notification-unread-dot"></span>
+                        OmniX 正式上线
+                    </div>
                     <div class="notification-date">2026-09-30</div>
-                    <span class="notification-unread-dot"></span>
+                    <span class="notification-delete-btn" title="删除消息">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                    </span>
                 </button>
-                <button class="notification-item" type="button" data-title="邀请好友，共享积分福利！" data-date="2026-08-21 18:31" data-content="🎉 邀请共享积分礼活动已上线！即日起至2026年9月30日23:59，邀请用户注册且7日内登录 TeleAgent，您和好友均可获得积分奖励：\n\n• 邀请人：每邀请1位好友，得500积分（每月最高累计3万积分），积分有效期1年\n• 被邀请人：注册并登录桌面端后，立得3000积分，积分有效期1个月\n• 参与方式：点击「头像 - 积分福利社 - 邀请共享积分 - 前往活动」进入活动页面，查看详情并分享邀请\n\n📍温馨提示：邀请功能长期有效，奖励细则请以积分福利社活动说明为准。">
-                    <div class="notification-item-title">邀请好友，共享积分福利！</div>
+                <button class="notification-item" type="button" data-title="邀请好友,共享积分福利!" data-date="2026-08-21 18:31" data-content="🎉 邀请共享积分礼活动已上线!即日起至2026年9月30日23:59,邀请用户注册且7日内登录 OmniX,您和好友均可获得积分奖励:\n\n• 邀请人:每邀请1位好友,得500积分(每月最高累计3万积分),积分有效期1年\n• 被邀请人:注册并登录桌面端后,立得3000积分,积分有效期1个月\n• 参与方式:点击「头像 - 积分福利社 - 邀请共享积分 - 前往活动」进入活动页面,查看详情并分享邀请\n\n📍温馨提示:邀请功能长期有效,奖励细则请以积分福利社活动说明为准。">
+                    <div class="notification-item-title">
+                        <span class="notification-unread-dot"></span>
+                        邀请好友,共享积分福利!
+                    </div>
                     <div class="notification-date">2026-08-21</div>
-                    <span class="notification-unread-dot"></span>
+                    <span class="notification-delete-btn" title="删除消息">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                    </span>
                 </button>
+            </div>
+            <div class="notification-pagination" id="notificationPagination" hidden>
+                <span id="notificationPaginationInfo"></span>
+                <div class="notification-pagination-controls" id="notificationPaginationControls"></div>
             </div>
             <div class="notification-empty" id="notificationEmpty">全部消息已读</div>
         </section>
@@ -1182,8 +1834,23 @@
             <h2 id="notificationDetailTitle"></h2>
             <time id="notificationDetailDate"></time>
             <div class="notification-detail-content" id="notificationDetailContent"></div>
-            <button class="notification-detail-confirm" id="notificationDetailConfirm" type="button">我知道了</button>
+            <div class="notification-detail-actions">
+                <button class="notification-detail-confirm" id="notificationDetailConfirm" type="button">我知道了</button>
+                <button class="notification-detail-delete" id="notificationDetailDelete" type="button">删除此消息</button>
+            </div>
         </section>
+    </div>
+
+    <!-- ====== Delete Confirm Dialog ====== -->
+    <div class="notification-confirm-overlay" id="notificationConfirmOverlay">
+        <div class="notification-confirm-dialog" id="notificationConfirmDialog">
+            <div class="notification-confirm-title">确认删除</div>
+            <div class="notification-confirm-content">删除后将无法恢复，确定要删除这条消息吗？</div>
+            <div class="notification-confirm-actions">
+                <button class="notification-confirm-btn notification-confirm-cancel" id="notificationConfirmCancel" type="button">取消</button>
+                <button class="notification-confirm-btn notification-confirm-delete" id="notificationConfirmDelete" type="button">删除</button>
+            </div>
+        </div>
     </div>
 
     <!-- ====== Main Content (iframe) ====== -->
@@ -1280,6 +1947,9 @@
                         switchTo(e.data.src);
                     }
                 }
+                if (e.data && e.data.type === 'openFeedback') {
+                    openFeedbackModal(e.data.content || '');
+                }
             });
 
             // 消息中心
@@ -1289,16 +1959,64 @@
             var notificationPanel = document.getElementById('notificationPanel');
             var notificationClose = document.getElementById('notificationClose');
             var markAllRead = document.getElementById('markAllRead');
-            var notificationItems = document.querySelectorAll('.notification-item');
+            var notificationList = document.getElementById('notificationList');
+            var notificationPagination = document.getElementById('notificationPagination');
+            var notificationPaginationInfo = document.getElementById('notificationPaginationInfo');
+            var notificationPaginationControls = document.getElementById('notificationPaginationControls');
+            var notificationItems = [];
+            var notificationPage = 1;
+            var notificationPageSize = 5;
             var notificationEmpty = document.getElementById('notificationEmpty');
             var notificationDetailOverlay = document.getElementById('notificationDetailOverlay');
             var notificationDetail = document.getElementById('notificationDetail');
             var notificationDetailTitle = document.getElementById('notificationDetailTitle');
             var notificationDetailDate = document.getElementById('notificationDetailDate');
             var notificationDetailContent = document.getElementById('notificationDetailContent');
+            var notificationConfirmOverlay = document.getElementById('notificationConfirmOverlay');
+            var notificationConfirmDialog = document.getElementById('notificationConfirmDialog');
+            var notificationConfirmCancel = document.getElementById('notificationConfirmCancel');
+            var notificationConfirmDelete = document.getElementById('notificationConfirmDelete');
+            var pendingDeleteItem = null;
+
+            [
+                ['技能管理新增审核提醒', '2026-08-18', '您有新的技能待审核，请前往管理后台查看详情。'],
+                ['反馈管理有新的待处理反馈', '2026-08-15', '反馈管理中有新的待处理反馈，请及时查看并分派处理人。'],
+                ['系统维护通知', '2026-08-12', '系统将于今晚进行例行维护，维护期间部分功能可能短暂不可用。'],
+                ['客户端版本更新', '2026-08-08', 'OmniX 客户端已更新，欢迎体验新的功能和优化。']
+            ].forEach(function(data) {
+                var item = document.createElement('button');
+                item.className = 'notification-item';
+                item.type = 'button';
+                item.dataset.title = data[0];
+                item.dataset.date = data[1];
+                item.dataset.content = data[2];
+                item.innerHTML = '<div class="notification-item-title"><span class="notification-unread-dot"></span>' + data[0] + '</div><div class="notification-date">' + data[1] + '</div><span class="notification-delete-btn" title="删除消息"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg></span>';
+                notificationList.appendChild(item);
+            });
+
+            function renderNotificationPage() {
+                var allItems = Array.from(notificationList.querySelectorAll('.notification-item-template'));
+                var totalPages = Math.max(1, Math.ceil(allItems.length / notificationPageSize));
+                notificationPage = Math.max(1, Math.min(notificationPage, totalPages));
+                allItems.forEach(function(item) { item.hidden = true; });
+                var start = (notificationPage - 1) * notificationPageSize;
+                allItems.slice(start, start + notificationPageSize).forEach(function(item) { item.hidden = false; });
+                notificationItems = allItems;
+                notificationPagination.hidden = allItems.length <= notificationPageSize;
+                notificationPaginationInfo.textContent = '共 ' + allItems.length + ' 条，第 ' + (start + 1) + '-' + Math.min(start + notificationPageSize, allItems.length) + ' 条';
+                notificationPaginationControls.innerHTML = '<button class="notification-page-btn" type="button" onclick="changeNotificationPage(' + (notificationPage - 1) + ')" ' + (notificationPage === 1 ? 'disabled' : '') + '>上一页</button>' + Array.from({ length: totalPages }, function(_, index) { var page = index + 1; return '<button class="notification-page-btn ' + (page === notificationPage ? 'active' : '') + '" type="button" onclick="changeNotificationPage(' + page + ')">' + page + '</button>'; }).join('') + '<button class="notification-page-btn" type="button" onclick="changeNotificationPage(' + (notificationPage + 1) + ')" ' + (notificationPage === totalPages ? 'disabled' : '') + '>下一页</button>';
+            }
+
+            window.changeNotificationPage = function(page) {
+                var totalPages = Math.ceil(notificationList.querySelectorAll('.notification-item-template').length / notificationPageSize);
+                if (page < 1 || page > totalPages) return;
+                if (page === notificationPage) return;
+                notificationPage = page;
+                renderNotificationPage();
+            };
 
             function updateNotificationCount() {
-                var unreadCount = document.querySelectorAll('.notification-item:not(.read)').length;
+                var unreadCount = document.querySelectorAll('.notification-item-template:not(.read)').length;
                 notificationCount.textContent = unreadCount;
                 notificationCount.style.display = unreadCount ? 'block' : 'none';
                 notificationEmpty.classList.toggle('show', unreadCount === 0);
@@ -1331,6 +2049,9 @@
             });
 
             notificationClose.addEventListener('click', closeNotificationPanel);
+            notificationPagination.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
             notificationOverlay.addEventListener('click', function(e) {
                 if (!notificationPanel.contains(e.target)) closeNotificationPanel();
             });
@@ -1342,7 +2063,8 @@
                 updateNotificationCount();
             });
 
-            notificationItems.forEach(function(item) {
+            notificationList.querySelectorAll('.notification-item').forEach(function(item) {
+                item.classList.add('notification-item-template');
                 item.addEventListener('click', function() {
                     item.classList.add('read');
                     updateNotificationCount();
@@ -1354,6 +2076,56 @@
                 });
             });
 
+            document.querySelectorAll('.notification-delete-btn').forEach(function(deleteBtn) {
+                deleteBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    pendingDeleteItem = deleteBtn.closest('.notification-item');
+                    notificationConfirmOverlay.classList.add('show');
+                });
+            });
+
+            notificationConfirmCancel.addEventListener('click', function() {
+                notificationConfirmOverlay.classList.remove('show');
+                pendingDeleteItem = null;
+            });
+
+            notificationConfirmDelete.addEventListener('click', function() {
+                if (pendingDeleteItem) {
+                    pendingDeleteItem.style.transition = 'opacity 0.3s, transform 0.3s';
+                    pendingDeleteItem.style.opacity = '0';
+                    pendingDeleteItem.style.transform = 'translateX(-20px)';
+                    setTimeout(function() {
+                        pendingDeleteItem.remove();
+                        pendingDeleteItem = null;
+                        renderNotificationPage();
+                        updateNotificationCount();
+                    }, 300);
+                }
+                notificationConfirmOverlay.classList.remove('show');
+            });
+
+            notificationConfirmOverlay.addEventListener('click', function(e) {
+                if (!notificationConfirmDialog.contains(e.target)) {
+                    notificationConfirmOverlay.classList.remove('show');
+                    pendingDeleteItem = null;
+                }
+            });
+
+            document.getElementById('notificationDetailDelete').addEventListener('click', function() {
+                var currentTitle = notificationDetailTitle.textContent;
+                var currentContent = notificationDetailContent.textContent;
+                var items = document.querySelectorAll('.notification-item');
+                items.forEach(function(item) {
+                    if (item.getAttribute('data-title') === currentTitle && item.getAttribute('data-content') === currentContent) {
+                        pendingDeleteItem = item;
+                    }
+                });
+                closeNotificationDetail();
+                notificationConfirmOverlay.classList.add('show');
+            });
+
+            renderNotificationPage();
+
             document.getElementById('notificationDetailClose').addEventListener('click', closeNotificationDetail);
             document.getElementById('notificationDetailConfirm').addEventListener('click', closeNotificationDetail);
             notificationDetailOverlay.addEventListener('click', function(e) {
@@ -1361,6 +2133,8 @@
             });
             document.addEventListener('keydown', function(e) {
                 if (e.key !== 'Escape') return;
+                notificationConfirmOverlay.classList.remove('show');
+                pendingDeleteItem = null;
                 closeNotificationDetail();
                 closeNotificationPanel();
             });
@@ -1467,8 +2241,399 @@
 			window.location.href=url;
 		}
     }
-	
+
+	// ====== Feedback Modal ======
+	let feedbackFiles = [];
+	const feedbackHistory = [
+		{
+			id: 'feedback-001',
+			content: '希望知识库支持按文件夹批量导入文档，并显示每个文件的解析进度。',
+			submittedAt: '2026-10-24 14:36',
+			uploadedLog: true,
+			status: 'handled',
+			handledAt: '2026-10-25 10:18',
+			handleDescription: '感谢反馈。批量导入和文件级解析进度已纳入后续版本计划，当前可先通过多选文件方式逐批上传。'
+		},
+		{
+			id: 'feedback-002',
+			content: '生成图片时希望能保存常用的尺寸和风格设置，减少重复配置。',
+			submittedAt: '2026-10-18 09:52',
+			uploadedLog: false,
+			status: 'handled',
+			handledAt: '2026-10-20 16:42',
+			handleDescription: '已在 v0.3.4 中支持保存最近使用的图片生成参数，常用预设功能正在持续完善。'
+		},
+		{
+			id: 'feedback-003',
+			content: '会话较多时，侧边栏搜索结果希望能按最近更新时间排序。',
+			submittedAt: '2026-10-12 20:08',
+			uploadedLog: true,
+			status: 'pending'
+		},
+		{
+			id: 'feedback-004',
+			content: '希望增加深色模式，夜间使用时界面对眼睛更友好。',
+			submittedAt: '2026-10-09 11:24',
+			uploadedLog: false,
+			status: 'handled',
+			handledAt: '2026-10-11 15:30',
+			handleDescription: '深色模式已纳入界面主题改造计划，后续版本将逐步开放。'
+		},
+		{
+			id: 'feedback-005',
+			content: '文件上传完成后，希望能在通知中心看到解析成功或失败提醒。',
+			submittedAt: '2026-10-06 16:45',
+			uploadedLog: true,
+			status: 'pending'
+		},
+		{
+			id: 'feedback-006',
+			content: '建议聊天记录支持按项目导出，便于整理阶段性工作成果。',
+			submittedAt: '2026-10-02 09:18',
+			uploadedLog: false,
+			status: 'handled',
+			handledAt: '2026-10-04 14:20',
+			handleDescription: '已记录导出需求，后续将结合项目归档能力统一提供。'
+		}
+	];
+	let feedbackView = 'form';
+	let currentFeedbackId = null;
+	let feedbackPage = 1;
+	const feedbackPageSize = 5;
+
+	function setFeedbackView(view, feedbackId) {
+		feedbackView = view;
+		currentFeedbackId = feedbackId || null;
+		document.querySelectorAll('.feedback-view').forEach(function(element) {
+			element.hidden = element.id !== 'feedback' + view.charAt(0).toUpperCase() + view.slice(1) + 'View';
+		});
+		if (view === 'list') renderFeedbackHistory();
+		if (view === 'detail') renderFeedbackDetail();
+	}
+
+	function openFeedbackModal(content) {
+		var textarea = document.getElementById('feedbackTextarea');
+		var charCount = document.getElementById('feedbackCharCount');
+		document.getElementById('feedbackOverlay').classList.add('show');
+		document.body.style.overflow = 'hidden';
+		setFeedbackView('form');
+		if (content && textarea && charCount) {
+			textarea.value = content;
+			charCount.textContent = content.length;
+			updateSubmitBtnState();
+		}
+	}
+
+	function closeFeedbackModal() {
+		document.getElementById('feedbackOverlay').classList.remove('show');
+		document.body.style.overflow = '';
+		feedbackTextarea.value = '';
+		feedbackFiles = [];
+		feedbackCharCount.textContent = '0';
+		document.getElementById('feedbackFileCount').textContent = '0';
+		document.getElementById('feedbackThumbnails').innerHTML = '';
+		updateSubmitBtnState();
+	}
+
+	function openFeedbackHistory() {
+		setFeedbackView('list');
+	}
+
+	function openFeedbackForm() {
+		setFeedbackView('form');
+		setTimeout(function() { feedbackTextarea.focus(); }, 0);
+	}
+
+	function openFeedbackDetail(id) {
+		setFeedbackView('detail', id);
+	}
+
+	function openFeedbackImagePreview() {
+		document.getElementById('feedbackImagePreviewOverlay').classList.add('show');
+	}
+
+	function closeFeedbackImagePreview() {
+		document.getElementById('feedbackImagePreviewOverlay').classList.remove('show');
+	}
+
+	function renderFeedbackHistory() {
+		const records = document.getElementById('feedbackRecords');
+		const empty = document.getElementById('feedbackHistoryEmpty');
+		const pagination = document.getElementById('feedbackPagination');
+		if (!feedbackHistory.length) {
+			records.innerHTML = '';
+			empty.hidden = false;
+			pagination.hidden = true;
+			return;
+		}
+		empty.hidden = true;
+		const totalPages = Math.ceil(feedbackHistory.length / feedbackPageSize);
+		feedbackPage = Math.max(1, Math.min(feedbackPage, totalPages));
+		const start = (feedbackPage - 1) * feedbackPageSize;
+		const pageRecords = feedbackHistory.slice(start, start + feedbackPageSize);
+		records.innerHTML = pageRecords.map(function(item) {
+			const handled = item.status === 'handled';
+			return '<button class="feedback-record" type="button" onclick="openFeedbackDetail(\'' + item.id + '\')">' +
+				'<span class="feedback-record-content">' +
+				'<span class="feedback-record-title">' + escapeFeedbackHtml(item.content) + '</span>' +
+				'<span class="feedback-record-meta"><span>' + item.submittedAt + '</span><span class="feedback-status ' + (handled ? 'handled' : 'pending') + '">' + (handled ? '已处理' : '已提交') + '</span></span>' +
+				'</span>' +
+				'<svg class="feedback-record-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>' +
+				'</button>';
+		}).join('');
+		pagination.hidden = false;
+		document.getElementById('feedbackPaginationInfo').textContent = '共 ' + feedbackHistory.length + ' 条，第 ' + (start + 1) + '-' + Math.min(start + feedbackPageSize, feedbackHistory.length) + ' 条';
+		document.getElementById('feedbackPaginationControls').innerHTML =
+			'<button class="feedback-page-btn" type="button" onclick="changeFeedbackPage(' + (feedbackPage - 1) + ')" ' + (feedbackPage === 1 ? 'disabled' : '') + '>上一页</button>' +
+			Array.from({ length: totalPages }, function(_, index) { var page = index + 1; return '<button class="feedback-page-btn ' + (page === feedbackPage ? 'active' : '') + '" type="button" onclick="changeFeedbackPage(' + page + ')">' + page + '</button>'; }).join('') +
+			'<button class="feedback-page-btn" type="button" onclick="changeFeedbackPage(' + (feedbackPage + 1) + ')" ' + (feedbackPage === totalPages ? 'disabled' : '') + '>下一页</button>';
+	}
+
+	function changeFeedbackPage(page) {
+		const totalPages = Math.ceil(feedbackHistory.length / feedbackPageSize);
+		if (page < 1 || page > totalPages || page === feedbackPage) return;
+		feedbackPage = page;
+		renderFeedbackHistory();
+	}
+
+	function renderFeedbackDetail() {
+		const item = feedbackHistory.find(function(record) { return record.id === currentFeedbackId; });
+		if (!item) {
+			setFeedbackView('list');
+			return;
+		}
+		document.getElementById('feedbackDetailContent').textContent = item.content;
+		document.getElementById('feedbackDetailSubmittedAt').textContent = item.submittedAt;
+		document.getElementById('feedbackDetailLogStatus').textContent = item.uploadedLog ? '已上传' : '未上传';
+		const handleSection = document.getElementById('feedbackHandleSection');
+		const pendingNote = document.getElementById('feedbackPendingNote');
+		if (item.status === 'handled') {
+			handleSection.hidden = false;
+			pendingNote.hidden = true;
+			document.getElementById('feedbackHandledAt').textContent = item.handledAt;
+			document.getElementById('feedbackHandleDescription').textContent = item.handleDescription;
+		} else {
+			handleSection.hidden = true;
+			pendingNote.hidden = false;
+		}
+	}
+
+	function escapeFeedbackHtml(value) {
+		return value.replace(/[&<>"']/g, function(character) {
+			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character];
+		});
+	}
+
+	let feedbackTextarea;
+	let feedbackCharCount;
+	let feedbackSubmitBtn;
+
+	document.addEventListener('DOMContentLoaded', function() {
+		const feedbackOverlay = document.getElementById('feedbackOverlay');
+		feedbackTextarea = document.getElementById('feedbackTextarea');
+		feedbackCharCount = document.getElementById('feedbackCharCount');
+		feedbackSubmitBtn = document.getElementById('feedbackSubmitBtn');
+
+		feedbackOverlay.addEventListener('click', function(e) {
+			if (e.target === this) closeFeedbackModal();
+		});
+		feedbackTextarea.addEventListener('input', function() {
+			feedbackCharCount.textContent = this.value.length;
+			updateSubmitBtnState();
+		});
+		document.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape' && feedbackOverlay.classList.contains('show')) closeFeedbackModal();
+		});
+		updateSubmitBtnState();
+	});
+
+	function handleFeedbackFiles(event) {
+		const files = Array.from(event.target.files);
+		const remaining = 6 - feedbackFiles.length;
+		const newFiles = files.slice(0, remaining);
+		newFiles.forEach(function(file) {
+			if (file.type.startsWith('image/')) {
+				const reader = new FileReader();
+				reader.onload = function(e) {
+					feedbackFiles.push({ file: file, url: e.target.result });
+					renderThumbnails();
+				};
+				reader.readAsDataURL(file);
+			}
+		});
+		event.target.value = '';
+	}
+
+	function renderThumbnails() {
+		const container = document.getElementById('feedbackThumbnails');
+		document.getElementById('feedbackFileCount').textContent = feedbackFiles.length;
+		if (feedbackFiles.length === 0) {
+			container.innerHTML = '';
+			updateSubmitBtnState();
+			return;
+		}
+		container.innerHTML = feedbackFiles.map(function(item, index) {
+			return '<div class="feedback-thumbnail">' +
+				'<img src="' + item.url + '" alt="预览" />' +
+				'<button class="feedback-thumbnail-remove" onclick="removeThumbnail(' + index + ')" title="删除">' +
+				'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+				'</button></div>';
+		}).join('');
+		updateSubmitBtnState();
+	}
+
+	function removeThumbnail(index) {
+		feedbackFiles.splice(index, 1);
+		renderThumbnails();
+	}
+
+	function updateSubmitBtnState() {
+		if (!feedbackTextarea || !feedbackSubmitBtn) return;
+		const hasContent = feedbackTextarea.value.trim().length > 0 || feedbackFiles.length > 0;
+		feedbackSubmitBtn.disabled = !hasContent;
+		feedbackSubmitBtn.classList.toggle('active', hasContent);
+	}
+
+	function submitFeedback() {
+		if (feedbackSubmitBtn.disabled) return;
+		const content = feedbackTextarea.value.trim();
+		const uploadLog = document.getElementById('feedbackUploadLog').checked;
+		console.log('提交反馈:', { content, files: feedbackFiles.length, uploadLog });
+		feedbackHistory.unshift({
+			id: 'feedback-' + Date.now(),
+			content: content || '已提交图片反馈',
+			submittedAt: new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-'),
+			uploadedLog: uploadLog,
+			status: 'pending'
+		});
+		feedbackPage = 1;
+		feedbackTextarea.value = '';
+		feedbackFiles = [];
+		feedbackCharCount.textContent = '0';
+		document.getElementById('feedbackFileCount').textContent = '0';
+		document.getElementById('feedbackThumbnails').innerHTML = '';
+		updateSubmitBtnState();
+		alert('反馈已提交，感谢您的支持！');
+		setFeedbackView('list');
+	}
+
     </script>
+
+    <!-- ====== Feedback Modal ====== -->
+    <div class="feedback-overlay" id="feedbackOverlay">
+        <div class="feedback-modal">
+            <section class="feedback-view" id="feedbackFormView" aria-label="提交意见反馈">
+                <div class="feedback-header">
+                    <h3 class="feedback-title">意见反馈</h3>
+                    <div class="feedback-header-actions">
+                        <button class="feedback-close" onclick="closeFeedbackModal()" aria-label="关闭">×</button>
+                    </div>
+                </div>
+                <div class="feedback-body">
+                    <textarea class="feedback-textarea" id="feedbackTextarea" placeholder="描述你遇到的问题" maxlength="10000"></textarea>
+                    <div class="feedback-footer">
+                        <div class="feedback-upload">
+                            <input type="file" id="feedbackFileInput" multiple accept="image/*" style="display:none" onchange="handleFeedbackFiles(event)" />
+                            <button class="feedback-upload-btn" type="button" onclick="document.getElementById('feedbackFileInput').click()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
+                                上传图片 (<span id="feedbackFileCount">0</span>/6)
+                            </button>
+                        </div>
+                        <div class="feedback-count"><span id="feedbackCharCount">0</span>/10000</div>
+                    </div>
+                    <div class="feedback-thumbnails" id="feedbackThumbnails"></div>
+                    <label class="feedback-checkbox">
+                        <input type="checkbox" id="feedbackUploadLog" checked />
+                        <span class="feedback-checkbox-text">上传日志，仅用于排查问题，可能包含对话记录、设备信息等数据。详情请查阅 <a href="https://www.neoomni.cn/omnix-privacy-policy.html" target="_blank" class="feedback-privacy-link">隐私保护声明</a></span>
+                    </label>
+                </div>
+                <div class="feedback-actions with-history">
+                    <button class="feedback-history-trigger" type="button" onclick="openFeedbackHistory()">我的反馈</button>
+                    <button class="feedback-submit-btn" id="feedbackSubmitBtn" type="button" onclick="submitFeedback()" disabled>提交反馈</button>
+                </div>
+            </section>
+
+            <section class="feedback-view" id="feedbackListView" aria-label="我的反馈" hidden>
+                <div class="feedback-header">
+                    <h3 class="feedback-title">我的反馈</h3>
+                    <div class="feedback-header-actions">
+                        <button class="feedback-close" onclick="closeFeedbackModal()" aria-label="关闭">×</button>
+                    </div>
+                </div>
+                <div class="feedback-list-body">
+                    <p class="feedback-list-intro">查看历史反馈和处理进度</p>
+                    <div class="feedback-records" id="feedbackRecords"></div>
+                    <div class="feedback-empty" id="feedbackHistoryEmpty" hidden>暂时没有历史反馈</div>
+					<div class="feedback-pagination" id="feedbackPagination" hidden>
+						<span id="feedbackPaginationInfo"></span>
+						<div class="feedback-pagination-controls" id="feedbackPaginationControls"></div>
+					</div>
+                </div>
+                <div class="feedback-actions">
+                    <button class="feedback-submit-btn active" type="button" onclick="openFeedbackForm()">提交意见反馈</button>
+                </div>
+            </section>
+
+            <section class="feedback-view" id="feedbackDetailView" aria-label="反馈详情" hidden>
+                <div class="feedback-header">
+                    <button class="feedback-back-btn" type="button" onclick="openFeedbackHistory()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+                        返回列表
+                    </button>
+                    <div class="feedback-header-actions">
+                        <button class="feedback-close" onclick="closeFeedbackModal()" aria-label="关闭">×</button>
+                    </div>
+                </div>
+                <div class="feedback-detail-body">
+                    <section class="feedback-detail-group">
+                        <h4 class="feedback-detail-group-title">我的反馈</h4>
+                        <div class="feedback-detail-section">
+                            <div class="feedback-detail-label">反馈内容</div>
+                            <div class="feedback-detail-content" id="feedbackDetailContent"></div>
+                        </div>
+                        <div class="feedback-detail-section">
+                            <div class="feedback-detail-label">反馈图片</div>
+                            <div class="feedback-image-list">
+                                <button class="feedback-image-placeholder" type="button" onclick="openFeedbackImagePreview()" aria-label="放大查看反馈图片">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" /></svg>
+                                    图片占位符
+                                </button>
+                            </div>
+                        </div>
+                        <div class="feedback-detail-section">
+                            <div class="feedback-detail-label">日志数据</div>
+                            <div class="feedback-detail-time" id="feedbackDetailLogStatus"></div>
+                        </div>
+                        <div class="feedback-detail-section">
+                            <div class="feedback-detail-label">提交时间</div>
+                            <div class="feedback-detail-time" id="feedbackDetailSubmittedAt"></div>
+                        </div>
+                    </section>
+                    <section class="feedback-detail-group">
+                        <h4 class="feedback-detail-group-title">处理详情</h4>
+                        <div class="feedback-detail-section" id="feedbackHandleSection">
+                            <div class="feedback-detail-label">处理时间</div>
+                            <div class="feedback-detail-time" id="feedbackHandledAt"></div>
+                            <div class="feedback-detail-label">处理说明</div>
+                            <div class="feedback-detail-content" id="feedbackHandleDescription"></div>
+                        </div>
+                        <div class="feedback-detail-section" id="feedbackPendingNote" hidden>
+                            <div class="feedback-detail-label">处理状态</div>
+                            <div class="feedback-pending-note">反馈已收到，平台会尽快处理，请耐心等待。</div>
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="feedback-image-preview-overlay" id="feedbackImagePreviewOverlay" onclick="if (event.target === this) closeFeedbackImagePreview()">
+        <div class="feedback-image-preview" role="dialog" aria-modal="true" aria-label="反馈图片预览">
+            <button class="feedback-image-preview-close" type="button" onclick="closeFeedbackImagePreview()" aria-label="关闭图片预览">×</button>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" /></svg>
+            <div class="feedback-image-preview-title">反馈图片预览占位符</div>
+        </div>
+    </div>
 
 </body>
 </html>

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=818">
+<title>思维特智能制造展示中心设计方案</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: #eef0f4;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+                 "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    position: relative;
+    margin: 0 auto;
+    background: #eef0f4;
+    overflow: hidden;
+  }
+
+  /* ================= 浏览器工具条 ================= */
+  .toolbar {
+    position: relative;
+    height: 38px;
+    background: #f4f4f5;
+    display: flex;
+    align-items: center;
+    padding: 0 20px 0 18px;
+    border-bottom: 1px solid #e3e3e5;
+  }
+
+  .nav-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex: none;
+  }
+  .nav-btn svg { display: block; }
+  .nav-btn.disabled { opacity: 0.38; }
+  .nav-btn + .nav-btn { margin-left: 2px; }
+
+  .urlbar {
+    display: flex;
+    align-items: center;
+    height: 32px;
+    margin-left: 16px;
+    flex: 1;
+    padding: 0 14px;
+    background: #e9e9eb;
+    border: 1px solid #e0e0e2;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .url-text {
+    font-size: 13px;
+    color: #2f3033;
+    letter-spacing: 0.1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1;
+  }
+
+  .tool-actions {
+    display: flex;
+    align-items: center;
+    margin-left: 12px;
+    flex: none;
+  }
+  .tool-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+  }
+  .tool-btn + .tool-btn { margin-left: 2px; }
+
+  /* ================= Hero ================= */
+  .hero {
+    position: relative;
+    height: 304px;
+    background: linear-gradient(103deg, #0a2d74 0%, #11479a 38%, #1e63c0 68%, #2b7ad8 100%);
+    overflow: hidden;
+  }
+
+  /* 右侧装饰圆环 */
+  .hero .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    pointer-events: none;
+  }
+  .ring.r1 { width: 460px; height: 460px; right: -130px; top: -120px; }
+  .ring.r2 { width: 620px; height: 620px; right: -210px; top: -200px; border-color: rgba(255,255,255,0.08); }
+
+  .hero-inner {
+    position: absolute;
+    left: 60px;
+    top: 0;
+    width: 700px;
+  }
+
+  .badge {
+    display: inline-block;
+    margin-top: 44px;
+    padding: 7px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+
+  .hero-title {
+    margin-top: 26px;
+    color: #ffffff;
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1.1;
+  }
+
+  .hero-sub {
+    margin-top: 20px;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 17px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+
+  .hero-stats {
+    display: flex;
+    margin-top: 30px;
+  }
+  .stat { margin-right: 68px; }
+  .stat:last-child { margin-right: 0; }
+  .stat .v {
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .stat .v sup { font-size: 10px; font-weight: 600; }
+  .stat .k {
+    margin-top: 10px;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 12.5px;
+    letter-spacing: 0.3px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* ================= 正文 ================= */
+  .content {
+    padding: 40px 16px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 40px 44px 44px;
+    box-shadow: 0 1px 3px rgba(20, 40, 80, 0.04);
+  }
+
+  .sec-head {
+    display: flex;
+    align-items: center;
+  }
+  .sec-bar {
+    width: 5px;
+    height: 32px;
+    background: #e8590c;
+    border-radius: 2px;
+    margin-right: 16px;
+    flex: none;
+  }
+  .sec-title {
+    color: #1c1e21;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .sec-en {
+    margin-left: 14px;
+    color: #9aa0a6;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    line-height: 1;
+    transform: translateY(1px);
+  }
+
+  .sec-body {
+    margin-top: 24px;
+    color: #3a3d42;
+    font-size: 16px;
+    line-height: 2.05;
+    letter-spacing: 0.3px;
+    text-align: justify;
+  }
+  .sec-body strong { color: #1c1e21; font-weight: 600; }
+
+  /* 子标题 */
+  .sub-head {
+    display: flex;
+    align-items: baseline;
+    margin-top: 30px;
+  }
+  .sub-no {
+    color: #e8590c;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-right: 12px;
+    flex: none;
+  }
+  .sub-title {
+    color: #1c1e21;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    line-height: 1.4;
+  }
+  .sub-en {
+    margin-left: 10px;
+    color: #b0b4b9;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.4px;
+  }
+
+  /* 参数表 */
+  .data-table {
+    width: 100%;
+    margin-top: 22px;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .data-table thead th {
+    background: #f5f6f8;
+    color: #4a4d52;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-align: left;
+    padding: 11px 16px;
+    border-bottom: 1px solid #eceef1;
+    white-space: nowrap;
+  }
+  .data-table tbody td {
+    padding: 12px 16px;
+    color: #46494e;
+    border-bottom: 1px solid #f1f2f4;
+    letter-spacing: 0.2px;
+  }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .data-table tbody td:first-child { color: #1c1e21; font-weight: 600; }
+  .data-table .num { font-variant-numeric: tabular-nums; }
+  .data-table tr.total td {
+    background: #fbfbfc;
+    color: #1c1e21;
+    font-weight: 600;
+  }
+
+  .table-note {
+    margin-top: 10px;
+    color: #9aa0a6;
+    font-size: 12.5px;
+    letter-spacing: 0.2px;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- 浏览器工具条 -->
+    <div class="toolbar">
+      <!-- 后退 -->
+      <div class="nav-btn disabled" title="后退">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="#3c3e42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 5 8 12 15 19"></polyline>
+        </svg>
+      </div>
+      <!-- 前进 -->
+      <div class="nav-btn disabled" title="前进">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="#3c3e42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 5 16 12 9 19"></polyline>
+        </svg>
+      </div>
+      <!-- 刷新 -->
+      <div class="nav-btn" title="刷新" style="margin-left:6px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="#3c3e42" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"></path>
+          <polyline points="20.8 3.6 20.8 8.2 16.2 8.2"></polyline>
+        </svg>
+      </div>
+
+      <!-- 地址栏 -->
+      <div class="urlbar">
+        <span class="url-text">本地文件 · Svite展厅设计方案/思维特智能制造展示中心设计方案.html</span>
+      </div>
+
+      <!-- 右侧工具 -->
+      <div class="tool-actions">
+        <!-- 指针 -->
+        <div class="tool-btn" title="选择元素">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none"
+               stroke="#3c3e42" stroke-width="1.7" stroke-linejoin="round">
+            <path d="M5.5 3.2 L18.6 11.4 L12.4 12.6 L9.6 18.6 Z" fill="none"></path>
+            <path d="M15.8 3.4 l0.7 1.9 1.9 0.7 -1.9 0.7 -0.7 1.9 -0.7 -1.9 -1.9 -0.7 1.9 -0.7 Z"
+                  fill="#3c3e42" stroke="none"></path>
+          </svg>
+        </div>
+        <!-- 文件夹 -->
+        <div class="tool-btn" title="打开所在文件夹">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none"
+               stroke="#3c3e42" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6.6a1.6 1.6 0 0 1 1.6-1.6h4.1l1.8 2.1h8.9A1.6 1.6 0 0 1 21 8.7v9.7a1.6 1.6 0 0 1-1.6 1.6H4.6A1.6 1.6 0 0 1 3 18.4Z"></path>
+          </svg>
+        </div>
+        <!-- 更多 -->
+        <div class="tool-btn" title="更多">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="#3c3e42" stroke="none">
+            <circle cx="5.6" cy="12" r="1.75"></circle>
+            <circle cx="12" cy="12" r="1.75"></circle>
+            <circle cx="18.4" cy="12" r="1.75"></circle>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero 区 -->
+    <header class="hero">
+      <span class="ring r2"></span>
+      <span class="ring r1"></span>
+      <div class="hero-inner">
+        <span class="badge">设计方案汇报 · DESIGN PROPOSAL</span>
+        <h1 class="hero-title">思维特智能制造展示中心</h1>
+        <p class="hero-sub">浙江思维特数字科技有限公司 · 科技感 / 蓝白系 · 面向政府领导与投资者的企业展厅</p>
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="v">15m × 7m × 3.5m</div>
+            <div class="k">方正会议室空间改造</div>
+          </div>
+          <div class="stat">
+            <div class="v">105m<sup>2</sup></div>
+            <div class="k">建筑面积 · 5大功能分区</div>
+          </div>
+          <div class="stat">
+            <div class="v">37m / 25min</div>
+            <div class="k">单向环形参观动线</div>
+          </div>
+          <div class="stat">
+            <div class="v">4+1 图纸</div>
+            <div class="k">平面/效果/立面/动线/灯光</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 正文区 -->
+    <main class="content">
+      <section class="card">
+        <div class="sec-head">
+          <span class="sec-bar"></span>
+          <h2 class="sec-title">一、设计概述</h2>
+          <span class="sec-en">CONCEPT</span>
+        </div>
+        <p class="sec-body">
+          以「聚力 · 聚能」为策展主题，将 15m×7m 的方正会议室改造为一条单向环形叙事展线：从入口形象序厅出发，沿"企业历程 → 产品核心 → 技术创新 → 案例与愿景"层层递进，在空间几何中心以 4m 弧形 LED 屏形成视觉高潮，最终以愿景墙合影点收束，契合政府领导视察与投资人路演的双重场景。
+        </p>
+      </section>
+
+      <!-- 第二章 -->
+      <section class="card">
+        <div class="sec-head">
+          <span class="sec-bar"></span>
+          <h2 class="sec-title">二、空间与动线</h2>
+          <span class="sec-en">SPACE &amp; CIRCULATION</span>
+        </div>
+
+        <div class="sub-head">
+          <span class="sub-no">2.1</span>
+          <span class="sub-title">空间条件与改造边界</span>
+          <span class="sub-en">SITE CONDITION</span>
+        </div>
+        <p class="sec-body">
+          原始空间为 15m×7m 方正会议室，净高 3.5m，建筑面积 105㎡，无柱网遮挡，北、西两面为实体墙可作主展面，南侧为入口，东侧为设备间与强电井。改造遵循"轻介入"原则：不改动原有消防喷淋、空调风管与配电回路，仅以轻钢龙骨隔墙、吊顶造型与地面抬高 120mm 的方式完成走线与界面重塑。中心区吊顶局部抬升至 3.3m，用于容纳 4m 弧形 LED 屏钢架；其余区域吊顶压低至 2.9m，既隐藏管线，也强化展线的包裹感与沉浸感。
+        </p>
+
+        <div class="sub-head">
+          <span class="sub-no">2.2</span>
+          <span class="sub-title">单向环形参观动线</span>
+          <span class="sub-en">ONE-WAY LOOP</span>
+        </div>
+        <p class="sec-body">
+          动线自入口 3m 缓冲过渡区起，经形象序厅建立第一印象，沿北墙进入企业历程时间轴，于西北转角转入西墙产品核心实物区，在空间几何中心以 4m 弧形 LED 屏形成视觉高潮，再折向南墙技术创新段，最终经东侧案例与愿景收束于合影墙。全程 37m，单向行进、不回头、不交叉、不逆流，参观者始终沿同一侧墙面阅读，讲解员可背对展墙面向团队，避免人流对冲。按 1.2m/s 常规步速与每站 1.5—2min 停留测算，标准参观时长为 25min；压缩版 15min 可略过产品实物细节与专利墙，仅保留序厅、中心 LED 与愿景墙三个记忆点。
+        </p>
+
+        <div class="sub-head">
+          <span class="sub-no">2.3</span>
+          <span class="sub-title">空间节奏与照明策略</span>
+          <span class="sub-en">RHYTHM &amp; LIGHTING</span>
+        </div>
+        <p class="sec-body">
+          整体呈"抑—扬—收"三段式节奏：序厅基础照度控制在 150lx、色温 3000K 暖白，压低视线以突出发光标识；企业历程段渐亮至 250lx，引导阅读节奏；中心 LED 区环境照度降至 80lx，屏体亮度维持 600—800nit，使弧形屏成为空间中唯一高亮源；愿景段回升至 300lx，满足合影面部补光需求。全馆采用 4000K 主光与 3000K 辅助光双色温配置，重点展项显色指数 Ra≥90，轨道射灯统一 24° 与 36° 两种光束角，并以洗墙灯均匀打亮展面，规避玻璃展柜镜面反射。
+        </p>
+
+        <div class="sub-head">
+          <span class="sub-no">2.4</span>
+          <span class="sub-title">分区面积与停留时长</span>
+          <span class="sub-en">ZONE SCHEDULE</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>功能分区</th>
+              <th>面积</th>
+              <th>展线长度</th>
+              <th>建议停留</th>
+              <th>核心形式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>入口形象序厅</td>
+              <td class="num">12㎡</td>
+              <td class="num">4m</td>
+              <td class="num">2min</td>
+              <td>发光标识 + 竖屏品牌片</td>
+            </tr>
+            <tr>
+              <td>企业历程</td>
+              <td class="num">18㎡</td>
+              <td class="num">8m</td>
+              <td class="num">5min</td>
+              <td>通长时间轴灯箱 + 实物柜</td>
+            </tr>
+            <tr>
+              <td>产品核心</td>
+              <td class="num">24㎡</td>
+              <td class="num">9m</td>
+              <td class="num">6min</td>
+              <td>三大产品线实物与剖切模型</td>
+            </tr>
+            <tr>
+              <td>技术创新</td>
+              <td class="num">22㎡</td>
+              <td class="num">8m</td>
+              <td class="num">5min</td>
+              <td>数字专利墙 + 透明 OLED 柜</td>
+            </tr>
+            <tr>
+              <td>案例与愿景</td>
+              <td class="num">20㎡</td>
+              <td class="num">8m</td>
+              <td class="num">5min</td>
+              <td>案例地图 + 愿景合影墙</td>
+            </tr>
+            <tr>
+              <td>公共通道及设备</td>
+              <td class="num">9㎡</td>
+              <td class="num">—</td>
+              <td class="num">—</td>
+              <td>缓冲、转场与中控机位</td>
+            </tr>
+            <tr class="total">
+              <td>合计</td>
+              <td class="num">105㎡</td>
+              <td class="num">37m</td>
+              <td class="num">23min</td>
+              <td>含转场约 25min</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="table-note">注：面积为净使用面积估算，最终以施工图为准；停留时长不含讲解互动与自由参观的弹性时间。</p>
+      </section>
+
+      <!-- 第三章 -->
+      <section class="card">
+        <div class="sec-head">
+          <span class="sec-bar"></span>
+          <h2 class="sec-title">三、分区与展项</h2>
+          <span class="sec-en">ZONES &amp; EXHIBITS</span>
+        </div>
+        <p class="sec-body">
+          五个功能分区按"认知—认同—共鸣"的叙事逻辑递进：序厅解决"是谁"，历程解决"从哪来"，产品与创新解决"凭什么"，案例与愿景解决"要去哪"。展项采用标准化硬件 + 可替换内容的组合，便于后续按产品迭代与汇报场景快速调整，而不必二次施工。
+        </p>
+
+        <div class="sub-head">
+          <span class="sub-no">3.1</span>
+          <span class="sub-title">入口形象序厅 · 12㎡</span>
+          <span class="sub-en">ARRIVAL</span>
+        </div>
+        <p class="sec-body">
+          入口正对 3.6m 高发光企业标识，配 2.2m 宽竖屏循环播放 30s 品牌片，地面嵌入品牌 VI 导引线，将访客自然导入展线起点。一侧设 55 寸预约签到屏，支持访客登记、讲解模式切换与团队分组提示，兼顾日常接待与团队视察两种使用状态。
+        </p>
+
+        <div class="sub-head">
+          <span class="sub-no">3.2</span>
+          <span class="sub-title">企业历程 · 18㎡</span>
+          <span class="sub-en">MILESTONES</span>
+        </div>
+        <p class="sec-body">
+          北墙设 8m 通长时间轴灯箱，选取创立至今 6 个关键节点，以年份刻度、事件图文与影像截帧三层信息排布；下方布置 3 组实物陈列柜，分别陈列早期产品、资质证书与里程碑奖杯，柜内配置恒温除湿模块。一侧嵌入 21.5 寸触摸查询屏，可按年份调取完整图文与历史影像，作为灯箱信息的延伸而非重复。
+        </p>
+
+        <div class="sub-head">
+          <span class="sub-no">3.3</span>
+          <span class="sub-title">产品核心 · 24㎡</span>
+          <span class="sub-en">PRODUCT CORE</span>
+        </div>
+        <p class="sec-body">
+          西墙按智能装备、工业软件、系统集成三条产品线分区陈列，每条产品线配 1:1 实物或剖切模型与参数灯箱，重点呈现设备内部结构与关键工艺。中部设 1.2m×1.2m 升降展台，用于主推单品的快速切换；顶部 4m 弧形 LED 屏与展台联动，播放产品工作原理三维动画，形成"实物—动画—参数"三重印证，这也是全馆唯一的动态视觉高潮。
+        </p>
+
+        <div class="sub-head">
+          <span class="sub-no">3.4</span>
+          <span class="sub-title">技术创新 · 22㎡</span>
+          <span class="sub-en">INNOVATION</span>
+        </div>
+        <p class="sec-body">
+          南墙为数字专利墙，以 LED 点阵实时滚动专利数量、研发投入占比与在研项目数，数据由后台按季度更新，避免牌面固化。中部透明 OLED 展柜陈列伺服驱动、视觉模组等核心零部件，观众可透过屏体看到实物同时叠加参数标注；一侧设"研发场景窗"，以灯箱还原实验室与产线联调的真实场景，强化技术可信度。
+        </p>
+
+        <div class="sub-head">
+          <span class="sub-no">3.5</span>
+          <span class="sub-title">案例与愿景 · 20㎡</span>
+          <span class="sub-en">CASES &amp; VISION</span>
+        </div>
+        <p class="sec-body">
+          东墙设中国地图灯箱，以点位标注落地城市与标杆项目，下方为客户 logo 阵列，采用磁吸模块便于增补。展线尽端为愿景墙，以 4m 宽发光 slogan 与"聚力 · 聚能"主视觉构成合影点，预留 2.5m×3m 站位区与顶部补光，确保政府领导视察与投资人路演均可在同一位置完成留念与传播。
+        </p>
+
+        <div class="sub-head">
+          <span class="sub-no">3.6</span>
+          <span class="sub-title">智能中控与后期运维</span>
+          <span class="sub-en">CONTROL &amp; O&amp;M</span>
+        </div>
+        <p class="sec-body">
+          全馆由中控平板统一管理，预设"日常待机、领导视察、路演讲解、夜间安防"四种场景，一键联动灯光、屏体、音效与门禁。内容经云端后台远程更新，单条素材替换控制在 10min 以内；屏体、灯箱、展柜均按模块化预留检修口与标准接口，后续扩容或调整分区无需破坏已完成面层。
+        </p>
+      </section>
+    </main>
+
+  </div>
+</body>
+</html>

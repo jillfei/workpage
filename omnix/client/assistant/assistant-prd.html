@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人助手工作台 - 产品需求文档 v1.0</title>
+<style>
+  :root{--primary:#4f46e5;--primary-light:#eef2ff;--text:#1f2937;--text-2:#6b7280;--bg:#f9fafb;--card:#fff;--border:#e5e7eb;--green:#059669;--amber:#d97706;--danger:#dc2626;--side:260px}
+  *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth} body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.75}
+  .sidebar{position:fixed;inset:0 auto 0 0;width:var(--side);background:#fff;border-right:1px solid var(--border);overflow:auto;padding:24px 0;z-index:2}.sidebar-title{padding:0 20px 16px;border-bottom:1px solid var(--border);margin-bottom:12px;color:var(--primary);font-weight:700;font-size:14px}.sidebar-title span{display:block;margin-top:4px;font-size:11px;color:var(--text-2);font-weight:400}.nav,.nav-sub{list-style:none}.nav a{display:block;padding:9px 20px;border-left:3px solid transparent;color:var(--text);text-decoration:none;font-size:13px;font-weight:600}.nav a:hover,.nav a.active{color:var(--primary);background:var(--primary-light);border-left-color:var(--primary)}.nav-sub a{padding:6px 20px 6px 36px;color:var(--text-2);font-size:12px;font-weight:400}.instructions-frame{display:block;width:100%;height:2440px;border:1px solid var(--border);border-radius:10px;background:#f4f6f9}
+  main{margin-left:var(--side);padding:40px}.container{max-width:1320px;margin:auto}.hero{padding:52px 36px;border-radius:16px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;text-align:center;margin-bottom:28px}.hero h1{font-size:34px;line-height:1.3}.hero p{margin-top:10px;opacity:.88;font-size:16px}.meta,.section{background:var(--card);border:1px solid var(--border);border-radius:12px}.meta{padding:18px 28px;margin-bottom:24px}.section{padding:34px;margin-bottom:24px;scroll-margin-top:20px}.section h2{font-size:22px;color:var(--primary);padding-bottom:12px;margin-bottom:20px;border-bottom:2px solid var(--primary-light)}.section h3{font-size:17px;margin:28px 0 12px;scroll-margin-top:20px}.section h4{font-size:15px;color:var(--primary);margin:22px 0 10px}.section p{color:var(--text-2);margin-bottom:12px}.section strong{color:var(--text)}
+  table{width:100%;border-collapse:collapse;margin:14px 0 22px;font-size:13px}th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:top}th{background:var(--primary-light);color:var(--primary);font-size:12px;white-space:nowrap}tr:hover td{background:#fafafa}.feature-list{list-style:none}.feature-list li{padding:12px 14px;margin-bottom:9px;border-left:3px solid var(--primary);background:var(--primary-light);border-radius:0 7px 7px 0}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:16px 0}.card{padding:18px;border:1px solid var(--border);border-radius:9px;background:var(--primary-light)}.card h4{margin:0 0 6px}.card p{margin:0;font-size:13px}.note{margin:16px 0;padding:13px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-left:4px solid #3b82f6;border-radius:0 8px 8px 0;color:#1e40af}.flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;margin:18px 0}.flow-item{flex:1 1 145px;padding:13px 10px;background:#fff;border:1px solid #c7d2fe;border-radius:8px;text-align:center;color:#3730a3;font-weight:600}.arrow{align-self:center;color:var(--text-2);font-size:20px}.diagram{margin:16px 0;padding:22px;border:1px solid var(--border);border-radius:10px;background:#fbfcff;overflow:auto}.diagram svg{display:block;min-width:760px;width:100%;height:auto}.tag{display:inline-block;padding:1px 8px;border-radius:12px;font-size:12px;font-weight:600}.tag-blue{background:#dbeafe;color:#1d4ed8}.tag-green{background:#d1fae5;color:#047857}.tag-amber{background:#fef3c7;color:#92400e}.tag-red{background:#fee2e2;color:#b91c1c}.footer{text-align:center;padding:20px;color:var(--text-2);font-size:13px}
+  @media(max-width:900px){.sidebar{display:none}main{margin-left:0;padding:20px}.cards{grid-template-columns:1fr}.section{padding:22px}} @media(max-width:560px){main{padding:12px}.hero{padding:38px 18px}.hero h1{font-size:25px}.section{padding:18px}.meta{padding:12px;overflow:auto}table{min-width:650px}.section>table{display:block;overflow:auto}.flow{display:block}.arrow{display:none}.flow-item{margin-bottom:8px}}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-title">目录导航<span>个人助手工作台 PRD</span></div>
+  <ul class="nav">
+    <li><a class="active" href="#sec1">一、概述</a></li><li><ul class="nav-sub"><li><a href="#sec1-1">1.1 背景说明</a></li><li><a href="#sec1-2">1.2 需求描述</a></li><li><a href="#sec1-3">1.3 核心概念定义</a></li><li><a href="#sec1-4">1.4 目标用户与典型场景</a></li></ul></li>
+    <li><a href="#sec2">二、技术方案</a></li>
+    <li><a href="#sec3">三、功能架构与流程图</a></li><li><ul class="nav-sub"><li><a href="#sec3-1">3.1 系统架构图</a></li><li><a href="#sec3-2">3.2 业务流程图</a></li></ul></li>
+    <li><a href="#sec4">四、详细设计</a></li><li><ul class="nav-sub"><li><a href="#sec4-1">4.1 个人助手页面</a></li><li><a href="#sec4-2">4.2 助手工作台模块</a></li><li><a href="#sec4-3">4.3 任务与产物预览模块</a></li><li><a href="#sec4-4">4.4 IM 频道配置弹窗</a></li></ul></li>
+  </ul>
+</nav>
+<main><div class="container">
+  <header class="hero"><h1>个人助手工作台</h1><p>统一承接任务 · 异步派发执行 · 远程 IM 连接 · 任务与工作产物预览</p></header>
+  <div class="meta"><table><tr><th style="width:15%">文档版本</th><th style="width:18%">修改日期</th><th style="width:15%">修改人</th><th>修改说明</th></tr><tr><td>v1.0</td><td>2026-11-03</td><td>孙礼飞</td><td>个人助手工作台产品需求文档，包含指令路由、任务执行、工作台、任务/产物预览及 IM 连接能力。</td></tr></table></div>
+
+  <section class="section" id="sec1"><h2>一、概述</h2>
+    <h3 id="sec1-1">1.1 背景说明</h3><p>用户在处理代码修改、问题排查、资料查询、文档审读和产物交付等工作时，通常需要在沟通工具、执行环境和结果文件之间频繁切换。任务过程不可见、执行结果分散、远程发起与跟进不连续，会降低任务协同效率。</p><p>个人助手工作台提供统一任务入口与执行承载：用户以自然语言提出需求，系统根据任务性质完成直接答复、直接处理、异步派发、上下文续办或补充确认；任务执行后，用户可在同一工作台查看任务会话和生成产物，并通过 IM 频道远程提交任务和跟进结果。</p>
+    <h3 id="sec1-2">1.2 需求描述</h3><ul class="feature-list"><li><strong>统一任务承接：</strong>支持将用户自然语言需求识别为问答、秘书事务、新任务、已有结果迭代、待确认事项或受限事项，并执行匹配处理。</li><li><strong>可跟进的异步执行：</strong>新任务可在不阻塞用户操作的前提下派发执行，状态从已受理进入执行并回传完成、失败或取消结果。</li><li><strong>集中工作台：</strong>在同一侧边工作区查看 IM 连接状态、最近任务和工作产物；任务与文件均可打开为独立标签页预览。</li><li><strong>远程连接：</strong>支持微信、企业微信、钉钉、飞书四类 IM 频道的绑定、状态展示和安全解绑。</li></ul>
+    <h3 id="sec1-3">1.3 核心概念定义</h3><table><tr><th style="width:20%">概念</th><th>定义与说明</th></tr><tr><td>个人助手</td><td>面向个人工作流的任务协调入口，负责理解需求、决策处理方式、派发执行并汇报结果。</td></tr><tr><td>任务会话</td><td>承载一个可执行任务的上下文单元，包含目标、已知路径、约束、已有结论以及执行过程和结果。</td></tr><tr><td>助手工作台</td><td>个人助手右侧的管理与预览区域，汇集 IM 频道、最近任务、工作产物和打开的标签页。</td></tr><tr><td>工作产物</td><td>任务执行后生成或引用的文件型结果，例如 HTML 文档；可从对话消息或工作台列表打开。</td></tr><tr><td>IM 频道</td><td>用于远程向个人助手发送任务并接收结果的外部即时通讯入口，具有未绑定、绑定中、已绑定状态。</td></tr><tr><td>绑定</td><td>用户通过指定 IM 平台的扫码授权流程建立频道连接；连接成功后可远程发起任务。</td></tr></table>
+    <h3 id="sec1-4">1.4 目标用户与典型场景</h3><div class="cards"><div class="card"><h4>研发与技术负责人</h4><p>将修复缺陷、阅读代码、审查改动等任务交由助手异步执行，并在任务完成后直接打开对应会话或交付文件。</p></div><div class="card"><h4>产品与运营人员</h4><p>通过自然语言委派调研、文档生成和内容审读任务，在工作台集中查看任务进展和结果。</p></div><div class="card"><h4>移动办公用户</h4><p>在微信、企业微信、钉钉或飞书中远程发送任务，保持电脑端执行环境与移动端沟通渠道连接。</p></div></div>
+  </section>
+
+  <section class="section" id="sec2"><h2>二、技术方案</h2>
+<style>
+:root{
+  --ink:#16202e; --ink2:#3f4b5c; --ink3:#6c7a8d; --line:#e1e6ee; --line2:#c9d3e2;
+  --blue:#2563eb; --teal:#0f766e; --violet:#6d4ed7; --indigo:#4338ca; --purple:#7c3aed;
+  --amber:#a35b0a; --green:#17694a; --red:#b3352c; --bg:#f4f6f9;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;
+  font-size:16px;line-height:1.78;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1280px;margin:0 auto;padding:0 22px}
+h1,h2,h3,h4{margin:0;line-height:1.35;letter-spacing:.2px}
+p{margin:.5em 0;color:var(--ink2)}
+strong{color:var(--ink)}
+code,.mono{font-family:ui-monospace,Consolas,"Liberation Mono",Menlo,monospace}
+
+/* 图卡与区块 */
+.figure{
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  margin:24px 0;padding:22px 24px 20px;box-shadow:0 1px 2px rgba(16,24,40,.05),0 8px 24px rgba(16,24,40,.04);
+  break-inside:avoid;page-break-inside:avoid;
+}
+.fig-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.fig-no{font-family:ui-monospace,Consolas,monospace;font-size:15px;font-weight:700;color:#fff;background:var(--ink);border-radius:7px;padding:1px 9px}
+.fig-head h2{font-size:21px;font-weight:750}
+.fig-q{font-size:15.5px;color:var(--ink3);margin:6px 0 14px}
+.svg-wrap{overflow-x:auto;background:#fbfcfe;border:1px solid var(--line);border-radius:10px;padding:6px 8px;-webkit-overflow-scrolling:touch}
+.svg-wrap svg{display:block;max-width:none}
+.fig-notes{margin:12px 0 0;padding:0 0 0 20px;font-size:15.5px;color:var(--ink2)}
+.fig-notes li{margin:3px 0}
+.fig-notes b{color:var(--ink)}
+.lead{font-size:16px;color:var(--ink2)}
+.note{font-size:15px;color:var(--ink3);margin:8px 0 0}
+.section-title{font-size:20px;font-weight:750;margin:26px 0 4px}
+.section-sub{font-size:15.5px;color:var(--ink3);margin:0 0 14px}
+
+/* 标签 */
+.tag{display:inline-block;font-size:15px;font-weight:600;line-height:1.5;padding:0 7px;border-radius:5px;vertical-align:1px}
+.tag.fact{background:#eaf7f0;color:var(--green)}
+.tag.inf{background:#fdf4e4;color:var(--amber)}
+
+/* 七类卡片 */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.cat{--c:#2563eb;border:1px solid var(--line);border-top:4px solid var(--c);border-radius:12px;background:#fff;padding:15px 18px 16px;break-inside:avoid}
+.cat-head{display:flex;align-items:center;gap:10px}
+.cat-letter{width:30px;height:30px;border-radius:8px;background:var(--c);color:#fff;font-size:15px;font-weight:700;display:grid;place-items:center;flex:0 0 auto}
+.cat h3{font-size:17px;font-weight:750;color:var(--ink)}
+.cat-sub{font-size:15px;color:var(--ink3);margin:4px 0 10px;padding-bottom:8px;border-bottom:1px dashed #e6ebf3}
+.kv{display:grid;grid-template-columns:80px 1fr;gap:5px 10px;font-size:15.5px;color:var(--ink2)}
+.kv dt{font-size:15px;font-weight:700;color:var(--c);white-space:nowrap}
+.kv dd{margin:0}
+.kv dd.bad{color:#b3352c}
+
+/* 表格 */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-top:14px;background:#fff}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:15.5px}
+th,td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{background:#f4f7fc;font-size:15px;font-weight:700;white-space:nowrap;color:var(--ink)}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:nth-child(even) td{background:#fbfcfe}
+td.first{font-weight:600;color:var(--ink)}
+td.muted{color:var(--ink3);font-size:15px}
+.badge{display:inline-block;font-size:15px;font-weight:600;padding:1px 9px;border-radius:999px;white-space:nowrap}
+.b-keep{background:#eaf7f0;color:var(--green)}
+.b-new{background:#edf3ff;color:var(--blue)}
+
+/* 反模式 */
+.anti{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.anti-card{border:1px solid #f0c7c2;border-left:5px solid var(--red);border-radius:10px;background:#fffaf9;padding:14px 16px}
+.anti-card .at{font-size:16px;font-weight:750;color:var(--red);margin-bottom:4px}
+.anti-card .ap{font-size:15px;color:var(--ink2);margin:3px 0}
+.anti-card .ap b{color:var(--ink)}
+.anti-card .ax{font-size:15px;color:var(--green);margin-top:6px;padding-top:6px;border-top:1px dashed #f0d6d2}
+.anti-warn{margin-top:14px;padding:13px 16px;border-radius:10px;background:#fdecea;border:1px solid #f0c2bd;font-size:15.5px;color:#7f2b23}
+
+/* 速查表 */
+.quick td.q{font-weight:600;color:var(--ink)}
+.quick .arrow{color:#9aa7bb}
+
+/* 脚注 */
+.footnotes{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin:24px 0 40px}
+.footnotes h2{font-size:19px;margin-bottom:6px}
+.footnotes ul{margin:6px 0 0;padding-left:20px;font-size:15.5px;color:var(--ink2)}
+.footnotes li{margin:4px 0}
+footer{padding:18px 0 44px;border-top:1px solid var(--line);font-size:15px;color:var(--ink3)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:6px 20px;justify-content:space-between}
+
+/* SVG 通用 */
+svg text{font-family:-apple-system,"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;font-size:15px;fill:#3d4b5e}
+.t{font-size:15.5px;font-weight:700;fill:#14202f}
+.d{fill:#5c6a7c}
+.m{fill:#8494a8}
+.warn{fill:#a35b0a}
+.arr{stroke:#7e8da2;stroke-width:1.6;fill:none}
+.arrD{stroke:#8c76d6;stroke-width:1.6;fill:none;stroke-dasharray:6 5}
+.life{stroke:#c6d0df;stroke-width:1.3;stroke-dasharray:5 6}
+.qbox{fill:#ffffff;stroke:#c7d3e4;stroke-width:1.3}
+.lbl{fill:#445268;stroke:#fbfcfe;stroke-width:4px;paint-order:stroke;stroke-linejoin:round}
+
+@media (max-width:820px){
+  .figure{padding:16px 14px}
+  .wrap{padding:0 14px}
+  .cards,.anti{grid-template-columns:1fr}
+}
+@media print{
+  @page{size:A3 landscape;margin:10mm}
+  body{background:#fff;font-size:15px}
+  .figure{box-shadow:none;border:1px solid #bbb;padding:10px;margin:12px 0;break-inside:avoid}
+  .svg-wrap{overflow:visible;border:0;padding:0;background:#fff}
+  .svg-wrap svg{width:100%;height:auto}
+  .page-break{break-before:page;page-break-before:always}
+  .cat,.anti-card{break-inside:avoid}
+  table{min-width:0}
+}
+</style>
+<main class="wrap">
+<section class="figure">
+  <div class="fig-head"><span class="fig-no">1</span><h2>主决策树 · 这句话会被怎么处理</h2></div>
+   <p class="fig-q">用户输入内容，从上往下依次过 A→B→C→D→E→F，取第一条成立的进行执行。</p>
+
+  <div class="svg-wrap">
+    <svg viewBox="0 0 1140 830" data-w="1140" data-h="830" role="img" aria-label="指令处理主决策树">
+      <defs>
+        <marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#7e8da2"></path>
+        </marker>
+       <marker id="ar1w" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+         <path d="M0,0 L10,5 L0,10 z" fill="#ffffff"></path>
+       </marker>
+      </defs>
+
+      <g transform="translate(-200 0)">
+       <!-- 起点 -->
+      <rect x="490" y="34" width="260" height="44" rx="22" fill="#16202e"></rect>
+       <text class="t" x="620" y="62" text-anchor="middle" style="fill:#ffffff" font-size="16">用户一句话进来</text>
+      <line class="arr" x1="620" y1="80" x2="620" y2="94" marker-end="url(#ar1)"></line>
+
+      <!-- A -->
+      <rect x="400" y="96" width="400" height="64" rx="9" class="qbox"></rect>
+      <rect x="400" y="96" width="5" height="64" fill="#2563eb"></rect>
+      <circle cx="370" cy="128" r="15" fill="#2563eb"></circle>
+      <text class="t" x="370" y="133" text-anchor="middle" fill="#ffffff">A</text>
+       <text class="t" x="600" y="122" text-anchor="middle">答案不依赖新的调查？</text>
+       <text class="d" x="600" y="144" text-anchor="middle">闲聊 · 概念解释 · 已有上下文或已核实结果的问答</text>
+      <line class="arr" x1="800" y1="128" x2="874" y2="128" marker-end="url(#ar1)"></line>
+      <text class="d lbl" x="838" y="120" text-anchor="middle">是</text>
+      <rect x="880" y="102" width="300" height="52" rx="8" fill="#f2f6ff" stroke="#c9d9f7"></rect>
+       <text class="t" x="1030" y="123" text-anchor="middle">直接答</text>
+       <text class="d" x="1030" y="144" text-anchor="middle">不调查，直接给结论</text>
+
+      <line class="arr" x1="620" y1="160" x2="620" y2="184" marker-end="url(#ar1)"></line>
+      <text class="m" x="636" y="178">否</text>
+
+      <!-- B -->
+      <rect x="400" y="186" width="400" height="64" rx="9" class="qbox"></rect>
+      <rect x="400" y="186" width="5" height="64" fill="#0f766e"></rect>
+      <circle cx="370" cy="218" r="15" fill="#0f766e"></circle>
+      <text class="t" x="370" y="223" text-anchor="middle" fill="#ffffff">B</text>
+       <text class="t" x="600" y="212" text-anchor="middle">是助理自己能办的秘书事务？</text>
+       <text class="d" x="600" y="234" text-anchor="middle">记忆 · 简单任务 · 会话状态 · 文件整理</text>
+      <line class="arr" x1="800" y1="218" x2="874" y2="218" marker-end="url(#ar1)"></line>
+      <text class="d lbl" x="838" y="210" text-anchor="middle">是</text>
+      <rect x="880" y="192" width="300" height="52" rx="8" fill="#edf8f6" stroke="#c9e6df"></rect>
+       <text class="t" x="1030" y="213" text-anchor="middle">直接做</text>
+       <text class="d" x="1030" y="234" text-anchor="middle">调工具，如实回报结果</text>
+
+      <line class="arr" x1="620" y1="250" x2="620" y2="274" marker-end="url(#ar1)"></line>
+      <text class="m" x="636" y="268">否</text>
+
+       <!-- C：新任务执行 -->
+       <rect x="400" y="276" width="400" height="64" rx="9" class="qbox"></rect>
+       <rect x="400" y="276" width="5" height="64" fill="#6d4ed7"></rect>
+       <circle cx="370" cy="308" r="15" fill="#6d4ed7"></circle>
+       <text class="t" x="370" y="313" text-anchor="middle" fill="#ffffff">C</text>
+        <text class="t" x="600" y="302" text-anchor="middle">是新任务需要执行？</text>
+        <text class="d" x="600" y="324" text-anchor="middle">读内容 · 跑命令 · 出产物 · 联网检索 · 多步任务</text>
+       <line class="arr" x1="800" y1="308" x2="874" y2="308" marker-end="url(#ar1)"></line>
+       <text class="d lbl" x="838" y="300" text-anchor="middle">是</text>
+       <rect x="880" y="282" width="300" height="52" rx="8" fill="#f5f2ff" stroke="#d5cbf5"></rect>
+        <text class="t" x="1030" y="303" text-anchor="middle">派发执行</text>
+        <text class="d" x="1030" y="324" text-anchor="middle">按任务拆解后执行</text>
+
+       <line class="arr" x1="620" y1="340" x2="620" y2="364" marker-end="url(#ar1)"></line>
+       <text class="m" x="636" y="358">否</text>
+
+       <!-- D：已有结果迭代 -->
+       <rect x="400" y="366" width="400" height="64" rx="9" class="qbox"></rect>
+       <rect x="400" y="366" width="5" height="64" fill="#7c3aed"></rect>
+       <circle cx="370" cy="398" r="15" fill="#7c3aed"></circle>
+       <text class="t" x="370" y="403" text-anchor="middle" fill="#ffffff">D</text>
+        <text class="t" x="600" y="392" text-anchor="middle">是对已有结果的迭代？</text>
+        <text class="d" x="600" y="414" text-anchor="middle">补充 · 纠错 · 改口径 · 下一阶段</text>
+       <line class="arr" x1="800" y1="398" x2="874" y2="398" marker-end="url(#ar1)"></line>
+       <text class="d lbl" x="838" y="390" text-anchor="middle">是</text>
+       <rect x="880" y="372" width="300" height="52" rx="8" fill="#f7f2ff" stroke="#ddd0f7"></rect>
+        <text class="t" x="1030" y="393" text-anchor="middle">续用原会话 / 新建</text>
+        <text class="d" x="1030" y="414" text-anchor="middle">按上下文重叠度决定</text>
+
+       <line class="arr" x1="620" y1="430" x2="620" y2="454" marker-end="url(#ar1)"></line>
+       <text class="m" x="636" y="448">否</text>
+
+       <!-- E：用户确认 -->
+       <rect x="400" y="456" width="400" height="64" rx="9" class="qbox"></rect>
+       <rect x="400" y="456" width="5" height="64" fill="#a35b0a"></rect>
+       <circle cx="370" cy="488" r="15" fill="#a35b0a"></circle>
+       <text class="t" x="370" y="493" text-anchor="middle" fill="#ffffff">E</text>
+        <text class="t" x="600" y="482" text-anchor="middle">需要用户拿主意？</text>
+        <text class="d" x="600" y="504" text-anchor="middle">目标不清 · 缺关键参数 · 不可逆操作</text>
+       <line class="arr" x1="800" y1="488" x2="874" y2="488" marker-end="url(#ar1)"></line>
+       <text class="d lbl" x="838" y="480" text-anchor="middle">是</text>
+       <rect x="880" y="462" width="300" height="52" rx="8" fill="#fdf7ea" stroke="#e8d3a8"></rect>
+        <text class="t" x="1030" y="483" text-anchor="middle">转述给用户</text>
+        <text class="d" x="1030" y="504" text-anchor="middle">答复回送同一会话</text>
+
+       <line class="arr" x1="620" y1="520" x2="620" y2="544" marker-end="url(#ar1)"></line>
+       <text class="m" x="636" y="538">否</text>
+
+       <!-- F：限制 -->
+       <rect x="400" y="546" width="400" height="64" rx="9" class="qbox"></rect>
+       <rect x="400" y="546" width="5" height="64" fill="#b3352c"></rect>
+       <circle cx="370" cy="578" r="15" fill="#b3352c"></circle>
+       <text class="t" x="370" y="583" text-anchor="middle" fill="#ffffff">F</text>
+        <text class="t" x="600" y="572" text-anchor="middle">受限或做不到？</text>
+        <text class="d" x="600" y="594" text-anchor="middle">权限不足 · 工具不存在 · 规则禁止</text>
+       <line class="arr" x1="800" y1="578" x2="874" y2="578" marker-end="url(#ar1)"></line>
+       <text class="d lbl" x="838" y="570" text-anchor="middle">是</text>
+       <rect x="880" y="552" width="300" height="52" rx="8" fill="#fdecea" stroke="#f0c7c2"></rect>
+        <text class="t" x="1030" y="573" text-anchor="middle">说明限制 + 给替代</text>
+        <text class="d" x="1030" y="594" text-anchor="middle">不绕道实现</text>
+
+       <line class="arr" x1="620" y1="610" x2="620" y2="634" marker-end="url(#ar1)"></line>
+       <text class="m" x="636" y="628">否</text>
+
+       <!-- 兜底 -->
+       <rect x="400" y="636" width="400" height="64" rx="9" fill="#fdf4e4" stroke="#d99a2b" stroke-dasharray="7 5"></rect>
+        <text class="t" x="600" y="662" text-anchor="middle">都不匹配：先问一句再判定</text>
+        <text class="d" x="600" y="684" text-anchor="middle">不替用户假设，也不硬塞进某一类</text>
+
+       <!-- 旁路规则 -->
+       <rect x="280" y="726" width="1000" height="84" rx="10" fill="#f8fafd" stroke="#dbe2ee"></rect>
+        <text class="d" x="620" y="772" text-anchor="middle">判定顺序 A → B → C → D → E → F；一条任务可能同时符合多条，按顺序取第一条成立的。</text>
+      </g>
+     </svg>
+  </div>
+
+
+</section>
+<section class="figure page-break">
+  <div class="fig-head"><span class="fig-no">2</span><h2>任务派发的标准流程</h2></div>
+  <p class="fig-q"> </p>
+
+  <div class="svg-wrap">
+    <svg viewBox="0 0 1140 780" data-w="1140" data-h="780" role="img" aria-label="C 类派发标准流程时序图">
+      <defs>
+        <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#7e8da2"></path>
+        </marker>
+        <marker id="ar2d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#8c76d6"></path>
+        </marker>
+      </defs>
+
+      <!-- 泳道头 -->
+      <rect x="50" y="26" width="160" height="44" rx="9" fill="#f2f6ff" stroke="#c9d9f7"></rect>
+      <text class="t" x="130" y="54" text-anchor="middle">用户</text>
+      <rect x="420" y="26" width="200" height="44" rx="9" fill="#edf8f6" stroke="#c9e6df"></rect>
+      <text class="t" x="520" y="54" text-anchor="middle">调度层（助理）</text>
+      <rect x="850" y="26" width="200" height="44" rx="9" fill="#f5f2ff" stroke="#d5cbf5"></rect>
+      <text class="t" x="950" y="54" text-anchor="middle">执行会话</text>
+
+      <line class="life" x1="130" y1="70" x2="130" y2="740"></line>
+      <line class="life" x1="520" y1="70" x2="520" y2="740"></line>
+      <line class="life" x1="950" y1="70" x2="950" y2="740"></line>
+
+      <!-- ① -->
+      <line class="arr" x1="130" y1="112" x2="508" y2="112" marker-end="url(#ar2)"></line>
+      <text class="d lbl" x="320" y="102" text-anchor="middle">① 需求（自然语言）</text>
+
+      <!-- ② -->
+      <line class="arr" x1="520" y1="164" x2="142" y2="164" marker-end="url(#ar2)"></line>
+      <text class="d lbl" x="330" y="154" text-anchor="middle">② 先确认一句：正在派发（不让用户干等）</text>
+
+      <!-- ③ -->
+      <line class="arr" x1="520" y1="216" x2="938" y2="216" marker-end="url(#ar2)"></line>
+      <text class="d lbl" x="730" y="206" text-anchor="middle">③ 派发：异步、不阻塞</text>
+
+      <!-- ④ -->
+      <line class="arr" x1="520" y1="268" x2="142" y2="268" marker-end="url(#ar2)"></line>
+      <text class="d lbl" x="330" y="258" text-anchor="middle">④ 回执：已受理（queued）</text>
+      <rect x="868" y="240" width="196" height="42" rx="8" fill="#fdf4e4" stroke="#d99a2b" stroke-width="1.4"></rect>
+      <text class="warn" x="884" y="267" style="font-weight:700">回执 ≠ 完成</text>
+
+      <!-- 载荷面板 -->
+      <rect x="636" y="300" width="200" height="162" rx="9" fill="#fbfcff" stroke="#c9d9f7"></rect>
+      <text class="t" x="652" y="326">派发载荷（4 字段）</text>
+      <text class="d" x="652" y="352">① 目标</text>
+      <text class="d" x="652" y="376">② 已知路径</text>
+      <text class="d" x="652" y="400">③ 约束</text>
+      <text class="d" x="652" y="424">④ 已有结论</text>
+      <text class="m" x="652" y="448">模型档位不走提示词</text>
+      <line x1="720" y1="298" x2="720" y2="218" stroke="#9fb0c9" stroke-width="1.2" stroke-dasharray="5 4"></line>
+
+      <!-- ⑤ activation -->
+      <rect x="852" y="306" width="196" height="180" rx="9" fill="#faf8ff" stroke="#cdbcf0" stroke-width="1.3"></rect>
+      <text class="t" x="868" y="332">⑤ 工具调用循环</text>
+      <text class="d" x="868" y="356">规划 → 调工具</text>
+      <text class="d" x="868" y="380">读结果 → 再规划</text>
+      <text class="d" x="868" y="404">循环直到结束</text>
+      <text class="m" x="868" y="432">state: running</text>
+      <text class="m" x="868" y="456">工作区：文件/终端/Git</text>
+
+      <!-- ⑥ -->
+      <line class="arrD" x1="950" y1="536" x2="532" y2="536" marker-end="url(#ar2d)"></line>
+      <text class="d lbl" x="735" y="526" text-anchor="middle">⑥ 结果回传：完成 / 失败 / 取消</text>
+
+      <!-- ⑦ -->
+      <rect class="qbox" x="420" y="566" width="200" height="52" rx="8"></rect>
+      <text class="t" x="436" y="590">⑦ 提炼结论</text>
+      <text class="d" x="436" y="610">只留结论，不搬过程</text>
+
+      <!-- ⑧ -->
+      <line class="arr" x1="520" y1="650" x2="142" y2="650" marker-end="url(#ar2)"></line>
+      <text class="d lbl" x="330" y="640" text-anchor="middle">⑧ 经通讯器汇报（含产物路径）</text>
+
+      <text class="m" x="130" y="722">实线＝用户可见交互　虚线＝内部事件回传</text>
+    </svg>
+  </div>
+
+</section>
+<section class="figure">
+  <div class="fig-head"><span class="fig-no">3</span><h2>路由决策表 · 续用还是新建</h2></div>
+
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th style="width:6%">序</th><th style="width:34%">条件</th><th style="width:16%">路由</th><th>理由与注意点</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="muted">1</td><td class="first">同一产物的迭代：补充、纠错、改口径、下一阶段</td><td><span class="badge b-keep">续用原会话</span></td><td>产物路径、已有结论、踩过的坑都在上下文里，重建成本高。</td></tr>
+        <tr><td class="muted">2</td><td class="first">完全无关的新任务</td><td><span class="badge b-new">新建会话</span></td><td>旧上下文会带来错误假设，新会话判断更干净。</td></tr>
+        <tr><td class="muted">3</td><td class="first">用户明确要求分开执行</td><td><span class="badge b-new">新建会话</span></td><td>用户意图优先，不解释、不劝。</td></tr>
+        <tr><td class="muted">4</td><td class="first">原会话能力不够：缺技能 / 缺权限 / 缺工具</td><td><span class="badge b-new">新建会话</span></td><td>新会话重新加载能力并重新鉴权；旧会话硬撑只会失败。</td></tr>
+        <tr><td class="muted">5</td><td class="first">多条任务会写同一批文件</td><td><span class="badge b-new">串行派发</span></td><td>并行会话共享同一工作目录，写冲突是必然，不是偶发。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+
+</section>
+</main>
+
+
+<script>
+(function(){
+  var boxes=document.querySelectorAll('.svg-wrap svg');
+  for(var i=0;i<boxes.length;i++){
+    var s=boxes[i];
+    s.setAttribute('width', s.getAttribute('data-w')||'1240');
+    s.setAttribute('height', s.getAttribute('data-h')||'760');
+  }
+})();
+</script>
+</section>
+
+  <section class="section" id="sec3"><h2>三、功能架构与流程图</h2>
+    <h3 id="sec3-1">3.1 系统架构图</h3><p>个人助手页面由会话区和助手工作台组成。会话区承载任务沟通与产物消息；工作台承载 IM 频道管理、最近任务和工作产物，并以标签页预览任务会话或文件型结果。工作台支持可调宽、全屏与收起。</p><div class="diagram"><svg viewBox="0 0 1000 360" role="img" aria-label="个人助手工作台系统架构图"><defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#6b7280"/></marker></defs><rect x="385" y="16" width="230" height="46" rx="9" fill="#4f46e5"/><text x="500" y="46" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">个人助手工作台</text><line x1="500" y1="62" x2="500" y2="92" stroke="#6b7280" marker-end="url(#a)"/><rect x="85" y="94" width="250" height="72" rx="9" fill="#eef2ff" stroke="#818cf8"/><text x="210" y="123" text-anchor="middle" fill="#3730a3" font-size="15" font-weight="700">会话区</text><text x="210" y="148" text-anchor="middle" fill="#6b7280" font-size="13">任务消息 · 状态 · 工作产物</text><rect x="665" y="94" width="250" height="72" rx="9" fill="#eef2ff" stroke="#818cf8"/><text x="790" y="123" text-anchor="middle" fill="#3730a3" font-size="15" font-weight="700">助手工作台</text><text x="790" y="148" text-anchor="middle" fill="#6b7280" font-size="13">IM 频道 · 最近任务 · 工作产物</text><line x1="790" y1="166" x2="790" y2="200" stroke="#6b7280" marker-end="url(#a)"/><rect x="520" y="205" width="165" height="70" rx="8" fill="#fff" stroke="#a5b4fc"/><text x="602" y="235" text-anchor="middle" fill="#3730a3" font-size="14" font-weight="700">标签页管理</text><text x="602" y="257" text-anchor="middle" fill="#6b7280" font-size="12">新开 · 切换 · 关闭</text><rect x="730" y="205" width="165" height="70" rx="8" fill="#fff" stroke="#a5b4fc"/><text x="812" y="235" text-anchor="middle" fill="#3730a3" font-size="14" font-weight="700">IM 连接管理</text><text x="812" y="257" text-anchor="middle" fill="#6b7280" font-size="12">绑定 · 状态 · 解绑</text><line x1="602" y1="275" x2="602" y2="309" stroke="#6b7280" marker-end="url(#a)"/><line x1="812" y1="275" x2="812" y2="309" stroke="#6b7280" marker-end="url(#a)"/><rect x="550" y="311" width="315" height="34" rx="7" fill="#dcfce7" stroke="#86efac"/><text x="707" y="333" text-anchor="middle" fill="#047857" font-size="13" font-weight="700">任务会话 / 工作产物预览区</text></svg></div>
+    <h3 id="sec3-2">3.2 业务流程图</h3><p>用户可从对话中的任务卡片、最近任务、对话中的文件卡片或工作产物列表进入预览。系统按标题识别是否已打开相同对象：已存在则切换至对应标签，不重复创建；不存在则创建新标签并加载相应预览内容。关闭当前任务标签后，优先切换至剩余任务标签；无剩余任务标签时返回助手工作台。</p><div class="diagram"><svg viewBox="0 0 1000 400" role="img" aria-label="任务和产物预览业务流程图"><defs><marker id="b" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#6b7280"/></marker></defs><rect x="420" y="12" width="160" height="38" rx="19" fill="#059669"/><text x="500" y="37" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">用户选择任务或产物</text><line x1="500" y1="50" x2="500" y2="89" stroke="#6b7280" marker-end="url(#b)"/><rect x="380" y="90" width="240" height="45" rx="8" fill="#eef2ff" stroke="#818cf8"/><text x="500" y="118" text-anchor="middle" fill="#3730a3" font-size="14">检查同标题标签是否已存在</text><line x1="380" y1="112" x2="205" y2="112" stroke="#6b7280" marker-end="url(#b)"/><text x="292" y="103" text-anchor="middle" fill="#6b7280" font-size="12">存在</text><rect x="45" y="90" width="160" height="45" rx="8" fill="#dcfce7" stroke="#86efac"/><text x="125" y="118" text-anchor="middle" fill="#047857" font-size="14">切换至已有标签</text><line x1="500" y1="135" x2="500" y2="181" stroke="#6b7280" marker-end="url(#b)"/><text x="517" y="162" fill="#6b7280" font-size="12">不存在</text><rect x="380" y="182" width="240" height="45" rx="8" fill="#fff" stroke="#818cf8"/><text x="500" y="210" text-anchor="middle" fill="#3730a3" font-size="14">创建任务 / 产物标签</text><line x1="500" y1="227" x2="500" y2="273" stroke="#6b7280" marker-end="url(#b)"/><rect x="380" y="274" width="240" height="45" rx="8" fill="#fff" stroke="#818cf8"/><text x="500" y="302" text-anchor="middle" fill="#3730a3" font-size="14">加载对应预览并激活标签</text><line x1="500" y1="319" x2="500" y2="357" stroke="#6b7280" marker-end="url(#b)"/><rect x="380" y="358" width="240" height="32" rx="7" fill="#fef3c7" stroke="#fcd34d"/><text x="500" y="379" text-anchor="middle" fill="#92400e" font-size="13">关闭时切换剩余标签或返回工作台</text></svg></div>
+  </section>
+
+  <section class="section" id="sec4"><h2>四、详细设计</h2>
+    <h3 id="sec4-1">4.1 个人助手页面</h3><p>个人助手页面为左右分屏布局：左侧展示会话历史、用户任务消息、助手状态和工作产物卡片；右侧默认展示助手工作台。会话区与工作台之间的分割线支持拖动调宽和双击恢复默认宽度。工作台可进入全屏、收起和恢复状态。</p><h4>4.1.1 会话展示模块</h4><table><tr><th style="width:17%">字段</th><th style="width:14%">类型</th><th style="width:9%">必填</th><th>说明</th></tr><tr><td>页面标题</td><td>文本</td><td>是</td><td>固定展示“个人助手”，标识当前会话空间。</td></tr><tr><td>助手消息</td><td>富文本消息</td><td>是</td><td>左对齐展示助手的说明、任务安排和结论；支持保留换行。</td></tr><tr><td>用户消息</td><td>文本气泡</td><td>是</td><td>右对齐展示用户需求；当消息来自 IM 时，在消息前展示来源图标，悬停可查看来源平台。</td></tr><tr><td>任务状态</td><td>状态文本</td><td>否</td><td>展示任务完成状态及耗时；仅任务存在可展示状态时显示。</td></tr><tr><td>消息时间</td><td>时间文本</td><td>否</td><td>展示消息产生时间；与复制操作同一信息区域展示。</td></tr><tr><td>复制消息</td><td>图标按钮</td><td>否</td><td>用于复制对应助手消息内容；鼠标悬停时提供视觉反馈。</td></tr><tr><td>工作产物卡片</td><td>文件卡片</td><td>否</td><td>展示文件名和文件类型；点击或按 Enter、空格可打开工作产物预览标签。</td></tr><tr><td>任务入口卡片</td><td>任务标签</td><td>否</td><td>展示任务标题和执行中状态；点击或按 Enter、空格打开对应任务会话预览。</td></tr></table>
+    <h4>4.1.2 分屏与工作台状态模块</h4><table><tr><th style="width:17%">字段</th><th style="width:14%">类型</th><th style="width:9%">必填</th><th>说明</th></tr><tr><td>工作台宽度</td><td>可拖动尺寸</td><td>是</td><td>默认按窗口比例初始化，最小宽度为 300px；最大宽度为窗口宽度减 420px，保证会话区保留最小可用空间。</td></tr><tr><td>分割线</td><td>拖拽控件</td><td>是</td><td>按住后左右拖动实时调整工作台宽度；双击恢复默认宽度；收起或全屏状态下不允许拖动。</td></tr><tr><td>全屏放大 / 还原</td><td>图标按钮</td><td>是</td><td>全屏时工作台覆盖整个视口；再次点击或按 Esc 退出全屏。进入全屏会自动取消收起状态。</td></tr><tr><td>收起 / 展开</td><td>图标按钮</td><td>是</td><td>收起后隐藏工作台和分割线，仅保留页面右上角“展开面板”入口；展开后恢复此前宽度。</td></tr><tr><td>窗口尺寸适配</td><td>系统行为</td><td>是</td><td>窗口尺寸变化时，非全屏状态下重新按最小值和最大值约束校正工作台宽度。</td></tr></table>
+
+    <h3 id="sec4-2">4.2 助手工作台模块</h3><p>助手工作台为默认首页，提供 IM 频道、最近任务和工作产物三个信息区。顶部保留工作台标签，并支持查看全部已打开标签、切换活动标签、关闭任务或产物标签。</p><h4>4.2.1 工作台标签与总览模块</h4><table><tr><th style="width:17%">字段</th><th style="width:14%">类型</th><th style="width:9%">必填</th><th>说明</th></tr><tr><td>助手工作台标签</td><td>固定标签</td><td>是</td><td>默认激活；点击后关闭当前预览状态并返回工作台总览。</td></tr><tr><td>全部标签页</td><td>图标按钮 + 下拉菜单</td><td>是</td><td>点击生成标签清单，包含助手工作台及全部任务/产物标签；当前活动项高亮。点击菜单外区域自动关闭菜单。</td></tr><tr><td>任务 / 产物标签</td><td>可切换标签</td><td>否</td><td>首次打开对象时创建，标题为任务或文件名称；重复打开同标题对象时切换已有标签，不重复创建。</td></tr><tr><td>关闭标签</td><td>图标按钮</td><td>否</td><td>仅任务/产物标签显示。关闭活动标签时，优先切换到剩余任务标签；不存在剩余标签时清空预览并返回助手工作台。</td></tr><tr><td>IM 频道区</td><td>信息列表</td><td>是</td><td>展示频道配置入口、引导说明和已绑定频道；未绑定任何频道时展示空状态提示。</td></tr><tr><td>最近任务</td><td>任务列表</td><td>是</td><td>展示最近任务标题；点击或键盘触发后打开任务会话预览。</td></tr><tr><td>工作产物</td><td>文件列表</td><td>是</td><td>展示工作产物文件名；点击后打开文件型结果预览。</td></tr></table>
+
+    <h3 id="sec4-3">4.3 任务与工作产物预览模块</h3><p>任务与工作产物使用工作台内容区承载。打开任务时加载任务会话预览；打开工作产物时加载文件型结果预览。预览区与工作台总览互斥，活动标签决定当前展示内容。</p><h4>4.3.1 预览加载与切换模块</h4><table><tr><th style="width:17%">字段</th><th style="width:14%">类型</th><th style="width:9%">必填</th><th>说明</th></tr><tr><td>预览类型</td><td>页面内容</td><td>是</td><td>任务对象加载任务会话预览；工作产物对象加载文件型结果预览。</td></tr><tr><td>预览标题</td><td>标签标题</td><td>是</td><td>来源于被打开任务或文件的名称；用于标签显示、去重识别和全部标签页菜单展示。</td></tr><tr><td>活动状态</td><td>标签状态</td><td>是</td><td>当前标签高亮，工作台总览与其他标签取消高亮；对应预览内容显示。</td></tr><tr><td>工作台返回</td><td>页面切换</td><td>是</td><td>点击固定工作台标签后隐藏预览内容并恢复 IM 频道、最近任务和工作产物总览。</td></tr></table>
+
+    <h3 id="sec4-4">4.4 IM 频道配置弹窗</h3><p>IM 频道配置弹窗提供微信、企业微信、钉钉、飞书四类连接渠道。用户可在渠道列表发起绑定，系统显示对应平台的二维码和连接中状态；绑定成功后更新渠道列表和工作台已绑定频道。已绑定渠道再次操作时进入解绑确认流程。</p><h4>4.4.1 IM 频道列表模块</h4><table><tr><th style="width:17%">字段</th><th style="width:14%">类型</th><th style="width:9%">必填</th><th>说明</th></tr><tr><td>配置</td><td>主按钮</td><td>是</td><td>打开“IM 连接”弹窗，并将焦点置于关闭按钮，便于键盘操作。</td></tr><tr><td>连接说明</td><td>说明文本</td><td>是</td><td>说明连接后可通过 IM 向助手发送任务并跟进结果。</td></tr><tr><td>平台图标与名称</td><td>渠道信息</td><td>是</td><td>固定支持微信、企业微信、钉钉、飞书；每个平台独立维护绑定状态。</td></tr><tr><td>绑定状态</td><td>状态文本</td><td>是</td><td>未绑定时显示“未绑定”和“去绑定”；已绑定时显示“已绑定”和“解绑”。</td></tr><tr><td>去绑定</td><td>渠道操作</td><td>是</td><td>点击未绑定渠道进入绑定视图；按钮与整行均可触发。</td></tr><tr><td>关闭弹窗</td><td>图标按钮 / 遮罩行为</td><td>是</td><td>点击关闭按钮、绑定视图关闭按钮、弹窗外遮罩或按 Esc 均关闭连接弹窗，并清理未完成的绑定计时状态。</td></tr></table>
+    <h4>4.4.2 绑定与解绑表单模块</h4><table><tr><th style="width:17%">字段</th><th style="width:14%">类型</th><th style="width:9%">必填</th><th>说明</th></tr><tr><td>绑定平台</td><td>只读信息</td><td>是</td><td>由用户在频道列表中选择的平台决定，展示平台图标和“绑定 + 平台名称”标题。</td></tr><tr><td>扫码提示</td><td>说明文本</td><td>是</td><td>按所选平台动态展示“平台名称 + 扫一扫”，提示用户使用对应 IM 完成授权。</td></tr><tr><td>绑定二维码</td><td>二维码画布</td><td>是</td><td>依据平台标识生成差异化二维码图案；绑定中展示，成功后隐藏。</td></tr><tr><td>绑定结果</td><td>成功反馈</td><td>是</td><td>绑定成功后展示成功状态和“平台名称绑定成功”，同时将该平台写入已绑定频道列表；成功反馈后自动回到频道列表。</td></tr><tr><td>返回</td><td>按钮</td><td>否</td><td>在绑定中返回频道列表，取消当前绑定等待状态，不改变已绑定频道。</td></tr><tr><td>解绑提示</td><td>确认文本</td><td>是</td><td>动态带入被解绑平台名称，明确说明解除后无法通过该 IM 频道向助手发送任务。</td></tr><tr><td>取消</td><td>按钮</td><td>是</td><td>关闭解绑确认弹窗，不改变当前绑定关系。</td></tr><tr><td>确认解绑</td><td>危险按钮</td><td>是</td><td>删除当前平台绑定状态，渠道列表恢复“未绑定”，工作台已绑定频道列表同步更新；最后一个频道解绑后恢复空状态提示。</td></tr></table><div class="note">移动端适配：当屏幕宽度不超过 540px 时，IM 连接弹窗全屏展示，避免二维码与渠道列表在窄屏中被裁切。</div>
+  </section>
+  <div class="footer">— 文档结束 · 欢迎评审讨论 —</div>
+</div></main>
+<script>
+(function(){
+  var links=document.querySelectorAll('.nav a[href^="#"]');
+  links.forEach(function(link){link.addEventListener('click',function(){links.forEach(function(item){item.classList.remove('active')});link.classList.add('active')})});
+  var targets=[];document.querySelectorAll('[id^="sec"]').forEach(function(el){targets.push(el)});
+  window.addEventListener('scroll',function(){var current=targets[0]&&targets[0].id;targets.forEach(function(el){if(window.scrollY+90>=el.offsetTop)current=el.id});links.forEach(function(link){link.classList.toggle('active',link.getAttribute('href')==='#'+current)})});
+})();
+</script>
+</body>
+</html>

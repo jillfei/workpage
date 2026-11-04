@@ -1000,6 +1000,27 @@
                 <h1 class="page-title">模型配置</h1>
                 <p class="page-subtitle">选择默认供应商、模型和访问凭证。</p>
 
+                <h2 class="section-title">个人助理模型配置</h2>
+
+                <div class="card">
+                    <div class="form-row" style="align-items: center; margin-bottom: 0;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="personalAssistantModelSelect">个人助理模型</label>
+                            <div class="select-wrapper">
+                                <select class="custom-select" id="personalAssistantModelSelect">
+                                    <option value="GPT-5.4">GPT-5.4</option>
+                                    <option value="GPT-5 mini">GPT-5 mini</option>
+                                    <option value="GPT-4.1">GPT-4.1</option>
+                                    <option value="GPT-4o">GPT-4o</option>
+                                    <option value="Gemini 3.1 Pro">Gemini 3.1 Pro</option>
+                                    <option value="glm-4">glm-4</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="font-size: 12px; color: #999; margin-top: 10px;">切换后个人助理将立即使用所选模型。</p>
+                </div>
+
                 <h2 class="section-title">添加模型配置</h2>
                 
                 <!-- 添加模型表单 -->
@@ -1545,6 +1566,20 @@
         </main>
     </div>
 
+    <!-- 个人助理模型切换提示弹窗 -->
+    <div class="modal-overlay" id="assistantModelChangeModal" role="dialog" aria-modal="true" aria-labelledby="assistantModelChangeTitle">
+        <div class="modal" style="width: 360px;">
+            <div class="modal-header" style="margin-bottom: 16px;">
+                <div class="modal-title" id="assistantModelChangeTitle">个人助理模型已切换</div>
+                <button class="modal-close" onclick="closeModal('assistantModelChangeModal')" aria-label="关闭">×</button>
+            </div>
+            <p id="assistantModelChangeMessage" style="font-size: 14px; color: #666; line-height: 1.6;"></p>
+            <div class="modal-footer" style="justify-content: flex-end; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="closeModal('assistantModelChangeModal')">知道了</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 编辑模型配置弹窗 -->
     <div class="modal-overlay" id="editModelModal">
         <div class="modal">
@@ -1707,6 +1742,20 @@
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
+
+        // 个人助理模型切换后立即持久化，并提示当前生效的模型。
+        const personalAssistantModelSelect = document.getElementById('personalAssistantModelSelect');
+        const savedPersonalAssistantModel = localStorage.getItem('personalAssistantModel');
+        if (savedPersonalAssistantModel && [...personalAssistantModelSelect.options].some(option => option.value === savedPersonalAssistantModel)) {
+            personalAssistantModelSelect.value = savedPersonalAssistantModel;
+        }
+
+        personalAssistantModelSelect.addEventListener('change', function() {
+            const selectedModel = this.options[this.selectedIndex].text;
+            localStorage.setItem('personalAssistantModel', this.value);
+            document.getElementById('assistantModelChangeMessage').textContent = `个人助理已切换为 ${selectedModel}，新配置已立即生效。`;
+            openModal('assistantModelChangeModal');
+        });
 
         // 当前编辑的模型
         let currentEditModel = null;
