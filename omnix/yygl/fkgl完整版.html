@@ -26,6 +26,7 @@
         .fb-table thead th { text-align: left; padding: 12px 16px; font-size: 13px; font-weight: 500; color: #6b7280; border-bottom: 1px solid #e5e7eb; background: #fafafa; white-space: nowrap; }
         .fb-table tbody td { padding: 14px 16px; font-size: 14px; color: #374151; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
         .fb-table tbody tr:hover { background: #f9fafb; }
+        .fb-table tbody tr { cursor: pointer; }
 
         /* ── 状态标签 ── */
         .status-tag { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; line-height: 1.6; }
@@ -125,6 +126,10 @@
         .img-thumb-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
         .img-thumb { width: 64px; height: 64px; border-radius: 6px; border: 1px solid #e5e7eb; object-fit: cover; cursor: pointer; transition: box-shadow 0.15s; background: #f9fafb; }
         .img-thumb:hover { box-shadow: 0 0 0 2px rgba(59,130,246,0.3); }
+        .image-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 64px; height: 64px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f3f4f6; color: #9ca3af; cursor: pointer; transition: box-shadow 0.15s; }
+        .image-placeholder:hover { box-shadow: 0 0 0 2px rgba(59,130,246,0.3); }
+        .image-placeholder iconify-icon { font-size: 20px; }
+        .image-placeholder span { margin-top: 3px; font-size: 10px; line-height: 1; white-space: nowrap; }
 
         /* ── 日志下载 ── */
         .log-download { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; color: #3b82f6; cursor: pointer; transition: all 0.15s; background: #fff; text-decoration: none; margin-top: 8px; }
@@ -159,6 +164,9 @@
         .lightbox { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
         .lightbox.active { opacity: 1; pointer-events: auto; }
         .lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+        .lightbox-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; width: min(60vw, 420px); aspect-ratio: 1; border-radius: 12px; background: #f3f4f6; color: #9ca3af; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+        .lightbox-placeholder iconify-icon { font-size: 88px; }
+        .lightbox-placeholder span { margin-top: 14px; font-size: 18px; }
         .lightbox-close { position: absolute; top: 20px; right: 24px; color: #fff; font-size: 32px; cursor: pointer; opacity: 0.8; transition: opacity 0.15s; background: none; }
         .lightbox-close:hover { opacity: 1; }
 
@@ -565,6 +573,7 @@
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
     <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
     <img id="lightboxImg" src="" alt="preview"/>
+    <div id="lightboxPlaceholder" class="lightbox-placeholder hidden"><iconify-icon icon="mdi:image-outline"></iconify-icon><span>图片占位符</span></div>
 </div>
 
 <script>
@@ -582,11 +591,9 @@ const PRIORITY_MAP = {
     urgent: { label: '紧急', cls: 'priority-urgent' }
 };
 
-// ====== 模拟占位图（浅色占位符） ======
+// ====== 模拟图片占位符 ======
 const PLACEHOLDER_IMGS = [
-    'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="200" height="200" fill="%23f3f4f6"/><rect x="70" y="55" width="60" height="45" rx="6" fill="%23d1d5db"/><circle cx="88" cy="70" r="6" fill="%23e5e7eb"/><path d="M70 100 L90 80 L110 95 L130 75 L130 100 Z" fill="%23e5e7eb"/><text x="100" y="130" text-anchor="middle" fill="%239ca3af" font-size="12" font-family="sans-serif">用户截图</text></svg>'),
-    'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="200" height="200" fill="%23eff6ff"/><rect x="70" y="55" width="60" height="45" rx="6" fill="%23bfdbfe"/><circle cx="88" cy="70" r="6" fill="%23dbeafe"/><path d="M70 100 L90 80 L110 95 L130 75 L130 100 Z" fill="%23dbeafe"/><text x="100" y="130" text-anchor="middle" fill="%233b82f6" font-size="12" font-family="sans-serif">处理附件</text></svg>'),
-    'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="200" height="200" fill="%23ecfdf5"/><rect x="70" y="55" width="60" height="45" rx="6" fill="%23a7f3d0"/><circle cx="88" cy="70" r="6" fill="%23d1fae5"/><path d="M70 100 L90 80 L110 95 L130 75 L130 100 Z" fill="%23d1fae5"/><text x="100" y="130" text-anchor="middle" fill="%23047857" font-size="12" font-family="sans-serif">回复附图</text></svg>')
+    'placeholder', 'placeholder', 'placeholder'
 ];
 const PLACEHOLDER_LOG = 'data:application/octet-stream;base64,U2FtcGxlIGxvZyBjb250ZW50';
 
@@ -594,14 +601,14 @@ const PLACEHOLDER_LOG = 'data:application/octet-stream;base64,U2FtcGxlIGxvZyBjb2
 let feedbackList = [
     {
         id: 'FB20261028001', type: '', content: '登录页面在弱网环境下加载超过 10 秒，偶发白屏，刷新后可恢复。已附截图与日志。',
-        user: '张三', source: 'iOS', priority: '', status: 'pending', owner: '',
+        user: '张三', source: 'Win11', priority: '', status: 'pending', owner: '',
         createdAt: '2026-10-28 08:50', updatedAt: '2026-10-28 08:50',
         images: PLACEHOLDER_IMGS, logFile: { name: 'app_log_20261028.txt', url: PLACEHOLDER_LOG },
         reply: '', replyImages: [], logs: []
     },
     {
         id: 'FB20261027015', type: 'suggestion', content: '希望在消息列表支持按未读优先排序，方便快速处理待办消息。',
-        user: '王五', source: 'Android', priority: 'normal', status: 'processing', owner: '赵六',
+        user: '王五', source: 'Win10', priority: 'normal', status: 'processing', owner: '赵六',
         createdAt: '2026-10-27 10:05', updatedAt: '2026-10-28 09:30',
         images: [], logFile: null,
         reply: '', replyImages: [],
@@ -612,7 +619,7 @@ let feedbackList = [
     },
     {
         id: 'FB20261026008', type: 'bug', content: '更换手机号后无法接收验证码，原号码已停用。',
-        user: '陈七', source: 'Web', priority: 'urgent', status: 'replied', owner: '李四',
+        user: '陈七', source: 'Mac', priority: 'urgent', status: 'replied', owner: '李四',
         createdAt: '2026-10-26 16:30', updatedAt: '2026-10-27 18:00',
         images: PLACEHOLDER_IMGS, logFile: { name: 'sms_error_log.txt', url: PLACEHOLDER_LOG },
         reply: '经核实，该问题由短信网关切换导致，已在 V3.2.1 修复。请升级至最新版本后重试，如仍有问题请联系客服。',
@@ -625,7 +632,7 @@ let feedbackList = [
     },
     {
         id: 'FB20261025022', type: 'experience', content: '深色模式下部分按钮文字对比度不足，阅读困难。',
-        user: '周八', source: 'PC', priority: 'low', status: 'processing', owner: '孙九',
+        user: '周八', source: 'Mac', priority: 'low', status: 'processing', owner: '孙九',
         createdAt: '2026-10-25 19:30', updatedAt: '2026-10-26 11:20',
         images: PLACEHOLDER_IMGS, logFile: null,
         reply: '', replyImages: [],
@@ -635,7 +642,7 @@ let feedbackList = [
     },
     {
         id: 'FB20261024011', type: 'other', content: '咨询企业版发票开具流程及所需材料。',
-        user: '吴十', source: 'Web', priority: 'normal', status: 'replied', owner: '客服A',
+        user: '吴十', source: 'Win10', priority: 'normal', status: 'replied', owner: '客服A',
         createdAt: '2026-10-24 15:12', updatedAt: '2026-10-25 10:05',
         images: [], logFile: null,
         reply: '已通过站内信发送开票指引及材料清单，请查收。如有疑问可随时再次反馈。',
@@ -692,12 +699,12 @@ function renderList(list) {
         const tp = item.type ? (TYPE_MAP[item.type] || item.type) : '-';
         const tr = document.createElement('tr');
         // 操作按钮逻辑：待处理→受理；处理中→处理+回复；已回复→仅查看
-        let actions = `<a class="action-link" onclick="openDetail('${item.id}')">查看</a>`;
+        let actions = `<a class="action-link" onclick="event.stopPropagation(); openDetail('${item.id}')">查看</a>`;
         if (item.status === 'pending') {
-            actions += `<a class="action-link" onclick="openAccept('${item.id}')">受理</a>`;
+            actions += `<a class="action-link" onclick="event.stopPropagation(); openAccept('${item.id}')">受理</a>`;
         } else if (item.status === 'processing') {
-            actions += `<a class="action-link" onclick="openProcess('${item.id}')">处理</a>`;
-            actions += `<a class="action-link" onclick="openReply('${item.id}')">回复</a>`;
+            actions += `<a class="action-link" onclick="event.stopPropagation(); openProcess('${item.id}')">处理</a>`;
+            actions += `<a class="action-link" onclick="event.stopPropagation(); openReply('${item.id}')">回复</a>`;
         }
         // 已回复状态不显示额外操作
         tr.innerHTML = `
@@ -713,6 +720,7 @@ function renderList(list) {
             <td class="text-sm text-gray-600">${item.updatedAt}</td>
             <td>${actions}</td>
         `;
+        tr.onclick = () => openDetail(item.id);
         tbody.appendChild(tr);
     });
     renderPagination(start, end, list.length, totalPages);
@@ -789,7 +797,16 @@ function handleUploadPreview(input, previewId) {
 // ====== 灯箱 ======
 function openLightbox(src) {
     const lb = document.getElementById('lightbox');
-    document.getElementById('lightboxImg').src = src;
+    const image = document.getElementById('lightboxImg');
+    const placeholder = document.getElementById('lightboxPlaceholder');
+    if (src === 'placeholder') {
+        image.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+    } else {
+        placeholder.classList.add('hidden');
+        image.classList.remove('hidden');
+        image.src = src;
+    }
     lb.classList.add('active');
 }
 function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
@@ -800,6 +817,14 @@ function renderThumbs(containerId, images) {
     el.innerHTML = '';
     if (!images || !images.length) return;
     images.forEach(src => {
+        if (src === 'placeholder') {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'image-placeholder';
+            placeholder.innerHTML = '<iconify-icon icon="mdi:image-outline"></iconify-icon><span>图片占位符</span>';
+            placeholder.onclick = () => openLightbox('placeholder');
+            el.appendChild(placeholder);
+            return;
+        }
         const img = document.createElement('img');
         img.className = 'img-thumb';
         img.src = src;
@@ -813,7 +838,7 @@ function renderLogLink(containerId, logFile) {
     const el = document.getElementById(containerId);
     el.innerHTML = '';
     if (!logFile) return;
-    el.innerHTML = `<a class="log-download" href="${logFile.url}" download="${escapeHtml(logFile.name)}"><iconify-icon icon="mdi:file-document-outline"></iconify-icon>${escapeHtml(logFile.name)}</a>`;
+    el.innerHTML = `<a class="log-download" href="${logFile.url}" download="${escapeHtml(logFile.name)}" title="点击下载"><iconify-icon icon="mdi:file-document-outline"></iconify-icon>${escapeHtml(logFile.name)}</a>`;
 }
 
 // ====== 处理人单选 ======
@@ -1007,7 +1032,7 @@ function openDetail(id) {
     } else {
         item.logs.forEach(log => {
             const dotCls = log.type === 'accept' ? 'accept' : log.type === 'reply' ? 'reply' : 'process';
-            const imgsHtml = (log.images && log.images.length) ? '<div class="img-thumb-list">' + log.images.map(s => `<img class="img-thumb" src="${s}" onclick="openLightbox('${s.replace(/'/g,"\\'")}')"/>`).join('') + '</div>' : '';
+            const imgsHtml = (log.images && log.images.length) ? '<div class="img-thumb-list">' + log.images.map(s => s === 'placeholder' ? '<div class="image-placeholder" onclick="openLightbox(\'placeholder\')"><iconify-icon icon="mdi:image-outline"></iconify-icon><span>图片占位符</span></div>' : `<img class="img-thumb" src="${s}" onclick="openLightbox('${s.replace(/'/g,"\\'")}')"/>`).join('') + '</div>' : '';
             tl.innerHTML += `
                 <div class="timeline-item">
                     <div class="timeline-dot ${dotCls}"></div>

@@ -1,0 +1,2648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>通知管理</title>
+    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js">
+    </script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: #e5e7eb;
+        }
+        table { border-collapse: collapse; }
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+        .page-wrap {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #d1d5db;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .tag-enabled {
+            background: #D1FAE5;
+            color: #059669;
+        }
+        .tag-disabled {
+            background: #F3F4F6;
+            color: #6B7280;
+        }
+        .tag-sent {
+            background: #D1FAE5;
+            color: #059669;
+        }
+        .tag-pending {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+        .tag-recalled {
+            background: #F3F4F6;
+            color: #6B7280;
+        }
+        .tag-source-auto {
+            background: #EEF2FF;
+            color: #4F46E5;
+        }
+        .tag-source-manual {
+            background: #DBEAFE;
+            color: #2563EB;
+        }
+        .tag-read {
+            background: #D1FAE5;
+            color: #059669;
+        }
+        .tag-unread {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: #D1D5DB;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        .toggle-switch input:checked+.toggle-slider {
+            background: #059669;
+        }
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(20px);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.hidden {
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+            animation: fadeIn 0.25s ease;
+        }
+        .toast.hidden {
+            display: none;
+        }
+        .toast-success {
+            background: #D1FAE5;
+            color: #059669;
+            border: 1px solid #A7F3D0;
+        }
+        .toast-error {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .detail-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+        .detail-modal-content {
+            background: #fff;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 760px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .status-dot.enabled { background: #059669; }
+        .status-dot.disabled { background: #9CA3AF; }
+
+        /* 已读进度条 */
+        .read-bar {
+            width: 72px;
+            height: 6px;
+            background: #F3F4F6;
+            border-radius: 3px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .read-bar-fill {
+            height: 100%;
+            background: #059669;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        /* 人员选择弹窗 */
+        #personPickerModal { z-index: 1200; }
+        .picker-modal-content {
+            background: #fff;
+            border-radius: 12px;
+            width: 92%;
+            max-width: 880px;
+            height: 600px;
+            max-height: 86vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.25s ease;
+        }
+        .picker-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 1px solid #EBEEF0;
+            flex-shrink: 0;
+        }
+        .picker-body {
+            display: flex;
+            gap: 16px;
+            padding: 16px 20px;
+            flex: 1;
+            min-height: 0;
+        }
+        .picker-left,
+        .picker-right {
+            flex: 1;
+            min-width: 0;
+            border: 1px solid #EBEEF0;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+        .picker-search {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #F2F3F5;
+            border-radius: 6px;
+            padding: 7px 10px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+        .picker-search input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 13px;
+            color: #1F2937;
+        }
+        .picker-search input::placeholder { color: #AEB4BB; }
+        .picker-tree {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+        }
+        .tree-node {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .tree-node:hover { background: #F5F6F7; }
+        .tree-caret {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8A9199;
+            transition: transform 0.15s;
+        }
+        .tree-caret.expanded { transform: rotate(90deg); }
+        .tree-caret.leaf { visibility: hidden; }
+        .tree-check {
+            width: 15px;
+            height: 15px;
+            accent-color: #4F46E5;
+            flex-shrink: 0;
+            pointer-events: none;
+        }
+        .tree-label { font-size: 13px; color: #1F2937; }
+        .tree-phone {
+            font-size: 12px;
+            color: #AEB4BB;
+            margin-left: 4px;
+        }
+        .picker-right-head {
+            font-size: 13px;
+            color: #8A9199;
+            margin-bottom: 6px;
+            flex-shrink: 0;
+        }
+        .picker-selected-list {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+        }
+        .picker-selected-item {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 10px 0;
+        }
+        .picker-selected-info { min-width: 0; }
+        .picker-selected-main {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            line-height: 1.4;
+        }
+        .picker-selected-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+        .picker-selected-phone {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .picker-selected-dept {
+            font-size: 12px;
+            color: #7C89A1;
+            margin-top: 3px;
+        }
+        .picker-selected-remove {
+            color: #AEB4BB;
+            cursor: pointer;
+            padding: 2px;
+            line-height: 1;
+        }
+        .picker-selected-remove:hover { color: #DC2626; }
+        .picker-empty {
+            text-align: center;
+            color: #AEB4BB;
+            font-size: 13px;
+            padding: 28px 0;
+            line-height: 1.8;
+        }
+        .picker-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 12px 20px;
+            border-top: 1px solid #EBEEF0;
+            flex-shrink: 0;
+        }
+        .selected-persons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .selected-person-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #EEF2FF;
+            color: #4F46E5;
+            border-radius: 9999px;
+            padding: 3px 8px 3px 10px;
+            font-size: 12px;
+        }
+        .chip-remove {
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            opacity: 0.7;
+        }
+        .chip-remove:hover { opacity: 1; }
+
+        /* 变量标签 */
+        .var-tag {
+            display: inline-flex;
+            align-items: center;
+            background: #FEF3C7;
+            color: #B45309;
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            margin: 1px 2px;
+            white-space: nowrap;
+        }
+        .code-text {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            background: #F3F4F6;
+            color: #4F46E5;
+            border-radius: 4px;
+            padding: 2px 8px;
+            display: inline-block;
+        }
+
+        /* 变量填充面板 */
+        .var-fill-panel {
+            background: #FFFBEB;
+            border: 1px solid #FDE68A;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .var-fill-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .var-fill-row:last-child { margin-bottom: 0; }
+        .var-fill-label {
+            width: 110px;
+            flex-shrink: 0;
+            font-size: 13px;
+            color: #92400E;
+            text-align: right;
+        }
+        .var-fill-input {
+            flex: 1;
+            border: 1px solid #FDE68A;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 13px;
+            outline: none;
+            background: #fff;
+        }
+        .var-fill-input:focus { border-color: #F59E0B; }
+
+        /* 模板变量编辑行 */
+        .var-edit-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .var-edit-row input {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 13px;
+            outline: none;
+            background: #fff;
+            min-width: 0;
+        }
+        .var-edit-row input:focus { border-color: #4f46e5; }
+        .var-edit-remove {
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            color: #9CA3AF;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .var-edit-remove:hover { color: #DC2626; background: #FEF2F2; }
+
+        /* 详情页 Tab */
+        .detail-tabs {
+            display: inline-flex;
+            background: #F3F4F6;
+            border-radius: 8px;
+            padding: 3px;
+            gap: 2px;
+        }
+        .detail-tab {
+            padding: 5px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #6B7280;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s;
+        }
+        .detail-tab:hover { color: #1F2937; }
+        .detail-tab.active {
+            background: #fff;
+            color: #4F46E5;
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        /* 分页页脚（固定底部，不随内容滚动） */
+        .pagination-footer {
+            flex-shrink: 0;
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            padding: 12px 32px 13px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .pagination-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+        .pagination-info strong { color: #1f2937; font-weight: 600; }
+        .pagination-divider { color: #e5e7eb; }
+        .pagination-size {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pagination-size span { white-space: nowrap; }
+        .pagination-size select {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 2px 4px;
+            font-size: 13px;
+            color: #374151;
+            background: #ffffff;
+            cursor: pointer;
+            outline: none;
+        }
+        .pagination-size select:focus { border-color: #4f46e5; }
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pagination-btn {
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+        .pagination-btn:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+        .pagination-pages {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pagination-page {
+            min-width: 30px;
+            height: 30px;
+            padding: 0 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all .15s;
+            user-select: none;
+        }
+        .pagination-page:hover { background: #f3f4f6; }
+        .pagination-page.active {
+            background: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+        }
+        .pagination-ellipsis {
+            color: #9ca3af;
+            padding: 0 2px;
+            user-select: none;
+        }
+
+        /* ═══ Tailwind CSS 工具类替代 ═══ */
+        .flex { display: flex; }
+        .inline-flex { display: inline-flex; }
+        .grid { display: grid; }
+        .block { display: block; }
+        .hidden { display: none; }
+        .flex-col { flex-direction: column; }
+        .flex-1 { flex: 1 1 0%; }
+        .flex-shrink-0 { flex-shrink: 0; }
+        .flex-wrap { flex-wrap: wrap; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .items-end { align-items: flex-end; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .justify-end { justify-content: flex-end; }
+
+        .gap-1 { gap: 0.25rem; }
+        .gap-1\.5 { gap: 0.375rem; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-y-2 { row-gap: 0.5rem; }
+
+        .space-x-2 > * + * { margin-left: 0.5rem; }
+        .space-x-3 > * + * { margin-left: 0.75rem; }
+        .space-x-4 > * + * { margin-left: 1rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .space-y-5 > * + * { margin-top: 1.25rem; }
+
+        .w-4 { width: 1rem; }
+        .w-5 { width: 1.25rem; }
+        .w-7 { width: 1.75rem; }
+        .w-8 { width: 2rem; }
+        .w-9 { width: 2.25rem; }
+        .w-10 { width: 2.5rem; }
+        .w-11 { width: 2.75rem; }
+        .w-12 { width: 3rem; }
+        .w-14 { width: 3.5rem; }
+        .w-full { width: 100%; }
+        .h-4 { height: 1rem; }
+        .h-5 { height: 1.25rem; }
+        .h-7 { height: 1.75rem; }
+        .h-8 { height: 2rem; }
+        .h-9 { height: 2.25rem; }
+        .h-10 { height: 2.5rem; }
+        .h-11 { height: 2.75rem; }
+        .h-12 { height: 3rem; }
+        .h-14 { height: 3.5rem; }
+        .h-16 { height: 4rem; }
+        .h-full { height: 100%; }
+        .min-w-0 { min-width: 0; }
+        .max-w-md { max-width: 28rem; }
+        .max-w-sm { max-width: 24rem; }
+        .max-w-2xl { max-width: 42rem; }
+        .max-w-3xl { max-width: 48rem; }
+        .max-h-\[90vh\] { max-height: 90vh; }
+        .max-h-\[80vh\] { max-height: 80vh; }
+
+        .p-1 { padding: 0.25rem; }
+        .p-4 { padding: 1rem; }
+        .p-5 { padding: 1.25rem; }
+        .p-6 { padding: 1.5rem; }
+        .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+        .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .px-8 { padding-left: 2rem; padding-right: 2rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-5 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+        .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+        .py-20 { padding-top: 5rem; padding-bottom: 5rem; }
+        .pt-3 { padding-top: 0.75rem; }
+        .pl-3 { padding-left: 0.75rem; }
+        .pl-10 { padding-left: 2.5rem; }
+        .pr-4 { padding-right: 1rem; }
+        .pr-8 { padding-right: 2rem; }
+
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-5 { margin-bottom: 1.25rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-0\.5 { margin-top: 0.125rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-1\.5 { margin-top: 0.375rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-3 { margin-top: 0.75rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mr-3 { margin-right: 0.75rem; }
+        .ml-auto { margin-left: auto; }
+        .mx-4 { margin-left: 1rem; margin-right: 1rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-base { font-size: 1rem; line-height: 1.5rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-6xl { font-size: 3.75rem; line-height: 1; }
+        .font-normal { font-weight: 400; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        .italic { font-style: italic; }
+        .uppercase { text-transform: uppercase; }
+        .tracking-wider { letter-spacing: 0.05em; }
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .leading-relaxed { line-height: 1.625; }
+        .whitespace-pre-line { white-space: pre-line; }
+
+        .text-white { color: #ffffff; }
+        .text-gray-300 { color: #d1d5db; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-gray-500 { color: #6b7280; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-900 { color: #111827; }
+        .text-blue-500 { color: #3b82f6; }
+        .text-blue-600 { color: #2563eb; }
+        .text-red-500 { color: #ef4444; }
+        .text-red-600 { color: #dc2626; }
+        .text-green-600 { color: #16a34a; }
+        .text-orange-500 { color: #f97316; }
+        .text-indigo-600 { color: #4f46e5; }
+
+        .bg-white { background-color: #ffffff; }
+        .bg-gray-50 { background-color: #f9fafb; }
+        .bg-blue-50 { background-color: #eff6ff; }
+        .bg-blue-600 { background-color: #2563eb; }
+        .bg-red-50 { background-color: #fef2f2; }
+        .bg-red-600 { background-color: #dc2626; }
+        .bg-green-50 { background-color: #f0fdf4; }
+        .bg-indigo-50 { background-color: #eef2ff; }
+
+        .border { border-width: 1px; }
+        .border-b { border-bottom-width: 1px; }
+        .border-t { border-top-width: 1px; }
+        .border-gray-50 { border-color: #f9fafb; }
+        .border-gray-100 { border-color: #f3f4f6; }
+        .border-gray-200 { border-color: #e5e7eb; }
+        .border-gray-300 { border-color: #d1d5db; }
+
+        .rounded { border-radius: 0.25rem; }
+        .rounded-md { border-radius: 0.375rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-2xl { border-radius: 1rem; }
+        .rounded-full { border-radius: 9999px; }
+        .rounded-t-2xl { border-top-left-radius: 1rem; border-top-right-radius: 1rem; }
+        .rounded-b-2xl { border-bottom-left-radius: 1rem; border-bottom-right-radius: 1rem; }
+
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .sticky { position: sticky; }
+        .top-0 { top: 0; }
+        .top-1\/2 { top: 50%; }
+        .right-2 { right: 0.5rem; }
+        .bottom-0 { bottom: 0; }
+        .left-3 { left: 0.75rem; }
+        .z-10 { z-index: 10; }
+
+        .overflow-hidden { overflow: hidden; }
+        .overflow-y-auto { overflow-y: auto; }
+
+        .shadow-2xl { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
+
+        .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        .cursor-pointer { cursor: pointer; }
+        .pointer-events-none { pointer-events: none; }
+        .select-none { user-select: none; }
+        .appearance-none { appearance: none; }
+        .resize-none { resize: none; }
+
+        .bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-from), var(--tw-gradient-to)); }
+        .from-blue-50 { --tw-gradient-from: #eff6ff; --tw-gradient-to: rgb(239 246 255 / 0); }
+        .from-indigo-50 { --tw-gradient-from: #eef2ff; --tw-gradient-to: rgb(238 242 255 / 0); }
+        .to-indigo-50 { --tw-gradient-to: #eef2ff; }
+        .to-purple-50 { --tw-gradient-to: #faf5ff; }
+
+        .align-middle { vertical-align: middle; }
+
+        .hover\:text-blue-600:hover { color: #2563eb; }
+        .hover\:text-blue-800:hover { color: #1e40af; }
+        .hover\:text-red-600:hover { color: #dc2626; }
+        .hover\:text-red-700:hover { color: #b91c1c; }
+        .hover\:text-gray-600:hover { color: #4b5563; }
+        .hover\:text-gray-900:hover { color: #111827; }
+        .hover\:bg-gray-50:hover { background-color: #f9fafb; }
+        .hover\:bg-gray-100:hover { background-color: #f3f4f6; }
+        .hover\:bg-blue-50:hover { background-color: #eff6ff; }
+        .hover\:bg-blue-100:hover { background-color: #dbeafe; }
+        .hover\:bg-blue-700:hover { background-color: #1d4ed8; }
+        .hover\:bg-red-50:hover { background-color: #fef2f2; }
+        .hover\:bg-red-700:hover { background-color: #b91c1c; }
+        .hover\:bg-orange-50:hover { background-color: #fff7ed; }
+
+        .focus\:outline-none:focus { outline: none; }
+        .focus\:ring-2:focus { box-shadow: 0 0 0 2px var(--tw-ring-color, rgba(59, 130, 246, 0.5)); }
+        .focus\:ring-blue-500\/20:focus { --tw-ring-color: rgba(59, 130, 246, 0.2); box-shadow: 0 0 0 2px var(--tw-ring-color); }
+        .focus\:ring-blue-500:focus { --tw-ring-color: #3b82f6; }
+        .focus\:border-blue-500:focus { border-color: #3b82f6; }
+
+        .-translate-y-1\/2 { transform: translateY(-50%); }
+
+        button, a[href] { cursor: pointer; }
+        input, select, textarea { font-family: inherit; }
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+
+        <!-- 顶部栏 -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0">
+            <div class="flex items-center space-x-2 text-sm text-gray-500" id="breadcrumb-area">
+                <span>系统管理</span>
+                <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                <span class="text-gray-900 font-medium">通知管理</span>
+            </div>
+            <div class="flex items-center space-x-3" id="header-actions">
+                <div id="header-list-actions" class="flex items-center space-x-3">
+                    <button onclick="showView('templates')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                        <iconify-icon icon="mdi:file-document-edit-outline"></iconify-icon>
+                        <span>模板配置</span>
+                    </button>
+                    <button onclick="openCreateNotice()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                        <iconify-icon icon="mdi:plus"></iconify-icon>
+                        <span>创建通知</span>
+                    </button>
+                </div>
+                <div id="header-template-actions" class="hidden flex items-center space-x-3">
+                    <button onclick="showView('list')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
+                        <iconify-icon icon="mdi:arrow-left"></iconify-icon>
+                        <span>返回通知列表</span>
+                    </button>
+                    <button onclick="openAddTemplate()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                        <iconify-icon icon="mdi:plus"></iconify-icon>
+                        <span>新增模板</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 内容滚动区 -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-6">
+
+            <!-- 通知列表视图 -->
+            <div id="view-list">
+                <!-- 筛选栏 -->
+                <div class="flex items-center space-x-4 mb-6 flex-wrap gap-y-2">
+                    <div class="relative flex-1 max-w-md">
+                        <iconify-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" icon="mdi:magnify"></iconify-icon>
+                        <input class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm"
+                        placeholder="搜索通知标题或内容..." type="text" id="search-input" oninput="filterNotices()" />
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="relative">
+                            <select class="appearance-none pl-3 pr-8 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer" id="source-filter" onchange="filterNotices()">
+                                <option value="">全部来源</option>
+                                <option value="auto">系统自动</option>
+                                <option value="manual">管理员手动</option>
+                            </select>
+                            <iconify-icon class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" icon="mdi:chevron-down"></iconify-icon>
+                        </div>
+                        <div class="relative">
+                            <select class="appearance-none pl-3 pr-8 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer" id="status-filter" onchange="filterNotices()">
+                                <option value="">全部状态</option>
+                                <option value="sent">已发送</option>
+                                <option value="pending">待发送</option>
+                                <option value="recalled">已撤回</option>
+                            </select>
+                            <iconify-icon class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" icon="mdi:chevron-down"></iconify-icon>
+                        </div>
+                        <div class="relative">
+                            <select class="appearance-none pl-3 pr-8 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer" id="read-filter" onchange="filterNotices()">
+                                <option value="">全部阅读情况</option>
+                                <option value="allRead">全部已读</option>
+                                <option value="hasUnread">存在未读</option>
+                            </select>
+                            <iconify-icon class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" icon="mdi:chevron-down"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 通知表格 -->
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden" id="notice-table-wrap">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                <th class="px-4 py-3 text-left font-semibold" style="min-width:170px;">标题</th>
+                                <th class="px-4 py-3 text-left font-semibold" style="min-width:220px;">内容</th>
+                                <th class="px-4 py-3 text-left font-semibold">来源</th>
+                                <th class="px-4 py-3 text-left font-semibold">接收人员</th>
+                                <th class="px-4 py-3 text-left font-semibold" style="min-width:130px;">已读情况</th>
+                                <th class="px-4 py-3 text-left font-semibold">状态</th>
+                                <th class="px-4 py-3 text-left font-semibold">发送时间</th>
+                                <th class="px-4 py-3 text-left font-semibold">创建时间</th>
+                                <th class="px-4 py-3 text-right font-semibold">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="notice-table-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- 空状态 -->
+                <div id="empty-state" class="hidden flex-col items-center justify-center py-20 text-center">
+                    <iconify-icon icon="mdi:bell-outline" class="text-6xl text-gray-300 mb-4"></iconify-icon>
+                    <p class="text-gray-500 text-lg mb-2">暂无通知</p>
+                    <p class="text-gray-400 text-sm mb-6">点击「创建通知」向人员发送通知</p>
+                    <button onclick="openCreateNotice()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">创建通知</button>
+                </div>
+            </div>
+
+            <!-- 模板配置视图 -->
+            <div id="view-templates" class="hidden">
+                <div class="bg-blue-50 border border-gray-200 rounded-xl p-4 mb-4 flex items-start gap-3">
+                    <iconify-icon icon="mdi:information-outline" class="text-blue-500 text-lg mt-0.5 flex-shrink-0"></iconify-icon>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        模板供两种方式使用：管理员<b>手动创建通知</b>时可直接选用模板快速填充内容；开发也可在系统中通过
+                        <span class="code-text">templateCode</span> 调用模板<b>自动发送通知</b>。模板内容中可配置
+                        <span class="var-tag">{变量}</span>，发送时按实际值替换。
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                <th class="px-4 py-3 text-left font-semibold">模板名称</th>
+                                <th class="px-4 py-3 text-left font-semibold">模板编码</th>
+                                <th class="px-4 py-3 text-left font-semibold" style="min-width:180px;">标题模板</th>
+                                <th class="px-4 py-3 text-left font-semibold" style="min-width:160px;">变量</th>
+                                <th class="px-4 py-3 text-left font-semibold">调用次数</th>
+                                <th class="px-4 py-3 text-left font-semibold">状态</th>
+                                <th class="px-4 py-3 text-right font-semibold">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="template-table-body"></tbody>
+                    </table>
+                </div>
+
+                <div id="template-empty" class="hidden flex-col items-center justify-center py-20 text-center">
+                    <iconify-icon icon="mdi:file-document-outline" class="text-6xl text-gray-300 mb-4"></iconify-icon>
+                    <p class="text-gray-500 text-lg mb-2">暂无模板</p>
+                    <p class="text-gray-400 text-sm mb-6">点击「新增模板」配置可复用的通知模板</p>
+                    <button onclick="openAddTemplate()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">新增模板</button>
+                </div>
+            </div>
+
+        </div><!-- end 内容滚动区 -->
+
+        <!-- 分页页脚（通知列表 / 模板配置共用，按当前视图独立分页） -->
+        <div id="pagination-footer" class="pagination-footer">
+            <div class="pagination-info">
+                <span>共 <strong id="pg-total">0</strong> 条</span>
+                <span class="pagination-divider">|</span>
+                <span>第 <span id="pg-range">1-0</span> 条</span>
+                <span class="pagination-divider">|</span>
+                <div class="pagination-size">
+                    <span>每页</span>
+                    <select id="pg-size" onchange="changePageSize(this.value)">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <span>条</span>
+                </div>
+            </div>
+            <div class="pagination-controls">
+                <button id="pg-prev" class="pagination-btn" onclick="changePage('prev')" aria-label="上一页">
+                    <iconify-icon icon="mdi:chevron-left"></iconify-icon>
+                </button>
+                <div id="pg-pages" class="pagination-pages"></div>
+                <button id="pg-next" class="pagination-btn" onclick="changePage('next')" aria-label="下一页">
+                    <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                </button>
+            </div>
+        </div>
+
+    </div><!-- end page-wrap -->
+
+    <!-- 创建通知弹窗 -->
+    <div id="createModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('createModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-2xl">
+                <h3 class="text-lg font-bold text-gray-900" id="create-modal-title">创建通知</h3>
+                <button onclick="closeModal('createModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-5">
+                <!-- 使用模板 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">使用模板 <span class="text-gray-400 font-normal text-xs">(可选，选择后自动填充标题与内容)</span></label>
+                    <div class="relative">
+                        <select id="create-template" class="w-full appearance-none pl-3 pr-8 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer" onchange="applyTemplate(this.value)">
+                            <option value="">不使用模板，手动填写</option>
+                        </select>
+                        <iconify-icon class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" icon="mdi:chevron-down"></iconify-icon>
+                    </div>
+                </div>
+
+                <!-- 变量填充 -->
+                <div id="var-fill-area" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">模板变量填充</label>
+                    <div class="var-fill-panel" id="var-fill-panel"></div>
+                    <div class="flex justify-end mt-2">
+                        <button onclick="applyVariables()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                            <iconify-icon icon="mdi:auto-fix"></iconify-icon><span>将变量值应用到标题与内容</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">通知标题 <span class="text-red-500">*</span></label>
+                    <input type="text" id="notice-title" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入通知标题" maxlength="50" oninput="updateTitleCount(this)" />
+                    <p class="text-xs mt-1"><span id="title-count" class="text-gray-400">0</span><span class="text-gray-400">/50</span></p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">通知内容 <span class="text-red-500">*</span></label>
+                    <textarea id="notice-content" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm resize-none" rows="5" placeholder="请输入通知内容..." maxlength="500" oninput="updateContentCount(this)"></textarea>
+                    <p class="text-xs mt-1"><span id="content-count" class="text-gray-400">0</span><span class="text-gray-400">/500</span></p>
+                </div>
+
+                <!-- 接收人员 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">接收人员 <span class="text-red-500">*</span></label>
+                    <div class="flex items-center gap-4 mb-3">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="notice-scope" value="all" checked onchange="onScopeChange()" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
+                            <span class="text-sm text-gray-700">全员（<span id="scope-all-count">30</span> 人）</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="notice-scope" value="selected" onchange="onScopeChange()" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
+                            <span class="text-sm text-gray-700">手动批量选择人员</span>
+                        </label>
+                    </div>
+                    <div id="person-picker-area" class="hidden">
+                        <button type="button" onclick="openPersonPicker()" class="w-full flex items-center justify-between px-4 py-2.5 bg-white border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50/30 transition-colors text-sm text-gray-600">
+                            <span class="flex items-center gap-2">
+                                <iconify-icon icon="mdi:account-multiple-plus-outline" class="text-lg text-gray-400"></iconify-icon>
+                                选择人员
+                            </span>
+                            <span class="flex items-center gap-1 text-gray-400">
+                                <span id="person-selected-count">已选 0 人</span>
+                                <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                            </span>
+                        </button>
+                        <div class="selected-persons" id="selected-persons"></div>
+                    </div>
+                </div>
+
+                <!-- 发送时间 -->
+                <div id="send-time-section">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">发送时间 <span class="text-red-500">*</span></label>
+                    <div class="flex items-center gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="send-mode" value="now" checked onchange="onSendModeChange()" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
+                            <span class="text-sm text-gray-700">立即发送</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="send-mode" value="scheduled" onchange="onSendModeChange()" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
+                            <span class="text-sm text-gray-700">定时发送</span>
+                        </label>
+                        <input type="datetime-local" id="send-time-input" class="hidden px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer" />
+                    </div>
+                </div>
+
+                <!-- 创建时间（自动生成） -->
+                <div class="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3">
+                    <span class="text-sm text-gray-500 flex items-center gap-1.5">
+                        <iconify-icon icon="mdi:clock-outline"></iconify-icon> 创建时间（保存时自动生成）
+                    </span>
+                    <span class="text-sm text-gray-700" id="create-time-preview"></span>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 sticky bottom-0 bg-white rounded-b-2xl">
+                <button onclick="closeModal('createModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button id="save-notice-btn" onclick="saveNotice()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">保存并发送</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加成员弹窗（部门树 + 已选列表） -->
+    <div id="personPickerModal" class="modal-overlay hidden" onclick="if(event.target===this)cancelPersonPicker()">
+        <div class="picker-modal-content" onclick="event.stopPropagation()">
+            <div class="picker-header">
+                <span class="text-base font-semibold text-gray-900">添加成员</span>
+                <button onclick="cancelPersonPicker()" class="text-gray-400 hover:text-gray-600 text-xl leading-none" aria-label="关闭">
+                    <iconify-icon icon="mdi:close"></iconify-icon>
+                </button>
+            </div>
+            <div class="picker-body">
+                <div class="picker-left">
+                    <div class="picker-search">
+                        <iconify-icon icon="mdi:magnify" class="text-gray-400"></iconify-icon>
+                        <input type="text" id="picker-search" placeholder="搜索姓名 / 手机号 / 工号" oninput="onPickerSearch()" />
+                    </div>
+                    <div class="picker-tree custom-scrollbar" id="picker-tree"></div>
+                </div>
+                <div class="picker-right">
+                    <div class="picker-right-head">已选 <span id="picker-selected-count">0</span> 个</div>
+                    <div class="picker-selected-list custom-scrollbar" id="picker-selected-list"></div>
+                </div>
+            </div>
+            <div class="picker-footer">
+                <button onclick="cancelPersonPicker()" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="confirmPersonPicker()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知详情弹窗（含人员已读/未读） -->
+    <div id="detailModal" class="detail-modal-overlay hidden" onclick="if(event.target===this)closeDetailModal()">
+        <div class="detail-modal-content" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between p-5 border-b border-gray-100">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center flex-shrink-0">
+                        <iconify-icon icon="mdi:bell-ring-outline" class="text-2xl text-blue-600"></iconify-icon>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h2 class="text-lg font-bold text-gray-900 truncate" id="detail-title"></h2>
+                            <span id="detail-source-tag"></span>
+                            <span id="detail-status-tag"></span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-0.5" id="detail-scope"></p>
+                    </div>
+                </div>
+                <button onclick="closeDetailModal()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors flex-shrink-0">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="p-5">
+                <div class="flex items-center gap-4 text-xs text-gray-400 mb-5 flex-wrap">
+                    <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline"></iconify-icon> 创建人：<span id="detail-creator"></span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon> 创建时间：<span id="detail-created-at"></span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="mdi:send-circle-outline"></iconify-icon> 发送时间：<span id="detail-sent-at"></span></span>
+                    <span class="flex items-center gap-1" id="detail-template-wrap"><iconify-icon icon="mdi:file-document-outline"></iconify-icon> 使用模板：<span id="detail-template"></span></span>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-5 mb-5">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                        <iconify-icon icon="mdi:text-long" class="text-blue-500"></iconify-icon>
+                        通知内容
+                    </h3>
+                    <div class="text-sm text-gray-600 leading-relaxed whitespace-pre-line" id="detail-content"></div>
+                </div>
+
+                <!-- 人员已读情况 -->
+                <div>
+                    <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+                        <h3 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                            <iconify-icon icon="mdi:account-group-outline" class="text-blue-500"></iconify-icon>
+                            接收人员（共 <span id="detail-total-count">0</span> 人）
+                        </h3>
+                        <div class="detail-tabs" id="detail-tabs">
+                            <span class="detail-tab active" data-tab="all" onclick="switchRecipientTab('all')">全部</span>
+                            <span class="detail-tab" data-tab="read" onclick="switchRecipientTab('read')">已读 <span id="tab-read-count"></span></span>
+                            <span class="detail-tab" data-tab="unread" onclick="switchRecipientTab('unread')">未读 <span id="tab-unread-count"></span></span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="read-bar" style="width:100%;">
+                            <div class="read-bar-fill" id="detail-read-bar" style="width:0%;"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="relative flex-1">
+                            <iconify-icon icon="mdi:magnify" class="text-base text-gray-400" style="position:absolute; left:10px; top:50%; transform:translateY(-50%);"></iconify-icon>
+                            <input type="text" id="recipient-search" placeholder="搜索姓名或部门..." oninput="onRecipientSearch()" class="w-full bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" style="padding:7px 10px 7px 32px;" />
+                        </div>
+                        <span class="text-xs text-gray-500 flex-shrink-0" id="recipient-filter-info"></span>
+                    </div>
+                    <div class="border border-gray-200 rounded-xl overflow-hidden" style="max-height:300px; overflow-y:auto;">
+                        <table class="w-full text-sm">
+                            <thead class="sticky top-0">
+                                <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                                    <th class="px-4 py-2.5 text-left font-semibold">姓名</th>
+                                    <th class="px-4 py-2.5 text-left font-semibold">部门</th>
+                                    <th class="px-4 py-2.5 text-left font-semibold">阅读状态</th>
+                                    <th class="px-4 py-2.5 text-left font-semibold">阅读时间</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recipient-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="flex items-center justify-between mt-3">
+                        <span class="text-xs text-gray-500" id="recipient-page-info"></span>
+                        <div class="pagination-controls" id="recipient-pager"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-100">
+                <button onclick="closeDetailModal()" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增/编辑模板弹窗 -->
+    <div id="templateModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('templateModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-2xl">
+                <h3 class="text-lg font-bold text-gray-900" id="template-modal-title">新增模板</h3>
+                <button onclick="closeModal('templateModal')" class="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <iconify-icon icon="mdi:close" class="text-xl"></iconify-icon>
+                </button>
+            </div>
+            <div class="px-6 py-5 space-y-5">
+                <div class="grid gap-4" style="grid-template-columns: 1fr 1fr;">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">模板名称 <span class="text-red-500">*</span></label>
+                        <input type="text" id="tpl-name" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="如：系统上线通知" maxlength="20" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">模板编码 <span class="text-red-500">*</span></label>
+                        <input type="text" id="tpl-code" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="大写字母与下划线，如 SYSTEM_LAUNCH" maxlength="40" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9_]/g,'')" />
+                        <p class="text-xs mt-1 text-gray-400">供开发在系统中调用该模板自动发送通知</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">标题模板 <span class="text-red-500">*</span></label>
+                    <input type="text" id="tpl-title" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="如：{systemName}正式上线通知" maxlength="50" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">内容模板 <span class="text-red-500">*</span></label>
+                    <textarea id="tpl-content" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm resize-none" rows="4" placeholder="如：{userName}您好，您 {month} 的工资 {amount} 元已发放至您的账户，请注意查收。" maxlength="500"></textarea>
+                    <p class="text-xs mt-1 text-gray-400">在内容中使用 <span class="var-tag">{变量名}</span> 占位，发送时按变量值替换</p>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-sm font-medium text-gray-700">变量配置 <span class="text-gray-400 font-normal text-xs">(可选)</span></label>
+                        <button onclick="addVarRow()" class="flex items-center gap-1 px-2.5 py-1 text-xs text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                            <iconify-icon icon="mdi:plus"></iconify-icon><span>添加变量</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-2 px-1" id="var-edit-header" style="display:none;">
+                        <span style="width:130px;">变量名（英文）</span>
+                        <span class="flex-1">说明</span>
+                        <span style="width:130px;">示例值</span>
+                        <span style="width:88px;"></span>
+                    </div>
+                    <div id="var-edit-rows"></div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">状态</label>
+                        <p class="text-xs text-gray-400 mt-0.5">禁用后不可被手动选用或系统调用</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="tpl-status" checked />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 sticky bottom-0 bg-white rounded-b-2xl">
+                <button onclick="closeModal('templateModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button onclick="saveTemplate()" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认弹窗（撤回 / 删除通用） -->
+    <div id="confirmModal" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('confirmModal')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+            <div class="px-6 py-8 text-center">
+                <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4" id="confirm-icon-wrap">
+                    <iconify-icon icon="mdi:alert-circle-outline" class="text-3xl text-red-500" id="confirm-icon"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2" id="confirm-title">确认操作</h3>
+                <p class="text-sm text-gray-500" id="confirm-msg"></p>
+            </div>
+            <div class="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
+                <button onclick="closeModal('confirmModal')" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">取消</button>
+                <button id="confirm-btn" class="px-5 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script>
+        // ═══════════════════════════════════════════════
+        // 数据模型
+        // ═══════════════════════════════════════════════
+        const CURRENT_USER = '孙礼飞';
+
+        const people = [
+            { id: 1, name: '张伟', dept: '技术部', phone: '13720458841' }, { id: 2, name: '李娜', dept: '技术部', phone: '13658793390' },
+            { id: 3, name: '王强', dept: '技术部', phone: '15843626627' }, { id: 4, name: '刘洋', dept: '技术部', phone: '13968212214' },
+            { id: 5, name: '闫瑞', dept: '技术部', phone: '18653127702' }, { id: 6, name: '华成', dept: '技术部', phone: '13573984483' },
+            { id: 7, name: '陈静', dept: '产品部', phone: '15064209918' }, { id: 8, name: '赵蕾', dept: '产品部', phone: '18871633056' },
+            { id: 9, name: '孙丽', dept: '产品部', phone: '13749566129' }, { id: 10, name: '金峰', dept: '产品部', phone: '15927498840' },
+            { id: 11, name: '周杰', dept: '设计部', phone: '13682972275' }, { id: 12, name: '吴敏', dept: '设计部', phone: '18736485561' },
+            { id: 13, name: '郑浩', dept: '设计部', phone: '13857239034' }, { id: 14, name: '陶真', dept: '设计部', phone: '15162877748' },
+            { id: 15, name: '王芳', dept: '运营部', phone: '18975341186' }, { id: 16, name: '冯军', dept: '运营部', phone: '13726854452' },
+            { id: 17, name: '蒋雯', dept: '运营部', phone: '15649718893' }, { id: 18, name: '韩雪', dept: '运营部', phone: '13862532207' },
+            { id: 19, name: '魏东', dept: '运营部', phone: '18534776634' }, { id: 20, name: '杨帆', dept: '市场部', phone: '13986415518' },
+            { id: 21, name: '朱琳', dept: '市场部', phone: '15729367742' }, { id: 22, name: '秦岚', dept: '市场部', phone: '13647549981' },
+            { id: 23, name: '齐媛', dept: '市场部', phone: '18863924426' }, { id: 24, name: '徐刚', dept: '人事部', phone: '13524876670' },
+            { id: 25, name: '何静', dept: '人事部', phone: '15872633315' }, { id: 26, name: '吕鹏', dept: '人事部', phone: '13756478859' },
+            { id: 27, name: '施瑶', dept: '财务部', phone: '18643752248' }, { id: 28, name: '张斌', dept: '财务部', phone: '13925887763' },
+            { id: 29, name: '孔维', dept: '行政部', phone: '15073664497' }, { id: 30, name: '曹阳', dept: '行政部', phone: '18742991125' }
+        ];
+        const peopleById = id => people.find(p => p.id === id);
+        const ORG_ROOT_NAME = '集团总部';
+        const deptNames = [...new Set(people.map(p => p.dept))];
+        const deptMembers = dept => people.filter(p => p.dept === dept);
+
+        let templates = [{
+            id: 1,
+            name: '系统上线通知',
+            code: 'SYSTEM_LAUNCH',
+            titleTpl: '{systemName}正式上线通知',
+            contentTpl: '各位同事：{systemName}将于 {launchTime} 正式上线。请及时登录系统熟悉相关功能，如有问题请联系 {contactDept}。',
+            variables: [
+                { key: 'systemName', desc: '系统名称', sample: '数字化运营平台' },
+                { key: 'launchTime', desc: '上线时间', sample: '2026-11-06 09:00' },
+                { key: 'contactDept', desc: '联系部门', sample: '信息技术部' }
+            ],
+            status: 'enabled',
+            usageCount: 128
+        }, {
+            id: 2,
+            name: '系统维护公告',
+            code: 'SYS_MAINTENANCE',
+            titleTpl: '系统维护通知',
+            contentTpl: '系统将于 {startTime} 至 {endTime} 进行维护升级，期间将暂停服务。维护原因：{reason}。给您带来不便敬请谅解。',
+            variables: [
+                { key: 'startTime', desc: '维护开始时间', sample: '2026-11-08 22:00' },
+                { key: 'endTime', desc: '维护结束时间', sample: '2026-11-09 02:00' },
+                { key: 'reason', desc: '维护原因', sample: '数据库版本升级' }
+            ],
+            status: 'enabled',
+            usageCount: 36
+        }, {
+            id: 3,
+            name: '任务指派通知',
+            code: 'TASK_ASSIGNED',
+            titleTpl: '您有新的任务：{taskName}',
+            contentTpl: '{assignee}您好，您被指派了新任务「{taskName}」，请于 {deadline} 前完成。',
+            variables: [
+                { key: 'taskName', desc: '任务名称', sample: 'Q4 数据看板搭建' },
+                { key: 'assignee', desc: '被指派人', sample: '李娜' },
+                { key: 'deadline', desc: '截止时间', sample: '2026-11-15 18:00' }
+            ],
+            status: 'enabled',
+            usageCount: 215
+        }, {
+            id: 4,
+            name: '审批结果通知',
+            code: 'APPROVAL_RESULT',
+            titleTpl: '审批结果：{result}',
+            contentTpl: '{applicant}您好，您提交的{type}申请已由审批人处理，审批结果：{result}。',
+            variables: [
+                { key: 'applicant', desc: '申请人', sample: '王强' },
+                { key: 'type', desc: '审批类型', sample: '请假' },
+                { key: 'result', desc: '审批结果', sample: '已通过' }
+            ],
+            status: 'enabled',
+            usageCount: 402
+        }, {
+            id: 5,
+            name: '安全告警通知',
+            code: 'SECURITY_ALERT',
+            titleTpl: '安全告警：{riskType}',
+            contentTpl: '检测到账号 {account} 于 {time} 出现异常，风险类型：{riskType}。请相关负责人员及时核实处理。',
+            variables: [
+                { key: 'riskType', desc: '风险类型', sample: '异地登录' },
+                { key: 'account', desc: '涉及账号', sample: 'zhangwei@corp.com' },
+                { key: 'time', desc: '发生时间', sample: '2026-11-03 02:14' }
+            ],
+            status: 'disabled',
+            usageCount: 17
+        }];
+
+        // 生成接收人（含已读状态）
+        function makeRecipients(ids, readIds, readDate) {
+            return ids.map(id => {
+                const p = peopleById(id);
+                const isRead = readIds.includes(id);
+                return {
+                    id: p.id,
+                    name: p.name,
+                    dept: p.dept,
+                    read: isRead,
+                    readAt: isRead ? readDate + ' ' + String(8 + (id % 12)).padStart(2, '0') + ':' + String((id * 7) % 60).padStart(2, '0') : ''
+                };
+            });
+        }
+        const allIds = people.map(p => p.id);
+        const techIds = people.filter(p => p.dept === '技术部').map(p => p.id);
+
+        let notices = [{
+            id: 1,
+            title: '系统升级维护通知',
+            content: '各位同事：\n系统将于 2026-11-08 22:00 至 2026-11-09 02:00 进行维护升级，期间将暂停服务。维护原因：数据库版本升级。给您带来不便敬请谅解。',
+            source: 'manual',
+            status: 'sent',
+            scope: 'all',
+            templateId: 2,
+            recipients: makeRecipients(allIds, allIds.filter(id => id % 3 !== 0), '2026-11-04'),
+            createdBy: CURRENT_USER,
+            createdAt: '2026-11-04 09:30',
+            sentAt: '2026-11-04 09:30'
+        }, {
+            id: 2,
+            title: 'OmniX V3.1正式上线通知',
+            content: '各位同事：OmniX V3.1已于 2026-11-06 09:00 正式上线。请及时登录系统熟悉相关功能，如有问题请联系信息技术部。',
+            source: 'auto',
+            status: 'sent',
+            scope: 'all',
+            templateId: 1,
+            recipients: makeRecipients(allIds, allIds.filter(id => id % 4 !== 0), '2026-11-03'),
+            createdBy: '系统',
+            createdAt: '2026-11-03 10:00',
+            sentAt: '2026-11-03 10:00'
+        }, {
+            id: 3,
+            title: '项目「数字化中台」评审会提醒',
+            content: '请以下人员于 2026-11-06 14:00 到 3 号会议室参加「数字化中台」项目方案评审会，请提前准备各自模块的汇报材料。',
+            source: 'manual',
+            status: 'sent',
+            scope: 'selected',
+            templateId: null,
+            recipients: makeRecipients([1, 2, 7, 8, 11, 15, 20, 24], [1, 2, 7, 11, 15], '2026-11-04'),
+            createdBy: '陈静',
+            createdAt: '2026-11-04 11:20',
+            sentAt: '2026-11-04 11:20'
+        }, {
+            id: 4,
+            title: '安全告警：异地登录',
+            content: '检测到账号 zhangwei@corp.com 于 2026-11-03 02:14 出现异常，风险类型：异地登录。请相关负责人员及时核实处理。',
+            source: 'auto',
+            status: 'sent',
+            scope: 'selected',
+            templateId: 5,
+            recipients: makeRecipients([1, 5, 6], [1, 5], '2026-11-03'),
+            createdBy: '系统',
+            createdAt: '2026-11-03 02:15',
+            sentAt: '2026-11-03 02:15'
+        }, {
+            id: 5,
+            title: '您有新的任务：Q4 数据看板搭建',
+            content: '李娜您好，您被指派了新任务「Q4 数据看板搭建」，请于 2026-11-15 18:00 前完成。',
+            source: 'auto',
+            status: 'sent',
+            scope: 'selected',
+            templateId: 3,
+            recipients: makeRecipients([2], [2], '2026-11-02'),
+            createdBy: '系统',
+            createdAt: '2026-11-02 16:40',
+            sentAt: '2026-11-02 16:40'
+        }, {
+            id: 6,
+            title: '审批结果：已通过',
+            content: '王强您好，您提交的请假申请已由审批人处理，审批结果：已通过。',
+            source: 'auto',
+            status: 'sent',
+            scope: 'selected',
+            templateId: 4,
+            recipients: makeRecipients([3], [3], '2026-11-01'),
+            createdBy: '系统',
+            createdAt: '2026-11-01 09:12',
+            sentAt: '2026-11-01 09:12'
+        }, {
+            id: 7,
+            title: '月度运营数据报告已生成',
+            content: '2026 年 10 月运营数据报告已生成，请相关负责人员登录系统「数据中心 - 报表管理」查看并确认。',
+            source: 'auto',
+            status: 'sent',
+            scope: 'selected',
+            templateId: null,
+            recipients: makeRecipients([15, 16, 17, 18, 19, 7], [15, 16, 17], '2026-10-31'),
+            createdBy: '系统',
+            createdAt: '2026-10-31 18:00',
+            sentAt: '2026-10-31 18:00'
+        }, {
+            id: 8,
+            title: '新年放假安排通知',
+            content: '全体员工：\n2027 年元旦放假安排为 1 月 1 日至 1 月 3 日，共 3 天，1 月 4 日（周一）正常上班。请各部门提前安排好工作交接。',
+            source: 'manual',
+            status: 'sent',
+            scope: 'all',
+            templateId: null,
+            recipients: makeRecipients(allIds, allIds.filter(id => id % 2 === 0), '2026-10-30'),
+            createdBy: '徐刚',
+            createdAt: '2026-10-30 15:00',
+            sentAt: '2026-10-30 15:00'
+        }, {
+            id: 9,
+            title: '数据库备份完成通知',
+            content: '生产数据库已完成全量备份，备份时间 2026-11-05 03:00，备份大小 128GB，校验结果正常。',
+            source: 'auto',
+            status: 'sent',
+            scope: 'selected',
+            templateId: null,
+            recipients: makeRecipients(techIds, techIds.filter(id => id !== 4), '2026-11-05'),
+            createdBy: '系统',
+            createdAt: '2026-11-05 03:05',
+            sentAt: '2026-11-05 03:05'
+        }, {
+            id: 10,
+            title: '年度培训课程开课提醒',
+            content: '「高效能团队管理」培训课程将于 2026-11-10 09:30 在培训中心开课，请报名的同事提前 10 分钟签到。',
+            source: 'manual',
+            status: 'pending',
+            scope: 'selected',
+            templateId: null,
+            recipients: makeRecipients([7, 8, 9, 10, 24, 25, 26], [], ''),
+            createdBy: '何静',
+            createdAt: '2026-11-05 10:30',
+            sentAt: '2026-11-10 09:00'
+        }, {
+            id: 11,
+            title: '办公网络升级通知',
+            content: '本周末将对办公区网络进行升级，期间网络可能短时中断。（信息有误，已撤回，请以最新通知为准）',
+            source: 'manual',
+            status: 'recalled',
+            scope: 'all',
+            templateId: null,
+            recipients: makeRecipients(allIds, [1, 2, 3], '2026-10-28'),
+            createdBy: '孔维',
+            createdAt: '2026-10-28 14:00',
+            sentAt: '2026-10-28 14:05'
+        }, {
+            id: 12,
+            title: '客户回访任务提醒',
+            content: '您有 3 条客户回访任务即将到期，请登录 CRM 系统「我的任务」中查看并及时处理。',
+            source: 'auto',
+            status: 'pending',
+            scope: 'selected',
+            templateId: null,
+            recipients: makeRecipients([20, 21, 22, 23], [], ''),
+            createdBy: '系统',
+            createdAt: '2026-11-05 14:00',
+            sentAt: '2026-11-07 09:00'
+        }];
+
+        let currentView = 'list';
+        let detailNoticeId = null;
+        let recipientTab = 'all';
+        let editingNoticeId = null;
+        let editingTemplateId = null;
+        let selectedPersonIds = [];
+
+        // 分页状态（通知列表与模板配置各自独立）
+        let listCurrentPage = 1;
+        let listPageSize = 10;
+        let tplCurrentPage = 1;
+        let tplPageSize = 10;
+        // 添加成员弹窗状态
+        let pickerExpanded = new Set(['root', deptNames[0]]);
+        let pickerSearch = '';
+        let pickerDraftIds = [];
+        // 详情弹窗-接收人员分页与搜索
+        let recipientCurrentPage = 1;
+        const recipientPageSize = 10;
+        let recipientSearch = '';
+
+        const sourceMeta = {
+            auto: { label: '系统自动', cls: 'tag-source-auto' },
+            manual: { label: '管理员手动', cls: 'tag-source-manual' }
+        };
+        const statusMeta = {
+            sent: { label: '已发送', cls: 'tag-sent' },
+            pending: { label: '待发送', cls: 'tag-pending' },
+            recalled: { label: '已撤回', cls: 'tag-recalled' }
+        };
+
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function nowStr(withSecond) {
+            const opt = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+            if (withSecond) opt.second = '2-digit';
+            return new Date().toLocaleString('zh-CN', opt).replace(/\//g, '-');
+        }
+
+        // ═══════════════════════════════════════════════
+        // 视图切换
+        // ═══════════════════════════════════════════════
+        function showView(view) {
+            currentView = view;
+            document.getElementById('view-list').classList.toggle('hidden', view !== 'list');
+            document.getElementById('view-templates').classList.toggle('hidden', view !== 'templates');
+            document.getElementById('header-list-actions').classList.toggle('hidden', view !== 'list');
+            document.getElementById('header-template-actions').classList.toggle('hidden', view !== 'templates');
+
+            const bc = document.getElementById('breadcrumb-area');
+            if (view === 'list') {
+                bc.innerHTML =
+                    '<span>系统管理</span><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">通知管理</span>';
+                renderNoticeTable();
+            } else {
+                bc.innerHTML =
+                    '<a href="#" onclick="showView(\'list\');return false;" class="hover:text-blue-600">通知管理</a><iconify-icon icon="mdi:chevron-right"></iconify-icon><span class="text-gray-900 font-medium">模板配置</span>';
+                renderTemplateTable();
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        // 通知列表
+        // ═══════════════════════════════════════════════
+        function readStats(n) {
+            const total = n.recipients.length;
+            const read = n.recipients.filter(r => r.read).length;
+            return { total, read, unread: total - read };
+        }
+
+        function scopeText(n) {
+            const s = readStats(n);
+            return n.scope === 'all' ? `全员（${s.total} 人）` : `指定人员（${s.total} 人）`;
+        }
+
+        function getFilteredNotices() {
+            const search = document.getElementById('search-input').value.trim().toLowerCase();
+            const sourceFilter = document.getElementById('source-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            const readFilter = document.getElementById('read-filter').value;
+            return notices.filter(n => {
+                if (search && !n.title.toLowerCase().includes(search) && !n.content.toLowerCase().includes(search))
+                    return false;
+                if (sourceFilter && n.source !== sourceFilter) return false;
+                if (statusFilter && n.status !== statusFilter) return false;
+                if (readFilter) {
+                    const s = readStats(n);
+                    if (readFilter === 'allRead' && s.unread !== 0) return false;
+                    if (readFilter === 'hasUnread' && s.unread === 0) return false;
+                }
+                return true;
+            });
+        }
+
+        function renderNoticeTable() {
+            const filtered = getFilteredNotices();
+            const total = filtered.length;
+            const totalPages = Math.max(1, Math.ceil(total / listPageSize));
+            if (listCurrentPage > totalPages) listCurrentPage = totalPages;
+            const start = (listCurrentPage - 1) * listPageSize;
+            const pageItems = filtered.slice(start, start + listPageSize);
+            const tbody = document.getElementById('notice-table-body');
+            const wrap = document.getElementById('notice-table-wrap');
+
+            if (total === 0) {
+                wrap.classList.add('hidden');
+                const es = document.getElementById('empty-state');
+                es.classList.remove('hidden');
+                es.classList.add('flex');
+                renderPagination(total, listCurrentPage, listPageSize);
+                return;
+            }
+            wrap.classList.remove('hidden');
+            const es = document.getElementById('empty-state');
+            es.classList.add('hidden');
+            es.classList.remove('flex');
+
+            tbody.innerHTML = pageItems.map(n => {
+                const s = readStats(n);
+                const pct = s.total ? Math.round(s.read / s.total * 100) : 0;
+                const src = sourceMeta[n.source];
+                const st = statusMeta[n.status];
+                const readCell = `<div class="flex items-center gap-2" title="点击查看人员已读详情">
+                           <div class="read-bar"><div class="read-bar-fill" style="width:${pct}%;"></div></div>
+                           <span class="text-xs text-gray-600 whitespace-nowrap">${s.read}/${s.total} 已读</span>
+                        </div>`;
+                const canRecall = n.status === 'sent' || n.status === 'pending';
+                const canManageRecalled = n.status === 'recalled' && s.read === 0;
+                const editBtn = canManageRecalled
+                    ? `<button onclick="event.stopPropagation(); openEditNotice(${n.id})" class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>`
+                    : '';
+                const recallBtn = canRecall
+                    ? `<button onclick="event.stopPropagation(); openRecallConfirm(${n.id})" class="text-orange-500 hover:text-red-600 text-xs mr-3">撤回</button>`
+                    : '';
+                const deleteBtn = canManageRecalled
+                    ? `<button onclick="event.stopPropagation(); openDeleteNoticeConfirm(${n.id})" class="text-red-500 hover:text-red-700 text-xs">删除</button>`
+                    : '';
+                return `
+                <tr class="border-b border-gray-50 hover:bg-gray-50 align-middle cursor-pointer" onclick="openDetail(${n.id})">
+                    <td class="px-4 py-3">
+                        <div class="flex items-center gap-2">
+                            <iconify-icon icon="${n.source === 'auto' ? 'mdi:robot-outline' : 'mdi:bell-outline'}" class="${n.source === 'auto' ? 'text-indigo-600' : 'text-blue-600'} flex-shrink-0"></iconify-icon>
+                            <span class="font-medium text-gray-900 hover:text-blue-600 truncate" style="max-width:190px;" title="${esc(n.title)}">${esc(n.title)}</span>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3 text-gray-500">
+                        <span class="block truncate" style="max-width:230px;" title="${esc(n.content)}">${esc(n.content.replace(/\n/g, ' '))}</span>
+                    </td>
+                    <td class="px-4 py-3"><span class="tag ${src.cls}">${src.label}</span></td>
+                    <td class="px-4 py-3 text-gray-600 whitespace-nowrap">${scopeText(n)}</td>
+                    <td class="px-4 py-3">${readCell}</td>
+                    <td class="px-4 py-3"><span class="tag ${st.cls}">${st.label}</span></td>
+                    <td class="px-4 py-3 text-gray-500 whitespace-nowrap">${n.status === 'pending' ? '<span class="text-orange-500">' + esc(n.sentAt) + '</span>' : esc(n.sentAt || '—')}</td>
+                    <td class="px-4 py-3 text-gray-500 whitespace-nowrap">${esc(n.createdAt)}</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">
+                        <button onclick="event.stopPropagation(); openDetail(${n.id})" class="text-blue-600 hover:text-blue-800 text-xs mr-3">详情</button>
+                        ${editBtn}
+                        ${recallBtn}
+                        ${deleteBtn}
+                    </td>
+                </tr>`;
+            }).join('');
+            renderPagination(total, listCurrentPage, listPageSize);
+        }
+
+        function filterNotices() { listCurrentPage = 1; renderNoticeTable(); }
+
+        // ═══════════════════════════════════════════════
+        // 分页（通知列表 / 模板配置 共用底部页脚）
+        // ═══════════════════════════════════════════════
+        function buildPageNumbers(current, totalPages, goFn) {
+            goFn = goFn || 'goToPage';
+            if (totalPages <= 1) return '<span class="pagination-page active">1</span>';
+            const pages = [];
+            const add = (n, active) => pages.push(
+                `<span class="pagination-page ${active ? 'active' : ''}" onclick="${goFn}(${n})">${n}</span>`);
+            if (totalPages <= 7) {
+                for (let i = 1; i <= totalPages; i++) add(i, i === current);
+            } else {
+                add(1, current === 1);
+                if (current > 3) pages.push('<span class="pagination-ellipsis">…</span>');
+                const from = Math.max(2, current - 1);
+                const to = Math.min(totalPages - 1, current + 1);
+                for (let i = from; i <= to; i++) add(i, i === current);
+                if (current < totalPages - 2) pages.push('<span class="pagination-ellipsis">…</span>');
+                add(totalPages, current === totalPages);
+            }
+            return pages.join('');
+        }
+
+        function renderPagination(total, currentPage, pageSize) {
+            const footer = document.getElementById('pagination-footer');
+            footer.style.display = total === 0 ? 'none' : 'flex';
+            const totalPages = Math.max(1, Math.ceil(total / pageSize));
+            document.getElementById('pg-total').textContent = total;
+            const start = total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+            const end = Math.min(total, currentPage * pageSize);
+            document.getElementById('pg-range').textContent = start + '-' + end;
+            const sizeSel = document.getElementById('pg-size');
+            if (parseInt(sizeSel.value) !== pageSize) sizeSel.value = String(pageSize);
+            document.getElementById('pg-pages').innerHTML = buildPageNumbers(currentPage, totalPages);
+            document.getElementById('pg-prev').disabled = currentPage <= 1;
+            document.getElementById('pg-next').disabled = currentPage >= totalPages;
+        }
+
+        function changePage(dir) {
+            if (currentView === 'templates') {
+                const tp = Math.max(1, Math.ceil(templates.length / tplPageSize));
+                const p = tplCurrentPage + (dir === 'prev' ? -1 : 1);
+                if (p < 1 || p > tp) return;
+                tplCurrentPage = p;
+                renderTemplateTable();
+            } else {
+                const tp = Math.max(1, Math.ceil(getFilteredNotices().length / listPageSize));
+                const p = listCurrentPage + (dir === 'prev' ? -1 : 1);
+                if (p < 1 || p > tp) return;
+                listCurrentPage = p;
+                renderNoticeTable();
+            }
+        }
+
+        function goToPage(n) {
+            if (currentView === 'templates') {
+                if (n < 1 || n > Math.max(1, Math.ceil(templates.length / tplPageSize))) return;
+                tplCurrentPage = n;
+                renderTemplateTable();
+            } else {
+                if (n < 1 || n > Math.max(1, Math.ceil(getFilteredNotices().length / listPageSize))) return;
+                listCurrentPage = n;
+                renderNoticeTable();
+            }
+        }
+
+        function changePageSize(v) {
+            v = parseInt(v);
+            if (currentView === 'templates') {
+                tplPageSize = v;
+                tplCurrentPage = 1;
+                renderTemplateTable();
+            } else {
+                listPageSize = v;
+                listCurrentPage = 1;
+                renderNoticeTable();
+            }
+        }
+
+        // ═══════════════════════════════════════════════
+        // 通知详情（人员已读/未读）
+        // ═══════════════════════════════════════════════
+        function openDetail(id) {
+            const n = notices.find(x => x.id === id);
+            if (!n) return;
+            detailNoticeId = id;
+            recipientTab = 'all';
+            recipientSearch = '';
+            recipientCurrentPage = 1;
+            document.getElementById('recipient-search').value = '';
+
+            document.getElementById('detail-title').textContent = n.title;
+            const src = sourceMeta[n.source];
+            const st = statusMeta[n.status];
+            document.getElementById('detail-source-tag').innerHTML = `<span class="tag ${src.cls}">${src.label}</span>`;
+            document.getElementById('detail-status-tag').innerHTML = `<span class="tag ${st.cls}">${st.label}</span>`;
+            document.getElementById('detail-scope').textContent = '接收范围：' + scopeText(n);
+            document.getElementById('detail-creator').textContent = n.createdBy;
+            document.getElementById('detail-created-at').textContent = n.createdAt;
+            document.getElementById('detail-sent-at').textContent =
+                (n.status === 'pending' ? '计划 ' : '') + (n.sentAt || '—');
+            document.getElementById('detail-content').textContent = n.content;
+
+            const tplWrap = document.getElementById('detail-template-wrap');
+            const tpl = n.templateId ? templates.find(t => t.id === n.templateId) : null;
+            if (tpl) {
+                tplWrap.style.display = '';
+                document.getElementById('detail-template').textContent = `${tpl.name}（${tpl.code}）`;
+            } else {
+                tplWrap.style.display = 'none';
+            }
+
+            renderRecipientSection(n);
+            document.querySelectorAll('#detail-tabs .detail-tab').forEach(t =>
+                t.classList.toggle('active', t.dataset.tab === 'all'));
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function onRecipientSearch() {
+            recipientSearch = document.getElementById('recipient-search').value.trim().toLowerCase();
+            recipientCurrentPage = 1;
+            const n = notices.find(x => x.id === detailNoticeId);
+            if (n) renderRecipientSection(n);
+        }
+
+        function goRecipientPage(n) {
+            const tp = Math.max(1, Math.ceil(getFilteredRecipients().length / recipientPageSize));
+            if (n < 1 || n > tp) return;
+            recipientCurrentPage = n;
+            const no = notices.find(x => x.id === detailNoticeId);
+            if (no) renderRecipientSection(no);
+        }
+
+        function changeRecipientPage(dir) {
+            goRecipientPage(recipientCurrentPage + (dir === 'prev' ? -1 : 1));
+        }
+
+        function getFilteredRecipients() {
+            const n = notices.find(x => x.id === detailNoticeId);
+            if (!n) return [];
+            let list = n.recipients;
+            if (recipientTab === 'read') list = list.filter(r => r.read);
+            if (recipientTab === 'unread') list = list.filter(r => !r.read);
+            if (recipientSearch) list = list.filter(r =>
+                r.name.toLowerCase().includes(recipientSearch) || r.dept.toLowerCase().includes(recipientSearch));
+            return list;
+        }
+
+        function renderRecipientSection(n) {
+            const s = readStats(n);
+            document.getElementById('detail-total-count').textContent = s.total;
+            document.getElementById('tab-read-count').textContent = s.read;
+            document.getElementById('tab-unread-count').textContent = s.unread;
+            const pct = s.total ? Math.round(s.read / s.total * 100) : 0;
+            document.getElementById('detail-read-bar').style.width = pct + '%';
+
+            const filtered = getFilteredRecipients();
+            const filterInfo = document.getElementById('recipient-filter-info');
+            filterInfo.textContent = recipientSearch ? `匹配 ${filtered.length} 人` : '';
+
+            const totalPages = Math.max(1, Math.ceil(filtered.length / recipientPageSize));
+            if (recipientCurrentPage > totalPages) recipientCurrentPage = totalPages;
+            const start = (recipientCurrentPage - 1) * recipientPageSize;
+            const list = filtered.slice(start, start + recipientPageSize);
+
+            const tbody = document.getElementById('recipient-table-body');
+            if (filtered.length === 0) {
+                const msg = recipientSearch ? '未找到匹配的人员'
+                    : recipientTab === 'read' ? '暂无已读人员'
+                    : recipientTab === 'unread' ? '全部人员均已读 🎉' : '暂无接收人员';
+                tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">${msg}</td></tr>`;
+            } else {
+                tbody.innerHTML = list.map(r => `
+                    <tr class="border-b border-gray-50">
+                        <td class="px-4 py-2.5 font-medium text-gray-900">${esc(r.name)}</td>
+                        <td class="px-4 py-2.5 text-gray-500">${esc(r.dept)}</td>
+                        <td class="px-4 py-2.5"><span class="tag ${r.read ? 'tag-read' : 'tag-unread'}">${r.read ? '已读' : '未读'}</span></td>
+                        <td class="px-4 py-2.5 text-gray-500">${r.read ? esc(r.readAt) : '<span class="text-gray-300">—</span>'}</td>
+                    </tr>`).join('');
+            }
+
+            const info = document.getElementById('recipient-page-info');
+            if (filtered.length === 0) {
+                info.textContent = '共 0 人';
+            } else {
+                const end = Math.min(filtered.length, start + recipientPageSize);
+                info.textContent = `第 ${start + 1}-${end} 人 / 共 ${filtered.length} 人`;
+            }
+            const pager = document.getElementById('recipient-pager');
+            pager.innerHTML = `
+                <button class="pagination-btn" onclick="changeRecipientPage('prev')" ${recipientCurrentPage <= 1 ? 'disabled' : ''} aria-label="上一页">
+                    <iconify-icon icon="mdi:chevron-left"></iconify-icon>
+                </button>
+                <div class="pagination-pages">${buildPageNumbers(recipientCurrentPage, totalPages, 'goRecipientPage')}</div>
+                <button class="pagination-btn" onclick="changeRecipientPage('next')" ${recipientCurrentPage >= totalPages ? 'disabled' : ''} aria-label="下一页">
+                    <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                </button>`;
+        }
+
+        function switchRecipientTab(tab) {
+            recipientTab = tab;
+            recipientCurrentPage = 1;
+            document.querySelectorAll('#detail-tabs .detail-tab').forEach(t =>
+                t.classList.toggle('active', t.dataset.tab === tab));
+            const n = notices.find(x => x.id === detailNoticeId);
+            if (n) renderRecipientSection(n);
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        // ═══════════════════════════════════════════════
+        // 创建通知
+        // ═══════════════════════════════════════════════
+        function openCreateNotice() {
+            editingNoticeId = null;
+            document.getElementById('create-modal-title').textContent = '创建通知';
+            document.getElementById('save-notice-btn').textContent = '保存并发送';
+            document.getElementById('send-time-section').classList.remove('hidden');
+            document.getElementById('notice-title').value = '';
+            document.getElementById('notice-content').value = '';
+            document.getElementById('title-count').textContent = '0';
+            document.getElementById('content-count').textContent = '0';
+            document.querySelector('input[name="notice-scope"][value="all"]').checked = true;
+            document.querySelector('input[name="send-mode"][value="now"]').checked = true;
+            document.getElementById('send-time-input').value = '';
+            document.getElementById('create-time-preview').textContent = nowStr(false);
+            document.getElementById('scope-all-count').textContent = people.length;
+            selectedPersonIds = [];
+            pickerDraftIds = [];
+            pickerSearch = '';
+            onScopeChange();
+            onSendModeChange();
+
+            // 模板下拉：仅启用模板
+            const sel = document.getElementById('create-template');
+            sel.innerHTML = '<option value="">不使用模板，手动填写</option>' +
+                templates.filter(t => t.status === 'enabled').map(t =>
+                    `<option value="${t.id}">${esc(t.name)}（${esc(t.code)}）</option>`).join('');
+            document.getElementById('var-fill-area').classList.add('hidden');
+            openModal('createModal');
+        }
+
+        function openEditNotice(id) {
+            const n = notices.find(x => x.id === id);
+            if (!n || n.status !== 'recalled' || readStats(n).read !== 0) {
+                showToast('仅已撤回且无人已读的通知可以修改', 'error');
+                return;
+            }
+            editingNoticeId = id;
+            document.getElementById('create-modal-title').textContent = '编辑通知';
+            document.getElementById('save-notice-btn').textContent = '保存修改';
+            document.getElementById('send-time-section').classList.add('hidden');
+            document.getElementById('notice-title').value = n.title;
+            document.getElementById('notice-content').value = n.content;
+            updateTitleCount(document.getElementById('notice-title'));
+            updateContentCount(document.getElementById('notice-content'));
+            document.querySelector(`input[name="notice-scope"][value="${n.scope}"]`).checked = true;
+            selectedPersonIds = n.scope === 'selected' ? n.recipients.map(r => r.id) : [];
+            pickerDraftIds = selectedPersonIds.slice();
+            document.getElementById('scope-all-count').textContent = people.length;
+            onScopeChange();
+            renderSelectedPersons();
+
+            const sel = document.getElementById('create-template');
+            sel.innerHTML = '<option value="">不使用模板，手动填写</option>' +
+                templates.filter(t => t.status === 'enabled' || t.id === n.templateId).map(t =>
+                    `<option value="${t.id}">${esc(t.name)}（${esc(t.code)}）</option>`).join('');
+            sel.value = n.templateId || '';
+            document.getElementById('var-fill-area').classList.add('hidden');
+            openModal('createModal');
+        }
+
+        function applyTemplate(tplId) {
+            const area = document.getElementById('var-fill-area');
+            if (!tplId) { area.classList.add('hidden'); return; }
+            const tpl = templates.find(t => t.id === parseInt(tplId));
+            if (!tpl) { area.classList.add('hidden'); return; }
+            document.getElementById('notice-title').value = tpl.titleTpl;
+            document.getElementById('notice-content').value = tpl.contentTpl;
+            updateTitleCount(document.getElementById('notice-title'));
+            updateContentCount(document.getElementById('notice-content'));
+            const panel = document.getElementById('var-fill-panel');
+            if (tpl.variables && tpl.variables.length > 0) {
+                panel.innerHTML = tpl.variables.map(v => `
+                    <div class="var-fill-row">
+                        <span class="var-fill-label"><span class="var-tag">{${esc(v.key)}}</span></span>
+                        <input type="text" class="var-fill-input" data-key="${esc(v.key)}" placeholder="${esc(v.desc || '')}，示例：${esc(v.sample || '')}" />
+                    </div>`).join('');
+                area.classList.remove('hidden');
+            } else {
+                panel.innerHTML = '';
+                area.classList.add('hidden');
+            }
+        }
+
+        function applyVariables() {
+            const titleEl = document.getElementById('notice-title');
+            const contentEl = document.getElementById('notice-content');
+            let count = 0;
+            document.querySelectorAll('#var-fill-panel .var-fill-input').forEach(inp => {
+                const key = inp.dataset.key;
+                const val = inp.value.trim();
+                if (!val) return;
+                const re = new RegExp('\\{' + key + '\\}', 'g');
+                titleEl.value = titleEl.value.replace(re, val);
+                contentEl.value = contentEl.value.replace(re, val);
+                count++;
+            });
+            if (count === 0) { showToast('请先填写变量值', 'error'); return; }
+            updateTitleCount(titleEl);
+            updateContentCount(contentEl);
+            showToast('变量已应用到标题与内容', 'success');
+        }
+
+        function updateTitleCount(el) {
+            const c = el.value.length;
+            const counter = document.getElementById('title-count');
+            counter.textContent = c;
+            counter.className = c > 50 ? 'text-red-500 font-medium' : c > 40 ? 'text-orange-500' : 'text-gray-400';
+        }
+
+        function updateContentCount(el) {
+            const c = el.value.length;
+            const counter = document.getElementById('content-count');
+            counter.textContent = c;
+            counter.className = c > 500 ? 'text-red-500 font-medium' : c > 450 ? 'text-orange-500' : 'text-gray-400';
+        }
+
+        function onScopeChange() {
+            const scope = document.querySelector('input[name="notice-scope"]:checked').value;
+            document.getElementById('person-picker-area').classList.toggle('hidden', scope !== 'selected');
+            if (scope === 'selected') renderSelectedPersons();
+        }
+
+        // ─── 添加成员弹窗（部门树 + 已选列表） ───
+        function openPersonPicker() {
+            pickerDraftIds = selectedPersonIds.slice();
+            pickerSearch = '';
+            document.getElementById('picker-search').value = '';
+            renderPickerTree();
+            renderPickerSelected();
+            openModal('personPickerModal');
+        }
+
+        function cancelPersonPicker() {
+            closeModal('personPickerModal');
+        }
+
+        function confirmPersonPicker() {
+            selectedPersonIds = pickerDraftIds.slice();
+            closeModal('personPickerModal');
+            renderSelectedPersons();
+        }
+
+        function onPickerSearch() {
+            pickerSearch = document.getElementById('picker-search').value.trim().toLowerCase();
+            renderPickerTree();
+        }
+
+        function getPickerMatchedIds() {
+            if (!pickerSearch) return null;
+            return new Set(people.filter(p =>
+                p.name.toLowerCase().includes(pickerSearch) ||
+                (p.phone || '').toLowerCase().includes(pickerSearch) ||
+                String(p.id).includes(pickerSearch) ||
+                p.dept.toLowerCase().includes(pickerSearch)
+            ).map(p => p.id));
+        }
+
+        function pickerCheckState(ids) {
+            const sel = ids.filter(id => pickerDraftIds.includes(id)).length;
+            return { all: ids.length > 0 && sel === ids.length, some: sel > 0 && sel < ids.length };
+        }
+
+        function pickerPersonRow(p, depth) {
+            const checked = pickerDraftIds.includes(p.id);
+            return `
+                <div class="tree-node" style="padding-left:${8 + depth * 20}px" onclick="togglePickerPerson(${p.id})">
+                    <span class="tree-caret leaf"></span>
+                    <input type="checkbox" class="tree-check" ${checked ? 'checked' : ''} />
+                    <span class="tree-label">${esc(p.name)}</span>
+                    <span class="tree-phone">${esc(p.phone || '')}</span>
+                </div>`;
+        }
+
+        function renderPickerTree() {
+            const box = document.getElementById('picker-tree');
+            const matched = getPickerMatchedIds();
+            let html = '';
+            if (matched) {
+                // 搜索模式：扁平展示匹配人员
+                const list = people.filter(p => matched.has(p.id));
+                if (list.length === 0) {
+                    html = '<div class="picker-empty">未找到匹配的成员<br>可尝试姓名 / 手机号 / 工号</div>';
+                } else {
+                    const st = pickerCheckState(list.map(p => p.id));
+                    html += `
+                        <div class="tree-node" onclick="togglePickerGroup('all')">
+                            <span class="tree-caret leaf"></span>
+                            <input type="checkbox" class="tree-check" id="picker-check-all" ${st.all ? 'checked' : ''} />
+                            <span class="tree-label">全选（匹配 ${list.length} 人）</span>
+                        </div>`;
+                    html += list.map(p => pickerPersonRow(p, 1)).join('');
+                }
+                box.innerHTML = html;
+                const allCb = document.getElementById('picker-check-all');
+                if (allCb) allCb.indeterminate = pickerCheckState(list.map(p => p.id)).some;
+                return;
+            }
+            // 树模式：全选 / 集团总部 / 部门 / 成员
+            const rootSt = pickerCheckState(allIds);
+            html += `
+                <div class="tree-node" onclick="togglePickerGroup('root')">
+                    <span class="tree-caret leaf"></span>
+                    <input type="checkbox" class="tree-check" id="picker-check-all" ${rootSt.all ? 'checked' : ''} />
+                    <span class="tree-label">全选</span>
+                </div>`;
+            const rootOpen = pickerExpanded.has('root');
+            html += `
+                <div class="tree-node" onclick="togglePickerExpand('root')">
+                    <span class="tree-caret ${rootOpen ? 'expanded' : ''}"><iconify-icon icon="mdi:chevron-right"></iconify-icon></span>
+                    <input type="checkbox" class="tree-check" id="picker-check-root" ${rootSt.all ? 'checked' : ''} />
+                    <span class="tree-label">${esc(ORG_ROOT_NAME)}</span>
+                </div>`;
+            if (rootOpen) {
+                deptNames.forEach((dept, i) => {
+                    const members = deptMembers(dept);
+                    const st = pickerCheckState(members.map(p => p.id));
+                    const open = pickerExpanded.has(dept);
+                    html += `
+                        <div class="tree-node" style="padding-left:28px" onclick="togglePickerExpand('${dept}')">
+                            <span class="tree-caret ${open ? 'expanded' : ''}"><iconify-icon icon="mdi:chevron-right"></iconify-icon></span>
+                            <input type="checkbox" class="tree-check" id="picker-check-dept-${i}" ${st.all ? 'checked' : ''} />
+                            <span class="tree-label">${esc(dept)}</span>
+                        </div>`;
+                    if (open) html += members.map(p => pickerPersonRow(p, 2)).join('');
+                });
+            }
+            box.innerHTML = html;
+            document.getElementById('picker-check-all').indeterminate = rootSt.some;
+            document.getElementById('picker-check-root').indeterminate = rootSt.some;
+            deptNames.forEach((dept, i) => {
+                const cb = document.getElementById('picker-check-dept-' + i);
+                if (cb) cb.indeterminate = pickerCheckState(deptMembers(dept).map(p => p.id)).some;
+            });
+        }
+
+        function togglePickerPerson(id) {
+            const idx = pickerDraftIds.indexOf(id);
+            if (idx > -1) pickerDraftIds.splice(idx, 1);
+            else pickerDraftIds.push(id);
+            renderPickerTree();
+            renderPickerSelected();
+        }
+
+        function togglePickerGroup(key) {
+            let ids;
+            if (key === 'root') ids = allIds.slice();
+            else if (key === 'all') {
+                const matched = getPickerMatchedIds();
+                ids = matched ? people.filter(p => matched.has(p.id)).map(p => p.id) : allIds.slice();
+            } else ids = deptMembers(key).map(p => p.id);
+            const allSel = ids.length > 0 && ids.every(id => pickerDraftIds.includes(id));
+            if (allSel) pickerDraftIds = pickerDraftIds.filter(id => !ids.includes(id));
+            else ids.forEach(id => { if (!pickerDraftIds.includes(id)) pickerDraftIds.push(id); });
+            renderPickerTree();
+            renderPickerSelected();
+        }
+
+        function togglePickerExpand(key) {
+            if (pickerExpanded.has(key)) pickerExpanded.delete(key);
+            else pickerExpanded.add(key);
+            renderPickerTree();
+        }
+
+        function renderPickerSelected() {
+            document.getElementById('picker-selected-count').textContent = pickerDraftIds.length;
+            const box = document.getElementById('picker-selected-list');
+            if (pickerDraftIds.length === 0) {
+                box.innerHTML = '<div class="picker-empty">尚未选择成员<br>请在左侧列表中勾选</div>';
+                return;
+            }
+            box.innerHTML = pickerDraftIds.map(id => {
+                const p = peopleById(id);
+                return `
+                    <div class="picker-selected-item">
+                        <div class="picker-selected-info">
+                            <div class="picker-selected-main">
+                                <span class="picker-selected-name">${esc(p.name)}</span>
+                                <span class="picker-selected-phone">${esc(p.phone)}</span>
+                            </div>
+                            <div class="picker-selected-dept">${esc(ORG_ROOT_NAME)} / ${esc(p.dept)}</div>
+                        </div>
+                        <span class="picker-selected-remove" onclick="togglePickerPerson(${id})" title="移除">
+                            <iconify-icon icon="mdi:close"></iconify-icon>
+                        </span>
+                    </div>`;
+            }).join('');
+        }
+
+        function removePerson(id) {
+            const idx = selectedPersonIds.indexOf(id);
+            if (idx > -1) selectedPersonIds.splice(idx, 1);
+            renderSelectedPersons();
+        }
+
+        function clearSelectedPersons() {
+            selectedPersonIds = [];
+            renderSelectedPersons();
+        }
+
+        function renderSelectedPersons() {
+            document.getElementById('person-selected-count').textContent = `已选 ${selectedPersonIds.length} 人`;
+            const box = document.getElementById('selected-persons');
+            if (selectedPersonIds.length === 0) { box.innerHTML = ''; return; }
+            box.innerHTML = selectedPersonIds.map(id => {
+                const p = peopleById(id);
+                return `<span class="selected-person-chip">${esc(p.name)}
+                        <span class="chip-remove" onclick="removePerson(${id})"><iconify-icon icon="mdi:close" class="text-xs"></iconify-icon></span>
+                    </span>`;
+            }).join('');
+        }
+
+        function onSendModeChange() {
+            const mode = document.querySelector('input[name="send-mode"]:checked').value;
+            document.getElementById('send-time-input').classList.toggle('hidden', mode !== 'scheduled');
+        }
+
+        function saveNotice() {
+            const title = document.getElementById('notice-title').value.trim();
+            const content = document.getElementById('notice-content').value.trim();
+            const scope = document.querySelector('input[name="notice-scope"]:checked').value;
+            const mode = document.querySelector('input[name="send-mode"]:checked').value;
+            const sendTimeRaw = document.getElementById('send-time-input').value;
+            const tplId = document.getElementById('create-template').value ? parseInt(document.getElementById('create-template').value) : null;
+
+            if (!title) { showToast('请输入通知标题', 'error'); return; }
+            if (/\{[A-Za-z0-9_]+\}/.test(title) || /\{[A-Za-z0-9_]+\}/.test(content)) {
+                showToast('标题或内容中还有未填充的模板变量', 'error'); return;
+            }
+            if (!content) { showToast('请输入通知内容', 'error'); return; }
+            if (content.length > 500) { showToast('通知内容不能超过 500 字符', 'error'); return; }
+            if (scope === 'selected' && selectedPersonIds.length === 0) { showToast('请选择接收人员', 'error'); return; }
+
+            if (editingNoticeId) {
+                const notice = notices.find(x => x.id === editingNoticeId);
+                if (!notice || notice.status !== 'recalled' || readStats(notice).read !== 0) {
+                    showToast('仅已撤回且无人已读的通知可以修改', 'error');
+                    return;
+                }
+                const recipientIds = scope === 'all' ? allIds.slice() : selectedPersonIds.slice();
+                notice.title = title;
+                notice.content = content;
+                notice.scope = scope;
+                notice.templateId = tplId;
+                notice.recipients = makeRecipients(recipientIds, [], '');
+                editingNoticeId = null;
+                closeModal('createModal');
+                renderNoticeTable();
+                showToast('通知修改成功', 'success');
+                return;
+            }
+
+            let sentAt, status;
+            if (mode === 'now') {
+                sentAt = nowStr(false);
+                status = 'sent';
+            } else {
+                if (!sendTimeRaw) { showToast('请选择定时发送时间', 'error'); return; }
+                const dt = new Date(sendTimeRaw);
+                if (dt.getTime() <= Date.now()) { showToast('定时发送时间必须晚于当前时间', 'error'); return; }
+                sentAt = sendTimeRaw.replace('T', ' ');
+                status = 'pending';
+            }
+
+            const recipientIds = scope === 'all' ? allIds.slice() : selectedPersonIds.slice();
+            const notice = {
+                id: Date.now(),
+                title,
+                content,
+                source: 'manual',
+                status,
+                scope,
+                templateId: tplId,
+                recipients: makeRecipients(recipientIds, [], ''),
+                createdBy: CURRENT_USER,
+                createdAt: nowStr(true).slice(0, 16),
+                sentAt
+            };
+            notices.unshift(notice);
+            if (tplId) {
+                const tpl = templates.find(t => t.id === tplId);
+                if (tpl) tpl.usageCount = (tpl.usageCount || 0) + 1;
+            }
+            closeModal('createModal');
+            listCurrentPage = 1;
+            renderNoticeTable();
+            showToast(status === 'sent' ? '通知已发送' : '定时通知创建成功', 'success');
+        }
+
+        // ═══════════════════════════════════════════════
+        // 撤回 / 删除通知
+        // ═══════════════════════════════════════════════
+        let confirmAction = null;
+
+        function openConfirm(title, msg, btnText, icon, action) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-msg').textContent = msg;
+            const btn = document.getElementById('confirm-btn');
+            btn.textContent = btnText;
+            document.getElementById('confirm-icon').setAttribute('icon', icon);
+            confirmAction = action;
+            btn.setAttribute('onclick', 'doConfirmAction()');
+            openModal('confirmModal');
+        }
+
+        function doConfirmAction() {
+            const fn = confirmAction;
+            confirmAction = null;
+            closeModal('confirmModal');
+            if (fn) fn();
+        }
+
+        function openRecallConfirm(id) {
+            const n = notices.find(x => x.id === id);
+            if (!n || (n.status !== 'sent' && n.status !== 'pending')) return;
+            openConfirm('确认撤回', `撤回后「${n.title}」将对接收人员不可见，确认撤回该通知？`, '确认撤回', 'mdi:undo-variant', () => {
+                n.status = 'recalled';
+                renderNoticeTable();
+                showToast('通知已撤回', 'success');
+            });
+        }
+
+        function openDeleteNoticeConfirm(id) {
+            const n = notices.find(x => x.id === id);
+            if (!n || n.status !== 'recalled' || readStats(n).read !== 0) {
+                showToast('仅已撤回且无人已读的通知可以删除', 'error');
+                return;
+            }
+            openConfirm('确认删除', `确认删除通知「${n.title}」？删除后不可恢复。`, '确认删除', 'mdi:alert-circle-outline', () => {
+                if (n.status !== 'recalled' || readStats(n).read !== 0) {
+                    showToast('仅已撤回且无人已读的通知可以删除', 'error');
+                    return;
+                }
+                notices = notices.filter(x => x.id !== id);
+                renderNoticeTable();
+                showToast('删除成功', 'success');
+            });
+        }
+
+        // ═══════════════════════════════════════════════
+        // 模板配置
+        // ═══════════════════════════════════════════════
+        function renderTemplateTable() {
+            const total = templates.length;
+            const totalPages = Math.max(1, Math.ceil(total / tplPageSize));
+            if (tplCurrentPage > totalPages) tplCurrentPage = totalPages;
+            const start = (tplCurrentPage - 1) * tplPageSize;
+            const pageItems = templates.slice(start, start + tplPageSize);
+            const tbody = document.getElementById('template-table-body');
+            const wrap = tbody.closest('.bg-white');
+
+            if (total === 0) {
+                wrap.classList.add('hidden');
+                const te = document.getElementById('template-empty');
+                te.classList.remove('hidden');
+                te.classList.add('flex');
+                renderPagination(total, tplCurrentPage, tplPageSize);
+                return;
+            }
+            wrap.classList.remove('hidden');
+            const te = document.getElementById('template-empty');
+            te.classList.add('hidden');
+            te.classList.remove('flex');
+
+            tbody.innerHTML = pageItems.map(t => {
+                const isEnabled = t.status === 'enabled';
+                const varTags = (t.variables && t.variables.length)
+                    ? t.variables.map(v => `<span class="var-tag" title="${esc(v.desc || '')}">{${esc(v.key)}}</span>`).join('')
+                    : '<span class="text-xs text-gray-300">无变量</span>';
+                return `
+                <tr class="border-b border-gray-50 hover:bg-gray-50 align-middle">
+                    <td class="px-4 py-3">
+                        <div class="font-medium text-gray-900">${esc(t.name)}</div>
+                    </td>
+                    <td class="px-4 py-3"><span class="code-text">${esc(t.code)}</span></td>
+                    <td class="px-4 py-3 text-gray-500">
+                        <span class="block truncate" style="max-width:200px;" title="${esc(t.titleTpl)}">${esc(t.titleTpl)}</span>
+                    </td>
+                    <td class="px-4 py-3"><div class="flex flex-wrap gap-1" style="max-width:220px;">${varTags}</div></td>
+                    <td class="px-4 py-3 text-gray-500">${t.usageCount || 0}</td>
+                    <td class="px-4 py-3">
+                        <label class="toggle-switch">
+                            <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="toggleTemplateStatus(${t.id})" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">
+                        <button onclick="openCreateFromTemplate(${t.id})" class="text-indigo-600 hover:text-blue-800 text-xs mr-3">用此模板发通知</button>
+                        <button onclick="openEditTemplate(${t.id})" class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>
+                        <button onclick="openDeleteTemplateConfirm(${t.id})" class="text-red-500 hover:text-red-700 text-xs">删除</button>
+                    </td>
+                </tr>`;
+            }).join('');
+            renderPagination(total, tplCurrentPage, tplPageSize);
+        }
+
+        function toggleTemplateStatus(id) {
+            const t = templates.find(x => x.id === id);
+            if (!t) return;
+            t.status = t.status === 'enabled' ? 'disabled' : 'enabled';
+            renderTemplateTable();
+            showToast(t.status === 'enabled' ? '模板已启用' : '模板已禁用', 'success');
+        }
+
+        function openAddTemplate() {
+            editingTemplateId = null;
+            document.getElementById('template-modal-title').textContent = '新增模板';
+            document.getElementById('tpl-name').value = '';
+            document.getElementById('tpl-code').value = '';
+            document.getElementById('tpl-title').value = '';
+            document.getElementById('tpl-content').value = '';
+            document.getElementById('tpl-status').checked = true;
+            document.getElementById('var-edit-rows').innerHTML = '';
+            updateVarHeader();
+            openModal('templateModal');
+        }
+
+        function openEditTemplate(id) {
+            const t = templates.find(x => x.id === id);
+            if (!t) return;
+            editingTemplateId = id;
+            document.getElementById('template-modal-title').textContent = '编辑模板 - ' + t.name;
+            document.getElementById('tpl-name').value = t.name;
+            document.getElementById('tpl-code').value = t.code;
+            document.getElementById('tpl-title').value = t.titleTpl;
+            document.getElementById('tpl-content').value = t.contentTpl;
+            document.getElementById('tpl-status').checked = t.status === 'enabled';
+            const rows = document.getElementById('var-edit-rows');
+            rows.innerHTML = '';
+            (t.variables || []).forEach(v => addVarRow(v.key, v.desc, v.sample));
+            updateVarHeader();
+            openModal('templateModal');
+        }
+
+        function addVarRow(key, desc, sample) {
+            const rows = document.getElementById('var-edit-rows');
+            const row = document.createElement('div');
+            row.className = 'var-edit-row';
+            row.innerHTML = `
+                <input type="text" style="width:130px; flex-shrink:0;" class="var-key" placeholder="如 userName" maxlength="20" value="${esc(key || '')}" oninput="this.value=this.value.replace(/[^A-Za-z0-9_]/g,'')" />
+                <input type="text" class="flex-1 var-desc" placeholder="变量说明，如 员工姓名" maxlength="30" value="${esc(desc || '')}" />
+                <input type="text" style="width:130px; flex-shrink:0;" class="var-sample" placeholder="示例值" maxlength="30" value="${esc(sample || '')}" />
+                <button onclick="insertVarToContent(this)" class="flex items-center gap-0.5 px-2 py-1 text-xs text-blue-600 bg-blue-50 rounded hover:bg-blue-100 flex-shrink-0" title="将变量插入内容模板">
+                    <iconify-icon icon="mdi:plus-circle-outline"></iconify-icon><span>插入</span>
+                </button>
+                <span class="var-edit-remove" onclick="removeVarRow(this)"><iconify-icon icon="mdi:close" class="text-base"></iconify-icon></span>`;
+            rows.appendChild(row);
+            updateVarHeader();
+        }
+
+        function removeVarRow(el) {
+            el.closest('.var-edit-row').remove();
+            updateVarHeader();
+        }
+
+        function updateVarHeader() {
+            const has = document.querySelectorAll('#var-edit-rows .var-edit-row').length > 0;
+            document.getElementById('var-edit-header').style.display = has ? 'flex' : 'none';
+        }
+
+        function insertVarToContent(btn) {
+            const row = btn.closest('.var-edit-row');
+            const key = row.querySelector('.var-key').value.trim();
+            if (!key) { showToast('请先填写变量名', 'error'); return; }
+            const ta = document.getElementById('tpl-content');
+            const token = `{${key}}`;
+            const start = ta.selectionStart != null ? ta.selectionStart : ta.value.length;
+            ta.value = ta.value.slice(0, start) + token + ta.value.slice(ta.selectionEnd != null ? ta.selectionEnd : start);
+            ta.focus();
+            ta.selectionStart = ta.selectionEnd = start + token.length;
+        }
+
+        function collectVarRows() {
+            const vars = [];
+            let error = null;
+            document.querySelectorAll('#var-edit-rows .var-edit-row').forEach(row => {
+                const key = row.querySelector('.var-key').value.trim();
+                const desc = row.querySelector('.var-desc').value.trim();
+                const sample = row.querySelector('.var-sample').value.trim();
+                if (!key && !desc && !sample) return;
+                if (!key) { error = '变量名不能为空'; return; }
+                if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(key)) { error = `变量名「${key}」需以字母开头，仅含字母、数字、下划线`; return; }
+                if (vars.some(v => v.key === key)) { error = `变量名「${key}」重复`; return; }
+                vars.push({ key, desc, sample });
+            });
+            return error ? { error } : { vars };
+        }
+
+        function saveTemplate() {
+            const name = document.getElementById('tpl-name').value.trim();
+            const code = document.getElementById('tpl-code').value.trim();
+            const titleTpl = document.getElementById('tpl-title').value.trim();
+            const contentTpl = document.getElementById('tpl-content').value.trim();
+            const status = document.getElementById('tpl-status').checked ? 'enabled' : 'disabled';
+
+            if (!name) { showToast('请输入模板名称', 'error'); return; }
+            if (!code) { showToast('请输入模板编码', 'error'); return; }
+            if (!/^[A-Z][A-Z0-9_]*$/.test(code)) { showToast('模板编码需为大写字母开头，仅含大写字母、数字、下划线', 'error'); return; }
+            if (!titleTpl) { showToast('请输入标题模板', 'error'); return; }
+            if (!contentTpl) { showToast('请输入内容模板', 'error'); return; }
+            if (templates.some(t => t.code === code && t.id !== editingTemplateId)) { showToast('模板编码已存在', 'error'); return; }
+
+            const result = collectVarRows();
+            if (result.error) { showToast(result.error, 'error'); return; }
+            const vars = result.vars;
+
+            // 校验内容中使用的变量均已定义
+            const used = new Set();
+            (titleTpl + ' ' + contentTpl).replace(/\{([A-Za-z0-9_]+)\}/g, (m, k) => { used.add(k); return m; });
+            const undefinedVars = [...used].filter(k => !vars.some(v => v.key === k));
+            if (undefinedVars.length > 0) {
+                showToast(`内容中使用了未定义的变量：${undefinedVars.map(k => '{' + k + '}').join('、')}`, 'error');
+                return;
+            }
+
+            if (editingTemplateId) {
+                const t = templates.find(x => x.id === editingTemplateId);
+                if (t) { t.name = name; t.code = code; t.titleTpl = titleTpl; t.contentTpl = contentTpl; t.variables = vars; t.status = status; }
+                showToast('模板编辑成功', 'success');
+            } else {
+                templates.push({ id: Date.now(), name, code, titleTpl, contentTpl, variables: vars, status, usageCount: 0 });
+                showToast('模板创建成功', 'success');
+            }
+            closeModal('templateModal');
+            renderTemplateTable();
+        }
+
+        function openDeleteTemplateConfirm(id) {
+            const t = templates.find(x => x.id === id);
+            if (!t) return;
+            openConfirm('确认删除', `确认删除模板「${t.name}」？删除后系统将无法再通过编码 ${t.code} 调用该模板。`, '确认删除', 'mdi:alert-circle-outline', () => {
+                templates = templates.filter(x => x.id !== id);
+                renderTemplateTable();
+                showToast('删除成功', 'success');
+            });
+        }
+
+        // 从模板直接发起通知：切回列表视图并打开创建弹窗、预选该模板
+        function openCreateFromTemplate(id) {
+            const t = templates.find(x => x.id === id);
+            if (!t) return;
+            if (t.status !== 'enabled') { showToast('该模板已禁用，请先启用', 'error'); return; }
+            showView('list');
+            openCreateNotice();
+            const sel = document.getElementById('create-template');
+            sel.value = String(id);
+            applyTemplate(String(id));
+        }
+
+        // ═══════════════════════════════════════════════
+        // Modal / Toast
+        // ═══════════════════════════════════════════════
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function showToast(msg, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast toast-${type}`;
+            toast.classList.remove('hidden');
+            setTimeout(() => { toast.classList.add('hidden'); }, 2500);
+        }
+
+        // ═══════════════════════════════════════════════
+        // 初始化
+        // ═══════════════════════════════════════════════
+        renderNoticeTable();
+
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

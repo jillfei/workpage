@@ -856,23 +856,9 @@
             </div>
             <div class="flex items-center space-x-3" id="header-actions">
                 <div id="header-list-actions" class="flex items-center space-x-3">
-                    <button onclick="showView('templates')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
-                        <iconify-icon icon="mdi:file-document-edit-outline"></iconify-icon>
-                        <span>模板配置</span>
-                    </button>
                     <button onclick="openCreateNotice()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
                         <iconify-icon icon="mdi:plus"></iconify-icon>
                         <span>创建通知</span>
-                    </button>
-                </div>
-                <div id="header-template-actions" class="hidden flex items-center space-x-3">
-                    <button onclick="showView('list')" class="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors text-sm">
-                        <iconify-icon icon="mdi:arrow-left"></iconify-icon>
-                        <span>返回通知列表</span>
-                    </button>
-                    <button onclick="openAddTemplate()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                        <iconify-icon icon="mdi:plus"></iconify-icon>
-                        <span>新增模板</span>
                     </button>
                 </div>
             </div>
@@ -904,15 +890,6 @@
                                 <option value="">全部状态</option>
                                 <option value="sent">已发送</option>
                                 <option value="pending">待发送</option>
-                                <option value="recalled">已撤回</option>
-                            </select>
-                            <iconify-icon class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" icon="mdi:chevron-down"></iconify-icon>
-                        </div>
-                        <div class="relative">
-                            <select class="appearance-none pl-3 pr-8 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer" id="read-filter" onchange="filterNotices()">
-                                <option value="">全部阅读情况</option>
-                                <option value="allRead">全部已读</option>
-                                <option value="hasUnread">存在未读</option>
                             </select>
                             <iconify-icon class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" icon="mdi:chevron-down"></iconify-icon>
                         </div>
@@ -928,7 +905,6 @@
                                 <th class="px-4 py-3 text-left font-semibold" style="min-width:220px;">内容</th>
                                 <th class="px-4 py-3 text-left font-semibold">来源</th>
                                 <th class="px-4 py-3 text-left font-semibold">接收人员</th>
-                                <th class="px-4 py-3 text-left font-semibold" style="min-width:130px;">已读情况</th>
                                 <th class="px-4 py-3 text-left font-semibold">状态</th>
                                 <th class="px-4 py-3 text-left font-semibold">发送时间</th>
                                 <th class="px-4 py-3 text-left font-semibold">创建时间</th>
@@ -945,42 +921,6 @@
                     <p class="text-gray-500 text-lg mb-2">暂无通知</p>
                     <p class="text-gray-400 text-sm mb-6">点击「创建通知」向人员发送通知</p>
                     <button onclick="openCreateNotice()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">创建通知</button>
-                </div>
-            </div>
-
-            <!-- 模板配置视图 -->
-            <div id="view-templates" class="hidden">
-                <div class="bg-blue-50 border border-gray-200 rounded-xl p-4 mb-4 flex items-start gap-3">
-                    <iconify-icon icon="mdi:information-outline" class="text-blue-500 text-lg mt-0.5 flex-shrink-0"></iconify-icon>
-                    <p class="text-sm text-gray-600 leading-relaxed">
-                        模板供两种方式使用：管理员<b>手动创建通知</b>时可直接选用模板快速填充内容；开发也可在系统中通过
-                        <span class="code-text">templateCode</span> 调用模板<b>自动发送通知</b>。模板内容中可配置
-                        <span class="var-tag">{变量}</span>，发送时按实际值替换。
-                    </p>
-                </div>
-
-                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
-                                <th class="px-4 py-3 text-left font-semibold">模板名称</th>
-                                <th class="px-4 py-3 text-left font-semibold">模板编码</th>
-                                <th class="px-4 py-3 text-left font-semibold" style="min-width:180px;">标题模板</th>
-                                <th class="px-4 py-3 text-left font-semibold" style="min-width:160px;">变量</th>
-                                <th class="px-4 py-3 text-left font-semibold">调用次数</th>
-                                <th class="px-4 py-3 text-left font-semibold">状态</th>
-                                <th class="px-4 py-3 text-right font-semibold">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="template-table-body"></tbody>
-                    </table>
-                </div>
-
-                <div id="template-empty" class="hidden flex-col items-center justify-center py-20 text-center">
-                    <iconify-icon icon="mdi:file-document-outline" class="text-6xl text-gray-300 mb-4"></iconify-icon>
-                    <p class="text-gray-500 text-lg mb-2">暂无模板</p>
-                    <p class="text-gray-400 text-sm mb-6">点击「新增模板」配置可复用的通知模板</p>
-                    <button onclick="openAddTemplate()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">新增模板</button>
                 </div>
             </div>
 
@@ -1027,28 +967,6 @@
                 </button>
             </div>
             <div class="px-6 py-5 space-y-5">
-                <!-- 使用模板 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">使用模板 <span class="text-gray-400 font-normal text-xs">(可选，选择后自动填充标题与内容)</span></label>
-                    <div class="relative">
-                        <select id="create-template" class="w-full appearance-none pl-3 pr-8 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer" onchange="applyTemplate(this.value)">
-                            <option value="">不使用模板，手动填写</option>
-                        </select>
-                        <iconify-icon class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" icon="mdi:chevron-down"></iconify-icon>
-                    </div>
-                </div>
-
-                <!-- 变量填充 -->
-                <div id="var-fill-area" class="hidden">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">模板变量填充</label>
-                    <div class="var-fill-panel" id="var-fill-panel"></div>
-                    <div class="flex justify-end mt-2">
-                        <button onclick="applyVariables()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-                            <iconify-icon icon="mdi:auto-fix"></iconify-icon><span>将变量值应用到标题与内容</span>
-                        </button>
-                    </div>
-                </div>
-
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">通知标题 <span class="text-red-500">*</span></label>
                     <input type="text" id="notice-title" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="请输入通知标题" maxlength="50" oninput="updateTitleCount(this)" />
@@ -1064,46 +982,14 @@
                 <!-- 接收人员 -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">接收人员 <span class="text-red-500">*</span></label>
-                    <div class="flex items-center gap-4 mb-3">
+                    <div class="flex items-center gap-4">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="radio" name="notice-scope" value="all" checked onchange="onScopeChange()" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
                             <span class="text-sm text-gray-700">全员（<span id="scope-all-count">30</span> 人）</span>
                         </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="notice-scope" value="selected" onchange="onScopeChange()" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
-                            <span class="text-sm text-gray-700">手动批量选择人员</span>
-                        </label>
-                    </div>
-                    <div id="person-picker-area" class="hidden">
-                        <button type="button" onclick="openPersonPicker()" class="w-full flex items-center justify-between px-4 py-2.5 bg-white border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50/30 transition-colors text-sm text-gray-600">
-                            <span class="flex items-center gap-2">
-                                <iconify-icon icon="mdi:account-multiple-plus-outline" class="text-lg text-gray-400"></iconify-icon>
-                                选择人员
-                            </span>
-                            <span class="flex items-center gap-1 text-gray-400">
-                                <span id="person-selected-count">已选 0 人</span>
-                                <iconify-icon icon="mdi:chevron-right"></iconify-icon>
-                            </span>
-                        </button>
-                        <div class="selected-persons" id="selected-persons"></div>
                     </div>
                 </div>
 
-                <!-- 发送时间 -->
-                <div id="send-time-section">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">发送时间 <span class="text-red-500">*</span></label>
-                    <div class="flex items-center gap-4">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="send-mode" value="now" checked onchange="onSendModeChange()" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
-                            <span class="text-sm text-gray-700">立即发送</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="send-mode" value="scheduled" onchange="onSendModeChange()" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
-                            <span class="text-sm text-gray-700">定时发送</span>
-                        </label>
-                        <input type="datetime-local" id="send-time-input" class="hidden px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer" />
-                    </div>
-                </div>
 
                 <!-- 创建时间（自动生成） -->
                 <div class="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3">
@@ -1149,7 +1035,7 @@
         </div>
     </div>
 
-    <!-- 通知详情弹窗（含人员已读/未读） -->
+    <!-- 通知详情弹窗 -->
     <div id="detailModal" class="detail-modal-overlay hidden" onclick="if(event.target===this)closeDetailModal()">
         <div class="detail-modal-content" onclick="event.stopPropagation()">
             <div class="flex items-center justify-between p-5 border-b border-gray-100">
@@ -1175,7 +1061,6 @@
                     <span class="flex items-center gap-1"><iconify-icon icon="mdi:account-outline"></iconify-icon> 创建人：<span id="detail-creator"></span></span>
                     <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon> 创建时间：<span id="detail-created-at"></span></span>
                     <span class="flex items-center gap-1"><iconify-icon icon="mdi:send-circle-outline"></iconify-icon> 发送时间：<span id="detail-sent-at"></span></span>
-                    <span class="flex items-center gap-1" id="detail-template-wrap"><iconify-icon icon="mdi:file-document-outline"></iconify-icon> 使用模板：<span id="detail-template"></span></span>
                 </div>
                 <div class="bg-gray-50 rounded-xl p-5 mb-5">
                     <h3 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
@@ -1185,49 +1070,7 @@
                     <div class="text-sm text-gray-600 leading-relaxed whitespace-pre-line" id="detail-content"></div>
                 </div>
 
-                <!-- 人员已读情况 -->
-                <div>
-                    <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
-                        <h3 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                            <iconify-icon icon="mdi:account-group-outline" class="text-blue-500"></iconify-icon>
-                            接收人员（共 <span id="detail-total-count">0</span> 人）
-                        </h3>
-                        <div class="detail-tabs" id="detail-tabs">
-                            <span class="detail-tab active" data-tab="all" onclick="switchRecipientTab('all')">全部</span>
-                            <span class="detail-tab" data-tab="read" onclick="switchRecipientTab('read')">已读 <span id="tab-read-count"></span></span>
-                            <span class="detail-tab" data-tab="unread" onclick="switchRecipientTab('unread')">未读 <span id="tab-unread-count"></span></span>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="read-bar" style="width:100%;">
-                            <div class="read-bar-fill" id="detail-read-bar" style="width:0%;"></div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="relative flex-1">
-                            <iconify-icon icon="mdi:magnify" class="text-base text-gray-400" style="position:absolute; left:10px; top:50%; transform:translateY(-50%);"></iconify-icon>
-                            <input type="text" id="recipient-search" placeholder="搜索姓名或部门..." oninput="onRecipientSearch()" class="w-full bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" style="padding:7px 10px 7px 32px;" />
-                        </div>
-                        <span class="text-xs text-gray-500 flex-shrink-0" id="recipient-filter-info"></span>
-                    </div>
-                    <div class="border border-gray-200 rounded-xl overflow-hidden" style="max-height:300px; overflow-y:auto;">
-                        <table class="w-full text-sm">
-                            <thead class="sticky top-0">
-                                <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                                    <th class="px-4 py-2.5 text-left font-semibold">姓名</th>
-                                    <th class="px-4 py-2.5 text-left font-semibold">部门</th>
-                                    <th class="px-4 py-2.5 text-left font-semibold">阅读状态</th>
-                                    <th class="px-4 py-2.5 text-left font-semibold">阅读时间</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recipient-table-body"></tbody>
-                        </table>
-                    </div>
-                    <div class="flex items-center justify-between mt-3">
-                        <span class="text-xs text-gray-500" id="recipient-page-info"></span>
-                        <div class="pagination-controls" id="recipient-pager"></div>
-                    </div>
-                </div>
+
             </div>
             <div class="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-100">
                 <button onclick="closeDetailModal()" class="px-5 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">关闭</button>
@@ -1557,9 +1400,9 @@
         }, {
             id: 11,
             title: '办公网络升级通知',
-            content: '本周末将对办公区网络进行升级，期间网络可能短时中断。（信息有误，已撤回，请以最新通知为准）',
+            content: '本周末将对办公区网络进行升级，期间网络可能短时中断。',
             source: 'manual',
-            status: 'recalled',
+            status: 'sent',
             scope: 'all',
             templateId: null,
             recipients: makeRecipients(allIds, [1, 2, 3], '2026-10-28'),
@@ -1579,6 +1422,15 @@
             createdAt: '2026-11-05 14:00',
             sentAt: '2026-11-07 09:00'
         }];
+
+        notices.forEach(notice => {
+            notice.scope = 'all';
+            notice.recipients = makeRecipients(allIds, [], '');
+            if (notice.status === 'pending') {
+                notice.status = 'sent';
+                notice.sentAt = notice.createdAt;
+            }
+        });
 
         let currentView = 'list';
         let detailNoticeId = null;
@@ -1607,8 +1459,7 @@
         };
         const statusMeta = {
             sent: { label: '已发送', cls: 'tag-sent' },
-            pending: { label: '待发送', cls: 'tag-pending' },
-            recalled: { label: '已撤回', cls: 'tag-recalled' }
+            pending: { label: '待发送', cls: 'tag-pending' }
         };
 
         function esc(s) {
@@ -1655,24 +1506,18 @@
 
         function scopeText(n) {
             const s = readStats(n);
-            return n.scope === 'all' ? `全员（${s.total} 人）` : `指定人员（${s.total} 人）`;
+            return n.scope === 'all' ? '全员' : '指定人员';
         }
 
         function getFilteredNotices() {
             const search = document.getElementById('search-input').value.trim().toLowerCase();
             const sourceFilter = document.getElementById('source-filter').value;
             const statusFilter = document.getElementById('status-filter').value;
-            const readFilter = document.getElementById('read-filter').value;
             return notices.filter(n => {
                 if (search && !n.title.toLowerCase().includes(search) && !n.content.toLowerCase().includes(search))
                     return false;
                 if (sourceFilter && n.source !== sourceFilter) return false;
                 if (statusFilter && n.status !== statusFilter) return false;
-                if (readFilter) {
-                    const s = readStats(n);
-                    if (readFilter === 'allRead' && s.unread !== 0) return false;
-                    if (readFilter === 'hasUnread' && s.unread === 0) return false;
-                }
                 return true;
             });
         }
@@ -1701,25 +1546,8 @@
             es.classList.remove('flex');
 
             tbody.innerHTML = pageItems.map(n => {
-                const s = readStats(n);
-                const pct = s.total ? Math.round(s.read / s.total * 100) : 0;
                 const src = sourceMeta[n.source];
                 const st = statusMeta[n.status];
-                const readCell = `<div class="flex items-center gap-2" title="点击查看人员已读详情">
-                           <div class="read-bar"><div class="read-bar-fill" style="width:${pct}%;"></div></div>
-                           <span class="text-xs text-gray-600 whitespace-nowrap">${s.read}/${s.total} 已读</span>
-                        </div>`;
-                const canRecall = n.status === 'sent' || n.status === 'pending';
-                const canManageRecalled = n.status === 'recalled' && s.read === 0;
-                const editBtn = canManageRecalled
-                    ? `<button onclick="event.stopPropagation(); openEditNotice(${n.id})" class="text-blue-600 hover:text-blue-800 text-xs mr-3">编辑</button>`
-                    : '';
-                const recallBtn = canRecall
-                    ? `<button onclick="event.stopPropagation(); openRecallConfirm(${n.id})" class="text-orange-500 hover:text-red-600 text-xs mr-3">撤回</button>`
-                    : '';
-                const deleteBtn = canManageRecalled
-                    ? `<button onclick="event.stopPropagation(); openDeleteNoticeConfirm(${n.id})" class="text-red-500 hover:text-red-700 text-xs">删除</button>`
-                    : '';
                 return `
                 <tr class="border-b border-gray-50 hover:bg-gray-50 align-middle cursor-pointer" onclick="openDetail(${n.id})">
                     <td class="px-4 py-3">
@@ -1733,15 +1561,11 @@
                     </td>
                     <td class="px-4 py-3"><span class="tag ${src.cls}">${src.label}</span></td>
                     <td class="px-4 py-3 text-gray-600 whitespace-nowrap">${scopeText(n)}</td>
-                    <td class="px-4 py-3">${readCell}</td>
                     <td class="px-4 py-3"><span class="tag ${st.cls}">${st.label}</span></td>
                     <td class="px-4 py-3 text-gray-500 whitespace-nowrap">${n.status === 'pending' ? '<span class="text-orange-500">' + esc(n.sentAt) + '</span>' : esc(n.sentAt || '—')}</td>
                     <td class="px-4 py-3 text-gray-500 whitespace-nowrap">${esc(n.createdAt)}</td>
                     <td class="px-4 py-3 text-right whitespace-nowrap">
                         <button onclick="event.stopPropagation(); openDetail(${n.id})" class="text-blue-600 hover:text-blue-800 text-xs mr-3">详情</button>
-                        ${editBtn}
-                        ${recallBtn}
-                        ${deleteBtn}
                     </td>
                 </tr>`;
             }).join('');
@@ -1836,11 +1660,6 @@
             const n = notices.find(x => x.id === id);
             if (!n) return;
             detailNoticeId = id;
-            recipientTab = 'all';
-            recipientSearch = '';
-            recipientCurrentPage = 1;
-            document.getElementById('recipient-search').value = '';
-
             document.getElementById('detail-title').textContent = n.title;
             const src = sourceMeta[n.source];
             const st = statusMeta[n.status];
@@ -1853,18 +1672,7 @@
                 (n.status === 'pending' ? '计划 ' : '') + (n.sentAt || '—');
             document.getElementById('detail-content').textContent = n.content;
 
-            const tplWrap = document.getElementById('detail-template-wrap');
-            const tpl = n.templateId ? templates.find(t => t.id === n.templateId) : null;
-            if (tpl) {
-                tplWrap.style.display = '';
-                document.getElementById('detail-template').textContent = `${tpl.name}（${tpl.code}）`;
-            } else {
-                tplWrap.style.display = 'none';
-            }
-
             renderRecipientSection(n);
-            document.querySelectorAll('#detail-tabs .detail-tab').forEach(t =>
-                t.classList.toggle('active', t.dataset.tab === 'all'));
             document.getElementById('detailModal').classList.remove('hidden');
         }
 
@@ -1890,63 +1698,11 @@
         function getFilteredRecipients() {
             const n = notices.find(x => x.id === detailNoticeId);
             if (!n) return [];
-            let list = n.recipients;
-            if (recipientTab === 'read') list = list.filter(r => r.read);
-            if (recipientTab === 'unread') list = list.filter(r => !r.read);
-            if (recipientSearch) list = list.filter(r =>
-                r.name.toLowerCase().includes(recipientSearch) || r.dept.toLowerCase().includes(recipientSearch));
-            return list;
+            return n.recipients;
         }
 
         function renderRecipientSection(n) {
-            const s = readStats(n);
-            document.getElementById('detail-total-count').textContent = s.total;
-            document.getElementById('tab-read-count').textContent = s.read;
-            document.getElementById('tab-unread-count').textContent = s.unread;
-            const pct = s.total ? Math.round(s.read / s.total * 100) : 0;
-            document.getElementById('detail-read-bar').style.width = pct + '%';
 
-            const filtered = getFilteredRecipients();
-            const filterInfo = document.getElementById('recipient-filter-info');
-            filterInfo.textContent = recipientSearch ? `匹配 ${filtered.length} 人` : '';
-
-            const totalPages = Math.max(1, Math.ceil(filtered.length / recipientPageSize));
-            if (recipientCurrentPage > totalPages) recipientCurrentPage = totalPages;
-            const start = (recipientCurrentPage - 1) * recipientPageSize;
-            const list = filtered.slice(start, start + recipientPageSize);
-
-            const tbody = document.getElementById('recipient-table-body');
-            if (filtered.length === 0) {
-                const msg = recipientSearch ? '未找到匹配的人员'
-                    : recipientTab === 'read' ? '暂无已读人员'
-                    : recipientTab === 'unread' ? '全部人员均已读 🎉' : '暂无接收人员';
-                tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">${msg}</td></tr>`;
-            } else {
-                tbody.innerHTML = list.map(r => `
-                    <tr class="border-b border-gray-50">
-                        <td class="px-4 py-2.5 font-medium text-gray-900">${esc(r.name)}</td>
-                        <td class="px-4 py-2.5 text-gray-500">${esc(r.dept)}</td>
-                        <td class="px-4 py-2.5"><span class="tag ${r.read ? 'tag-read' : 'tag-unread'}">${r.read ? '已读' : '未读'}</span></td>
-                        <td class="px-4 py-2.5 text-gray-500">${r.read ? esc(r.readAt) : '<span class="text-gray-300">—</span>'}</td>
-                    </tr>`).join('');
-            }
-
-            const info = document.getElementById('recipient-page-info');
-            if (filtered.length === 0) {
-                info.textContent = '共 0 人';
-            } else {
-                const end = Math.min(filtered.length, start + recipientPageSize);
-                info.textContent = `第 ${start + 1}-${end} 人 / 共 ${filtered.length} 人`;
-            }
-            const pager = document.getElementById('recipient-pager');
-            pager.innerHTML = `
-                <button class="pagination-btn" onclick="changeRecipientPage('prev')" ${recipientCurrentPage <= 1 ? 'disabled' : ''} aria-label="上一页">
-                    <iconify-icon icon="mdi:chevron-left"></iconify-icon>
-                </button>
-                <div class="pagination-pages">${buildPageNumbers(recipientCurrentPage, totalPages, 'goRecipientPage')}</div>
-                <button class="pagination-btn" onclick="changeRecipientPage('next')" ${recipientCurrentPage >= totalPages ? 'disabled' : ''} aria-label="下一页">
-                    <iconify-icon icon="mdi:chevron-right"></iconify-icon>
-                </button>`;
         }
 
         function switchRecipientTab(tab) {
@@ -1969,28 +1725,16 @@
             editingNoticeId = null;
             document.getElementById('create-modal-title').textContent = '创建通知';
             document.getElementById('save-notice-btn').textContent = '保存并发送';
-            document.getElementById('send-time-section').classList.remove('hidden');
             document.getElementById('notice-title').value = '';
             document.getElementById('notice-content').value = '';
             document.getElementById('title-count').textContent = '0';
             document.getElementById('content-count').textContent = '0';
             document.querySelector('input[name="notice-scope"][value="all"]').checked = true;
-            document.querySelector('input[name="send-mode"][value="now"]').checked = true;
-            document.getElementById('send-time-input').value = '';
             document.getElementById('create-time-preview').textContent = nowStr(false);
             document.getElementById('scope-all-count').textContent = people.length;
             selectedPersonIds = [];
             pickerDraftIds = [];
             pickerSearch = '';
-            onScopeChange();
-            onSendModeChange();
-
-            // 模板下拉：仅启用模板
-            const sel = document.getElementById('create-template');
-            sel.innerHTML = '<option value="">不使用模板，手动填写</option>' +
-                templates.filter(t => t.status === 'enabled').map(t =>
-                    `<option value="${t.id}">${esc(t.name)}（${esc(t.code)}）</option>`).join('');
-            document.getElementById('var-fill-area').classList.add('hidden');
             openModal('createModal');
         }
 
@@ -2283,51 +2027,14 @@
         function saveNotice() {
             const title = document.getElementById('notice-title').value.trim();
             const content = document.getElementById('notice-content').value.trim();
-            const scope = document.querySelector('input[name="notice-scope"]:checked').value;
-            const mode = document.querySelector('input[name="send-mode"]:checked').value;
-            const sendTimeRaw = document.getElementById('send-time-input').value;
-            const tplId = document.getElementById('create-template').value ? parseInt(document.getElementById('create-template').value) : null;
+            const scope = 'all';
 
             if (!title) { showToast('请输入通知标题', 'error'); return; }
-            if (/\{[A-Za-z0-9_]+\}/.test(title) || /\{[A-Za-z0-9_]+\}/.test(content)) {
-                showToast('标题或内容中还有未填充的模板变量', 'error'); return;
-            }
             if (!content) { showToast('请输入通知内容', 'error'); return; }
             if (content.length > 500) { showToast('通知内容不能超过 500 字符', 'error'); return; }
-            if (scope === 'selected' && selectedPersonIds.length === 0) { showToast('请选择接收人员', 'error'); return; }
-
-            if (editingNoticeId) {
-                const notice = notices.find(x => x.id === editingNoticeId);
-                if (!notice || notice.status !== 'recalled' || readStats(notice).read !== 0) {
-                    showToast('仅已撤回且无人已读的通知可以修改', 'error');
-                    return;
-                }
-                const recipientIds = scope === 'all' ? allIds.slice() : selectedPersonIds.slice();
-                notice.title = title;
-                notice.content = content;
-                notice.scope = scope;
-                notice.templateId = tplId;
-                notice.recipients = makeRecipients(recipientIds, [], '');
-                editingNoticeId = null;
-                closeModal('createModal');
-                renderNoticeTable();
-                showToast('通知修改成功', 'success');
-                return;
-            }
-
-            let sentAt, status;
-            if (mode === 'now') {
-                sentAt = nowStr(false);
-                status = 'sent';
-            } else {
-                if (!sendTimeRaw) { showToast('请选择定时发送时间', 'error'); return; }
-                const dt = new Date(sendTimeRaw);
-                if (dt.getTime() <= Date.now()) { showToast('定时发送时间必须晚于当前时间', 'error'); return; }
-                sentAt = sendTimeRaw.replace('T', ' ');
-                status = 'pending';
-            }
-
-            const recipientIds = scope === 'all' ? allIds.slice() : selectedPersonIds.slice();
+            const sentAt = nowStr(false);
+            const status = 'sent';
+            const recipientIds = allIds.slice();
             const notice = {
                 id: Date.now(),
                 title,
@@ -2335,21 +2042,17 @@
                 source: 'manual',
                 status,
                 scope,
-                templateId: tplId,
+                templateId: null,
                 recipients: makeRecipients(recipientIds, [], ''),
                 createdBy: CURRENT_USER,
                 createdAt: nowStr(true).slice(0, 16),
                 sentAt
             };
             notices.unshift(notice);
-            if (tplId) {
-                const tpl = templates.find(t => t.id === tplId);
-                if (tpl) tpl.usageCount = (tpl.usageCount || 0) + 1;
-            }
             closeModal('createModal');
             listCurrentPage = 1;
             renderNoticeTable();
-            showToast(status === 'sent' ? '通知已发送' : '定时通知创建成功', 'success');
+            showToast('通知已发送', 'success');
         }
 
         // ═══════════════════════════════════════════════
