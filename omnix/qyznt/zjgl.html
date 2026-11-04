@@ -2785,7 +2785,7 @@
             // （详情页/编辑页区别即 openDetail 第二个参数是否 edit）
             var iframeLeft = document.getElementById('iframeLeft');
             if (iframeLeft) {
-                var viewConfigSrc = './zjgl/1-agent-config-page - view.html';
+                var viewConfigSrc = './zjgl/1-agent-config-page-view.html';
                 var editConfigSrc = './zjgl/1-agent-config-page.html';
                 var targetConfigSrc = detailMode === 'edit' ? editConfigSrc : viewConfigSrc;
                 if (iframeLeft.getAttribute('src') !== targetConfigSrc) {
@@ -4219,6 +4219,264 @@
 <div class="prd-fab-wrapper"> <a class="prd-fab-btn" href="./zjgl_prd.html" target="_blank" rel="noopener noreferrer" aria-label="查看 PRD 文档">  <svg viewBox="0 0 24 24"> <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /> <polyline points="14 2 14 8 20 8" /> <line x1="8" y1="13" x2="16" y2="13" /> <line x1="8" y1="17" x2="16" y2="17" /> </svg> <span class="prd-fab-tooltip">PRD 文档</span></a></div>
 
 
+<script>
+/* ============================================================
+   全局知识库选择弹窗（父页面渲染，覆盖整个视口）
+   iframe 内的专家配置调用 window.parent.openKbPickerInApp(cfg)
+============================================================ */
+(function () {
+  var KB_STYLES_ID = 'app-kb-picker-styles';
+
+  var CSS = [
+    '.akb-mask{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:32px}',
+    '.akb-modal{background:#fff;border-radius:14px;width:860px;max-width:94vw;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 70px rgba(15,23,42,.28);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}',
+    '.akb-head{display:flex;align-items:center;padding:18px 24px;border-bottom:1px solid #E5E7EB}',
+    '.akb-head b{font-size:16px;font-weight:600;color:#111827}',
+    '.akb-close{margin-left:auto;border:none;background:none;cursor:pointer;color:#9CA3AF;font-size:16px;line-height:1;padding:6px 8px;border-radius:6px}',
+    '.akb-close:hover{background:#F3F4F6;color:#4B5563}',
+    '.akb-tabs{display:flex;border-bottom:1px solid #E5E7EB;padding:0 24px}',
+    '.akb-tab{padding:13px 6px;margin-right:26px;border:none;background:none;font-size:13.5px;color:#6B7280;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit}',
+    '.akb-tab:hover{color:#1F2937}',
+    '.akb-tab.on{color:#3B82F6;border-bottom-color:#3B82F6;font-weight:600}',
+    '.akb-search{padding:14px 24px}',
+    '.akb-search input{width:100%;height:38px;border:1px solid #E5E7EB;border-radius:9px;padding:0 13px;font-size:13.5px;outline:none;font-family:inherit;color:#374151}',
+    '.akb-search input:focus{border-color:#3B82F6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}',
+    '.akb-list{flex:1;overflow:auto;padding:0 24px 16px}',
+    '.akb-group{display:flex;align-items:center;gap:8px;margin:14px 0 10px;font-size:13px;font-weight:600;color:#6B7280}',
+    '.akb-group span{font-weight:400;font-size:12px;color:#9CA3AF}',
+    '.akb-item{border:1px solid #E5E7EB;border-radius:11px;margin-bottom:10px;background:#fff;overflow:hidden}',
+    '.akb-item.on{border-color:#93C5FD;background:#F8FBFF}',
+    '.akb-item-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}',
+    '.akb-check{width:18px;height:18px;border-radius:5px;border:1px solid #D1D5DB;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex:none;background:#fff;cursor:pointer}',
+    '.akb-item.on .akb-check{background:#3B82F6;border-color:#3B82F6}',
+    '.akb-avatar{width:38px;height:38px;border-radius:9px;background:#EFF6FF;color:#3B82F6;display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex:none}',
+    '.akb-main{flex:1;min-width:0}',
+    '.akb-title{font-size:14px;font-weight:600;color:#111827}',
+    '.akb-title em{font-style:normal;font-size:12.5px;font-weight:400;color:#9CA3AF;margin-left:8px}',
+    '.akb-desc{font-size:12.5px;color:#6B7280;margin-top:3px}',
+    '.akb-status{font-size:12px;color:#9CA3AF;white-space:nowrap;margin-right:10px}',
+    '.akb-arrow{color:#9CA3AF;transition:.2s;font-size:15px}',
+    '.akb-item.open .akb-arrow{transform:rotate(90deg)}',
+    '.akb-body{display:none;padding:0 16px 14px}',
+    '.akb-item.open .akb-body{display:block}',
+    '.akb-file{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid #F3F4F6;border-radius:9px;margin-bottom:6px;background:#FAFAFA}',
+    '.akb-file.on{border-color:#BBF7D0;background:#F0FDF4}',
+    '.akb-file.locked{opacity:.55;pointer-events:none}',
+    '.akb-fname{font-size:13px;color:#374151;font-weight:500}',
+    '.akb-fsize{font-size:12px;color:#9CA3AF;margin-top:2px}',
+    '.akb-fbtn{border:none;background:transparent;color:#3B82F6;font-size:13px;cursor:pointer;padding:5px 9px;border-radius:7px;font-family:inherit;flex:none}',
+    '.akb-fbtn:hover{background:#EFF6FF}',
+    '.akb-actions{display:flex;justify-content:flex-end;margin-top:8px}',
+    '.akb-all{height:32px;padding:0 14px;border-radius:8px;border:1px solid #3B82F6;background:#3B82F6;color:#fff;font-size:13px;cursor:pointer;font-family:inherit}',
+    '.akb-all.ghost{background:#fff;color:#3B82F6}',
+    '.akb-foot{display:flex;align-items:center;gap:12px;padding:16px 24px;border-top:1px solid #E5E7EB}',
+    '.akb-count{margin-right:auto;font-size:13px;color:#6B7280}',
+    '.akb-btn{height:34px;padding:0 18px;border-radius:8px;border:1px solid #E5E7EB;background:#fff;color:#374151;font-size:13.5px;cursor:pointer;font-family:inherit}',
+    '.akb-btn.primary{background:#3B82F6;border-color:#3B82F6;color:#fff}',
+    '.akb-btn:hover{opacity:.92}',
+    '.akb-empty{padding:40px 12px;text-align:center;font-size:13px;color:#9CA3AF}'
+  ].join('\n');
+
+  var state = null;   // { data, tab, keyword, onConfirm }
+
+  function ensureStyles() {
+    if (document.getElementById(KB_STYLES_ID)) return;
+    var st = document.createElement('style');
+    st.id = KB_STYLES_ID;
+    st.textContent = CSS;
+    document.head.appendChild(st);
+  }
+
+  function groupOf(kb) { return kb.source === 'admin' ? '管理端创建' : '客户端创建'; }
+
+  function summary() {
+    var kbCount = 0, fileCount = 0;
+    state.data.forEach(function (kb) {
+      if (kb.selected) kbCount++;
+      else fileCount += kb.files.filter(function (f) { return f.selected; }).length;
+    });
+    return { kbCount: kbCount, fileCount: fileCount };
+  }
+
+  function itemHTML(kb) {
+    var chosen = kb.files.filter(function (f) { return f.selected; }).length;
+    var status = kb.selected ? '已引用整个知识库' : (chosen ? '已选 ' + chosen + ' 个文件' : '未引用');
+    var files = kb.files.map(function (f) {
+      return '<div class="akb-file' + (f.selected ? ' on' : '') + (kb.selected ? ' locked' : '') + '">' +
+        '<div><div class="akb-fname">' + f.name + '</div><div class="akb-fsize">' + f.size + '</div></div>' +
+        '<button class="akb-fbtn" data-act="file" data-kb="' + kb.id + '" data-file="' + f.id + '">' +
+          (f.selected ? '移除' : '引用') + '</button>' +
+      '</div>';
+    }).join('');
+
+    return '<div class="akb-item' + (kb.selected ? ' on' : '') + (kb.expanded ? ' open' : '') + '" data-kb="' + kb.id + '">' +
+      '<div class="akb-item-head" data-act="toggle">' +
+        '<span class="akb-check" data-act="all" data-kb="' + kb.id + '">' + (kb.selected ? '✓' : '') + '</span>' +
+        '<span class="akb-avatar">库</span>' +
+        '<div class="akb-main">' +
+          '<div class="akb-title">' + kb.name + '<em>' + kb.owner + ' · ' + kb.dept + '</em></div>' +
+          '<div class="akb-desc">' + kb.desc + '</div>' +
+        '</div>' +
+        '<span class="akb-status">' + status + '</span>' +
+        '<span class="akb-arrow">›</span>' +
+      '</div>' +
+      '<div class="akb-body">' + files +
+        '<div class="akb-actions">' +
+          '<button class="akb-all' + (kb.selected ? ' ghost' : '') + '" data-act="all" data-kb="' + kb.id + '">' +
+            (kb.selected ? '取消引用整个知识库' : '引用整个知识库') + '</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function listHTML() {
+    var kw = String(state.keyword || '').trim().toLowerCase();
+    var html = '';
+    ['客户端创建', '管理端创建'].forEach(function (group) {
+      if (state.tab !== 'all' && state.tab !== group) return;
+      var items = state.data.filter(function (kb) {
+        if (groupOf(kb) !== group) return false;
+        if (!kw) return true;
+        var hay = (kb.name + ' ' + kb.desc + ' ' + kb.owner + ' ' + kb.dept + ' ' +
+          kb.files.map(function (f) { return f.name; }).join(' ')).toLowerCase();
+        return hay.indexOf(kw) > -1;
+      });
+      if (!items.length) return;
+      if (state.tab !== 'all') {
+        html += '<div class="akb-group">' + group + '<span>' + items.length + ' 个</span></div>';
+      }
+      html += items.map(itemHTML).join('');
+    });
+    return html || '<div class="akb-empty">没有匹配的知识库</div>';
+  }
+
+  function modalHTML() {
+    var sum = summary();
+    function countOf(g) {
+      return state.data.filter(function (kb) { return g === 'all' || groupOf(kb) === g; }).length;
+    }
+    return '<div class="akb-head"><b>选择知识库</b><button class="akb-close" data-act="close">✕</button></div>' +
+      '<div class="akb-tabs">' +
+        '<button class="akb-tab' + (state.tab === 'all' ? ' on' : '') + '" data-act="tab" data-tab="all">全部（' + countOf('all') + '）</button>' +
+        '<button class="akb-tab' + (state.tab === '客户端创建' ? ' on' : '') + '" data-act="tab" data-tab="客户端创建">客户端创建（' + countOf('客户端创建') + '）</button>' +
+        '<button class="akb-tab' + (state.tab === '管理端创建' ? ' on' : '') + '" data-act="tab" data-tab="管理端创建">管理端创建（' + countOf('管理端创建') + '）</button>' +
+      '</div>' +
+      '<div class="akb-search"><input id="akbSearch" placeholder="搜索知识库名称、描述或文件名..." value="' + state.keyword + '"></div>' +
+      '<div class="akb-list" id="akbList">' + listHTML() + '</div>' +
+      '<div class="akb-foot">' +
+        '<span class="akb-count" id="akbCount">已选 ' + sum.kbCount + ' 个知识库 · ' + sum.fileCount + ' 个文件</span>' +
+        '<button class="akb-btn" data-act="close">取消</button>' +
+        '<button class="akb-btn primary" data-act="confirm">确认</button>' +
+      '</div>';
+  }
+
+  function refresh(mask) {
+    mask.querySelector('#akbList').innerHTML = listHTML();
+    var sum = summary();
+    mask.querySelector('#akbCount').textContent = '已选 ' + sum.kbCount + ' 个知识库 · ' + sum.fileCount + ' 个文件';
+    mask.querySelectorAll('.akb-tab').forEach(function (t) {
+      t.classList.toggle('on', t.dataset.tab === state.tab);
+    });
+  }
+
+  function close() {
+    var m = document.getElementById('akbMask');
+    if (m) m.remove();
+  }
+
+  window.openKbPickerInApp = function (cfg) {
+    ensureStyles();
+    close();
+    state = {
+      data: cfg.data,
+      tab: cfg.tab || 'all',
+      keyword: cfg.keyword || '',
+      onConfirm: cfg.onConfirm
+    };
+
+    var mask = document.createElement('div');
+    mask.id = 'akbMask';
+    mask.className = 'akb-mask';
+    mask.innerHTML = '<div class="akb-modal">' + modalHTML() + '</div>';
+    document.body.appendChild(mask);
+
+    mask.addEventListener('click', function (e) {
+      if (e.target === mask) { close(); return; }
+      var t = e.target.closest('[data-act]');
+      if (!t) return;
+      var act = t.dataset.act;
+
+      if (act === 'close') { close(); return; }
+      if (act === 'confirm') {
+        if (state.onConfirm) state.onConfirm(state.data, state.tab, state.keyword);
+        close();
+        return;
+      }
+      if (act === 'tab') { state.tab = t.dataset.tab; refresh(mask); return; }
+
+      if (act === 'toggle') {
+        var item = t.closest('.akb-item');
+        var kb0 = state.data.find(function (k) { return k.id === item.dataset.kb; });
+        if (kb0) { kb0.expanded = !kb0.expanded; item.classList.toggle('open'); }
+        return;
+      }
+
+      if (act === 'all') {
+        e.stopPropagation();
+        var kb = state.data.find(function (k) { return k.id === t.dataset.kb; });
+        if (kb) {
+          kb.selected = !kb.selected;
+          if (kb.selected) kb.files.forEach(function (f) { f.selected = false; });
+          kb.expanded = true;
+          refresh(mask);
+        }
+        return;
+      }
+
+      if (act === 'file') {
+        e.stopPropagation();
+        var kb2 = state.data.find(function (k) { return k.id === t.dataset.kb; });
+        if (kb2) {
+          var f2 = kb2.files.find(function (x) { return x.id === t.dataset.file; });
+          if (f2) {
+            f2.selected = !f2.selected;
+            if (f2.selected) kb2.selected = false;
+            refresh(mask);
+          }
+        }
+      }
+    });
+
+    mask.addEventListener('input', function (e) {
+      if (e.target.id === 'akbSearch') {
+        state.keyword = e.target.value;
+        mask.querySelector('#akbList').innerHTML = listHTML();
+      }
+    });
+  };
+
+  /* ---------- 接收 iframe 请求：父页面渲染知识库弹窗 ---------- */
+  window.addEventListener('message', function (ev) {
+    var msg = ev.data;
+    if (!msg || msg.type !== 'omx-open-kb-picker') return;
+    var pl = msg.payload || {};
+    window.openKbPickerInApp({
+      data: pl.data,
+      tab: pl.tab,
+      keyword: pl.keyword,
+      onConfirm: function (data, tab, keyword) {
+        try {
+          ev.source.postMessage({
+            type: 'omx-kb-picker-result',
+            payload: { data: data, tab: tab, keyword: keyword }
+          }, '*');
+        } catch (e) { /* ignore */ }
+      }
+    });
+  });
+})();
+
+</script>
 </body>
 </html>
 

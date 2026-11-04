@@ -795,6 +795,24 @@ body {
       </div>
       <div id="skillList"></div>
     </div>
+
+    <!-- 知识库 -->
+    <div class="form-group">
+      <label class="form-label">知识库</label>
+      <div class="selector-trigger" onclick="openKbPicker()">
+        <div class="selector-trigger-left">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>管理知识库</span>
+        </div>
+        <div class="selector-trigger-right">
+          <span id="kbCountLabel">已选 0 个知识库</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+      <div id="kbTagList" class="selected-tags" style="margin-top:8px;"></div>
+      <div class="form-hint" style="margin-top:6px;font-size:12px;color:#9CA3AF;">可引用整个知识库，也可只引用其中的单个文件</div>
+    </div>
+
   </div>
 </div>
 
@@ -1913,6 +1931,408 @@ function removeSkill(id) {
     renderSkillList();
   }
 }
+
+/* ---------- 知识库选择 ---------- */
+/* ============================================================
+   知识库选择器
+   - 按「客户端创建 / 管理端创建」分组展示
+   - 可引用整个知识库，也可只引用其中的单个或多个文件
+============================================================ */
+var kbPickerData = [
+  {
+    id: 'kb1', name: '产品需求文档库', owner: '赵楠', source: 'client', dept: '产品中心',
+    desc: 'PRD、竞品分析、用户调研与版本规划',
+    selected: true, expanded: true,
+    files: [
+      { id: 'f1', name: '产品需求文档 v3.1.docx', size: '4.20 MB', selected: true },
+      { id: 'f2', name: '需求评审纪要 2026-10-24.md', size: '122.88 KB', selected: false },
+      { id: 'f3', name: '竞品分析：RAG 平台对比.pdf', size: '2.80 MB', selected: false },
+      { id: 'f4', name: '用户调研访谈纪要.pdf', size: '2.10 MB', selected: false },
+      { id: 'f5', name: '产品路线图.png', size: '921.60 KB', selected: false }
+    ]
+  },
+  {
+    id: 'kb2', name: '合同库', owner: '王倩', source: 'client', dept: '法务部',
+    desc: '框架协议、采购合同与保密协议模板',
+    selected: false, expanded: false,
+    files: [
+      { id: 'f6', name: '技术服务框架协议.pdf', size: '3.60 MB', selected: false },
+      { id: 'f7', name: '保密协议模板.docx', size: '225.28 KB', selected: false },
+      { id: 'f8', name: '供应商合同·云服务.pdf', size: '1.10 MB', selected: false }
+    ]
+  },
+  {
+    id: 'kb3', name: '人事制度库', owner: '周敏', source: 'client', dept: '人力资源部',
+    desc: '员工手册、考勤与薪酬制度、常用表格模板',
+    selected: false, expanded: false,
+    files: [
+      { id: 'f9', name: '员工手册 2026 版.pdf', size: '2.40 MB', selected: false },
+      { id: 'f10', name: '考勤与休假制度.docx', size: '560 KB', selected: false },
+      { id: 'f11', name: '绩效考核表.xlsx', size: '260 KB', selected: false }
+    ]
+  },
+  {
+    id: 'kb4', name: '研发规范与架构', owner: '孙礼飞', source: 'admin', dept: '研发中心',
+    desc: '编码规范、架构设计、部署运维手册',
+    selected: false, expanded: false,
+    files: [
+      { id: 'f12', name: '后端接口规范 v2.docx', size: '1.30 MB', selected: false },
+      { id: 'f13', name: '前端编码规范.md', size: '153.60 KB', selected: false },
+      { id: 'f14', name: '微服务架构设计说明书 v4.pdf', size: '5.40 MB', selected: false },
+      { id: 'f15', name: 'Kubernetes 部署手册.pdf', size: '4.80 MB', selected: false }
+    ]
+  },
+  {
+    id: 'kb5', name: '客户成功案例库', owner: '郑雪', source: 'client', dept: '客户成功部',
+    desc: '行业客户成功案例、交付复盘与培训材料',
+    selected: false, expanded: false,
+    files: [
+      { id: 'f16', name: '制造业客户成功案例集.pdf', size: '6.20 MB', selected: false },
+      { id: 'f17', name: '金融行业交付复盘.docx', size: '1.10 MB', selected: false }
+    ]
+  }
+];
+
+var kbPickerTab = 'all';
+
+function kbGroupOf(kb) {
+  return kb.source === 'admin' ? '管理端创建' : '客户端创建';
+}
+
+function kbSelectionSummary() {
+  var kbCount = 0, fileCount = 0;
+  kbPickerData.forEach(function (kb) {
+    if (kb.selected) kbCount++;
+    else fileCount += kb.files.filter(function (f) { return f.selected; }).length;
+  });
+  return { kbCount: kbCount, fileCount: fileCount };
+}
+
+function kbMatchesTab(kb) {
+  if (kbPickerTab === 'all') return true;
+  return kbGroupOf(kb) === kbPickerTab;
+}
+
+function buildKbItemHTML(kb) {
+  var chosen = kb.files.filter(function (f) { return f.selected; }).length;
+  var statusText = kb.selected
+    ? '已引用整个知识库'
+    : (chosen ? '已选 ' + chosen + ' 个文件' : '未引用');
+
+  var filesHtml = kb.files.map(function (f) {
+    return '<div class="top-mcp-sub' + (f.selected ? ' added' : '') + (kb.selected ? ' locked' : '') + '">' +
+      '<div>' +
+        '<div class="top-mcp-sub-name">' + f.name + '</div>' +
+        '<div class="top-mcp-sub-desc">' + f.size + '</div>' +
+      '</div>' +
+      '<button class="top-modal-btn top-modal-btn-ghost" data-action="toggleFile" data-kb="' + kb.id + '" data-file="' + f.id + '">' +
+        (f.selected ? '- 移除' : '+ 引用') +
+      '</button>' +
+    '</div>';
+  }).join('');
+
+  return '<div class="top-mcp-item' + (kb.selected ? ' selected' : '') + (kb.expanded ? ' expanded' : '') + '" data-id="' + kb.id + '">' +
+    '<div class="top-mcp-header" data-action="toggleKb">' +
+      '<div class="top-modal-item-check" data-action="toggleKbAll" data-kb="' + kb.id + '"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+      '<div class="top-modal-item-avatar" style="background:#EFF6FF;color:#3B82F6;">库</div>' +
+      '<div class="top-modal-item-content">' +
+        '<div class="top-modal-item-header">' +
+          '<span class="top-modal-item-name">' + kb.name + '</span>' +
+          '<span class="top-modal-item-meta">' + kb.owner + ' · ' + kb.dept + '</span>' +
+        '</div>' +
+        '<div class="top-modal-item-desc">' + kb.desc + '</div>' +
+      '</div>' +
+      '<div class="top-mcp-added-count">' + statusText + '</div>' +
+      '<span class="top-mcp-expand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
+    '</div>' +
+    '<div class="top-mcp-body">' +
+      filesHtml +
+      '<div class="top-mcp-actions">' +
+        '<button class="top-modal-btn ' + (kb.selected ? 'top-modal-btn-outline' : 'top-modal-btn-primary') + '" data-action="toggleKbAll" data-kb="' + kb.id + '">' +
+          (kb.selected ? '取消引用整个知识库' : '引用整个知识库') +
+        '</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function buildKbListHTML(keyword) {
+  var kw = String(keyword || '').trim().toLowerCase();
+  var groups = ['客户端创建', '管理端创建'];
+  var html = '';
+
+  groups.forEach(function (group) {
+    if (kbPickerTab !== 'all' && kbPickerTab !== group) return;
+    var items = kbPickerData.filter(function (kb) {
+      if (kbGroupOf(kb) !== group) return false;
+      if (!kw) return true;
+      var hay = (kb.name + ' ' + kb.desc + ' ' + kb.owner + ' ' + kb.dept + ' ' +
+        kb.files.map(function (f) { return f.name; }).join(' ')).toLowerCase();
+      return hay.indexOf(kw) > -1;
+    });
+    if (!items.length) return;
+    if (kbPickerTab !== 'all') html += '<div class="kb-group-title">' + group +
+      '<span class="kb-group-count">' + items.length + ' 个</span></div>';
+    html += items.map(buildKbItemHTML).join('');
+  });
+
+  return html || '<div class="kb-empty">没有匹配的知识库</div>';
+}
+
+function buildKbModalHTML(keyword) {
+  var sum = kbSelectionSummary();
+
+  function countOf(group) {
+    return kbPickerData.filter(function (kb) {
+      return (group === 'all' || kbGroupOf(kb) === group);
+    }).length;
+  }
+
+  return '<div class="top-modal-header">' +
+    '<h3 class="top-modal-title">选择知识库</h3>' +
+    '<button class="top-modal-close" data-action="close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+  '</div>' +
+  '<div class="model-tabs kb-tabs">' +
+    '<div class="model-tab' + (kbPickerTab === 'all' ? ' active' : '') + '" data-kbtab="all">全部（' + countOf('all') + '）</div>' +
+    '<div class="model-tab' + (kbPickerTab === '客户端创建' ? ' active' : '') + '" data-kbtab="客户端创建">客户端创建（' + countOf('客户端创建') + '）</div>' +
+    '<div class="model-tab' + (kbPickerTab === '管理端创建' ? ' active' : '') + '" data-kbtab="管理端创建">管理端创建（' + countOf('管理端创建') + '）</div>' +
+  '</div>' +
+  '<div class="top-modal-search"><input placeholder="搜索知识库名称、描述或文件名..." data-action="search"></div>' +
+  '<div class="top-modal-body" data-role="list">' + buildKbListHTML(keyword) + '</div>' +
+  '<div class="top-modal-footer">' +
+    '<span class="footer-count" data-role="count">已选 ' + sum.kbCount + ' 个知识库 · ' + sum.fileCount + ' 个文件</span>' +
+    '<button class="top-modal-btn top-modal-btn-outline" data-action="close">取消</button>' +
+    '<button class="top-modal-btn top-modal-btn-primary" data-action="confirm">确认</button>' +
+  '</div>';
+}
+
+window.openKbPicker = function () {
+  var doc = document;
+  try {
+    if (window.top && window.top.document && window.top.document.body) doc = window.top.document;
+  } catch (e) { doc = document; }
+
+  if (!doc.getElementById('top-modal-styles')) {
+    var srcStyle = document.getElementById('top-modal-styles');
+    var st = doc.createElement('style');
+    st.id = 'top-modal-styles';
+    if (srcStyle) st.textContent = srcStyle.textContent;
+    else { st.textContent = KB_PICKER_STYLES; }
+    doc.head.appendChild(st);
+  }
+  var kbStyle = doc.getElementById('kb-picker-styles');
+  if (!kbStyle) {
+    var s2 = doc.createElement('style');
+    s2.id = 'kb-picker-styles';
+    s2.textContent = KB_PICKER_STYLES;
+    doc.head.appendChild(s2);
+  }
+
+  var existing = doc.getElementById('topModalContainer');
+  if (existing) existing.remove();
+
+  var overlay = doc.createElement('div');
+  overlay.className = 'top-modal-overlay';
+  overlay.id = 'topModalContainer';
+
+  var modal = doc.createElement('div');
+  modal.className = 'top-modal wide';
+  modal.innerHTML = buildKbModalHTML('');
+  overlay.appendChild(modal);
+  doc.body.appendChild(overlay);
+
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closeKbPicker(doc);
+  });
+
+  bindKbEvents(modal, doc);
+};
+
+function closeKbPicker(doc) {
+  var el = doc.getElementById('topModalContainer');
+  if (el) el.remove();
+}
+
+function refreshKbModal(modal, keyword) {
+  var list = modal.querySelector('[data-role="list"]');
+  if (list) list.innerHTML = buildKbListHTML(keyword || '');
+  var sum = kbSelectionSummary();
+  var countEl = modal.querySelector('[data-role="count"]');
+  if (countEl) countEl.textContent = '已选 ' + sum.kbCount + ' 个知识库 · ' + sum.fileCount + ' 个文件';
+}
+
+function bindKbEvents(modal, doc) {
+  var keyword = '';
+
+  modal.addEventListener('click', function (e) {
+    var t = e.target;
+
+    var tabEl = t.closest('[data-kbtab]');
+    if (tabEl) {
+      kbPickerTab = tabEl.dataset.kbtab;
+      modal.querySelectorAll('[data-kbtab]').forEach(function (x) { x.classList.remove('active'); });
+      tabEl.classList.add('active');
+      refreshKbModal(modal, keyword);
+      return;
+    }
+
+    if (t.closest('[data-action="close"]')) { closeKbPicker(doc); return; }
+
+    if (t.closest('[data-action="confirm"]')) {
+      closeKbPicker(doc);
+      renderKbTags();
+      return;
+    }
+
+    var allBtn = t.closest('[data-action="toggleKbAll"]');
+    if (allBtn) {
+      e.stopPropagation();
+      var kb = kbPickerData.find(function (k) { return k.id === allBtn.dataset.kb; });
+      if (kb) {
+        kb.selected = !kb.selected;
+        if (kb.selected) kb.files.forEach(function (f) { f.selected = false; });
+        kb.expanded = true;
+        refreshKbModal(modal, keyword);
+      }
+      return;
+    }
+
+    var fileBtn = t.closest('[data-action="toggleFile"]');
+    if (fileBtn) {
+      e.stopPropagation();
+      var kb2 = kbPickerData.find(function (k) { return k.id === fileBtn.dataset.kb; });
+      if (kb2) {
+        var file = kb2.files.find(function (f) { return f.id === fileBtn.dataset.file; });
+        if (file) {
+          file.selected = !file.selected;
+          if (file.selected) kb2.selected = false;   // 选了单个文件即取消整库引用
+          refreshKbModal(modal, keyword);
+        }
+      }
+      return;
+    }
+
+    if (t.closest('[data-action="toggleKb"]')) {
+      var item = t.closest('.top-mcp-item');
+      if (item) {
+        var id = item.dataset.id;
+        var rec = kbPickerData.find(function (k) { return k.id === id; });
+        if (rec) rec.expanded = !rec.expanded;
+        item.classList.toggle('expanded');
+      }
+    }
+  });
+
+  var search = modal.querySelector('[data-action="search"]');
+  if (search) {
+    search.addEventListener('input', function () {
+      keyword = this.value;
+      refreshKbModal(modal, keyword);
+    });
+  }
+}
+
+function renderKbTags() {
+  var container = document.getElementById('kbTagList');
+  var label = document.getElementById('kbCountLabel');
+  if (!container) return;
+
+  var html = '';
+  var kbCount = 0, fileCount = 0;
+
+  kbPickerData.forEach(function (kb) {
+    if (kb.selected) {
+      kbCount++;
+      html += '<div class="selected-tag">' + kb.name +
+        '<span class="tag-remove" onclick="removeKbTag(\'' + kb.id + '\', null)">×</span></div>';
+    }
+    kb.files.forEach(function (f) {
+      if (f.selected) {
+        fileCount++;
+        html += '<div class="selected-tag">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>' +
+          f.name + '<span class="tag-remove" onclick="removeKbTag(\'' + kb.id + '\', \'' + f.id + '\')">×</span></div>';
+      }
+    });
+  });
+
+  container.innerHTML = html;
+  if (label) {
+    label.textContent = fileCount
+      ? '已选 ' + kbCount + ' 个知识库 · ' + fileCount + ' 个文件'
+      : '已选 ' + kbCount + ' 个知识库';
+  }
+}
+
+function removeKbTag(kbId, fileId) {
+  var kb = kbPickerData.find(function (k) { return k.id === kbId; });
+  if (!kb) return;
+  if (!fileId) kb.selected = false;
+  else {
+    var f = kb.files.find(function (x) { return x.id === fileId; });
+    if (f) f.selected = false;
+  }
+  renderKbTags();
+}
+
+/* 知识库弹窗补充样式：分组标题、空态、锁定态 */
+var KB_PICKER_STYLES = `
+.top-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:999999;display:flex;align-items:center;justify-content:center;padding:24px;animation:kbfade .2s ease}
+@keyframes kbfade{from{opacity:0}to{opacity:1}}
+.top-modal{background:#fff;border-radius:12px;width:560px;max-width:92vw;max-height:86vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.22)}
+.top-modal.wide{width:760px}
+.top-modal-header{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid #E5E7EB}
+.top-modal-title{font-size:15px;font-weight:600;color:#111827;margin:0}
+.top-modal-close{margin-left:auto;border:none;background:none;cursor:pointer;color:#9CA3AF;padding:4px;border-radius:6px;display:inline-flex}
+.top-modal-close:hover{background:#F3F4F6;color:#4B5563}
+.top-modal .model-tabs{display:flex;border-bottom:1px solid #E5E7EB;padding:0 20px}
+.top-modal .model-tab{padding:12px 16px;font-size:13px;color:#6B7280;cursor:pointer;border-bottom:2px solid transparent;transition:.2s;margin-bottom:-1px;user-select:none}
+.top-modal .model-tab:hover{color:#1F2937}
+.top-modal .model-tab.active{color:#3B82F6;border-bottom-color:#3B82F6;font-weight:500}
+.top-modal-search{padding:12px 20px}
+.top-modal-search input{width:100%;height:36px;border:1px solid #E5E7EB;border-radius:8px;padding:0 12px;font-size:13px;outline:none;font-family:inherit;color:#374151}
+.top-modal-search input:focus{border-color:#3B82F6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.top-modal-body{flex:1;overflow:auto;padding:0 20px 14px}
+.top-modal-footer{display:flex;align-items:center;gap:10px;padding:14px 20px;border-top:1px solid #E5E7EB}
+.top-modal-footer .footer-count{margin-right:auto;font-size:12.5px;color:#6B7280}
+.top-modal-btn{height:32px;padding:0 14px;border-radius:7px;font-size:13px;cursor:pointer;border:1px solid #E5E7EB;background:#fff;color:#374151;font-family:inherit}
+.top-modal-btn-outline:hover{background:#F9FAFB}
+.top-modal-btn-primary{background:#3B82F6;border-color:#3B82F6;color:#fff}
+.top-modal-btn-primary:hover{background:#2563EB}
+.top-modal-btn-ghost{border:none;background:transparent;color:#3B82F6;font-size:12.5px;padding:0 8px}
+.top-modal-btn-ghost:hover{background:#EFF6FF}
+.top-mcp-item{border:1px solid #E5E7EB;border-radius:10px;margin-bottom:10px;overflow:hidden;background:#fff}
+.top-mcp-item.selected{border-color:#93C5FD;background:#F8FBFF}
+.top-mcp-header{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}
+.top-modal-item-avatar{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex:none}
+.top-modal-item-content{flex:1;min-width:0}
+.top-modal-item-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.top-modal-item-name{font-size:13.5px;font-weight:600;color:#111827}
+.top-modal-item-meta{font-size:12px;color:#9CA3AF}
+.top-modal-item-desc{font-size:12.5px;color:#6B7280;margin-top:2px;line-height:1.5}
+.top-modal-item-check{width:16px;height:16px;border-radius:4px;border:1px solid #D1D5DB;display:flex;align-items:center;justify-content:center;flex:none;background:#fff}
+.top-mcp-item.selected .top-modal-item-check{background:#3B82F6;border-color:#3B82F6}
+.top-mcp-item:not(.selected) .top-modal-item-check svg{opacity:0}
+.top-mcp-expand{margin-left:4px;color:#9CA3AF;transition:.2s;display:inline-flex}
+.top-mcp-item.expanded .top-mcp-expand{transform:rotate(90deg)}
+.top-mcp-body{display:none;padding:0 14px 12px}
+.top-mcp-item.expanded .top-mcp-body{display:block}
+.top-mcp-sub{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid #F3F4F6;border-radius:8px;margin-bottom:6px;background:#FAFAFA}
+.top-mcp-sub.added{border-color:#BBF7D0;background:#F0FDF4}
+.top-mcp-sub-name{font-size:12.5px;color:#374151;font-weight:500}
+.top-mcp-sub-desc{font-size:11.5px;color:#9CA3AF;margin-top:2px}
+.top-mcp-actions{display:flex;justify-content:flex-end;margin-top:8px}
+.top-mcp-added-count{font-size:11.5px;color:#9CA3AF;margin-right:10px;white-space:nowrap}
+.kb-tabs{margin-bottom:4px}
+.kb-group-title{display:flex;align-items:center;gap:8px;margin:12px 0 8px;font-size:12.5px;font-weight:600;color:#6B7280}
+.kb-group-title:first-child{margin-top:4px}
+.kb-group-count{font-weight:400;font-size:11.5px;color:#9CA3AF}
+.kb-empty{padding:36px 12px;text-align:center;font-size:12.5px;color:#9CA3AF}
+.top-mcp-sub.locked{opacity:.55}
+.top-mcp-sub.locked button{pointer-events:none}
+`;
+
+renderKbTags();
 
 // Initial render
 renderConnectorList();
