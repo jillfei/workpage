@@ -4,9 +4,9 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>意见反馈管理</title>
-    <script src="https://jillfei.github.io/workpage/omnix/style/js/iconify-icon.min.js"></script>
+    <script src="../style/js/iconify-icon.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('../style/fonts/inter.css');
 
         *, *::before, *::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: #e5e7eb; }
         table { border-collapse: collapse; }
@@ -336,8 +336,8 @@
 </div>
 
 <!-- ========== 处理弹窗 ========== -->
-<div class="modal-overlay" id="processModal">
-    <div class="modal-box wide">
+<div class="modal-overlay" id="processModal" onclick="closeModalOverlay(event, 'processModal')">
+    <div class="modal-box wide" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
             <h3 class="text-lg font-semibold text-gray-900">处理反馈</h3>
             <button onclick="closeModal('processModal')" class="text-gray-400 hover:text-gray-600 transition-colors bg-white"><iconify-icon icon="mdi:close" class="text-xl"></iconify-icon></button>
@@ -410,8 +410,8 @@
 </div>
 
 <!-- ========== 详情弹窗 ========== -->
-<div class="modal-overlay" id="detailModal">
-    <div class="modal-box wide">
+<div class="modal-overlay" id="detailModal" onclick="closeModalOverlay(event, 'detailModal')">
+    <div class="modal-box wide" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
             <h3 class="text-lg font-semibold text-gray-900">反馈详情</h3>
             <button onclick="closeModal('detailModal')" class="text-gray-400 hover:text-gray-600 transition-colors bg-white"><iconify-icon icon="mdi:close" class="text-xl"></iconify-icon></button>
@@ -675,6 +675,7 @@ function changePageSize(size) {
 
 // ====== 通用弹窗 ======
 function closeModal(id) { document.getElementById(id).classList.remove('active'); currentModalId = null; }
+function closeModalOverlay(event, id) { if (event.target === event.currentTarget) closeModal(id); }
 function nowStr() { return new Date().toLocaleString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).replace(/\//g,'-'); }
 
 // ====== 图片上传预览 ======

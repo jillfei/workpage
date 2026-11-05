@@ -582,6 +582,221 @@
             flex: 1;
         }
 
+        /* --- Section tabs --- */
+        .section-tabs {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-top: 16px;
+            padding: 0 10px;
+            border-bottom: 1px solid #ebebeb;
+        }
+        .section-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px 8px;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+            transition: color 0.12s;
+        }
+        .section-tab:hover {
+            color: #333;
+        }
+        .section-tab.active {
+            color: #111;
+            font-weight: 600;
+        }
+        .section-tab.active::after {
+            content: "";
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            bottom: -1px;
+            height: 2px;
+            border-radius: 2px;
+            background: #111;
+        }
+        .section-tab:focus-visible {
+            outline: 2px solid #4a6cf7;
+            outline-offset: -2px;
+        }
+        .tab-count {
+            font-size: 11px;
+            font-weight: 400;
+            color: #999;
+        }
+        .section-panel {
+            margin-top: 8px;
+        }
+        .section-panel[hidden] {
+            display: none;
+        }
+
+        /* --- Pinned group --- */
+        .pinned-header {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px 6px;
+            font-size: 12px;
+            color: #999;
+            cursor: pointer;
+            user-select: none;
+        }
+        .pinned-header:focus-visible {
+            outline: 2px solid #4a6cf7;
+            outline-offset: -2px;
+        }
+        .pinned-chevron {
+            width: 12px;
+            height: 12px;
+            color: #bbb;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        .pinned-group.collapsed .pinned-chevron {
+            transform: rotate(-90deg);
+        }
+        .pinned-group.collapsed .pinned-list {
+            display: none;
+        }
+        .pinned-group:not([hidden]) + .section-list {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        /* --- Chat item hover actions --- */
+        .chat-item {
+            position: relative;
+        }
+        .item-actions {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            align-items: center;
+            gap: 2px;
+            padding-left: 16px;
+            background: linear-gradient(to right, rgba(247, 247, 247, 0), #f7f7f7 16px);
+        }
+        .chat-item:hover .item-actions,
+        .chat-item.menu-open .item-actions {
+            display: inline-flex;
+        }
+        .chat-item:hover .item-actions {
+            background: linear-gradient(to right, rgba(234, 234, 234, 0), #eaeaea 16px);
+        }
+        .chat-item.active:hover .item-actions,
+        .chat-item.active.menu-open .item-actions {
+            background: linear-gradient(to right, rgba(228, 228, 228, 0), #e4e4e4 16px);
+        }
+        .item-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border: none;
+            border-radius: 5px;
+            background: transparent;
+            color: #666;
+            cursor: pointer;
+            flex-shrink: 0;
+            padding: 0;
+        }
+        .item-action-btn:hover {
+            background: #dcdcdc;
+            color: #333;
+        }
+        .item-action-btn:focus-visible {
+            outline: 2px solid #4a6cf7;
+            outline-offset: -2px;
+        }
+        .item-action-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+        .chat-item.pinned .pin-btn {
+            color: #4a6cf7;
+        }
+
+        /* --- Channel items --- */
+        .channel-item {
+            padding-left: 12px;
+        }
+        .channel-icon {
+            width: 16px;
+            height: 16px;
+            color: #777;
+            flex-shrink: 0;
+        }
+        .channel-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .channel-time {
+            font-size: 11px;
+            color: #bbb;
+            flex-shrink: 0;
+        }
+
+        /* --- Item dropdown menu --- */
+        .item-menu {
+            position: fixed;
+            z-index: 2100;
+            min-width: 148px;
+            padding: 6px;
+            background: #fff;
+            border: 1px solid #ebebeb;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+        .item-menu[hidden] {
+            display: none;
+        }
+        .item-menu-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            width: 100%;
+            padding: 8px 10px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            text-align: left;
+        }
+        .item-menu-row:hover {
+            background: #f5f5f5;
+        }
+        .item-menu-row svg {
+            width: 15px;
+            height: 15px;
+            color: #555;
+            flex-shrink: 0;
+        }
+        .item-menu-row.danger {
+            color: #dc2626;
+        }
+        .item-menu-row.danger svg {
+            color: #dc2626;
+        }
+
+
         .section-list {
             list-style: none;
             overflow: hidden;
@@ -590,7 +805,7 @@
             display: flex;
             align-items: center;
             gap: 9px;
-            padding: 6px 12px 6px 40px;
+            padding: 6px 12px 6px 10px;
             border-radius: 6px;
             font-size: 13px;
             color: #444;
@@ -639,7 +854,7 @@
             display: flex;
             align-items: center;
             gap: 9px;
-            padding: 5px 12px 5px 32px;
+            padding: 5px 12px 5px 10px;
             border-radius: 6px;
             font-size: 13px;
             color: #444;
@@ -1611,32 +1826,50 @@
             </li>
         </ul>
 
+        <div class="section-tabs" role="tablist">
+            <button class="section-tab active" id="tabChat" type="button" role="tab" aria-selected="true" data-panel="sectionChat">会话<span class="tab-count">4</span></button>
+            <button class="section-tab" id="tabProject" type="button" role="tab" aria-selected="false" data-panel="sectionProject">项目<span class="tab-count">3</span></button>
+            <button class="section-tab" id="tabChannel" type="button" role="tab" aria-selected="false" data-panel="sectionChannel">频道<span class="tab-count">2</span></button>
+        </div>
+
         <!-- 会话 Section -->
-        <div class="section">
-            <div class="section-header open" aria-expanded="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
-                <span class="section-title">💬 会话 (3)</span>
+        <div class="section section-panel" id="sectionChat" role="tabpanel" aria-labelledby="tabChat">
+            <div class="pinned-group" hidden>
+                <div class="pinned-header" role="button" tabindex="0" aria-expanded="true">
+                    <span class="pinned-title">置顶任务 (<span class="pinned-count">0</span>)</span>
+                    <svg class="pinned-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                </div>
+                <ul class="section-list pinned-list"></ul>
             </div>
             <ul class="section-list">
-                <li class="section-item" data-src="./session/agents.html">
+                <li class="section-item chat-item" data-src="./session/agents.html">
 					<svg class="loading-spin" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#007aff" stroke-width="1.8">
 					  <style>.loading-spin{margin:-4px; animation:spin 0.8s linear infinite}@keyframes spin{100%{transform:rotate(360deg)}}</style>
 					  <path d="M16 10A6 6 0 1 1 10 4" stroke-linecap="round"></path>
 					</svg>
 					每日AI新闻推送...<span style="font-size:11px;color:#b8860b;background:#fdf6e3;padding:1px 8px;border-radius:10px;margin-left:auto;">等待回复</span>
+					<span class="item-actions">
+						<button class="item-action-btn more-btn" type="button" aria-label="更多操作"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="19" cy="12" r="1.6" /></svg></button>
+						<button class="item-action-btn pin-btn" type="button" aria-label="置顶"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5" /><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16h14v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z" /></svg></button>
+					</span>
 				</li>
-                <li class="section-item" data-src="./session/agents-zsk.html"><span class="status-dot success"></span> 公司的请假制度（知识库引用）</li>
-                <li class="section-item" data-src="./session/agents-error.html"><span class="status-dot failed"></span> 设计一个人个、...<span style="font-size:11px;color:var(--danger);background:#fee2e2;padding:1px 8px;border-radius:10px;margin-left:auto;">失败</span></li>
-                <li class="section-item" data-src="content.html"><span class="status-dot pending"></span> 了解 OmniX 通用场景</li>
+                <li class="section-item chat-item" data-src="./session/agents-zsk.html"><span class="status-dot success"></span> 公司的请假制度（知识库引用）<span class="item-actions">
+						<button class="item-action-btn more-btn" type="button" aria-label="更多操作"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="19" cy="12" r="1.6" /></svg></button>
+						<button class="item-action-btn pin-btn" type="button" aria-label="置顶"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5" /><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16h14v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z" /></svg></button>
+					</span></li>
+                <li class="section-item chat-item" data-src="./session/agents-error.html"><span class="status-dot failed"></span> 设计一个人个、...<span style="font-size:11px;color:var(--danger);background:#fee2e2;padding:1px 8px;border-radius:10px;margin-left:auto;">失败</span><span class="item-actions">
+						<button class="item-action-btn more-btn" type="button" aria-label="更多操作"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="19" cy="12" r="1.6" /></svg></button>
+						<button class="item-action-btn pin-btn" type="button" aria-label="置顶"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5" /><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16h14v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z" /></svg></button>
+					</span></li>
+                <li class="section-item chat-item" data-src="content.html"><span class="status-dot pending"></span> 了解 OmniX 通用场景<span class="item-actions">
+						<button class="item-action-btn more-btn" type="button" aria-label="更多操作"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="19" cy="12" r="1.6" /></svg></button>
+						<button class="item-action-btn pin-btn" type="button" aria-label="置顶"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5" /><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16h14v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z" /></svg></button>
+					</span></li>
             </ul>
         </div>
 
         <!-- 项目 Section -->
-        <div class="section">
-            <div class="section-header open" aria-expanded="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
-                <span class="section-title">📂️ 项目 (1)</span>
-            </div>
+        <div class="section section-panel" id="sectionProject" role="tabpanel" aria-labelledby="tabProject" hidden>
             <ul class="section-list">
                 <li class="section-item project-row expanded" data-src="content.html?view=neoomni">
                     📋 NeoOmni官网设计
@@ -1665,7 +1898,36 @@
             </ul>
         </div>
 
-
+        <!-- 频道 Section -->
+        <div class="section section-panel" id="sectionChannel" role="tabpanel" aria-labelledby="tabChannel" hidden>
+            <div class="pinned-group" hidden>
+                <div class="pinned-header" role="button" tabindex="0" aria-expanded="true">
+                    <span class="pinned-title">置顶任务 (<span class="pinned-count">0</span>)</span>
+                    <svg class="pinned-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                </div>
+                <ul class="section-list pinned-list"></ul>
+            </div>
+            <ul class="section-list">
+                <li class="section-item chat-item channel-item">
+                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                    <span class="channel-name">OmniX 小组</span>
+                    <span class="channel-time">昨天 16:02</span>
+                    <span class="item-actions">
+                        <button class="item-action-btn more-btn" type="button" aria-label="更多操作"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="19" cy="12" r="1.6" /></svg></button>
+                        <button class="item-action-btn pin-btn" type="button" aria-label="置顶"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5" /><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16h14v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z" /></svg></button>
+                    </span>
+                </li>
+                <li class="section-item chat-item channel-item">
+                    <svg class="channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+                    <span class="channel-name">产品交流群</span>
+                    <span class="channel-time">昨天 10:24</span>
+                    <span class="item-actions">
+                        <button class="item-action-btn more-btn" type="button" aria-label="更多操作"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="19" cy="12" r="1.6" /></svg></button>
+                        <button class="item-action-btn pin-btn" type="button" aria-label="置顶"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5" /><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16h14v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z" /></svg></button>
+                    </span>
+                </li>
+            </ul>
+        </div>
 
         <!-- User Profile -->
         <div class="sidebar-footer">
@@ -1678,6 +1940,22 @@
         </div>
 
     </aside>
+
+    <!-- ====== Item Dropdown Menu ====== -->
+    <div class="item-menu" id="itemMenu" hidden>
+        <button class="item-menu-row" data-action="rename" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>
+            重命名
+        </button>
+        <button class="item-menu-row" data-action="archive" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8" /><rect x="1" y="3" width="22" height="5" /><line x1="10" y1="12" x2="14" y2="12" /></svg>
+            归档任务
+        </button>
+        <button class="item-menu-row danger" data-action="delete" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+            删除任务
+        </button>
+    </div>
 
     <!-- ====== Update Popup ====== -->
     <div class="update-popup-overlay" id="updatePopupOverlay">
@@ -1937,6 +2215,150 @@
                         toggle();
                     }
                 });
+            });
+
+            document.querySelectorAll('.section-tab').forEach(tab => {
+                const select = () => {
+                    document.querySelectorAll('.section-tab').forEach(t => {
+                        const on = t === tab;
+                        t.classList.toggle('active', on);
+                        t.setAttribute('aria-selected', String(on));
+                    });
+                    document.querySelectorAll('.section-panel').forEach(p => {
+                        p.hidden = p.id !== tab.getAttribute('data-panel');
+                    });
+                };
+                tab.addEventListener('click', select);
+            });
+
+            var itemMenu = document.getElementById('itemMenu');
+            var menuTarget = null;
+
+            function refreshPanel(panel) {
+                var group = panel.querySelector('.pinned-group');
+                if (!group) return;
+                var pinnedList = group.querySelector('.pinned-list');
+                var pinned = pinnedList.querySelectorAll('.chat-item').length;
+                group.querySelector('.pinned-count').textContent = pinned;
+                group.hidden = pinned === 0;
+                if (pinned === 0) group.classList.remove('collapsed');
+                group.querySelector('.pinned-header').setAttribute('aria-expanded', String(!group.classList.contains('collapsed')));
+                var tab = document.querySelector('.section-tab[data-panel="' + panel.id + '"]');
+                if (tab) tab.querySelector('.tab-count').textContent = panel.querySelectorAll('.chat-item').length;
+            }
+
+            function closeItemMenu() {
+                menuTarget = null;
+                itemMenu.hidden = true;
+                document.querySelectorAll('.chat-item.menu-open').forEach(function (n) {
+                    n.classList.remove('menu-open');
+                });
+            }
+
+            function openItemMenu(btn, item) {
+                menuTarget = item;
+                item.classList.add('menu-open');
+                itemMenu.hidden = false;
+                var rect = btn.getBoundingClientRect();
+                var top = rect.bottom + 4;
+                var left = rect.right - itemMenu.offsetWidth;
+                if (top + itemMenu.offsetHeight > window.innerHeight - 8) {
+                    top = rect.top - itemMenu.offsetHeight - 4;
+                }
+                if (left < 8) left = 8;
+                itemMenu.style.top = top + 'px';
+                itemMenu.style.left = left + 'px';
+            }
+
+            function getItemLabelEl(item) {
+                var named = item.querySelector('.channel-name');
+                if (named) return named;
+                for (var i = 0; i < item.childNodes.length; i++) {
+                    var n = item.childNodes[i];
+                    if (n.nodeType === 3 && n.textContent.trim()) return n;
+                }
+                return null;
+            }
+
+            document.querySelectorAll('.more-btn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var item = btn.closest('.chat-item');
+                    if (!itemMenu.hidden && menuTarget === item) {
+                        closeItemMenu();
+                    } else {
+                        closeItemMenu();
+                        openItemMenu(btn, item);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.pin-btn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var item = btn.closest('.chat-item');
+                    var panel = item.closest('.section-panel');
+                    var isPinned = item.classList.toggle('pinned');
+                    var target = isPinned
+                        ? panel.querySelector('.pinned-list')
+                        : panel.querySelector('.section-list:not(.pinned-list)');
+                    target.appendChild(item);
+                    closeItemMenu();
+                    refreshPanel(panel);
+                });
+            });
+
+            document.querySelectorAll('.pinned-header').forEach(function (header) {
+                var togglePinned = function () {
+                    var collapsed = header.closest('.pinned-group').classList.toggle('collapsed');
+                    header.setAttribute('aria-expanded', String(!collapsed));
+                };
+                header.addEventListener('click', togglePinned);
+                header.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        togglePinned();
+                    }
+                });
+            });
+
+            itemMenu.querySelectorAll('.item-menu-row').forEach(function (row) {
+                row.addEventListener('click', function () {
+                    var action = row.getAttribute('data-action');
+                    var item = menuTarget;
+                    closeItemMenu();
+                    if (!item) return;
+                    var panel = item.closest('.section-panel');
+                    if (action === 'rename') {
+                        var labelEl = getItemLabelEl(item);
+                        var val = window.prompt('重命名', labelEl ? labelEl.textContent.trim() : '');
+                        if (val !== null && val.trim() && labelEl) {
+                            if (labelEl.nodeType === 3) labelEl.nodeValue = val.trim();
+                            else labelEl.textContent = val.trim();
+                        }
+                    } else if (action === 'archive') {
+                        item.remove();
+                        refreshPanel(panel);
+                    } else if (action === 'delete') {
+                        if (window.confirm('确认删除该条目？')) {
+                            item.remove();
+                            refreshPanel(panel);
+                        }
+                    }
+                });
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!itemMenu.hidden && !e.target.closest('.item-menu') && !e.target.closest('.more-btn')) {
+                    closeItemMenu();
+                }
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeItemMenu();
+            });
+
+            document.querySelectorAll('.section-panel').forEach(function (panel) {
+                refreshPanel(panel);
             });
 
             window.addEventListener('message', function(e) {

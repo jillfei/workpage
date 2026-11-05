@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>通知管理</title>
-    <script src="https://jillfei.github.io/workpage/omnix/style/js/iconify-icon.min.js">
+    <script src="../style/js/iconify-icon.min.js">
     </script>
     <style>
         *,
@@ -126,6 +126,39 @@
             background: #F3F4F6;
             color: #6B7280;
         }
+
+        /* 操作链接 */
+        .action-link { color: #3b82f6; cursor: pointer; font-size: 14px; text-decoration: none; transition: color 0.15s; margin-right: 12px; }
+        .action-link:last-child { margin-right: 0; }
+        .action-link:hover { color: #2563eb; }
+
+        /* 通知说明下拉 */
+        .notice-help-wrap { position: relative; }
+        .notice-help-btn {
+            width: 28px; height: 28px; border-radius: 50%; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            background: #EEF2FF; color: #4F46E5; transition: background 0.15s;
+        }
+        .notice-help-btn:hover { background: #E0E7FF; }
+        .notice-help-btn iconify-icon { font-size: 18px; }
+        .notice-help-panel {
+            position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+            background: #fff; border: 1px solid #E5E7EB; border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1); padding: 16px 18px;
+            min-width: 240px; z-index: 300; opacity: 0; pointer-events: none;
+            transition: opacity 0.15s, transform 0.15s;
+        }
+        .notice-help-panel.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+        .notice-help-panel::before {
+            content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%) rotate(45deg);
+            width: 10px; height: 10px; background: #fff; border-left: 1px solid #E5E7EB; border-top: 1px solid #E5E7EB;
+        }
+        .notice-help-title { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 10px; }
+        .notice-help-list { list-style: none; padding: 0; margin: 0; }
+        .notice-help-list li {
+            font-size: 13px; color: #6B7280; padding: 5px 0; display: flex; align-items: center; gap: 8px;
+        }
+        .notice-help-list li iconify-icon { font-size: 16px; color: #4F46E5; flex-shrink: 0; }
 
         .toggle-switch {
             position: relative;
@@ -886,7 +919,20 @@
                 <span>系统管理</span>
                 <iconify-icon icon="mdi:chevron-right"></iconify-icon>
                 <span class="text-gray-900 font-medium">通知管理</span>
+				<div class="notice-help-wrap">
+				    <button class="notice-help-btn" onclick="event.stopPropagation(); toggleNoticeHelp()" title="系统通知说明">
+				        <iconify-icon icon="mdi:information-outline"></iconify-icon>
+				    </button>
+				    <div class="notice-help-panel" id="notice-help-panel">
+				        <div class="notice-help-title">系统通知清单</div>
+				        <ul class="notice-help-list">
+				            <li><iconify-icon icon="mdi:check-circle-outline"></iconify-icon>技能审核通过</li>
+				            <li><iconify-icon icon="mdi:close-circle-outline"></iconify-icon>技能审核不通过</li>
+				        </ul>
+				    </div>
+				</div>
             </div>
+
             <div class="flex items-center space-x-3" id="header-actions">
                 <div id="header-list-actions" class="flex items-center space-x-3">
                     <button onclick="openCreateNotice()" class="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
@@ -1615,8 +1661,8 @@
                     <td class="px-4 py-3"><span class="tag ${st.cls}">${st.label}</span></td>
                     <td class="px-4 py-3 text-gray-500 whitespace-nowrap">${n.status === 'pending' ? '<span class="text-orange-500">' + esc(n.sentAt) + '</span>' : esc(n.sentAt || '—')}</td>
                     <td class="px-4 py-3 text-gray-500 whitespace-nowrap">${esc(n.createdAt)}</td>
-                    <td class="px-4 py-3 text-right whitespace-nowrap">
-                        <button onclick="event.stopPropagation(); openDetail(${n.id})" class="text-blue-600 hover:text-blue-800 text-xs mr-3">详情</button>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <a class="action-link" onclick="event.stopPropagation(); openDetail(${n.id})">查看</a>
                     </td>
                 </tr>`;
             }).join('');
@@ -2387,6 +2433,22 @@
             toast.classList.remove('hidden');
             setTimeout(() => { toast.classList.add('hidden'); }, 2500);
         }
+
+        // ═══════════════════════════════════════════════
+        // 通知说明下拉
+        // ═══════════════════════════════════════════════
+        function toggleNoticeHelp() {
+            const panel = document.getElementById('notice-help-panel');
+            panel.classList.toggle('show');
+        }
+
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('notice-help-panel');
+            const wrap = e.target.closest('.notice-help-wrap');
+            if (!wrap && panel.classList.contains('show')) {
+                panel.classList.remove('show');
+            }
+        });
 
         // ═══════════════════════════════════════════════
         // 初始化

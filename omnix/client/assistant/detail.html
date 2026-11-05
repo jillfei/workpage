@@ -31,6 +31,25 @@
   #chatPanel{flex:1 1 auto;min-width:320px;display:flex;flex-direction:column;height:100%}
   .chat-header{flex:0 0 56px;display:flex;align-items:center;justify-content:space-between;padding:0 28px 0 24px}
   .chat-header h1{font-size:16px;font-weight:600;color:var(--text-1)}
+  .chat-title{display:flex;align-items:center;gap:7px}
+  .help-wrap{position:relative}
+  .help-btn{display:flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;border:0;background:transparent;color:#8f959e;cursor:pointer;border-radius:50%}
+  .help-btn svg{width:18px;height:18px}
+  .help-btn:hover{color:var(--blue)}
+  .help-btn[aria-expanded="true"]{color:var(--blue)}
+  .help-dropdown{position:absolute;top:calc(100% + 12px);left:-12px;width:380px;max-width:calc(100vw - 48px);max-height:calc(100vh - 110px);overflow-y:auto;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(31,35,41,.12);padding:18px 20px 16px;display:none;z-index:60}
+  .help-dropdown.show{display:block}
+  .help-title{font-size:15px;font-weight:600;color:var(--text-1);line-height:22px}
+  .help-desc{font-size:13px;color:var(--text-2);line-height:1.75;margin-top:8px}
+  .help-sec-title{font-size:13px;font-weight:600;color:var(--text-1);margin-top:18px;padding-top:14px;border-top:1px solid var(--border-light)}
+  .help-sub-title{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:var(--text-3);margin-top:14px}
+  .help-sub-title::before{content:"";width:3px;height:11px;border-radius:2px;background:#d5d8dc}
+  .help-sec-title + .help-sub-title{margin-top:12px}
+  .help-list{margin-top:11px;display:flex;flex-direction:column;gap:9px}
+  .help-list li{list-style:none;display:flex;align-items:center;gap:9px;font-size:13px;line-height:1.5;color:var(--text-2)}
+  .help-dot{flex:0 0 16px;width:16px;height:16px;border-radius:50%;background:#eef4ff;color:var(--blue);display:flex;align-items:center;justify-content:center}
+  .help-dot svg{width:10px;height:10px}
+  .help-item-name{color:var(--text-1);font-weight:500}
   .hicons{display:flex;align-items:center;gap:20px;color:#575b62;position:relative}
   .hicons svg{width:18px;height:18px;cursor:pointer}
   .hicons svg:hover{color:#1f2329}
@@ -233,7 +252,34 @@
   <!-- 左侧会话 -->
   <section id="chatPanel">
     <header class="chat-header">
-      <h1>个人助手</h1>
+      <div class="chat-title">
+        <h1>个人助手</h1>
+        <div class="help-wrap">
+          <button class="help-btn" id="btnHelp" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="什么是个人助手">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7.8" x2="12" y2="12.8"/><line x1="12" y1="16.1" x2="12" y2="16.3"/></svg>
+          </button>
+          <div class="help-dropdown" id="helpDropdown" role="dialog" aria-label="个人助手说明">
+            <div class="help-title">什么是个人助手</div>
+            <p class="help-desc">你的任务协调入口：说出需求，它负责理解、派发执行并汇报结果；通过 IM 配置绑定后，还能用手机发送指令，指挥电脑干活。</p>
+            <div class="help-sec-title">能力清单</div>
+            <div class="help-sub-title">会话类型</div>
+            <ul class="help-list">
+              <li><span class="help-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12.5 10 17.5 19 7"/></svg></span><span class="help-item-name">创建新会话</span></li>
+              <li><span class="help-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12.5 10 17.5 19 7"/></svg></span><span class="help-item-name">访问历史会话</span></li>
+              <li><span class="help-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12.5 10 17.5 19 7"/></svg></span><span class="help-item-name">访问项目空间会话</span></li>
+            </ul>
+            <div class="help-sub-title">会话能力</div>
+            <ul class="help-list">
+              <li><span class="help-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12.5 10 17.5 19 7"/></svg></span><span class="help-item-name">上传图片、视频和文件</span></li>
+              <li><span class="help-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12.5 10 17.5 19 7"/></svg></span><span class="help-item-name">调用专家、专家团</span></li>
+              <li><span class="help-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12.5 10 17.5 19 7"/></svg></span><span class="help-item-name">使用技能</span></li>
+              <li><span class="help-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12.5 10 17.5 19 7"/></svg></span><span class="help-item-name">使用连接器</span></li>
+              <li><span class="help-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12.5 10 17.5 19 7"/></svg></span><span class="help-item-name">使用知识库</span></li>
+              <li><span class="help-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="5 12.5 10 17.5 19 7"/></svg></span><span class="help-item-name">会话权限为默认权限</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
       <div class="hicons">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
         <div class="history-wrap">
@@ -534,7 +580,9 @@
       var tabMenu = document.getElementById('tabMenu');
       var btnHistory = document.getElementById('btnHistory');
       var historyDropdown = document.getElementById('historyDropdown');
-      var btnReset = document.getElementById('btnReset');
+       var btnReset = document.getElementById('btnReset');
+       var btnHelp = document.getElementById('btnHelp');
+       var helpDropdown = document.getElementById('helpDropdown');
       var resetModalMask = document.getElementById('resetModalMask');
       var btnResetCancel = document.getElementById('btnResetCancel');
       var btnResetConfirm = document.getElementById('btnResetConfirm');
@@ -644,10 +692,23 @@
         tabMenu.classList.remove('show');
         btnTabMenu.setAttribute('aria-expanded', 'false');
       }
-      if(!e.target.closest('.history-wrap')){
-        historyDropdown.classList.remove('show');
-      }
-    });
+       if(!e.target.closest('.history-wrap')){
+         historyDropdown.classList.remove('show');
+       }
+       if(!e.target.closest('.help-wrap')) closeHelpDropdown();
+     });
+     function closeHelpDropdown(){
+       helpDropdown.classList.remove('show');
+       btnHelp.setAttribute('aria-expanded', 'false');
+     }
+     btnHelp.addEventListener('click', function(e){
+       e.stopPropagation();
+       var isOpen = helpDropdown.classList.toggle('show');
+       btnHelp.setAttribute('aria-expanded', String(isOpen));
+     });
+     document.addEventListener('keydown', function(e){
+       if(e.key === 'Escape') closeHelpDropdown();
+     });
     btnHistory.addEventListener('click', function(e){
       e.stopPropagation();
       historyDropdown.classList.toggle('show');

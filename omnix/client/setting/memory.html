@@ -219,7 +219,214 @@
         }
 
         .memory-content[readonly] { cursor: default; }
+        .memory-content.is-clickable { cursor: pointer; transition: border-color 140ms ease, background-color 140ms ease; }
+        .memory-content.is-clickable:hover { border-color: #c8c8c8; background: #fcfcfc; }
         .empty-content { color: #aaa; }
+
+        .section-actions { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
+
+        .memory-quota { color: #969696; font-size: 12px; line-height: 1.4; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .memory-quota.is-over { color: #d9463e; font-weight: 600; }
+
+        .memory-list {
+            max-height: 336px;
+            overflow: auto;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            border: 1px solid #e3e3e3;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .memory-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border-bottom: 1px solid #efefef;
+        }
+
+        .memory-item:last-child { border-bottom: 0; }
+
+        .memory-item-main {
+            display: flex;
+            flex: 1;
+            align-items: flex-start;
+            gap: 10px;
+            min-width: 0;
+            padding: 12px 4px 12px 14px;
+            border: 0;
+            background: transparent;
+            text-align: left;
+        }
+
+        .memory-item-main:hover { background: #fafafa; }
+        .memory-index {
+            flex: 0 0 auto;
+            width: 20px;
+            padding-top: 2px;
+            color: #b0b0b0;
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+        }
+        .memory-item-body { flex: 1; min-width: 0; }
+        .memory-item-title {
+            display: block;
+            overflow: hidden;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.45;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .memory-item-excerpt {
+            display: block;
+            overflow: hidden;
+            margin-top: 3px;
+            color: #9a9a9a;
+            font-size: 12px;
+            line-height: 1.5;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .memory-item-time { flex: 0 0 auto; padding-top: 2px; color: #b5b5b5; font-size: 12px; white-space: nowrap; }
+        .memory-delete {
+            display: grid;
+            flex: 0 0 auto;
+            width: 30px;
+            height: 30px;
+            place-items: center;
+            padding: 0;
+            border: 0;
+            border-radius: 7px;
+            background: transparent;
+            color: #a3a3a3;
+        }
+        .memory-delete:hover { background: #f6f6f6; color: #d9463e; }
+        .memory-delete svg { width: 15px; height: 15px; }
+
+        .memory-empty {
+            padding: 30px 16px;
+            border: 1px dashed #dedede;
+            border-radius: 8px;
+            color: #a6a6a6;
+            font-size: 13px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .dialog-label { margin: 16px 0 6px; color: #4a4a4a; font-size: 13px; font-weight: 600; }
+        .dialog-label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+        .dialog-label-count { color: #999; font-size: 12px; font-weight: 400; font-variant-numeric: tabular-nums; }
+
+        .dialog-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dedede;
+            border-radius: 9px;
+            color: #262626;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .dialog-input::placeholder { color: #a6a6a6; }
+        .dialog-input:focus-visible, .dialog-textarea:focus-visible { outline: 2px solid #424242; outline-offset: 1px; }
+
+        .detail-meta { margin: 14px 0 0; color: #9a9a9a; font-size: 12px; line-height: 1.5; }
+        .detail-content-wrapper { min-height: 240px; }
+
+        .remaining-count {
+            margin: 8px 2px 0;
+            color: #999;
+            font-size: 12px;
+            line-height: 18px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .remaining-count.is-over { color: #d9463e; font-weight: 600; }
+
+        .dialog-footer.is-split { justify-content: space-between; }
+        .dialog-footer-group { display: flex; gap: 12px; }
+
+        .danger-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 36px;
+            padding: 0 16px;
+            border: 1px solid #f3cfcc;
+            border-radius: 8px;
+            background: #fdf1f0;
+            color: #d9463e;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .danger-button:hover { background: #fbe7e5; border-color: #e8b4b0; }
+
+        .dialog-body.confirm-body { min-height: 0; padding: 22px 24px 20px; }
+        .dialog-body.confirm-body .dialog-footer { margin-top: 20px; }
+
+        .confirm-header { display: flex; align-items: flex-start; gap: 12px; }
+        .confirm-icon {
+            display: grid;
+            flex: 0 0 auto;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border-radius: 10px;
+            background: #fdf1f0;
+            color: #d9463e;
+        }
+        .confirm-icon svg { width: 18px; height: 18px; }
+        .confirm-heading { flex: 1; min-width: 0; }
+        .confirm-heading .dialog-title { margin-bottom: 5px; font-size: 16px; line-height: 1.45; }
+
+        .confirm-card {
+            margin-top: 16px;
+            padding: 12px 14px;
+            border: 1px solid #ececec;
+            border-left: 3px solid #dcdcdc;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .confirm-card-title {
+            overflow: hidden;
+            margin: 0;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.5;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .confirm-card-excerpt {
+            display: -webkit-box;
+            overflow: hidden;
+            margin: 5px 0 0;
+            color: #8a8a8a;
+            font-size: 12px;
+            line-height: 1.65;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .confirm-card-meta { margin: 9px 0 0; color: #a8a8a8; font-size: 12px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+
+        .confirm-tips {
+            margin: 14px 0 0;
+            padding: 0 0 0 18px;
+            color: #8f8f8f;
+            font-size: 12px;
+            line-height: 1.75;
+        }
+
+        .confirm-tips li + li { margin-top: 2px; }
+
+
 
         .storage-label { margin: 0 0 14px; font-size: 15px; font-weight: 600; }
         .storage-row {
@@ -240,7 +447,9 @@
         .folder-button svg { width: 16px; height: 16px; }
 
         .is-disabled { opacity: .46; }
-        .is-disabled .outline-button, .is-disabled .memory-content { pointer-events: none; }
+        .is-disabled .outline-button, .is-disabled .memory-content,
+        .is-disabled .memory-list, .is-disabled .memory-empty { pointer-events: none; }
+
 
         .toast {
             position: fixed;
@@ -271,6 +480,9 @@
         }
 
         dialog::backdrop { background: rgb(0 0 0 / 28%); }
+
+        #confirmDialog { width: min(480px, calc(100vw - 40px)); }
+
 
         .dialog-body { display: flex; flex-direction: column; min-height: 500px; padding: 24px; }
         .dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
@@ -332,8 +544,18 @@
             .section-heading { gap: 12px; }
             .storage-row { flex-wrap: wrap; }
             .folder-button { width: 100%; }
+            .section-actions { gap: 8px; }
+            .memory-quota { display: none; }
+            .memory-item-time { display: none; }
+            .memory-item-main { padding: 12px 4px 12px 12px; }
             .dialog-body { min-height: min(500px, calc(100vh - 48px)); padding: 20px; }
             .textarea-wrapper { min-height: 220px; }
+            .detail-content-wrapper { min-height: 180px; }
+            .dialog-body.confirm-body { padding: 18px; }
+            .confirm-header { gap: 10px; }
+            .confirm-tips { padding-left: 16px; }
+            .confirm-body .dialog-footer button { flex: 1; }
+
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -349,9 +571,6 @@
                 <p class="page-subtitle" data-design-id="memory-page-subtitle">让 OmniX 在合适的时机记住你，并在未来对话中提供更连贯、个性化的回应。记忆遵循隐私政策，仅你本人可见。</p>
 
                 <section class="memory-switch-panel" data-design-id="global-memory-panel" aria-labelledby="global-memory-title">
-                    <div class="feature-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 5.5a3 3 0 0 1 5 0 3 3 0 0 1 4.2 4.24 3 3 0 0 1 0 5.52 3 3 0 0 1-4.2 4.24 3 3 0 0 1-5 0 3 3 0 0 1-4.2-4.24 3 3 0 0 1 0-5.52A3 3 0 0 1 9.5 5.5Z"/><path d="M12 7.5v9M9 10.2l3 1.8 3-1.8M9 13.8l3-1.8 3 1.8"/></svg>
-                    </div>
                     <div class="feature-copy">
                         <h2 class="feature-title" data-design-id="global-memory-title">全局记忆</h2>
                         <p class="feature-desc" data-design-id="global-memory-description">开启后，OmniX 会在所有会话中读取和更新你的个人偏好、习惯与长期上下文；关闭后不会使用或更新全局记忆。</p>
@@ -368,7 +587,8 @@
                             </div>
                             <button class="outline-button" id="editPersonaButton" data-design-id="edit-persona-button" type="button">编辑</button>
                         </div>
-                        <textarea class="memory-content empty-content" id="personaPreview" data-design-id="persona-preview" readonly aria-label="人设设定内容" placeholder="暂未设置人设。点击编辑，选择预设或输入自定义设定。"></textarea>
+                        <textarea class="memory-content empty-content is-clickable" id="personaPreview" data-design-id="persona-preview" readonly tabindex="0" role="button" title="点击编辑人设设定" aria-label="人设设定内容，点击编辑" placeholder="暂未设置人设。点击编辑，选择预设或输入自定义设定。"></textarea>
+
                     </section>
 
                     <section class="section-card" id="longMemorySection" data-design-id="long-memory-section" aria-labelledby="long-memory-title">
@@ -381,16 +601,22 @@
                                         <span class="memory-help-tooltip" id="long-memory-help-tooltip" data-design-id="long-memory-help-tooltip" role="tooltip">
                                             <p>1、自动记录用户长期偏好、习惯、身份信息</p>
                                             <p>2、根据用户明确要求记住某事，例如：“以后都这样处理”、“记住我的偏好是...”</p>
-                                            <p>3、长期记忆定期提炼内容，压缩过时或低优先级条目，确保长期记忆不超容量。</p>
+                                            <p>3、长期记忆以条目形式管理，上限 200 条、总计 20000 字；接近上限时会定期提炼、压缩过时或低优先级条目。</p>
                                         </span>
+
                                     </span>
                                 </div>
-                                <p class="section-desc" data-design-id="long-memory-description">跨会话保存的重要信息与结论，可随时查看和修改。</p>
+                                <p class="section-desc" data-design-id="long-memory-description">跨会话保存的重要信息与结论，以条目形式管理，可查看、编辑或删除。</p>
                             </div>
-                            <button class="outline-button" id="editLongMemoryButton" data-design-id="edit-long-memory-button" type="button">编辑</button>
+                            <div class="section-actions" data-design-id="long-memory-actions">
+                                <span class="memory-quota" id="longMemoryQuota" data-design-id="long-memory-quota">0 / 200 条 · 0 / 20000 字</span>
+                                <button class="outline-button" id="addLongMemoryButton" data-design-id="add-long-memory-button" type="button">新增</button>
+                            </div>
                         </div>
-                        <textarea class="memory-content" id="longMemoryPreview" data-design-id="long-memory-preview" readonly aria-label="长期记忆内容">用户正在负责集团资产咨询顾问、产品调研总结、向总经理汇报等工作，关注 SRM 对接、采购流程调研与产品规划。后续对话中优先结合这些长期目标提供连贯建议。</textarea>
+                        <ul class="memory-list" id="longMemoryList" data-design-id="long-memory-list" aria-labelledby="long-memory-title"></ul>
+                        <div class="memory-empty" id="longMemoryEmpty" data-design-id="long-memory-empty" hidden>暂无长期记忆。开启全局记忆后，OmniX 会自动提炼并记录重要信息。</div>
                     </section>
+
                 </div>
             </div>
         </main>
@@ -414,8 +640,8 @@
                 <button class="preset-button" data-design-id="persona-preset-decisive" type="button" data-preset="果断执行">果断执行</button>
             </div>
             <div class="textarea-wrapper" data-design-id="persona-editor-wrapper">
-                <textarea class="dialog-textarea" id="personaEditor" data-design-id="persona-editor" aria-label="编辑人设设定" placeholder="输入你希望 OmniX 呈现的身份、性格和表达方式..." maxlength="4000"></textarea>
-                <span class="character-count" id="personaCount" data-design-id="persona-character-count" aria-live="polite">0/4000</span>
+                <textarea class="dialog-textarea" id="personaEditor" data-design-id="persona-editor" aria-label="编辑人设设定" placeholder="输入你希望 OmniX 呈现的身份、性格和表达方式..." maxlength="1000"></textarea>
+                <span class="character-count" id="personaCount" data-design-id="persona-character-count" aria-live="polite">0/1000</span>
             </div>
             <div class="dialog-footer" data-design-id="persona-dialog-actions">
                 <button class="secondary-button" data-design-id="cancel-persona-button" type="button">取消</button>
@@ -424,27 +650,69 @@
         </form>
     </dialog>
 
-    <dialog id="longMemoryDialog" data-design-id="long-memory-dialog" aria-labelledby="long-memory-dialog-title">
-        <form class="dialog-body" method="dialog" data-design-id="long-memory-dialog-form">
+    <dialog id="memoryDetailDialog" data-design-id="memory-detail-dialog" aria-labelledby="memory-detail-dialog-title">
+        <form class="dialog-body" method="dialog" data-design-id="memory-detail-dialog-form">
             <div class="dialog-header">
                 <div>
-                    <h2 class="dialog-title" id="long-memory-dialog-title" data-design-id="long-memory-dialog-title">长期记忆</h2>
-                    <p class="dialog-desc" data-design-id="long-memory-dialog-description">仅自己可见。跨会话持久保存的重要知识和结论，由 OmniX 自动维护。</p>
+                    <h2 class="dialog-title" id="memory-detail-dialog-title" data-design-id="memory-detail-dialog-title">记忆详情</h2>
+                    <p class="dialog-desc" data-design-id="memory-detail-dialog-description">仅自己可见。可修改内容，或删除不再需要的记忆。</p>
                 </div>
-                <button class="close-button" data-design-id="close-long-memory-dialog-button" type="button" aria-label="关闭长期记忆弹窗">
+                <button class="close-button" data-design-id="close-memory-detail-dialog-button" type="button" aria-label="关闭记忆详情弹窗">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>
                 </button>
             </div>
-            <div class="textarea-wrapper" data-design-id="long-memory-editor-wrapper">
-                <textarea class="dialog-textarea" id="longMemoryEditor" data-design-id="long-memory-editor" aria-label="编辑长期记忆" maxlength="20000"></textarea>
-                <span class="character-count" id="longMemoryCount" data-design-id="long-memory-character-count" aria-live="polite">0/20000</span>
+            <p class="detail-meta" id="memoryDetailMeta" data-design-id="memory-detail-meta" hidden></p>
+            <label class="dialog-label" for="memoryTitleEditor" data-design-id="memory-title-label">标题</label>
+            <input class="dialog-input" id="memoryTitleEditor" data-design-id="memory-title-editor" type="text" maxlength="40" placeholder="一句话概括这条记忆">
+            <div class="dialog-label-row">
+                <label class="dialog-label" for="memoryContentEditor" data-design-id="memory-content-label">内容</label>
             </div>
-            <div class="dialog-footer" data-design-id="long-memory-dialog-actions">
-                <button class="secondary-button" data-design-id="cancel-long-memory-button" type="button">取消</button>
-                <button class="solid-button" data-design-id="save-long-memory-button" type="submit">保存</button>
+            <div class="textarea-wrapper detail-content-wrapper" data-design-id="memory-content-editor-wrapper">
+                <textarea class="dialog-textarea" id="memoryContentEditor" data-design-id="memory-content-editor" aria-label="编辑记忆内容" maxlength="20000" placeholder="记录需要长期保留的信息、结论或偏好..."></textarea>
+                <span class="character-count" id="memoryContentCount" data-design-id="memory-content-character-count" aria-live="polite">0 字</span>
+            </div>
+            <p class="remaining-count" id="memoryRemainingCount" data-design-id="memory-remaining-count" aria-live="polite">剩余可用 20000 字</p>
+            <div class="dialog-footer is-split" data-design-id="memory-detail-dialog-actions">
+                <button class="danger-button" id="deleteMemoryButton" data-design-id="delete-memory-button" type="button">删除</button>
+                <div class="dialog-footer-group">
+                    <button class="secondary-button" data-design-id="cancel-memory-detail-button" type="button">取消</button>
+                    <button class="solid-button" data-design-id="save-memory-detail-button" type="submit">保存</button>
+                </div>
             </div>
         </form>
     </dialog>
+
+    <dialog id="confirmDialog" data-design-id="memory-confirm-dialog" aria-labelledby="memory-confirm-title" aria-describedby="memoryConfirmDesc">
+        <div class="dialog-body confirm-body" data-design-id="memory-confirm-body">
+            <div class="confirm-header" data-design-id="memory-confirm-header">
+                <span class="confirm-icon" data-design-id="memory-confirm-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6.5 7l.8 12.1a1 1 0 0 0 1 .9h7.4a1 1 0 0 0 1-.9L17.5 7M10 11v6M14 11v6"/></svg>
+                </span>
+                <div class="confirm-heading">
+                    <h2 class="dialog-title" id="memory-confirm-title" data-design-id="memory-confirm-title">删除这条长期记忆？</h2>
+                    <p class="dialog-desc" id="memoryConfirmDesc" data-design-id="memory-confirm-desc">删除后立即生效且无法恢复，OmniX 在后续对话中将不再引用该内容。</p>
+                </div>
+            </div>
+
+            <div class="confirm-card" data-design-id="memory-confirm-card">
+                <p class="confirm-card-title" id="memoryConfirmTitle" data-design-id="memory-confirm-card-title"></p>
+                <p class="confirm-card-excerpt" id="memoryConfirmExcerpt" data-design-id="memory-confirm-card-excerpt"></p>
+                <p class="confirm-card-meta" id="memoryConfirmMeta" data-design-id="memory-confirm-card-meta"></p>
+            </div>
+
+            <ul class="confirm-tips" data-design-id="memory-confirm-tips">
+                <li>删除不会进入回收站，重要信息请先自行备份。</li>
+                <li>释放的字数额度可用于记录新的记忆。</li>
+                <li>若只需调整表述，建议点击条目进行编辑而非删除。</li>
+            </ul>
+
+            <div class="dialog-footer" data-design-id="memory-confirm-actions">
+                <button class="secondary-button" id="confirmCancelButton" data-design-id="memory-confirm-cancel-button" type="button">取消</button>
+                <button class="danger-button" id="confirmOkButton" data-design-id="memory-confirm-ok-button" type="button">确认删除</button>
+            </div>
+        </div>
+    </dialog>
+
 
     <div class="toast" id="toast" data-design-id="memory-toast" role="status" aria-live="polite"></div>
 
@@ -473,8 +741,40 @@ _用最少的话把事情做好。_
 
 - 高风险操作前简短确认
 - 私密信息不外泄`,
-            longMemory: document.getElementById('longMemoryPreview').value
+            memoryItems: [
+                {
+                    id: 'm-1',
+                    title: '当前主要工作职责',
+                    content: '用户正在负责集团资产咨询顾问、产品调研总结、向总经理汇报等工作，关注 SRM 对接、采购流程调研与产品规划。后续对话中优先结合这些长期目标提供连贯建议。',
+                    createdAt: '2026-09-18 10:24',
+                    updatedAt: '2026-10-28 16:02'
+                },
+                {
+                    id: 'm-2',
+                    title: '汇报材料偏好',
+                    content: '向总经理汇报时使用结论先行的结构：先给判断与影响，再附数据支撑；单页不超过 6 个要点，避免长段落。涉及财务口径需注明数据来源与统计周期。',
+                    createdAt: '2026-09-25 09:12',
+                    updatedAt: '2026-10-19 11:40'
+                },
+                {
+                    id: 'm-3',
+                    title: 'SRM 对接关键约定',
+                    content: 'SRM 系统对接以采购申请单为唯一入口，供应商主数据由集团统一维护，项目侧只读。接口异常时优先核对供应商编码与合同编号映射，不要直接改写主数据。',
+                    createdAt: '2026-10-08 15:31',
+                    updatedAt: '2026-11-02 09:05'
+                },
+                {
+                    id: 'm-4',
+                    title: '产品调研输出格式',
+                    content: '产品调研总结固定输出为：市场概况、竞品对比表、差异化机会、风险与不确定项、下一步建议。竞品对比表至少包含价格、核心能力、集成方式、服务体系四个维度。',
+                    createdAt: '2026-10-21 14:08',
+                    updatedAt: '2026-10-30 17:26'
+                }
+            ]
         };
+
+        const MEMORY_LIMIT = { count: 200, chars: 20000 };
+
 
         const personaPresets = {
             '高效极简': `# 协作风格 - 高效极简
@@ -574,18 +874,36 @@ _你来判断，你来做，我来验收。_
         const personaSection = document.getElementById('personaSection');
         const longMemorySection = document.getElementById('longMemorySection');
         const personaPreview = document.getElementById('personaPreview');
-        const longMemoryPreview = document.getElementById('longMemoryPreview');
         const personaDialog = document.getElementById('personaDialog');
-        const longMemoryDialog = document.getElementById('longMemoryDialog');
         const personaEditor = document.getElementById('personaEditor');
-        const longMemoryEditor = document.getElementById('longMemoryEditor');
         const personaCount = document.getElementById('personaCount');
-        const longMemoryCount = document.getElementById('longMemoryCount');
+        const memoryList = document.getElementById('longMemoryList');
+        const memoryEmpty = document.getElementById('longMemoryEmpty');
+        const memoryQuota = document.getElementById('longMemoryQuota');
+        const addMemoryButton = document.getElementById('addLongMemoryButton');
+        const memoryDetailDialog = document.getElementById('memoryDetailDialog');
+        const memoryTitleEditor = document.getElementById('memoryTitleEditor');
+        const memoryContentEditor = document.getElementById('memoryContentEditor');
+        const memoryContentCount = document.getElementById('memoryContentCount');
+        const memoryRemainingCount = document.getElementById('memoryRemainingCount');
+        const memoryDetailMeta = document.getElementById('memoryDetailMeta');
+        const deleteMemoryButton = document.getElementById('deleteMemoryButton');
+        const confirmDialog = document.getElementById('confirmDialog');
+        const confirmTitle = document.getElementById('memoryConfirmTitle');
+        const confirmExcerpt = document.getElementById('memoryConfirmExcerpt');
+        const confirmMeta = document.getElementById('memoryConfirmMeta');
+        const confirmOkButton = document.getElementById('confirmOkButton');
         const toast = document.getElementById('toast');
         let toastTimer;
+        let editingId = null;
+        let pendingDeleteId = null;
 
         function updateCharacterCount(editor, counter) {
             counter.textContent = `${editor.value.length}/${editor.maxLength}`;
+        }
+
+        function updateContentCount() {
+            memoryContentCount.textContent = `${memoryContentEditor.value.length} 字`;
         }
 
         function showToast(message) {
@@ -601,15 +919,90 @@ _你来判断，你来做，我来验收。_
             element.classList.toggle('empty-content', !value.trim());
         }
 
+        function memoryChars(item) {
+            return item.title.length + item.content.length;
+        }
+
+        function totalMemoryChars(items = state.memoryItems) {
+            return items.reduce((sum, item) => sum + memoryChars(item), 0);
+        }
+
+        function formatNow() {
+            const now = new Date();
+            const pad = value => String(value).padStart(2, '0');
+            return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+        }
+
+        function excerpt(content) {
+            const text = content.replace(/\s+/g, ' ').trim();
+            return text.length > 80 ? `${text.slice(0, 80)}…` : text;
+        }
+
+        function renderMemoryList() {
+            const items = state.memoryItems;
+            memoryList.innerHTML = '';
+            memoryEmpty.hidden = items.length > 0;
+            memoryList.hidden = items.length === 0;
+
+            items.forEach((item, index) => {
+                const row = document.createElement('li');
+                row.className = 'memory-item';
+                row.dataset.id = item.id;
+
+                const main = document.createElement('button');
+                main.type = 'button';
+                main.className = 'memory-item-main';
+                main.dataset.action = 'detail';
+                main.setAttribute('aria-label', `查看记忆详情：${item.title}`);
+
+                const order = document.createElement('span');
+                order.className = 'memory-index';
+                order.textContent = String(index + 1).padStart(2, '0');
+
+                const body = document.createElement('span');
+                body.className = 'memory-item-body';
+
+                const title = document.createElement('span');
+                title.className = 'memory-item-title';
+                title.textContent = item.title;
+
+                const summary = document.createElement('span');
+                summary.className = 'memory-item-excerpt';
+                summary.textContent = excerpt(item.content) || '（无内容）';
+
+                body.append(title, summary);
+
+                const time = document.createElement('span');
+                time.className = 'memory-item-time';
+                time.textContent = item.updatedAt;
+
+                main.append(order, body, time);
+
+                const remove = document.createElement('button');
+                remove.type = 'button';
+                remove.className = 'memory-delete';
+                remove.dataset.action = 'delete';
+                remove.setAttribute('aria-label', `删除记忆：${item.title}`);
+                remove.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6.5 7l.8 12.1a1 1 0 0 0 1 .9h7.4a1 1 0 0 0 1-.9L17.5 7M10 11v6M14 11v6"/></svg>';
+
+                row.append(main, remove);
+                memoryList.append(row);
+            });
+
+            const chars = totalMemoryChars();
+            memoryQuota.textContent = `${items.length} / ${MEMORY_LIMIT.count} 条 · ${chars} / ${MEMORY_LIMIT.chars} 字`;
+            memoryQuota.classList.toggle('is-over', items.length >= MEMORY_LIMIT.count || chars >= MEMORY_LIMIT.chars);
+        }
+
         function renderState() {
             memorySwitch.setAttribute('aria-checked', String(state.enabled));
             memorySwitch.setAttribute('aria-label', state.enabled ? '全局记忆已开启' : '全局记忆已关闭');
             personaSection.classList.toggle('is-disabled', !state.enabled);
             longMemorySection.classList.toggle('is-disabled', !state.enabled);
             document.getElementById('editPersonaButton').disabled = !state.enabled;
-            document.getElementById('editLongMemoryButton').disabled = !state.enabled;
+            addMemoryButton.disabled = !state.enabled;
             updatePreview(personaPreview, state.persona, '暂未设置人设。点击编辑，选择预设或输入自定义设定。');
-            updatePreview(longMemoryPreview, state.longMemory, '暂无长期记忆。');
+            renderMemoryList();
         }
 
         function openDialog(dialog) {
@@ -617,25 +1010,97 @@ _你来判断，你来做，我来验收。_
             dialog.showModal();
         }
 
+        function findItem(id) {
+            return state.memoryItems.find(item => item.id === id);
+        }
+
+        function updateRemainingCount() {
+            const others = state.memoryItems.filter(item => item.id !== editingId);
+            const used = totalMemoryChars(others) + memoryTitleEditor.value.trim().length + memoryContentEditor.value.trim().length;
+            const remaining = MEMORY_LIMIT.chars - used;
+            memoryRemainingCount.textContent = `剩余可用 ${Math.max(0, remaining)} 字`;
+            memoryRemainingCount.classList.toggle('is-over', remaining < 0);
+        }
+
+        function openMemoryDetail(item) {
+            editingId = item ? item.id : null;
+            memoryTitleEditor.value = item ? item.title : '';
+            memoryContentEditor.value = item ? item.content : '';
+            memoryDetailMeta.hidden = !item;
+            memoryDetailMeta.textContent = item
+                ? `创建于 ${item.createdAt} · 更新于 ${item.updatedAt} · 当前占用 ${memoryChars(item)} 字`
+                : '';
+            deleteMemoryButton.hidden = !item;
+            updateContentCount();
+            updateRemainingCount();
+            openDialog(memoryDetailDialog);
+            if (memoryDetailDialog.open) memoryTitleEditor.focus();
+        }
+
+        function requestDelete(item) {
+            if (!item) return;
+            pendingDeleteId = item.id;
+            confirmTitle.textContent = item.title;
+            confirmExcerpt.textContent = excerpt(item.content) || '（无内容）';
+            const others = state.memoryItems.filter(entry => entry.id !== item.id);
+            confirmMeta.textContent = `更新于 ${item.updatedAt} · 占用 ${memoryChars(item)} 字 · 删除后剩余 ${Math.max(0, MEMORY_LIMIT.chars - totalMemoryChars(others))} 字`;
+            openDialog(confirmDialog);
+            if (confirmDialog.open) document.getElementById('confirmCancelButton').focus();
+        }
+
+        function applyDelete(id) {
+            const item = findItem(id);
+            if (!item) return;
+            state.memoryItems = state.memoryItems.filter(entry => entry.id !== id);
+            renderMemoryList();
+            showToast('记忆已删除');
+        }
+
+        memoryList.addEventListener('click', event => {
+            if (!state.enabled) return;
+            const trigger = event.target.closest('[data-action]');
+            if (!trigger) return;
+            const row = trigger.closest('.memory-item');
+            const item = findItem(row.dataset.id);
+            if (!item) return;
+            if (trigger.dataset.action === 'delete') {
+                requestDelete(item);
+            } else {
+                openMemoryDetail(item);
+            }
+        });
+
+        addMemoryButton.addEventListener('click', () => {
+            if (state.memoryItems.length >= MEMORY_LIMIT.count) {
+                showToast(`长期记忆已达上限 ${MEMORY_LIMIT.count} 条，请先删除部分条目`);
+                return;
+            }
+            openMemoryDetail(null);
+        });
+
         memorySwitch.addEventListener('click', () => {
             state.enabled = !state.enabled;
             renderState();
             showToast(state.enabled ? '全局记忆已开启' : '全局记忆已关闭，内容将停止更新');
         });
 
-        document.getElementById('editPersonaButton').addEventListener('click', () => {
+        function openPersonaEditor() {
             personaEditor.value = state.persona;
             updateCharacterCount(personaEditor, personaCount);
             document.querySelectorAll('.preset-button').forEach(button => {
                 button.classList.toggle('is-active', personaPresets[button.dataset.preset] === state.persona);
             });
             openDialog(personaDialog);
-        });
+        }
 
-        document.getElementById('editLongMemoryButton').addEventListener('click', () => {
-            longMemoryEditor.value = state.longMemory;
-            updateCharacterCount(longMemoryEditor, longMemoryCount);
-            openDialog(longMemoryDialog);
+        document.getElementById('editPersonaButton').addEventListener('click', openPersonaEditor);
+
+        personaPreview.addEventListener('click', openPersonaEditor);
+        personaPreview.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openPersonaEditor();
+            }
         });
 
         document.querySelectorAll('.preset-button').forEach(button => {
@@ -648,14 +1113,37 @@ _你来判断，你来做，我来验收。_
         });
 
         personaEditor.addEventListener('input', () => updateCharacterCount(personaEditor, personaCount));
-        longMemoryEditor.addEventListener('input', () => updateCharacterCount(longMemoryEditor, longMemoryCount));
+        memoryContentEditor.addEventListener('input', () => {
+            updateContentCount();
+            updateRemainingCount();
+        });
+        memoryTitleEditor.addEventListener('input', updateRemainingCount);
 
         function closeDialog(dialog) { dialog.close(); }
 
+        function enableBackdropClose(dialog, onClose) {
+            let startedOnBackdrop = false;
+
+            dialog.addEventListener('mousedown', event => {
+                startedOnBackdrop = event.target === dialog;
+            });
+
+            dialog.addEventListener('click', event => {
+                if (event.target !== dialog || !startedOnBackdrop) return;
+                startedOnBackdrop = false;
+                if (onClose) onClose();
+                closeDialog(dialog);
+            });
+        }
+
+        enableBackdropClose(personaDialog);
+        enableBackdropClose(memoryDetailDialog, () => { editingId = null; });
+        enableBackdropClose(confirmDialog, () => { pendingDeleteId = null; });
+
         document.querySelector('[data-design-id="close-persona-dialog-button"]').addEventListener('click', () => closeDialog(personaDialog));
         document.querySelector('[data-design-id="cancel-persona-button"]').addEventListener('click', () => closeDialog(personaDialog));
-        document.querySelector('[data-design-id="close-long-memory-dialog-button"]').addEventListener('click', () => closeDialog(longMemoryDialog));
-        document.querySelector('[data-design-id="cancel-long-memory-button"]').addEventListener('click', () => closeDialog(longMemoryDialog));
+        document.querySelector('[data-design-id="close-memory-detail-dialog-button"]').addEventListener('click', () => closeDialog(memoryDetailDialog));
+        document.querySelector('[data-design-id="cancel-memory-detail-button"]').addEventListener('click', () => closeDialog(memoryDetailDialog));
 
         personaDialog.addEventListener('submit', event => {
             event.preventDefault();
@@ -665,21 +1153,81 @@ _你来判断，你来做，我来验收。_
             showToast('人设设定已保存');
         });
 
-        longMemoryDialog.addEventListener('submit', event => {
+        memoryDetailDialog.addEventListener('submit', event => {
             event.preventDefault();
-            state.longMemory = longMemoryEditor.value.trim();
-            renderState();
-            closeDialog(longMemoryDialog);
-            showToast('长期记忆已保存');
+            const title = memoryTitleEditor.value.trim();
+            const content = memoryContentEditor.value.trim();
+
+            if (!content) {
+                showToast('记忆内容不能为空');
+                memoryContentEditor.focus();
+                return;
+            }
+
+            const nextTitle = title || excerpt(content).slice(0, 20) || '未命名记忆';
+            const others = state.memoryItems.filter(item => item.id !== editingId);
+            const nextChars = totalMemoryChars(others) + nextTitle.length + content.length;
+
+            if (nextChars > MEMORY_LIMIT.chars) {
+                showToast(`总字数超出上限，最多 ${MEMORY_LIMIT.chars} 字（当前将占用 ${nextChars} 字）`);
+                return;
+            }
+
+            const now = formatNow();
+
+            if (editingId) {
+                const item = findItem(editingId);
+                item.title = nextTitle;
+                item.content = content;
+                item.updatedAt = now;
+            } else {
+                if (state.memoryItems.length >= MEMORY_LIMIT.count) {
+                    showToast(`长期记忆已达上限 ${MEMORY_LIMIT.count} 条`);
+                    return;
+                }
+                state.memoryItems.unshift({
+                    id: `m-${Date.now()}`,
+                    title: nextTitle,
+                    content,
+                    createdAt: now,
+                    updatedAt: now
+                });
+            }
+
+            renderMemoryList();
+            closeDialog(memoryDetailDialog);
+            showToast(editingId ? '记忆已更新' : '记忆已添加');
+            editingId = null;
         });
 
-        document.getElementById('openFolderButton').addEventListener('click', () => {
-            showToast('已请求打开记忆文件夹');
+        deleteMemoryButton.addEventListener('click', () => {
+            const item = findItem(editingId);
+            if (!item) return;
+            editingId = null;
+            closeDialog(memoryDetailDialog);
+            requestDelete(item);
         });
+
+        confirmOkButton.addEventListener('click', () => {
+            closeDialog(confirmDialog);
+            if (pendingDeleteId) {
+                if (editingId === pendingDeleteId) editingId = null;
+                applyDelete(pendingDeleteId);
+                pendingDeleteId = null;
+            }
+        });
+
+        document.getElementById('confirmCancelButton').addEventListener('click', () => {
+            pendingDeleteId = null;
+            closeDialog(confirmDialog);
+        });
+
+        confirmDialog.addEventListener('cancel', () => { pendingDeleteId = null; });
+        memoryDetailDialog.addEventListener('cancel', () => { editingId = null; });
 
         renderState();
         updateCharacterCount(personaEditor, personaCount);
-        updateCharacterCount(longMemoryEditor, longMemoryCount);
+
     </script>
 </body>
 </html>
