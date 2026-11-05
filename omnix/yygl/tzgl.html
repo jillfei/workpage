@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>通知管理</title>
-    <script src="https://modao.cc/agent-py/static/source/js/iconify-icon.min.js">
+    <script src="https://jillfei.github.io/workpage/omnix/style/js/iconify-icon.min.js">
     </script>
     <style>
         *,
@@ -92,6 +92,39 @@
         .tag-unread {
             background: #FEF3C7;
             color: #D97706;
+        }
+
+        /* 接收人员标识（全员 / 单人 / 多人） */
+        .scope-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+        .scope-badge iconify-icon {
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        .scope-badge .scope-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .scope-all {
+            background: #EEF2FF;
+            color: #4F46E5;
+        }
+        .scope-single {
+            background: #F3F4F6;
+            color: #6B7280;
+        }
+        .scope-multi {
+            background: #F3F4F6;
+            color: #6B7280;
         }
 
         .toggle-switch {
@@ -985,7 +1018,7 @@
                     <div class="flex items-center gap-4">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="radio" name="notice-scope" value="all" checked onchange="onScopeChange()" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
-                            <span class="text-sm text-gray-700">全员（<span id="scope-all-count">30</span> 人）</span>
+                            <span class="text-sm text-gray-700">全员</span>
                         </label>
                     </div>
                 </div>
@@ -1321,7 +1354,7 @@
             status: 'sent',
             scope: 'selected',
             templateId: 5,
-            recipients: makeRecipients([1, 5, 6], [1, 5], '2026-11-03'),
+            recipients: makeRecipients([1], [1], '2026-11-03'),
             createdBy: '系统',
             createdAt: '2026-11-03 02:15',
             sentAt: '2026-11-03 02:15'
@@ -1424,8 +1457,10 @@
         }];
 
         notices.forEach(notice => {
-            notice.scope = 'all';
-            notice.recipients = makeRecipients(allIds, [], '');
+            if (notice.source === 'manual') {
+                notice.scope = 'all';
+                notice.recipients = makeRecipients(allIds, [], '');
+            }
             if (notice.status === 'pending') {
                 notice.status = 'sent';
                 notice.sentAt = notice.createdAt;
@@ -1505,8 +1540,24 @@
         }
 
         function scopeText(n) {
-            const s = readStats(n);
-            return n.scope === 'all' ? '全员' : '指定人员';
+            if (n.scope === 'all') return '全员';
+            const names = n.recipients.map(r => r.name);
+            if (names.length === 1) return names[0];
+            return names.slice(0, 2).join('、') + (names.length > 2 ? ` 等 ${names.length} 人` : '');
+        }
+
+        function scopeBadge(n) {
+            const isAll = n.scope === 'all';
+            const names = n.recipients.map(r => r.name);
+            const isSingle = !isAll && names.length === 1;
+            const icon = isAll ? 'mdi:account-group-outline'
+                : (isSingle ? 'mdi:account-outline' : 'mdi:account-multiple-outline');
+            const cls = isAll ? 'scope-all' : (isSingle ? 'scope-single' : 'scope-multi');
+            const tip = isAll ? `全员通知（${names.length} 人）`
+                : (isSingle ? `单独发送给 ${names[0]}` : `指定人员：${names.join('、')}`);
+            return `<span class="scope-badge ${cls}" title="${esc(tip)}">` +
+                `<iconify-icon icon="${icon}"></iconify-icon>` +
+                `<span class="scope-text">${esc(scopeText(n))}</span></span>`;
         }
 
         function getFilteredNotices() {
@@ -1560,7 +1611,7 @@
                         <span class="block truncate" style="max-width:230px;" title="${esc(n.content)}">${esc(n.content.replace(/\n/g, ' '))}</span>
                     </td>
                     <td class="px-4 py-3"><span class="tag ${src.cls}">${src.label}</span></td>
-                    <td class="px-4 py-3 text-gray-600 whitespace-nowrap">${scopeText(n)}</td>
+                    <td class="px-4 py-3 text-gray-600 whitespace-nowrap"><div style="max-width:200px;">${scopeBadge(n)}</div></td>
                     <td class="px-4 py-3"><span class="tag ${st.cls}">${st.label}</span></td>
                     <td class="px-4 py-3 text-gray-500 whitespace-nowrap">${n.status === 'pending' ? '<span class="text-orange-500">' + esc(n.sentAt) + '</span>' : esc(n.sentAt || '—')}</td>
                     <td class="px-4 py-3 text-gray-500 whitespace-nowrap">${esc(n.createdAt)}</td>
@@ -1665,7 +1716,8 @@
             const st = statusMeta[n.status];
             document.getElementById('detail-source-tag').innerHTML = `<span class="tag ${src.cls}">${src.label}</span>`;
             document.getElementById('detail-status-tag').innerHTML = `<span class="tag ${st.cls}">${st.label}</span>`;
-            document.getElementById('detail-scope').textContent = '接收范围：' + scopeText(n);
+            document.getElementById('detail-scope').innerHTML =
+                `<span style="display:inline-flex;align-items:center;gap:6px;">接收人员：${scopeBadge(n)}</span>`;
             document.getElementById('detail-creator').textContent = n.createdBy;
             document.getElementById('detail-created-at').textContent = n.createdAt;
             document.getElementById('detail-sent-at').textContent =
@@ -1731,7 +1783,8 @@
             document.getElementById('content-count').textContent = '0';
             document.querySelector('input[name="notice-scope"][value="all"]').checked = true;
             document.getElementById('create-time-preview').textContent = nowStr(false);
-            document.getElementById('scope-all-count').textContent = people.length;
+            const scopeAllCountEl = document.getElementById('scope-all-count');
+            if (scopeAllCountEl) scopeAllCountEl.textContent = people.length;
             selectedPersonIds = [];
             pickerDraftIds = [];
             pickerSearch = '';
@@ -1755,7 +1808,8 @@
             document.querySelector(`input[name="notice-scope"][value="${n.scope}"]`).checked = true;
             selectedPersonIds = n.scope === 'selected' ? n.recipients.map(r => r.id) : [];
             pickerDraftIds = selectedPersonIds.slice();
-            document.getElementById('scope-all-count').textContent = people.length;
+            const scopeAllCountEl = document.getElementById('scope-all-count');
+            if (scopeAllCountEl) scopeAllCountEl.textContent = people.length;
             onScopeChange();
             renderSelectedPersons();
 

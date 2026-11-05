@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>意见反馈管理</title>
-    <script src="https://cdn.jsdmirror.com/npm/iconify-icon@3.0.2/dist/iconify-icon.min.js"></script>
+    <script src="https://jillfei.github.io/workpage/omnix/style/js/iconify-icon.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -57,8 +57,6 @@
         .modal-box.wide { width: 880px; }
 
         /* ─ 表单 ── */
-        .form-label { font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px; }
-        .form-label .required { color: #ef4444; margin-left: 2px; }
         .form-input, .form-select, .form-textarea { width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #374151; outline: none; transition: border-color 0.15s, box-shadow 0.15s; background: #fff; font-family: inherit; }
         .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
         .form-input::placeholder, .form-textarea::placeholder { color: #9ca3af; }
@@ -118,8 +116,24 @@
 
         /* ── 详情区块 ── */
         .detail-section { padding: 12px 14px; border: 1px solid #f3f4f6; border-radius: 8px; background: #fafafa; font-size: 13px; color: #4b5563; line-height: 1.7; word-break: break-word; }
-        .detail-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 24px; font-size: 13px; color: #6b7280; }
-        .detail-meta span strong { color: #374151; font-weight: 500; margin-right: 4px; }
+
+        /* ── 详情分块卡片 ── */
+        .detail-block { border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; background: #fff; }
+        .detail-block-head { display: flex; align-items: center; gap: 10px; padding: 11px 16px; background: #f9fafb; border-bottom: 1px solid #f3f4f6; }
+        .detail-block-head::before { content: ''; width: 3px; height: 14px; border-radius: 2px; background: #3b82f6; flex-shrink: 0; }
+        .detail-block-head.process::before { background: #10b981; }
+        .detail-block-title { font-size: 14px; font-weight: 600; color: #111827; }
+        .detail-block-extra { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 12px; color: #6b7280; }
+        .detail-block-body { padding: 16px; }
+        .detail-field { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 24px; }
+        .detail-field-item { min-width: 0; }
+        .detail-field-item.wide { grid-column: 1 / -1; }
+        .detail-field-label { font-size: 12px; color: #9ca3af; margin-bottom: 4px; }
+        .detail-field-value { font-size: 13px; color: #1f2937; word-break: break-word; }
+        .detail-sublabel { font-size: 12px; color: #9ca3af; margin-bottom: 6px; }
+        .detail-block-body > * + * { margin-top: 16px; }
+        .detail-empty { padding: 28px 16px; text-align: center; color: #9ca3af; font-size: 13px; }
+        .detail-empty iconify-icon { display: block; margin: 0 auto 8px; font-size: 30px; color: #d1d5db; }
 
         /* ── 图片缩略图 ── */
         .img-thumb-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
@@ -142,20 +156,6 @@
         .upload-preview-item { position: relative; width: 64px; height: 64px; border-radius: 6px; overflow: hidden; border: 1px solid #e5e7eb; }
         .upload-preview-item img { width: 100%; height: 100%; object-fit: cover; }
         .upload-preview-item .remove-btn { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.5); color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; line-height: 1; }
-
-        /* ── 操作日志时间线 ── */
-        .timeline { position: relative; padding-left: 24px; }
-        .timeline::before { content: ''; position: absolute; left: 7px; top: 4px; bottom: 4px; width: 2px; background: #e5e7eb; }
-        .timeline-item { position: relative; padding-bottom: 20px; }
-        .timeline-item:last-child { padding-bottom: 0; }
-        .timeline-dot { position: absolute; left: -20px; top: 4px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #3b82f6; background: #fff; }
-        .timeline-dot.process { border-color: #047857; }
-        .timeline-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-        .timeline-action { font-size: 13px; font-weight: 600; color: #374151; }
-        .timeline-time { font-size: 12px; color: #9ca3af; }
-        .timeline-operator { font-size: 12px; color: #6b7280; }
-        .timeline-body { font-size: 13px; color: #4b5563; line-height: 1.6; }
-        .timeline-body .detail-section { margin-top: 6px; }
 
         /* ── 图片灯箱 ── */
         .lightbox { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
@@ -271,7 +271,7 @@
                         <th style="width:80px">来源端</th>
                         <th style="width:90px">当前状态</th>
                         <th style="width:140px">提交时间</th>
-                        <th style="width:140px">更新时间</th>
+                        <th style="width:140px">处理时间</th>
                         <th style="width:120px">操作</th>
                     </tr>
                 </thead>
@@ -337,36 +337,70 @@
 
 <!-- ========== 处理弹窗 ========== -->
 <div class="modal-overlay" id="processModal">
-    <div class="modal-box">
+    <div class="modal-box wide">
         <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
             <h3 class="text-lg font-semibold text-gray-900">处理反馈</h3>
             <button onclick="closeModal('processModal')" class="text-gray-400 hover:text-gray-600 transition-colors bg-white"><iconify-icon icon="mdi:close" class="text-xl"></iconify-icon></button>
         </div>
         <div class="px-6 py-5 space-y-5">
-            <div class="detail-meta mb-4">
-                <span><strong>反馈编号：</strong><span id="processFbId"></span></span>
-                <span><strong>提交用户：</strong><span id="processFbUser"></span></span>
-                <span><strong>来源端：</strong><span id="processFbSource"></span></span>
-            </div>
-            <div>
-                <div class="form-label">反馈内容</div>
-                <div class="detail-section" id="processFbContent"></div>
-                <div id="processFbImages" class="img-thumb-list"></div>
-                <div id="processFbLog"></div>
-            </div>
-            <div>
-                <div class="form-label">备注</div>
-                <textarea id="processNote" class="form-textarea" placeholder="请填写处理备注（选填）"></textarea>
-            </div>
-            <div>
-                <div class="form-label">附件（图片）</div>
-                <div class="upload-area" onclick="document.getElementById('processFileInput').click()">
-                    <iconify-icon icon="mdi:image-plus-outline" class="text-gray-400 text-lg"></iconify-icon>
-                    <div class="text-xs text-gray-500 mt-2">点击上传图片，支持多张</div>
-                    <input id="processFileInput" type="file" accept="image/*" multiple onchange="handleUploadPreview(this, 'processUploadPreview')"/>
+            <!-- ===== 上半部分：反馈详情 ===== -->
+            <section class="detail-block">
+                <div class="detail-block-head">
+                    <span class="detail-block-title">反馈详情</span>
+                    <div class="detail-block-extra">
+                        <span id="processFbStatus"></span>
+                        <span>编号 <strong class="text-gray-900 font-medium" id="processFbId"></strong></span>
+                    </div>
                 </div>
-                <div id="processUploadPreview" class="upload-preview"></div>
-            </div>
+                <div class="detail-block-body">
+                    <div class="detail-field">
+                        <div class="detail-field-item">
+                            <div class="detail-field-label">提交用户</div>
+                            <div class="detail-field-value" id="processFbUser">-</div>
+                        </div>
+                        <div class="detail-field-item">
+                            <div class="detail-field-label">来源端</div>
+                            <div class="detail-field-value" id="processFbSource">-</div>
+                        </div>
+                        <div class="detail-field-item">
+                            <div class="detail-field-label">提交时间</div>
+                            <div class="detail-field-value" id="processFbCreated">-</div>
+                        </div>
+                        <div class="detail-field-item wide">
+                            <div class="detail-sublabel">反馈内容</div>
+                            <div class="detail-section" id="processFbContent">-</div>
+                            <div id="processFbImages" class="img-thumb-list"></div>
+                            <div id="processFbLog"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== 下半部分：处理详情 ===== -->
+            <section class="detail-block">
+                <div class="detail-block-head process">
+                    <span class="detail-block-title">处理详情</span>
+                </div>
+                <div class="detail-block-body">
+                    <div>
+                        <div class="detail-sublabel">处理人</div>
+                        <div class="detail-field-value" id="processOperator">-</div>
+                    </div>
+                    <div>
+                        <div class="detail-sublabel">处理备注</div>
+                        <textarea id="processNote" class="form-textarea" placeholder="请填写处理备注（选填）"></textarea>
+                    </div>
+                    <div>
+                        <div class="detail-sublabel">附件（图片）</div>
+                        <div class="upload-area" onclick="document.getElementById('processFileInput').click()">
+                            <iconify-icon icon="mdi:image-plus-outline" class="text-gray-400 text-lg"></iconify-icon>
+                            <div class="text-xs text-gray-500 mt-2">点击上传图片，支持多张</div>
+                            <input id="processFileInput" type="file" accept="image/*" multiple onchange="handleUploadPreview(this, 'processUploadPreview')"/>
+                        </div>
+                        <div id="processUploadPreview" class="upload-preview"></div>
+                    </div>
+                </div>
+            </section>
         </div>
         <div class="flex items-center justify-end space-x-3 px-6 pb-5 pt-2 border-t border-gray-100">
             <button onclick="closeModal('processModal')" class="px-5 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">取消</button>
@@ -383,36 +417,69 @@
             <button onclick="closeModal('detailModal')" class="text-gray-400 hover:text-gray-600 transition-colors bg-white"><iconify-icon icon="mdi:close" class="text-xl"></iconify-icon></button>
         </div>
         <div class="px-6 py-5 space-y-5">
-            <!-- 基础信息 -->
-            <div class="detail-meta">
-                <span><strong>反馈编号：</strong><span id="detailId"></span></span>
-                <span><strong>提交用户：</strong><span id="detailUser"></span></span>
-                <span><strong>来源端：</strong><span id="detailSource"></span></span>
-                <span><strong>当前状态：</strong><span id="detailStatus"></span></span>
-                <span><strong>提交时间：</strong><span id="detailCreated"></span></span>
-                <span><strong>更新时间：</strong><span id="detailUpdated"></span></span>
-            </div>
-            <!-- 用户提交内容 -->
-            <div>
-                <div class="form-label">反馈内容</div>
-                <div class="detail-section" id="detailContent"></div>
-                <div id="detailImages" class="img-thumb-list"></div>
-                <div id="detailLog"></div>
-            </div>
-            <!-- 处理备注 -->
-            <div>
-                <div class="form-label">处理备注</div>
-                <div class="detail-section" id="detailReply">暂无备注</div>
-                <div id="detailReplyImages" class="img-thumb-list"></div>
-            </div>
-            <!-- 操作日志 -->
-            <div>
-                <div class="form-label">操作日志</div>
-                <div id="detailTimeline" class="timeline"></div>
-            </div>
+            <!-- ===== 上半部分：反馈详情 ===== -->
+            <section class="detail-block">
+                <div class="detail-block-head">
+                    <span class="detail-block-title">反馈详情</span>
+                    <div class="detail-block-extra">
+                        <span id="detailStatus"></span>
+                        <span>编号 <strong class="text-gray-900 font-medium" id="detailId"></strong></span>
+                    </div>
+                </div>
+                <div class="detail-block-body">
+                    <div class="detail-field">
+                        <div class="detail-field-item">
+                            <div class="detail-field-label">提交用户</div>
+                            <div class="detail-field-value" id="detailUser">-</div>
+                        </div>
+                        <div class="detail-field-item">
+                            <div class="detail-field-label">来源端</div>
+                            <div class="detail-field-value" id="detailSource">-</div>
+                        </div>
+                        <div class="detail-field-item">
+                            <div class="detail-field-label">提交时间</div>
+                            <div class="detail-field-value" id="detailCreated">-</div>
+                        </div>
+                        <div class="detail-field-item wide">
+                            <div class="detail-sublabel">反馈内容</div>
+                            <div class="detail-section" id="detailContent">-</div>
+                            <div id="detailImages" class="img-thumb-list"></div>
+                            <div id="detailLog"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== 下半部分：处理详情 ===== -->
+            <section class="detail-block">
+                <div class="detail-block-head process">
+                    <span class="detail-block-title">处理详情</span>
+                </div>
+                <div class="detail-block-body">
+                    <div id="detailProcessEmpty" class="detail-empty hidden">
+                        <iconify-icon icon="mdi:clipboard-text-clock-outline"></iconify-icon>
+                        该反馈尚未处理
+                    </div>
+                    <div id="detailProcessInfo" class="detail-field">
+                        <div class="detail-field-item">
+                            <div class="detail-field-label">处理人</div>
+                            <div class="detail-field-value" id="detailOperator">-</div>
+                        </div>
+                        <div class="detail-field-item">
+                            <div class="detail-field-label">处理时间</div>
+                            <div class="detail-field-value" id="detailProcessTime">-</div>
+                        </div>
+                        <div class="detail-field-item wide">
+                            <div class="detail-sublabel">处理备注</div>
+                            <div class="detail-section" id="detailReply">暂无备注</div>
+                            <div id="detailReplyImages" class="img-thumb-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
         <div class="flex items-center justify-end px-6 pb-5 pt-2 border-t border-gray-100">
-            <div id="detailActions" class="flex items-center space-x-3 mr-4 pr-4 border-r border-gray-200"></div>
+            <div id="detailActions" class="hidden items-center space-x-3 mr-4 pr-4 border-r border-gray-200"></div>
             <button onclick="closeModal('detailModal')" class="px-5 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">关闭</button>
         </div>
     </div>
@@ -536,6 +603,7 @@ function renderList(list) {
     const end = Math.min(start + pageSize, list.length);
     list.slice(start, end).forEach(item => {
         const st = STATUS_MAP[item.status] || STATUS_MAP.pending;
+        const processLog = getProcessLog(item);
         const tr = document.createElement('tr');
         let actions = `<a class="action-link" onclick="event.stopPropagation(); openDetail('${item.id}')">查看</a>`;
         if (item.status === 'pending') {
@@ -548,7 +616,7 @@ function renderList(list) {
             <td class="text-sm text-gray-600">${escapeHtml(item.source)}</td>
             <td><span class="status-tag ${st.cls}">${st.label}</span></td>
             <td class="text-sm text-gray-600">${item.createdAt}</td>
-            <td class="text-sm text-gray-600">${item.updatedAt}</td>
+            <td class="text-sm text-gray-600">${processLog ? processLog.time : '<span class="text-gray-300">-</span>'}</td>
             <td>${actions}</td>
         `;
         tr.onclick = () => openDetail(item.id);
@@ -560,6 +628,10 @@ function renderList(list) {
 function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]);
+}
+
+function getProcessLog(item) {
+    return (item.logs || []).find(log => log.type === 'process') || null;
 }
 
 // ====== 筛选 ======
@@ -732,12 +804,16 @@ function openProcess(id) {
     const item = feedbackList.find(x => x.id === id);
     if (!item || item.status !== 'pending') return;
     currentModalId = id;
+    const st = STATUS_MAP[item.status] || STATUS_MAP.pending;
+    document.getElementById('processFbStatus').innerHTML = `<span class="status-tag ${st.cls}">${st.label}</span>`;
     document.getElementById('processFbId').textContent = item.id;
     document.getElementById('processFbUser').textContent = item.user;
     document.getElementById('processFbSource').textContent = item.source;
+    document.getElementById('processFbCreated').textContent = item.createdAt;
     document.getElementById('processFbContent').textContent = item.content;
     renderThumbs('processFbImages', item.images);
     renderLogLink('processFbLog', item.logFile);
+    document.getElementById('processOperator').textContent = CURRENT_USER;
     document.getElementById('processNote').value = '';
     document.getElementById('processUploadPreview').innerHTML = '';
     document.getElementById('processModal').classList.add('active');
@@ -757,36 +833,6 @@ function saveProcess() {
     alert('处理成功，状态已变更为"已处理"');
 }
 
-// ====== 处理 ======
-function openProcess(id) {
-    const item = feedbackList.find(x => x.id === id);
-    if (!item || item.status !== 'pending') return;
-    currentModalId = id;
-    document.getElementById('processFbId').textContent = item.id;
-    document.getElementById('processFbUser').textContent = item.user;
-    document.getElementById('processFbSource').textContent = item.source;
-    document.getElementById('processFbContent').textContent = item.content;
-    renderThumbs('processFbImages', item.images);
-    renderLogLink('processFbLog', item.logFile);
-    document.getElementById('processNote').value = '';
-    document.getElementById('processUploadPreview').innerHTML = '';
-    document.getElementById('processModal').classList.add('active');
-}
-
-function saveProcess() {
-    if (!currentModalId) return;
-    const item = feedbackList.find(x => x.id === currentModalId);
-    if (!item) return;
-    const note = document.getElementById('processNote').value.trim();
-    const processImgs = Array.from(document.querySelectorAll('#processUploadPreview .upload-preview-item img')).map(i => i.src);
-    item.status = 'replied';
-    item.updatedAt = nowStr();
-    item.logs.push({ action: '处理', operator: '-', time: item.updatedAt, note: note || '-', type: 'process', images: processImgs });
-    closeModal('processModal');
-    filterList();
-    alert('处理成功，状态已变更为"已处理"');
-}
-
 // ====== 详情 ======
 function openDetail(id) {
     const item = feedbackList.find(x => x.id === id);
@@ -797,45 +843,31 @@ function openDetail(id) {
     document.getElementById('detailSource').textContent = item.source;
     document.getElementById('detailStatus').innerHTML = `<span class="status-tag ${st.cls}">${st.label}</span>`;
     document.getElementById('detailCreated').textContent = item.createdAt;
-    document.getElementById('detailUpdated').textContent = item.updatedAt;
     document.getElementById('detailContent').textContent = item.content;
     renderThumbs('detailImages', item.images);
     renderLogLink('detailLog', item.logFile);
-    // 处理备注
-    const processLog = item.logs.find(log => log.type === 'process');
-    document.getElementById('detailReply').textContent = processLog ? (processLog.note !== '-' ? processLog.note : '无备注') : '暂无备注';
-    renderThumbs('detailReplyImages', processLog ? processLog.images : []);
-    // 时间线
-    const tl = document.getElementById('detailTimeline');
-    tl.innerHTML = '';
-    if (!item.logs.length) {
-        tl.innerHTML = '<div class="text-sm text-gray-400">暂无操作记录</div>';
-    } else {
-        item.logs.forEach(log => {
-            const dotCls = 'process';
-            const imgsHtml = (log.images && log.images.length) ? '<div class="img-thumb-list">' + log.images.map(s => s === 'placeholder' ? '<div class="image-placeholder" onclick="openLightbox(\'placeholder\')"><iconify-icon icon="mdi:image-outline"></iconify-icon><span>图片占位符</span></div>' : `<img class="img-thumb" src="${s}" onclick="openLightbox('${s.replace(/'/g,"\\'")}')"/>`).join('') + '</div>' : '';
-            tl.innerHTML += `
-                <div class="timeline-item">
-                    <div class="timeline-dot ${dotCls}"></div>
-                    <div class="timeline-header">
-                        <span class="timeline-action">${escapeHtml(log.action)}</span>
-                        <span class="timeline-operator">${escapeHtml(log.operator)}</span>
-                        <span class="timeline-time">${log.time}</span>
-                    </div>
-                    <div class="timeline-body">
-                        <div class="detail-section">${escapeHtml(log.note)}</div>
-                        ${imgsHtml}
-                    </div>
-                </div>`;
-        });
+    // 处理详情
+    const processLog = getProcessLog(item);
+    const processed = !!processLog;
+    document.getElementById('detailProcessEmpty').classList.toggle('hidden', processed);
+    document.getElementById('detailProcessInfo').classList.toggle('hidden', !processed);
+    if (processed) {
+        document.getElementById('detailOperator').textContent = processLog.operator && processLog.operator !== '-' ? processLog.operator : '-';
+        document.getElementById('detailProcessTime').textContent = processLog.time || '-';
+        document.getElementById('detailReply').textContent = processLog.note && processLog.note !== '-' ? processLog.note : '无备注';
+        renderThumbs('detailReplyImages', processLog.images);
     }
-    // Render action buttons based on status
+    // 底部操作按钮
     const actionsEl = document.getElementById('detailActions');
     actionsEl.innerHTML = '';
     if (item.status === 'pending') {
-        actionsEl.innerHTML = '<button onclick="closeModal(\'detailModal\');openProcess(\'' + item.id + '\')" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">处理</button>';
+        actionsEl.classList.remove('hidden');
+        actionsEl.classList.add('flex');
+        actionsEl.innerHTML = `<button onclick="closeModal('detailModal');openProcess('${item.id}')" class="px-5 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">处理</button>`;
+    } else {
+        actionsEl.classList.add('hidden');
+        actionsEl.classList.remove('flex');
     }
-    // replied status: no action buttons, only the close button on the right
     document.getElementById('detailModal').classList.add('active');
 }
 
