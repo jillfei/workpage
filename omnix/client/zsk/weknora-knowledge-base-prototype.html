@@ -167,6 +167,9 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 .perm-table th,.perm-table td{border:1px solid var(--line,#e5e7eb);padding:8px 10px;text-align:center}
 .perm-table th{background:#f6f8f7;font-weight:500;color:var(--text-2)}
 .perm-table td:first-child{text-align:left;color:var(--text-2)}
+.perm-table tbody tr:hover td{background:#fafbfa}
+.perm-table td.pm-yes{color:#07c160;font-weight:600}
+.perm-table td.pm-no{color:#c9cdd4}
 .supported-formats{background:#fffbEB;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;margin-bottom:16px}
 .supported-formats .sfmt-title{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#92400e;margin-bottom:6px}
 .supported-formats .sfmt-list{font-size:12px;color:#b45309;line-height:1.8}
@@ -228,6 +231,12 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 .kb-card .mode-tag .icon{width:11px;height:11px;flex:none;stroke-width:1.8}
 .kb-card .src-owner{display:flex;align-items:center;gap:5px;margin-top:5px;font-size:12px;color:var(--text-3);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .kb-card .src-owner .icon{width:13px;height:13px;flex:none}
+/* 我的角色标签 */
+.role-tag{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:4px;font-size:11px;font-weight:500;line-height:1;white-space:nowrap;flex:none;background:#f3f4f6;color:#9ca3af}
+.role-tag.role-owner{background:#ecfdf5;color:#059669}
+.role-tag.role-admin{background:#eff6ff;color:#2563eb}
+.role-tag.role-editor{background:#f5f3ff;color:#7c3aed}
+.role-tag.role-viewer{background:#f3f4f6;color:#9ca3af}
 .kb-card .src-models{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;min-width:0}
 .kb-card .model-chip{display:inline-flex;align-items:center;gap:4px;height:21px;padding:0 6px;border-radius:4px;
   background:var(--bg-sunken);color:var(--text-3);font-size:11px;white-space:nowrap;min-width:0;flex:0 1 auto;overflow:hidden;max-width:100%}
@@ -681,19 +690,19 @@ const STATUS_ICON = {ok:"i-check-cir", warn:"i-warn-cir", err:"i-x-cir"};
 
 
 let KBS = [
-  { id:"kb_product", usedBytes:138.6 * 1024 * 1024 * 1024,  name:"产品需求文档库", iconColor:"#07c160", type:"doc", desc:"PRD、竞品分析与版本规划", docs:14, wiki:false, features:["多模态","知识图谱"], pinned:true, star:true, mode:"full", owner:"赵楠", createdAt:Date.now()-90*24*3600e3, updated:Date.now()-3600e3, org:"产品中心",
+  { id:"kb_product", usedBytes:138.6 * 1024 * 1024 * 1024,  name:"产品需求文档库", iconColor:"#07c160", type:"doc", desc:"PRD、竞品分析与版本规划", docs:14, wiki:false, features:["多模态","知识图谱"], pinned:true, star:true, mode:"full", owner:"赵楠", myRole:"所有者", createdAt:Date.now()-90*24*3600e3, updated:Date.now()-3600e3, org:"产品中心",
     sourcePath:"D:\\Documents\\ProductDesign", sourceStatus:"ok",
     vlm:"Qwen-VL-Max",
     cfg:{ llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", rerank:"qwen3-rerank", vector:"Qdrant", storage:"本地存储", chunk:{strategy:"按标题切分", size:512, overlap:64, parentChild:true, child:256, unit:"字符"}, multimodal:true, asr:false, autoTag:true } },
-  { id:"kb_contract", usedBytes:42.3 * 1024 * 1024 * 1024,  name:"合同", iconColor:"#3b82f6", type:"doc", desc:"无描述", docs:5, wiki:true, features:["Wiki","多模态"], pinned:false, star:false, mode:"quick", owner:"赵楠", createdAt:Date.now()-120*24*3600e3, updated:Date.now()-26*3600e3, org:"法务部",
+  { id:"kb_contract", usedBytes:42.3 * 1024 * 1024 * 1024,  name:"合同", iconColor:"#3b82f6", type:"doc", desc:"无描述", docs:5, wiki:true, features:["Wiki","多模态"], pinned:false, star:false, mode:"quick", owner:"王倩", myRole:"管理员", createdAt:Date.now()-120*24*3600e3, updated:Date.now()-26*3600e3, org:"法务部",
     sourcePath:"D:\\Legal\\Contracts", sourceStatus:"ok",
     vlm:"Qwen-VL-Max",
     cfg:{ llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", rerank:"bge-reranker-v2-m3", vector:"Qdrant", storage:"本地存储", chunk:{strategy:"按标题切分", size:800, overlap:120, parentChild:true, child:320, unit:"字符"}, multimodal:true, asr:false, autoTag:false } },
-  { id:"kb_rnd", usedBytes:96.8 * 1024 * 1024 * 1024,  name:"研发规范与架构", iconColor:"#8b5cf6", type:"doc", desc:"编码规范、架构设计与部署手册", docs:9, wiki:false, features:["知识图谱"], pinned:false, star:true, mode:"full", owner:"赵楠", createdAt:Date.now()-200*24*3600e3, updated:Date.now()-3*24*3600e3, org:"研发中心",
+  { id:"kb_rnd", usedBytes:96.8 * 1024 * 1024 * 1024,  name:"研发规范与架构", iconColor:"#8b5cf6", type:"doc", desc:"编码规范、架构设计与部署手册", docs:9, wiki:false, features:["知识图谱"], pinned:false, star:true, mode:"full", owner:"孙礼飞", myRole:"编辑者", createdAt:Date.now()-200*24*3600e3, updated:Date.now()-3*24*3600e3, org:"研发中心",
     sourcePath:"D:\\Projects\\TechDocs", sourceStatus:"partial", sourceTip:"部分文件仍在解析中，通常数分钟内完成。",
     vlm:"Qwen-VL-Max",
     cfg:{ llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", vector:"Qdrant", storage:"本地存储", chunk:{strategy:"按标题切分", size:640, overlap:96, parentChild:true, child:256, unit:"字符"}, multimodal:false, asr:true, autoTag:true } },
-  { id:"kb_market", usedBytes:27.5 * 1024 * 1024 * 1024,  name:"市场资料", iconColor:"#ec4899", type:"doc", desc:"品牌物料与行业研究报告", docs:3, wiki:false, features:["多模态"], pinned:false, star:false, mode:"quick", owner:"李明", createdAt:Date.now()-45*24*3600e3, updated:Date.now()-6*24*3600e3, org:"市场部", shared:"可编辑",
+  { id:"kb_market", usedBytes:27.5 * 1024 * 1024 * 1024,  name:"市场资料", iconColor:"#ec4899", type:"doc", desc:"品牌物料与行业研究报告", docs:3, wiki:false, features:["多模态"], pinned:false, star:false, mode:"quick", owner:"李明", myRole:"只读", createdAt:Date.now()-45*24*3600e3, updated:Date.now()-6*24*3600e3, org:"市场部", shared:"可编辑",
     sourcePath:"D:\\Research\\Finance", sourceStatus:"missing",
     vlm:"Qwen-VL-Max",
     cfg:{ llm:"qwen3-8b-max", emb:"qwen3.7-text-embedding", vector:"Qdrant", storage:"本地存储", chunk:{strategy:"按长度切分", size:400, overlap:50, parentChild:false, child:200, unit:"字符"}, multimodal:true, asr:false, autoTag:false } },
@@ -745,6 +754,13 @@ const DEFAULT_CHUNKS = ["分块内容示例：该段落描述了功能的背景�
 
 /* ========================= 列表页 ========================= */
 const ICON_COLORS = ["#07c160","#3b82f6","#8b5cf6","#ec4899","#f59e0b","#06b6d4","#ef4444","#10b981","#6366f1","#d97706"];
+/* 当前用户在该知识库中的角色标签 */
+function roleTag(k){
+  const r = k.myRole || "所有者";
+  const cls = r === "所有者" ? "role-owner" : r === "管理员" ? "role-admin" : r === "编辑者" ? "role-editor" : "role-viewer";
+  const tip = r === "所有者" ? "知识库唯一负责人，可移交" : r === "管理员" ? "协助管理成员与内容" : r === "编辑者" ? "维护文件、Wiki 与检索内容" : "仅可查看与检索";
+  return `<span class="role-tag ${cls}" title="${tip}" style="margin-left:6px">${r}</span>`;
+}
 function kbAvatar(k){
   if(k.iconImg) return `<div class="kb-ico" style="padding:0"><img src="${k.iconImg}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div>`;
   const ch = esc((k.name||"？").trim().charAt(0).toUpperCase());
@@ -786,20 +802,25 @@ const FILTERS = [
 ];
 function current(){ return KBS.find(k=>k.id===state.currentKbId); }
 
+/* 当前登录用户：决定「我创建的 / 我加入的」归属 */
+const CUR_USER = "赵楠";
+/* 我创建的：所有者是我 */
+function isMine(k){ return (k.owner || "") === CUR_USER; }
+
 function renderList(){
   const seg = $("#filterSeg");
   seg.innerHTML = FILTERS.map(f=>{
     const n = f.k==="all"?KBS.length
-            : f.k==="created"?KBS.filter(k=>!k.shared).length
-            : KBS.filter(k=>k.shared).length;
+            : f.k==="created"?KBS.filter(isMine).length
+            : KBS.filter(k=>!isMine(k)).length;
     return `<button class="${state.filter===f.k?'on':''}" onclick="setFilter('${f.k}')">${f.t}<span class="num">${n}</span></button>`;
   }).join("");
 
   const q = $("#kbSearch").value.trim().toLowerCase();
   state.query = q;
   let list = KBS.filter(k=>{
-    if(state.filter==="created" && k.shared) return false;
-    if(state.filter==="joined" && !k.shared) return false;
+    if(state.filter==="created" && !isMine(k)) return false;
+    if(state.filter==="joined" && isMine(k)) return false;
     if(q && !(k.name.toLowerCase().includes(q) || (k.desc||"").toLowerCase().includes(q))) return false;
     return true;
   });
@@ -871,7 +892,7 @@ function kbCard(k){
       <div onclick="pickKbIcon(event,'${k.id}')" title="点击更换图标" style="cursor:pointer">${kbAvatar(k)}</div>
       <div style="min-width:0">
         <div class="name-row"><div class="name">${esc(k.name)}</div>${statusHTML}</div>
-        <div class="src-owner">${icon("i-user","icon sm")}所有者：${esc(k.owner||"—")}</div>
+        <div class="src-owner">${icon("i-user","icon sm")}所有者：${esc(k.owner||"—")}${roleTag(k)}</div>
         <div class="src-models">
           <span class="model-chip" title="大语言模型：${esc(k.cfg?.llm||"—")}">${icon("i-spark","icon sm")}<span>${esc(k.cfg?.llm||"—")}</span></span>
           ${k.cfg?.multimodal||k.vlm?`<span class="model-chip vlm" title="视觉语言模型：${esc(k.vlm||"—")}">${icon("i-img","icon sm")}<span>${esc(k.vlm||"—")}</span></span>`:""}
@@ -919,11 +940,18 @@ function popMenu(anchor, html){
 function closeMenu(){ const m=$("#popMenu"); if(m) m.remove(); }
 function kbMenu(e, id){
   e.stopPropagation();
-  popMenu(e.currentTarget, `
-    <button onclick="openEnterpriseDetail('${id}', true)">${icon("i-edit","icon sm")}编辑知识库</button>
-    <button onclick="tryKbInChat('${id}')">${icon("i-chat","icon sm")}对话试一试</button>
-    <div class="sep"></div>
-    <button class="danger" onclick="delKb('${id}')">${icon("i-trash","icon sm")}删除</button>`);
+  const k = kbById(id);
+  if(!k) return;
+  const role = k.myRole || "所有者";
+  /* 编辑知识库：所有者 / 管理员 / 编辑者均可（只读不可） */
+  const canEdit = role !== "只读";
+  /* 删除：仅所有者 */
+  const canDelete = role === "所有者";
+  let html = "";
+  if(canEdit) html += `<button onclick="openEnterpriseDetail('${id}', true)">${icon("i-edit","icon sm")}编辑知识库</button>`;
+  html += `<button onclick="tryKbInChat('${id}')">${icon("i-chat","icon sm")}对话试一试</button>`;
+  if(canDelete) html += `<div class="sep"></div><button class="danger" onclick="delKb('${id}')">${icon("i-trash","icon sm")}删除</button>`;
+  popMenu(e.currentTarget, html);
 }
 /* 带上 edit 参数打开详情页，进入后自动弹出编辑弹窗 */
 function openEnterpriseDetail(id, edit){
@@ -937,7 +965,8 @@ function openEnterpriseDetail(id, edit){
     llm: k.cfg?.llm || "",
     emb: k.cfg?.emb || "",
     mode: k.mode || "quick",
-    scope: "enterprise"
+    scope: "enterprise",
+    role: k.myRole || "所有者"
   };
   if(edit) params.edit = "1";
   if (window.parent && window.parent !== window) {
@@ -1325,6 +1354,7 @@ const wiz = { i:0, type:"doc", name:"", desc:"", strategy:"自动", size:512, ov
   retVector:true, retKeyword:true, retGraph:false, vecTopK:10, kwThreshold:0.3, vecThreshold:0.5,
   rerankTopN:5, rerankThreshold:0.2, rerankEnabled:false, rerank:"qwen3-rerank",
   mode:"quick",
+  myRole:"所有者",
   owner:{name:"赵楠", dept:"产品部", phone:"138****2016"},
   members:[{id:"u2", name:"李工", dept:"研发部", phone:"139****5723", role:"管理员"}],
 };
@@ -1610,11 +1640,13 @@ function renderWizMembers(){
   const box = $("#wizMemberList");
   if(!box) return;
   const owner = wiz.owner || {name:"赵楠", dept:"产品部", phone:"138****2016"};
+  /* 仅所有者可转让 */
+  const isOwnerRole = (wiz.myRole || "所有者") === "所有者";
   const ownerRow = `<div class="member-row">
       <span class="kb-ico owner">${icon("i-user")}</span>
       <div style="flex:1"><b>${esc(owner.name)}（我）</b><i>${esc(owner.dept)} · ${esc(owner.phone)}</i></div>
       <span class="tag brand">所有者</span>
-      <button class="btn sm text" onclick="openTransferOwner()">转让</button>
+      ${isOwnerRole ? `<button class="btn sm text" onclick="openTransferOwner()">转让</button>` : ''}
     </div>`;
   const rows = wiz.members.map(m=>`<div class="member-row">
       <span class="kb-ico">${icon("i-user")}</span>
@@ -2604,11 +2636,12 @@ function wizPane(k){
               <table>
                 <thead><tr><th>能力</th><th>所有者</th><th>管理员</th><th>编辑者</th><th>只读</th></tr></thead>
                 <tbody>
-                  <tr><td>查看 / 检索知识库内容</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
-                  <tr><td>上传 / 删除文档</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
-                  <tr><td>修改知识库配置</td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
-                  <tr><td>管理成员与角色</td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
-                  <tr><td>删除知识库 / 转让所有者</td><td>✓</td><td>—</td><td>—</td><td>—</td></tr>
+                  <tr><td>查看 / 检索知识库内容</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td></tr>
+                  <tr><td>编辑知识库文件 / Wiki</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-no">—</td></tr>
+                  <tr><td>上传 / 删除文档</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-no">—</td></tr>
+                  <tr><td>修改知识库配置</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-no">—</td></tr>
+                  <tr><td>管理成员与角色</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-no">—</td><td class="pm-no">—</td></tr>
+                  <tr><td>删除知识库 / 转让所有者</td><td class="pm-yes">✓</td><td class="pm-no">—</td><td class="pm-no">—</td><td class="pm-no">—</td></tr>
                 </tbody>
               </table>
             </div>

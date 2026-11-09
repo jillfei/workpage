@@ -4232,6 +4232,7 @@
     '.akb-modal{background:#fff;border-radius:14px;width:860px;max-width:94vw;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 70px rgba(15,23,42,.28);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}',
     '.akb-head{display:flex;align-items:center;padding:18px 24px;border-bottom:1px solid #E5E7EB}',
     '.akb-head b{font-size:16px;font-weight:600;color:#111827}',
+    '.akb-head .akb-tip{margin-left:8px;font-size:12.5px;font-weight:400;color:#9CA3AF}',
     '.akb-close{margin-left:auto;border:none;background:none;cursor:pointer;color:#9CA3AF;font-size:16px;line-height:1;padding:6px 8px;border-radius:6px}',
     '.akb-close:hover{background:#F3F4F6;color:#4B5563}',
     '.akb-tabs{display:flex;border-bottom:1px solid #E5E7EB;padding:0 24px}',
@@ -4274,10 +4275,14 @@
     '.akb-btn{height:34px;padding:0 18px;border-radius:8px;border:1px solid #E5E7EB;background:#fff;color:#374151;font-size:13.5px;cursor:pointer;font-family:inherit}',
     '.akb-btn.primary{background:#3B82F6;border-color:#3B82F6;color:#fff}',
     '.akb-btn:hover{opacity:.92}',
-    '.akb-empty{padding:40px 12px;text-align:center;font-size:13px;color:#9CA3AF}'
+    '.akb-empty{padding:40px 12px;text-align:center;font-size:13px;color:#9CA3AF}',
+    '.akb-toast{position:fixed;top:24px;left:50%;transform:translate(-50%,-14px);opacity:0;z-index:10;display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;background:rgba(17,24,39,.93);color:#fff;font-size:13.5px;font-weight:500;box-shadow:0 10px 30px rgba(15,23,42,.28);pointer-events:none;transition:opacity .22s ease,transform .22s ease}',
+    '.akb-toast.show{opacity:1;transform:translate(-50%,0)}',
+    '.akb-toast svg{width:16px;height:16px;flex:none;color:#FBBF24}'
   ].join('\n');
 
   var state = null;   // { data, tab, keyword, onConfirm }
+  var MAX_KB = 5;
 
   function ensureStyles() {
     if (document.getElementById(KB_STYLES_ID)) return;
@@ -4285,6 +4290,31 @@
     st.id = KB_STYLES_ID;
     st.textContent = CSS;
     document.head.appendChild(st);
+  }
+
+  /* 选中数量（整库引用按 1 个计；仅勾选文件不计入知识库个数） */
+  function selectedKbCount() {
+    if (!state || !state.data) return 0;
+    return state.data.filter(function (kb) { return kb.selected; }).length;
+  }
+
+  /* 轻提示：达到 5 个上限时提示用户 */
+  function showKbToast(msg) {
+    var host = document.querySelector('.akb-modal');
+    if (!host) return;
+    var el = host.querySelector('.akb-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'akb-toast';
+      el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12" y2="16.5"/></svg>' +
+        '<span></span>';
+      host.appendChild(el);
+    }
+    el.querySelector('span').textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._timer);
+    el._timer = setTimeout(function () { el.classList.remove('show'); }, 2200);
   }
 
   function groupOf(kb) { return kb.source === 'admin' ? '管理端创建' : '客户端创建'; }
@@ -4355,7 +4385,7 @@
     function countOf(g) {
       return state.data.filter(function (kb) { return g === 'all' || groupOf(kb) === g; }).length;
     }
-    return '<div class="akb-head"><b>选择知识库</b><button class="akb-close" data-act="close">✕</button></div>' +
+    return '<div class="akb-head"><b>选择知识库</b><span class="akb-tip">（最多支持选择5个）</span><button class="akb-close" data-act="close">✕</button></div>' +
       '<div class="akb-tabs">' +
         '<button class="akb-tab' + (state.tab === 'all' ? ' on' : '') + '" data-act="tab" data-tab="all">全部（' + countOf('all') + '）</button>' +
         '<button class="akb-tab' + (state.tab === '客户端创建' ? ' on' : '') + '" data-act="tab" data-tab="客户端创建">客户端创建（' + countOf('客户端创建') + '）</button>' +
@@ -4425,6 +4455,10 @@
         e.stopPropagation();
         var kb = state.data.find(function (k) { return k.id === t.dataset.kb; });
         if (kb) {
+          if (!kb.selected && selectedKbCount() >= MAX_KB) {
+            showKbToast('最多支持选择 ' + MAX_KB + ' 个知识库，请先取消部分引用');
+            return;
+          }
           kb.selected = !kb.selected;
           if (kb.selected) kb.files.forEach(function (f) { f.selected = false; });
           kb.expanded = true;

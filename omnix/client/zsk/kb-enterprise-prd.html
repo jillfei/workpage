@@ -125,14 +125,18 @@
     <li><a href="#s3" data-t="s3">二、卡片更多操作</a></li>
     <li><a href="#s4" data-t="s4">三、容量进度条</a></li>
 
+    <li class="nav-group">权限</li>
+    <li><a href="#s-perm" data-t="s-perm">四、各角色可操作按钮一览</a></li>
+
     <li class="nav-group">创建与配置</li>
-    <li><a href="#s5" data-t="s5">四、新建知识库向导</a></li>
+    <li><a href="#s5" data-t="s5">五、新建知识库向导</a></li>
 
     <li class="nav-group">详情页</li>
-    <li><a href="#s6" data-t="s6">五、文件管理</a></li>
-    <li><a href="#s7" data-t="s7">六、Wiki 知识库</a></li>
-    <li><a href="#s8" data-t="s8">七、文件详情</a></li>
-    <li><a href="#s9" data-t="s9">八、编辑知识库</a></li>
+    <li><a href="#s6" data-t="s6">六、文件管理</a></li>
+    <li><a href="#s7" data-t="s7">七、Wiki 知识库</a></li>
+    <li><a href="#s8" data-t="s8">八、文件详情</a></li>
+    <li><a href="#s9" data-t="s9">九、编辑知识库</a></li>
+    <li><a href="#s10" data-t="s10">十、操作日志</a></li>
   </ul>
 </nav>
 
@@ -142,7 +146,7 @@
     <h1>企业知识库 · 功能说明</h1>
   </div>
 
-  <!-- ============ 二 ============ -->
+  <!-- ============ 一 ============ -->
   <section class="block" id="s2">
     <h2>一、知识库列表</h2>
     <p class="sub">入口：顶部「知识库」→「企业知识库」标签</p>
@@ -169,7 +173,7 @@
     </table>
   </section>
 
-  <!-- ============ 三 ============ -->
+  <!-- ============ 二 ============ -->
   <section class="block" id="s3">
     <h2>二、卡片更多操作</h2>
     <p class="sub">入口：卡片右上角「⋯」按钮</p>
@@ -197,7 +201,7 @@
     <div class="note warn"><b>注意：</b>删除为不可逆操作，前端需在请求返回前禁用「删除」按钮防止重复提交。</div>
   </section>
 
-  <!-- ============ 四 ============ -->
+  <!-- ============ 三 ============ -->
   <section class="block" id="s4">
     <h2>三、容量进度条</h2>
     <p class="sub">位置：列表页工具栏右侧、「共 N 个知识库」左侧</p>
@@ -247,12 +251,150 @@
     </ul>
   </section>
 
+  <!-- ============ 四 ============ -->
+  <section class="block" id="s-perm">
+    <h2>四、各角色可操作按钮一览</h2>
+    <p class="sub">四类角色在客户端各界面上的按钮可见性对照。用于研发实现权限控制、测试设计用例。</p>
+
+    <h3>P.1 角色说明</h3>
+    <table>
+      <tr><th style="width:22%">角色</th><th>说明</th></tr>
+      <tr>
+        <td><span class="tag ok">所有者</span></td>
+        <td>知识库唯一负责人，可移交所有权。</td>
+      </tr>
+      <tr>
+        <td><span class="tag info">管理员</span></td>
+        <td>可管理成员与内容，但<b>不能删除知识库、不能转让所有者</b>。</td>
+      </tr>
+      <tr>
+        <td><span class="tag warn">编辑者</span></td>
+        <td>可维护文件、Wiki、配置，但<b>不能管理成员</b>。</td>
+      </tr>
+      <tr>
+        <td><span class="tag gray">只读</span></td>
+        <td>仅可查看与检索；<b>非成员也按只读处理</b>。</td>
+      </tr>
+    </table>
+
+    <h3>P.2 知识库列表页 —— 卡片「⋯」菜单</h3>
+    <table>
+      <tr>
+        <th style="width:24%">菜单项</th>
+        <th style="width:16%">所有者</th><th style="width:16%">管理员</th>
+        <th style="width:16%">编辑者</th><th style="width:16%">只读</th>
+      </tr>
+      <tr><td>编辑知识库</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>对话试一试</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td></tr>
+      <tr><td>删除</td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td><td><span class="tag gray">隐藏</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>卡片角色标签</td><td>所有者（绿）</td><td>管理员（蓝）</td><td>编辑者（紫）</td><td>只读（灰）</td></tr>
+    </table>
+
+    <h3>P.3 详情页 —— 顶部操作区</h3>
+    <table>
+      <tr>
+        <th style="width:24%">按钮</th>
+        <th style="width:16%">所有者</th><th style="width:16%">管理员</th>
+        <th style="width:16%">编辑者</th><th style="width:16%">只读</th>
+      </tr>
+      <tr><td>编辑知识库</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>添加文档</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>在对话中试一试</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td></tr>
+      <tr><td>角色标签</td><td>所有者</td><td>管理员</td><td>编辑者</td><td>只读</td></tr>
+    </table>
+
+    <h3>P.4 详情页 —— 文件列表</h3>
+    <table>
+      <tr>
+        <th style="width:24%">元素</th>
+        <th style="width:16%">所有者</th><th style="width:16%">管理员</th>
+        <th style="width:16%">编辑者</th><th style="width:16%">只读</th>
+      </tr>
+      <tr><td>行前勾选框 / 表头全选</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>行尾「⋯」菜单</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>批量操作栏（移动 / 删除 / 加到会话）</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>「处理失败」快速重新处理按钮</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>文件夹「⋯」菜单（重命名 / 新建子文件夹 / 删除）</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+    </table>
+
+    <h3>P.5 详情页 —— 文件详情弹窗</h3>
+    <table>
+      <tr>
+        <th style="width:24%">按钮</th>
+        <th style="width:16%">所有者</th><th style="width:16%">管理员</th>
+        <th style="width:16%">编辑者</th><th style="width:16%">只读</th>
+      </tr>
+      <tr><td>下载</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>编辑自定义元数据 / 添加字段</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>编辑摘要 / 重新生成摘要</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>分块 · 编辑</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>分块 · 启用 / 停用开关</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>分块 · 辅助召回问题（?）</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>分块 · 查看父块（T）</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td></tr>
+    </table>
+
+    <h3>P.6 详情页 —— Wiki</h3>
+    <table>
+      <tr>
+        <th style="width:24%">按钮</th>
+        <th style="width:16%">所有者</th><th style="width:16%">管理员</th>
+        <th style="width:16%">编辑者</th><th style="width:16%">只读</th>
+      </tr>
+      <tr><td>新建目录 / 新建页面</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>页面 · 编辑</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>页面 · 版本记录</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>页面 · 删除</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>树节点「⋯」（删除 / 移动 / 重命名）</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td></tr>
+      <tr><td>展开全部 / 收起全部 / 刷新</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td></tr>
+    </table>
+
+    <h3>P.7 编辑知识库弹窗 —— 左侧步骤导航</h3>
+    <table>
+      <tr>
+        <th style="width:24%">步骤</th>
+        <th style="width:16%">所有者</th><th style="width:16%">管理员</th>
+        <th style="width:16%">编辑者</th><th style="width:16%">只读</th>
+      </tr>
+      <tr><td>1 基本信息</td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag gray">弹窗不可打开</span></td></tr>
+      <tr><td>2 模型配置</td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag gray">弹窗不可打开</span></td></tr>
+      <tr><td>3 分块设置</td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag gray">弹窗不可打开</span></td></tr>
+      <tr><td>4 图像处理</td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag gray">弹窗不可打开</span></td></tr>
+      <tr><td>5 高级设置</td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag gray">弹窗不可打开</span></td></tr>
+      <tr><td>6 检索策略</td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag gray">弹窗不可打开</span></td></tr>
+      <tr><td><b>权限管理 · 7 成员管理</b></td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span> <span style="color:#1677ff">（无所有者转让权限）</span></td><td><span class="tag gray">隐藏</span></td><td><span class="tag gray">弹窗不可打开</span></td></tr>
+      <tr><td><b>步骤总数</b></td><td><b>7 步</b></td><td><b>7 步</b></td><td><b>6 步</b></td><td>—</td></tr>
+    </table>
+
+    <h3>P.8 编辑知识库弹窗 —— 成员管理页</h3>
+    <table>
+      <tr>
+        <th style="width:24%">按钮</th>
+        <th style="width:16%">所有者</th><th style="width:16%">管理员</th>
+        <th style="width:16%">编辑者</th><th style="width:16%">只读</th>
+      </tr>
+      <tr><td>添加成员</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">步骤不可见</span></td><td><span class="tag gray">弹窗不可打开</span></td></tr>
+      <tr><td>成员角色下拉 / 移除成员</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">步骤不可见</span></td><td><span class="tag gray">弹窗不可打开</span></td></tr>
+      <tr><td><b>转让所有者</b></td><td><span class="tag ok">显示</span></td><td><span class="tag gray">隐藏</span></td><td><span class="tag gray">步骤不可见</span></td><td><span class="tag gray">弹窗不可打开</span></td></tr>
+    </table>
+
+    <h3>P.9 详情页 —— 操作日志</h3>
+    <table>
+      <tr>
+        <th style="width:24%">元素</th>
+        <th style="width:16%">所有者</th><th style="width:16%">管理员</th>
+        <th style="width:16%">编辑者</th><th style="width:16%">只读</th>
+      </tr>
+      <tr><td>「操作日志」标签</td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td><td><span class="tag ok">显示</span></td></tr>
+      <tr><td>日志内容（含成员变更记录）</td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td><td><span class="tag ok">可见</span></td></tr>
+    </table>
+  </section>
+
   <!-- ============ 五 ============ -->
   <section class="block" id="s5">
-    <h2>四、新建知识库向导</h2>
+    <h2>五、新建知识库向导</h2>
     <p class="sub">入口：右上角「新建知识库」→ 下拉选择「企业知识库」</p>
 
-    <h3>4.1 弹窗结构与两种创建模式</h3>
+    <h3>5.1 弹窗结构与两种创建模式</h3>
     <div class="panel">
       <div class="panel-title"><span class="dot"></span>弹窗骨架</div>
       <ul class="plain">
@@ -279,7 +421,7 @@
     </table>
     <div class="note"><b>模式切换规则：</b>两张卡片为单选，选中卡片显示绿色描边＋右上角勾选标记。切换时只更新左侧导航数量与底部「第 N / M 步」，<b>当前页面内容与已填输入全部保留</b>；若当前停留的步骤在新模式下不存在，自动回到最后一步。默认进入为快速创建（第 1 / 2 步），选择进阶创建后为第 1 / 7 步。</div>
 
-    <h3>4.2 基本信息（第 1 步）</h3>
+    <h3>5.2 基本信息（第 1 步）</h3>
     <p class="sub">页面标题「基本信息」，副标题「选择知识库类型并填写相关信息」</p>
     <table>
       <tr><th style="width:16%">字段</th><th style="width:10%">必填</th><th>说明</th></tr>
@@ -291,7 +433,7 @@
       <tr>
         <td>创建模式</td>
         <td>是</td>
-        <td>两张并排单选卡片：快速创建 / 进阶创建，卡片内含标题、图标、勾选态与一段说明文案（见 4.1）。切换规则见 4.1 提示。</td>
+        <td>两张并排单选卡片：快速创建 / 进阶创建，卡片内含标题、图标、勾选态与一段说明文案（见 5.1）。切换规则见 5.1 提示。</td>
       </tr>
       <tr>
         <td>名称</td>
@@ -311,7 +453,7 @@
     </table>
     <div class="note"><b>图标上传校验：</b>文件超过 1MB 时拒绝并提示 <span class="tag err">图片大小不能超过 1MB</span>；文件选择框默认只过滤 JPG / PNG / GIF。</div>
 
-    <h3>4.3 模型配置与分块设置（进阶创建）</h3>
+    <h3>5.3 模型配置与分块设置（进阶创建）</h3>
     <h4>模型配置</h4>
     <table>
       <tr><th style="width:24%">字段</th><th style="width:20%">默认值</th><th>说明</th></tr>
@@ -331,7 +473,7 @@
       <tr><td>子块大小</td><td>384 字符（64 ~ 2048）</td><td>开启父子分块后显示，用于向量匹配的嵌入块大小。</td></tr>
     </table>
 
-    <h3>4.4 图像处理（进阶创建）</h3>
+    <h3>5.4 图像处理（进阶创建）</h3>
     <table>
       <tr><th style="width:24%">字段</th><th style="width:20%">默认值</th><th>说明</th></tr>
       <tr><td>多模态功能</td><td>关闭</td><td>开启后支持图片等非文本内容的解析与检索。</td></tr>
@@ -339,7 +481,7 @@
       <tr><td>图片解析要求</td><td>空</td><td>开启多模态后显示。补充需重点识别的视觉信息，≤ 4000 字符，右下角实时显示字数（如 120/4000）。</td></tr>
     </table>
 
-    <h3>4.5 高级设置（进阶创建）</h3>
+    <h3>5.5 高级设置（进阶创建）</h3>
     <h4>AI 问题生成</h4>
     <ul class="plain">
       <li>开关默认<b>开启</b>；开启后展开「生成问题数量」与「问题生成要求」。</li>
@@ -355,7 +497,7 @@
       <tr><td>Wiki 提取重点</td><td>空</td><td>≤ 4000 字符，说明应重点识别的领域实体与概念，不会替换系统的 JSON 与引用协议。</td></tr>
     </table>
 
-    <h3>4.6 检索策略（进阶创建）</h3>
+    <h3>5.6 检索策略（进阶创建）</h3>
     <table>
       <tr><th style="width:24%">字段</th><th style="width:20%">默认值 / 范围</th><th>说明</th></tr>
       <tr><td>向量召回数量</td><td>10（0 ~ 100）</td><td>向量检索返回的最大结果数量。</td></tr>
@@ -367,7 +509,7 @@
       <tr><td>重排阈值</td><td>0.2（-10 ~ 10，步长 0.1）</td><td>重排序的最低相关性分数。</td></tr>
     </table>
 
-    <h3>4.7 成员管理</h3>
+    <h3>5.7 成员管理</h3>
     <table>
       <tr><th style="width:24%">区域</th><th>说明</th></tr>
       <tr><td>添加成员</td><td>点击输入框或「添加」按钮打开成员选择弹窗：支持按姓名 / 手机号 / 工号搜索，或按部门勾选，可多选，确认后加入列表。</td></tr>
@@ -376,7 +518,7 @@
       <tr><td>权限说明</td><td>右侧开关展开权限对照表（能力 × 所有者 / 管理员 / 编辑者 / 只读）：查看检索、上传删除文档、修改配置、管理成员与角色、删除知识库与转让所有者。</td></tr>
     </table>
 
-    <h3>4.8 校验与提示</h3>
+    <h3>5.8 校验与提示</h3>
     <table>
       <tr><th style="width:22%">字段</th><th style="width:26%">规则</th><th>失败提示</th></tr>
       <tr><td>知识库名称</td><td>必填，1~50 字符，同名不允许</td><td><span class="tag err">请填写知识库名称</span> / <span class="tag err">知识库名称已存在</span></td></tr>
@@ -396,7 +538,7 @@
     </table>
     <div class="note"><b>校验时机：</b>仅「名称」在点击「创建知识库」时校验；其余字段通过输入框上下限与滑块区间在输入阶段约束，<b>不做逐步拦截</b>，允许自由跳转任意步骤。</div>
 
-    <h3>4.9 提交创建</h3>
+    <h3>5.9 提交创建</h3>
     <table>
       <tr><th style="width:26%">场景</th><th style="width:30%">结果</th><th>提示文案</th></tr>
       <tr><td>名称未填</td><td>停留在向导，自动回到第 1 步基本信息，名称输入框获得焦点</td><td><span class="tag err">请填写知识库名称</span></td></tr>
@@ -408,20 +550,20 @@
 
   <!-- ============ 六 ============ -->
   <section class="block" id="s6">
-    <h2>五、文件管理</h2>
+    <h2>六、文件管理</h2>
     <p class="sub">详情页「知识库文件」标签</p>
 
-    <h3>5.1 区域结构</h3>
+    <h3>6.1 区域结构</h3>
     <table>
       <tr><th style="width:20%">区域</th><th>内容</th></tr>
-      <tr><td>顶部标签</td><td>「知识库文件」「Wiki」两个标签页；Wiki 处理中时标签旁显示转圈标识</td></tr>
-      <tr><td>右上容量</td><td>「知识库使用容量：xx」，点击文字或右侧柱状图标打开容量统计弹窗（见 5.11）</td></tr>
+      <tr><td>顶部标签</td><td>「知识库文件」「Wiki」「操作日志」三个标签页；Wiki 处理中时标签旁显示转圈标识</td></tr>
+      <tr><td>右上容量</td><td>「知识库使用容量：xx」，点击文字或右侧柱状图标打开容量统计弹窗（见 6.11）</td></tr>
       <tr><td>左侧文件夹栏</td><td>标题「文件夹」+ 实时计数「N 个」；下方为目录树</td></tr>
       <tr><td>右侧文件区</td><td>过滤栏 →（勾选后出现）批量操作栏 → 文件表格 → 分页</td></tr>
-      <tr><td>添加文档</td><td>右上角「添加文档」按钮，点击展开下拉菜单：「上传文件」「上传文件夹」（见 5.6）</td></tr>
+      <tr><td>添加文档</td><td>右上角「添加文档」按钮，点击展开下拉菜单：「上传文件」「上传文件夹」（见 6.6）</td></tr>
     </table>
 
-    <h3>5.2 文件夹树与文件列表联动</h3>
+    <h3>6.2 文件夹树与文件列表联动</h3>
     <table>
       <tr><th style="width:26%">点击对象</th><th style="width:34%">列表结果</th><th>说明</th></tr>
       <tr><td>根节点（知识库名）</td><td>显示全部文件</td><td>默认选中；不提供删除入口</td></tr>
@@ -435,7 +577,7 @@
       <li>文件夹计数与左上角「N 个」均按当前实际文件数实时统计：目录计数 = 自身及全部子目录下的文件数。</li>
     </ul>
 
-    <h3>5.3 文件夹「更多」菜单</h3>
+    <h3>6.3 文件夹「更多」菜单</h3>
     <table>
       <tr><th style="width:24%">菜单项</th><th style="width:34%">交互</th><th>校验 / 提示</th></tr>
       <tr><td>重命名</td><td>节点就地变为输入框，预填原名并全选；Enter 确认、Esc 取消、失焦即保存</td><td>清空则回退原名；同级重名拒绝并提示 <span class="tag err">已存在同名文件夹「{名}」</span></td></tr>
@@ -444,7 +586,7 @@
     </table>
     <div class="note"><b>根节点保护：</b>知识库根节点代表整个知识库，菜单中<b>不显示「删除」</b>；若绕过菜单触发删除，提示 <span class="tag warn">根目录不可删除</span>。</div>
 
-    <h3>5.4 过滤与分页</h3>
+    <h3>6.4 过滤与分页</h3>
     <table>
       <tr><th style="width:22%">控件</th><th>规则</th></tr>
       <tr><td>文档状态</td><td>下拉：全部 / 解析完成 / 索引中 / 解析中 / 待解析 / 处理失败，单选，选中即过滤</td></tr>
@@ -454,7 +596,7 @@
       <tr><td>空结果</td><td>表格区显示「没有匹配的文件」，分页显示「共 0 个文件」</td></tr>
     </table>
 
-    <h3>5.5 文件表格</h3>
+    <h3>6.5 文件表格</h3>
     <table>
       <tr><th style="width:22%">列</th><th>呈现</th></tr>
       <tr><td>勾选框</td><td>表头为全选（可半选态）；单行勾选进入批量操作</td></tr>
@@ -462,11 +604,11 @@
       <tr><td>文档大小</td><td>按量级自动取 KB / MB / GB，保留 2 位小数</td></tr>
       <tr><td>文档状态</td><td>彩色圆点 + 文字：解析完成（绿）/ 索引中（浅绿）/ 解析中（蓝）/ 待解析（紫）/ 处理失败（红）</td></tr>
       <tr><td>更新时间</td><td>格式 <code>YYYY-MM-DD HH:mm</code></td></tr>
-      <tr><td>操作</td><td>行尾「⋯」打开行内菜单（见 5.8）</td></tr>
+      <tr><td>操作</td><td>行尾「⋯」打开行内菜单（见 6.8）</td></tr>
     </table>
     <div class="note"><b>处理失败行：</b>状态右侧额外显示一个「重新处理」圆形按钮，悬浮提示「处理失败：{失败原因}，点击重新处理」；点击后状态置为「待解析」并提示「已加入重新处理队列」。</div>
 
-    <h3>5.6 上传文件 / 文件夹</h3>
+    <h3>6.6 上传文件 / 文件夹</h3>
     <p class="sub">入口：右上角「添加文档」→ 上传文件 / 上传文件夹；或「添加文档」弹窗内的拖拽区</p>
     <table>
       <tr><th style="width:22%">区域</th><th>说明</th></tr>
@@ -485,12 +627,12 @@
       <tr><td>选中的文件全部不支持</td><td>按钮文案变为「添加到知识库（无可上传文件）」；点击后不提交，提示 <span class="tag err">所选文件均不支持上传，仅支持 Markdown、文本文件、PDF、Word、Excel、PPT、图片</span></td></tr>
       <tr><td>部分文件不支持时提交</td><td>仅上传合法文件；若本次未同时导入文件夹，提示「已跳过 N 个不支持的文件」</td></tr>
       <tr><td>未选文件就提交</td><td>提示 <span class="tag warn">请先选择要添加的文件</span></td></tr>
-      <tr><td>提交成功</td><td>文件以「待解析」状态插入列表顶部，分页回到第 1 页，表格与左侧计数同步刷新，并打开上传进度面板（见 5.7）</td></tr>
+      <tr><td>提交成功</td><td>文件以「待解析」状态插入列表顶部，分页回到第 1 页，表格与左侧计数同步刷新，并打开上传进度面板（见 6.7）</td></tr>
       <tr><td>上传文件夹且保留结构</td><td>按原层级自动创建目录，完成后额外提示「已导入文件夹，已创建文件夹「{名}」」</td></tr>
       <tr><td>文件归属规则</td><td>勾选保留结构时文件放入对应子目录；未勾选时全部直接放入所选目标文件夹；目标为根目录时不记录层级</td></tr>
     </table>
 
-    <h3>5.7 上传进度面板</h3>
+    <h3>6.7 上传进度面板</h3>
     <table>
       <tr><th style="width:22%">元素</th><th>说明</th></tr>
       <tr><td>位置</td><td>页面右下角浮层，不遮挡表格操作；可收起 / 展开、可手动关闭</td></tr>
@@ -502,18 +644,18 @@
       <tr><td>失败态</td><td>标题「0 个完成，{N} 个未成功」，进度条转红；顶部出现「全部 {N} / 未成功 {N}」页签，每条显示「解析失败 · {失败原因}」，右侧为重新解析按钮；面板不自动收起，需手动关闭</td></tr>
     </table>
 
-    <h3>5.8 行内「⋯」菜单</h3>
+    <h3>6.8 行内「⋯」菜单</h3>
     <table>
       <tr><th style="width:20%">菜单项</th><th style="width:20%">出现条件</th><th>行为 / 提示</th></tr>
       <tr><td>重新处理</td><td>仅「处理失败」</td><td>状态置为待解析，提示「已加入重新处理队列」</td></tr>
       <tr><td>添加到会话</td><td>始终</td><td>提示「已将「{文件名}」添加到会话」，随后跳转对话页并带入该文件上下文</td></tr>
       <tr><td>下载文件</td><td>始终</td><td>提示「正在下载「{文件名}」」，完成后提示「已下载「{文件名}」到本地下载目录」</td></tr>
-      <tr><td>重命名</td><td>始终</td><td>打开重命名弹窗（见 5.10）</td></tr>
+      <tr><td>重命名</td><td>始终</td><td>打开重命名弹窗（见 6.10）</td></tr>
       <tr><td>移动</td><td>始终</td><td>悬浮展开二级菜单，列出目录树中全部文件夹（含根节点）；选择后移动，提示「已移动「{文件名}」到「{目标}」」</td></tr>
       <tr><td>删除</td><td>始终</td><td>红色文字，二次确认「确认删除文档「{文件名}」，删除后将无法恢复」；确认后提示「已删除「{文件名}」」，容量同步释放</td></tr>
     </table>
 
-    <h3>5.9 文件批量操作</h3>
+    <h3>6.9 文件批量操作</h3>
     <table>
       <tr><th style="width:22%">操作</th><th style="width:26%">前置条件</th><th>结果 / 提示文案</th></tr>
       <tr><td>批量栏出现</td><td>已勾选 ≥ 1 个文件</td><td>顶部显示「已选择 N 个文件」及操作按钮；取消勾选后隐藏</td></tr>
@@ -524,7 +666,7 @@
     </table>
     <div class="note"><b>移动弹窗：</b>目标为根节点时文件回到根目录（不记录层级）；未选择目标就点确定时提示 <span class="tag warn">请选择目标文件夹</span>。</div>
 
-    <h3>5.10 重命名文件</h3>
+    <h3>6.10 重命名文件</h3>
     <table>
       <tr><th style="width:22%">项</th><th>说明</th></tr>
       <tr><td>入口</td><td>行内「⋯」→ 重命名</td></tr>
@@ -534,7 +676,7 @@
       <tr><td>成功</td><td>提示「已将「{原名}」重命名为「{新名}」」，文件类型按新扩展名重新识别</td></tr>
     </table>
 
-    <h3>5.11 容量统计</h3>
+    <h3>6.11 容量统计</h3>
     <table>
       <tr><th style="width:22%">区域</th><th>说明</th></tr>
       <tr><td>入口</td><td>「知识库使用容量：xx」文字 / 右侧柱状图标</td></tr>
@@ -548,10 +690,10 @@
 
   <!-- ============ 七 ============ -->
   <section class="block" id="s7">
-    <h2>六、Wiki 知识库</h2>
+    <h2>七、Wiki 知识库</h2>
     <p class="sub">详情页「Wiki」标签 · 左侧为知识树/摘要列表，右侧为索引页与词条页</p>
 
-    <h3>6.1 左侧栏</h3>
+    <h3>7.1 左侧栏</h3>
     <table>
       <tr><th style="width:22%">元素</th><th>行为</th></tr>
       <tr><td>知识 / 摘要 切换</td><td><b>只切换左侧栏</b>，右侧内容保持不变；只有点击具体条目才切换右侧。若当前右侧是词条页，切到「摘要」后右侧仍停留在该词条页，点击摘要条目才跳到摘要详情</td></tr>
@@ -562,7 +704,7 @@
       <tr><td>工具栏按钮</td><td>展开全部、收起全部、新建目录、新建页面</td></tr>
     </table>
 
-    <h3>6.2 新建 / 编辑 Wiki 页面</h3>
+    <h3>7.2 新建 / 编辑 Wiki 页面</h3>
     <table>
       <tr><th style="width:20%">字段</th><th style="width:24%">规则</th><th>提示</th></tr>
       <tr><td>标题</td><td>必填，全局唯一</td><td><span class="tag err">请输入页面标题</span> / <span class="tag err">页面「{名}」已存在</span></td></tr>
@@ -571,7 +713,7 @@
       <tr><td>页面地址</td><td>由标题自动生成，无需填写；冲突时自动加序号</td><td>—</td></tr>
     </table>
 
-    <h3>6.3 版本历史</h3>
+    <h3>7.3 版本历史</h3>
     <table>
       <tr><th style="width:26%">场景</th><th>展示</th></tr>
       <tr><td>仅初始版本</td><td>标题「初始 → v1」，副标题「初始创建内容」；类型/摘要/正文全部标绿为新增；<b>无操作按钮</b>；左侧提示「暂无历史版本，页面内容变化后会自动记录快照」</td></tr>
@@ -580,7 +722,7 @@
       <tr><td>回滚</td><td>二次确认；回滚后当前内容先记入历史，版本号 +1</td></tr>
     </table>
 
-    <h3>6.4 删除类提示</h3>
+    <h3>7.4 删除类提示</h3>
     <table>
       <tr><th style="width:30%">操作</th><th>确认文案</th><th style="width:22%">成功提示</th></tr>
       <tr><td>删除 Wiki 页面</td><td>「确认删除「{名}」页面吗？删除后引用该页面的内链将失效。」</td><td>页面「{名}」已删除</td></tr>
@@ -591,10 +733,10 @@
 
   <!-- ============ 八 ============ -->
   <section class="block" id="s8">
-    <h2>七、文件详情</h2>
+    <h2>八、文件详情</h2>
     <p class="sub">入口：文件列表点击文件名 / Wiki 词条页「来源文档」链接</p>
 
-    <h3>7.1 区块结构</h3>
+    <h3>8.1 区块结构</h3>
     <table>
       <tr><th style="width:24%">区块</th><th>内容</th></tr>
       <tr><td>弹窗标题栏</td><td>左侧文件名（过长省略，悬浮显示全名）；右侧「下载」按钮与关闭「×」</td></tr>
@@ -605,7 +747,7 @@
       <tr><td>文件分块</td><td>片段列表，每个片段可启用/停用、编辑、查看父块、管理辅助召回问题</td></tr>
     </table>
 
-    <h3>7.2 文件下载</h3>
+    <h3>8.2 文件下载</h3>
     <div class="panel">
       <div class="panel-title"><span class="dot"></span>位置与样式</div>
       <ul class="plain">
@@ -623,7 +765,7 @@
       <tr><td>源文件已被清理</td><td>仅有索引与分块、无原始文件</td><td>按钮置灰并悬浮提示「源文件已失效」</td></tr>
     </table>
 
-    <h3>7.3 辅助召回问题</h3>
+    <h3>8.3 辅助召回问题</h3>
     <table>
       <tr><th style="width:24%">操作</th><th style="width:34%">交互</th><th>提示</th></tr>
       <tr><td>新增</td><td>点「+」展开输入框，Enter 确认</td><td>「已添加 1 个辅助召回问题」</td></tr>
@@ -632,7 +774,7 @@
       <tr><td>重新生成</td><td>覆盖该片段全部问题</td><td>「已重新生成辅助召回问题」</td></tr>
     </table>
 
-    <h3>7.4 来源文档链接</h3>
+    <h3>8.4 来源文档链接</h3>
     <ul class="plain">
       <li>Wiki 词条页「来源文档」中的链接，点击后<b>打开对应文件的详情弹窗</b>，而非跳转新页面。</li>
       <li>若文档名在文件库中不存在，提示 <span class="tag warn">原型演示：打开文档 {名}</span>（正式环境应提示「源文件已删除」并置灰）。</li>
@@ -641,13 +783,13 @@
 
   <!-- ============ 九 ============ -->
   <section class="block" id="s9">
-    <h2>八、编辑知识库</h2>
+    <h2>九、编辑知识库</h2>
     <p class="sub">入口：详情页「编辑知识库」按钮 / 卡片菜单「编辑知识库」</p>
 
-    <h3>8.1 结构</h3>
+    <h3>9.1 结构</h3>
     <p>与新建向导的步骤一致（7 步，左侧导航），区别仅在于：所有字段预填当前值，底部按钮为「取消 / 保存」。</p>
 
-    <h3>8.2 字段可编辑范围</h3>
+    <h3>9.2 字段可编辑范围</h3>
     <div class="panel">
       <div class="panel-title"><span class="dot"></span>总原则</div>
       <p>除 <b>Embedding 嵌入模型</b> 外，其余参数<b>全部可编辑</b>。</p>
@@ -668,7 +810,7 @@
     </table>
     <div class="note"><b>嵌入模型锁定说明：</b>该字段在编辑弹窗中始终展示当前值，用户可读但不可改；保存时也不会提交该字段。若业务上确需更换嵌入模型，应通过「重建知识库」或管理端迁移流程处理，不在此弹窗内提供入口。</div>
 
-    <h3>8.3 校验与提示</h3>
+    <h3>9.3 校验与提示</h3>
     <table>
       <tr><th style="width:26%">场景</th><th style="width:30%">结果</th><th>提示文案</th></tr>
       <tr><td>名称清空</td><td>停留当前步骤，输入框聚焦</td><td><span class="tag err">知识库名称不能为空</span></td></tr>
@@ -677,6 +819,53 @@
       <tr><td>有未保存修改时点取消</td><td>二次确认「放弃未保存的修改？」</td><td>—</td></tr>
       <tr><td>修改分块/检索配置</td><td>提示需重新解析才生效</td><td><span class="tag warn">配置已保存，重新解析后生效</span></td></tr>
     </table>
+  </section>
+
+  <!-- ============ 十 ============ -->
+  <section class="block" id="s10">
+    <h2>十、操作日志</h2>
+    <p class="sub">详情页「操作日志」标签 · 记录该知识库的创建、修改与成员变更</p>
+
+    <h3>10.1 区域结构</h3>
+    <table>
+      <tr><th style="width:20%">区域</th><th>内容</th></tr>
+      <tr><td>标题栏</td><td>「操作日志」+ 说明文案「记录该知识库的创建、修改与成员变更」</td></tr>
+      <tr><td>日志表格</td><td>操作时间 → 操作人 → 分类 → 操作 → 对象/说明 → 来源，共 6 列</td></tr>
+      <tr><td>底部分页</td><td>左侧「共 N 条」；右侧每页条数选择（默认 10 条/页）+ 翻页器</td></tr>
+    </table>
+
+    <h3>10.2 表格列说明</h3>
+    <table>
+      <tr><th style="width:16%">列</th><th style="width:40%">内容</th><th>说明</th></tr>
+      <tr><td>操作时间</td><td>YYYY-MM-DD HH:mm</td><td>按时间<b>倒序</b>排列，最新操作在最上</td></tr>
+      <tr><td>操作人</td><td>成员昵称</td><td>成员已被移除时仍保留历史昵称显示</td></tr>
+      <tr><td>分类</td><td>灰色标签，见 10.3</td><td>按操作对象归类，便于筛选定位</td></tr>
+      <tr><td>操作</td><td>动词短语，如「上传文档」「修改检索策略」</td><td>—</td></tr>
+      <tr><td>对象/说明</td><td>操作对象 + 关键变更内容</td><td>如「「李工」角色：编辑者 → 管理员」「向量召回 10，关键词阈值 0.30，向量阈值 0.50，开启重排序」</td></tr>
+      <tr><td>来源</td><td><span class="tag ok">客户端</span> / <span class="tag info">管理端</span></td><td>管理端（后台）的操作同样计入，便于审计</td></tr>
+    </table>
+
+    <h3>10.3 记录范围（分类与操作）</h3>
+    <table>
+      <tr><th style="width:18%">分类</th><th style="width:44%">计入的操作</th><th>对象/说明示例</th></tr>
+      <tr><td>编辑知识库</td><td>修改基本信息、修改模型配置、修改分块设置、修改检索策略等保存动作</td><td>「LLM：qwen3-8b-max；Embedding：qwen3.7-text-embedding」</td></tr>
+      <tr><td>文件</td><td>上传文档、删除文档、重命名文件、移动文件</td><td>「旧版劳动合同模板.docx，其分块与向量索引一并移除」</td></tr>
+      <tr><td>文件夹</td><td>新建文件夹、重命名、删除</td><td>「在「劳动合同」下新建文件夹「2026年」」</td></tr>
+      <tr><td>分块</td><td>编辑分块、启用/停用分块、重新生成摘要</td><td>「编辑「劳动合同·护士（试用期）.md」片段 2 的正文内容」</td></tr>
+      <tr><td>Wiki</td><td>生成 Wiki 索引、新建/编辑/删除 Wiki 页面</td><td>「「产品需求文档库」共生成 8 个页面」</td></tr>
+      <tr><td>调整成员权限</td><td>添加成员、修改成员角色、移除成员、转让所有者</td><td>「「李工」角色：编辑者 → 管理员」</td></tr>
+    </table>
+    <ul class="plain">
+      <li>纯查看、检索、对话等<b>不产生数据变更的行为不记录</b>。</li>
+      <li>「编辑知识库」弹窗一次保存涉及多个步骤的配置变更时，<b>按步骤拆分为多条日志</b>分别记录。</li>
+    </ul>
+
+    <h3>10.4 分页与加载</h3>
+    <ul class="plain">
+      <li>默认每页 <b>10 条</b>，可切换每页条数；切换时每页条数或翻页不改变排序（始终时间倒序）。</li>
+      <li>切换标签页进入时重新拉取最新日志；无日志时表格区显示空状态「暂无操作记录」。</li>
+    </ul>
+    <div class="note"><b>只读与留存：</b>日志仅追加、不可修改或删除，前端不提供任何编辑入口；知识库删除后其操作日志一并清除。操作人离职或被移出库时，历史日志中的操作人名称保留快照，不做置灰或替换。</div>
   </section>
 
 </main>

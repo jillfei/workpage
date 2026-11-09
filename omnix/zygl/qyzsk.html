@@ -160,6 +160,12 @@ input.chk{width:15px;height:15px;accent-color:var(--primary);cursor:pointer}
 .kb-card{position:relative;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;cursor:pointer;transition:.18s;display:flex;flex-direction:column;gap:12px}
 .kb-card:hover{border-color:var(--primary-border);box-shadow:0 8px 24px rgba(37,99,235,.10);transform:translateY(-2px)}
 .kb-card.off{background:#fcfcfd}
+/* 当前用户角色标签 */
+.role-tag{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:4px;font-size:11px;font-weight:500;line-height:1;white-space:nowrap;flex:none;background:#f3f4f6;color:var(--text-3)}
+.role-tag.owner{background:#ecfdf5;color:#059669}
+.role-tag.admin{background:#eff6ff;color:#2563eb}
+.role-tag.editor{background:#f5f3ff;color:#7c3aed}
+.role-tag.viewer{background:#f3f4f6;color:#9ca3af}
 .kb-card-top{display:flex;align-items:flex-start;gap:12px;min-width:0}
 .kb-card-meta{min-width:0;flex:1}
 .kb-card .kb-name{font-size:14.5px;max-width:100%}
@@ -394,8 +400,7 @@ table.log-table{width:100%;border-collapse:collapse;font-size:12.5px}
 .log-table th{text-align:left;background:#fafbfc;color:var(--text-3);font-weight:600;padding:9px 18px;border-bottom:1px solid var(--border)}
 .log-table td{padding:11px 18px;border-bottom:1px solid var(--border-2);color:var(--text-2);vertical-align:middle}
 .log-table tr:last-child td{border-bottom:none}
-.log-actor{display:flex;align-items:center;gap:8px;white-space:nowrap}
-.log-actor .avatar{width:24px;height:24px;font-size:10px}
+.log-actor{white-space:nowrap}
 .log-action{color:var(--text);font-weight:500;white-space:nowrap}
 .log-group{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:5px;background:#f4f6f8;color:var(--text-3);font-size:11px;white-space:nowrap}
 .log-target{color:var(--text-3);max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -442,6 +447,8 @@ table.log-table{width:100%;border-collapse:collapse;font-size:12.5px}
 .switch.on{background:var(--primary)}
 .switch::after{content:"";position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.2s}
 .switch.on::after{left:19px}
+/* 只读态：不可点击，降饱和 */
+.switch.readonly{cursor:not-allowed;opacity:.55;pointer-events:none}
 .switch-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px dashed var(--border-2)}
 .switch-row:last-child{border-bottom:none}
 .switch-row .t{flex:1;min-width:0}
@@ -807,7 +814,8 @@ table.log-table{width:100%;border-collapse:collapse;font-size:12.5px}
 .chat-hero-desc{font-size:12.5px;color:var(--text-3);line-height:1.75;margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .chat-body{flex:1;display:grid;grid-template-columns:400px minmax(0,1fr);gap:16px;padding:16px 20px 18px;overflow:hidden;min-height:0}
 .chat-left{border:1px solid var(--border);border-radius:11px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
-.chat-left-head{padding:13px 16px;border-bottom:1px solid var(--border-2);font-size:13.5px;font-weight:600;color:var(--text)}
+.chat-left-head{padding:13px 16px;border-bottom:1px solid var(--border-2);font-size:13.5px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:10px}
+.chat-left-head .btn.sm{margin-left:auto;font-weight:500}
 .chat-left-body{padding:16px;overflow:auto;display:flex;flex-direction:column;gap:18px;min-height:0}
 .chat-field label{display:block;font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:8px}
 .chat-field label .req{color:var(--err);margin-left:2px}
@@ -1034,6 +1042,7 @@ table.log-table{width:100%;border-collapse:collapse;font-size:12.5px}
   <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L20 8l-4-4L4 16z"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></symbol>
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-bug" viewBox="0 0 24 24"><path d="M9 5.5a3 3 0 0 1 6 0"/><rect x="7.5" y="7" width="9" height="12.5" rx="4.5"/><path d="M7.5 11H3.5M7.5 15.5H4.5M20.5 11h-4M19.5 15.5h-3"/><path d="M12 7v12"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/></symbol>
   <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4.5l3 2"/></symbol>
@@ -1133,6 +1142,8 @@ table.log-table{width:100%;border-collapse:collapse;font-size:12.5px}
 <div class="mask" id="capacityModal"><div class="modal md" id="capacityModalBox"></div></div>
 <!-- 对话试一试 -->
 <div class="mask" id="chatModal"><div class="modal" id="chatModalBox"></div></div>
+<!-- 检索策略（调试知识库内） -->
+<div class="mask" id="chatRetrievalModal"><div class="modal md" id="chatRetrievalModalBox"></div></div>
 <!-- 检索策略 -->
 <div class="mask" id="recallStrategy"><div class="modal md" id="recallStrategyBox"></div></div>
 <!-- 辅助召回问题 -->
@@ -1406,7 +1417,8 @@ const KBS = [
     },
     members: [
       { name: '李明', role: '所有者' },
-      { name: '郑雪', role: '编辑者' }
+      { name: '郑雪', role: '编辑者' },
+      { name: '孙礼飞', role: '编辑者' }
     ]
   },
   {
@@ -1430,7 +1442,8 @@ const KBS = [
     },
     members: [
       { name: '周敏', role: '所有者' },
-      { name: '王倩', role: '只读' }
+      { name: '王倩', role: '只读' },
+      { name: '孙礼飞', role: '管理员' }
     ]
   },
   {
@@ -1664,10 +1677,7 @@ const LOG_ACTIONS = {
   wikiDirRename:  { label: '重命名 Wiki 目录', group: 'Wiki' },
   wikiDirDelete:  { label: '删除 Wiki 目录', group: 'Wiki' },
   wikiVersion:    { label: '回滚 Wiki 版本', group: 'Wiki' },
-  wikiGen:        { label: '生成 Wiki 索引', group: 'Wiki' },
-
-  /* 对话 */
-  chatUse:        { label: '在对话中使用', group: '对话' }
+  wikiGen:        { label: '生成 Wiki 索引', group: 'Wiki' }
 };
 const logLabel = t => (LOG_ACTIONS[t] || {}).label || t;
 
@@ -1725,10 +1735,7 @@ const DEMO_LOGS = [
   ['wikiDirRename', '目录「业务流程」→「流程与规范」',                  '赵楠',   '2026-03-21 10:12'],
   ['wikiVersion',   '「知识库管理（管理端）」回滚到 v1',                 '赵楠',   '2026-03-21 10:30'],
   ['wikiDelete',    '删除页面「版本发布流程」',                         '孙礼飞', '2026-03-22 16:05'],
-  ['wikiDirDelete', '删除目录「术语」（含 2 个页面）',                  '孙礼飞', '2026-03-22 16:10'],
-
-  /* 对话 */
-  ['chatUse',       '在对话中使用「产品需求文档库」',                    '何静',   '2026-10-21 10:05']
+  ['wikiDirDelete', '删除目录「术语」（含 2 个页面）',                  '孙礼飞', '2026-03-22 16:10']
 ];
 
 KBS.forEach(k => {
@@ -1741,7 +1748,6 @@ KBS.forEach(k => {
     ['fileUpload', file, k.owner, '2026-10-25 16:22'],
     ['wikiEdit', page, k.owner, '2026-10-24 11:08'],
     ['memberAdd', lastMember ? `${lastMember.name}（${lastMember.role}）` : '—', k.owner, '2026-10-22 15:40'],
-    ['chatUse', k.name, '何静', '2026-10-21 10:05'],
     ['kbCreate', k.source === 'admin' ? `${k.name}（管理端创建）` : `${k.name}（客户端 ${k.client.device}）`, k.source === 'admin' ? '孙礼飞' : k.owner, k.createdAt]
   ];
   const rows = k.id === 'kb_product' ? DEMO_LOGS : seed;
@@ -1765,9 +1771,51 @@ function kbSharePct(k) { return globalQuota > 0 ? Math.min(100, k.usedBytes / gl
 /* ============================================================
    状态
 ============================================================ */
+/* 当前登录用户（侧边栏底部显示的登录人） */
+const CUR_USER = '孙礼飞';
+
+/* ============================================================
+   角色与权限
+   权限矩阵见 PERM_ROWS（成员管理页）：
+   - 所有者：全部
+   - 管理员：除「删除知识库 / 转让所有者」外全部
+   - 编辑者：查看、文件/Wiki 编辑、上传删除、修改配置
+   - 只读：仅查看与检索
+   非成员按「只读」处理
+============================================================ */
+const ROLE_OWNER = '所有者', ROLE_ADMIN = '管理员', ROLE_EDITOR = '编辑者', ROLE_VIEWER = '只读';
+
+/* 取当前用户在某知识库中的角色；非成员返回「只读」 */
+function myRole(kb) {
+  if (!kb) return ROLE_VIEWER;
+  if (kb.owner === CUR_USER) return ROLE_OWNER;
+  const m = (kb.members || []).find(x => x.name === CUR_USER);
+  return m ? m.role : ROLE_VIEWER;
+}
+function isOwner(kb) { return myRole(kb) === ROLE_OWNER; }
+function isAdmin(kb) { return myRole(kb) === ROLE_ADMIN; }
+/* 可编辑：所有者 / 管理员 / 编辑者 */
+function canEdit(kb) { const r = myRole(kb); return r === ROLE_OWNER || r === ROLE_ADMIN || r === ROLE_EDITOR; }
+/* 可管理成员：所有者 / 管理员 */
+function canManageMembers(kb) { const r = myRole(kb); return r === ROLE_OWNER || r === ROLE_ADMIN; }
+/* 可修改知识库配置：所有者 / 管理员 / 编辑者 */
+function canConfig(kb) { return canEdit(kb); }
+/* 可删除知识库 / 转让所有者：仅所有者 */
+function canDelete(kb) { return isOwner(kb); }
+/* 可调试知识库：所有者 / 管理员 / 编辑者（只读不可） */
+function canDebug(kb) { return canEdit(kb); }
+/* 是否有任何卡片菜单项；没有则隐藏「⋯」按钮 */
+function hasKbMenuActions(kb) { return canConfig(kb) || canDebug(kb) || canDelete(kb); }
+const ROLE_TIP = {
+  [ROLE_VIEWER]: '只读：仅可查看与检索知识库内容',
+  [ROLE_EDITOR]: '编辑者：可维护文件、Wiki 与检索内容',
+  [ROLE_ADMIN]: '管理员：可协助管理成员与内容',
+  [ROLE_OWNER]: '所有者：知识库唯一负责人'
+};
+
 const state = {
   viewMode: 'card',
-  q: '', source: 'all', status: 'all', sort: 'recent',
+  q: '', creator: 'all', status: 'all', sort: 'recent',
   currentId: null, tab: 'files',
   folder: '', fileQ: '', fileStatus: '', fileType: '', page: 1, pageSize: 10, logPage: 1, logPageSize: 10,
   selected: new Set(),
@@ -1837,11 +1885,12 @@ function kbAvatarHTML(k, cls = 'kb-ico') {
   if (k.iconImg) return `<div class="${cls}"><img src="${k.iconImg}" alt=""></div>`;
   return `<div class="${cls}" style="background:${k.iconColor}">${esc(k.iconText || k.name.slice(0, 1))}</div>`;
 }
-function sourceTagHTML(k) {
-  if (k.source === 'admin') {
-    return `<span class="src-tag admin">${icon('i-shield', 'ic sm')}管理端创建</span>`;
-  }
-  return `<span class="src-tag client">${icon('i-user', 'ic sm')}客户端创建</span>`;
+
+/* 当前用户在该知识库中的角色标签 */
+function roleTagHTML(k) {
+  const role = myRole(k);
+  const cls = role === ROLE_OWNER ? 'owner' : role === ROLE_ADMIN ? 'admin' : role === ROLE_EDITOR ? 'editor' : 'viewer';
+  return `<span class="role-tag ${cls}" title="${esc(ROLE_TIP[role] || '')}">${esc(role)}</span>`;
 }
 
 function renderList() {
@@ -1852,10 +1901,10 @@ function renderList() {
         <input id="kbSearch" placeholder="搜索知识库名称、描述或所有者…" value="${esc(state.q)}" oninput="state.q=this.value;renderResults()">
       </div>
       <div class="select-wrap">
-        <select id="sourceFilter" onchange="state.source=this.value;renderResults()">
-          <option value="all">全部来源</option>
-          <option value="client">客户端创建</option>
-          <option value="admin">管理端创建</option>
+        <select id="creatorFilter" onchange="state.creator=this.value;renderResults()">
+          <option value="all">全部</option>
+          <option value="mine">我创建的</option>
+          <option value="joined">我加入的</option>
         </select>
         ${icon('i-chev-d', 'ic sm')}
       </div>
@@ -1888,7 +1937,6 @@ function renderList() {
       </div>
       <button class="btn btn-recycle" onclick="openTrash()">${icon('i-trash', 'ic sm')}回收站${deletedTotal() ? `<span class="recycle-badge">${deletedTotal()}</span>` : ''}</button>
       <button class="btn" onclick="openQuotaModal()">${icon('i-db', 'ic sm')}容量配额</button>
-      <button class="btn primary" onclick="openWizard('create')">${icon('i-plus', 'ic sm')}新建知识库</button>
     </div>
     <div id="kbResults"></div>
   `;
@@ -1896,8 +1944,8 @@ function renderList() {
   renderResults();
 }
 function applySelects() {
-  const s = $('#sourceFilter'), st = $('#statusFilter'), so = $('#sortFilter');
-  if (s) s.value = state.source;
+  const cr = $('#creatorFilter'), st = $('#statusFilter'), so = $('#sortFilter');
+  if (cr) cr.value = state.creator;
   if (st) st.value = state.status;
   if (so) so.value = state.sort;
 }
@@ -1911,7 +1959,9 @@ function setViewMode(m) {
 function filteredKbs() {
   const q = state.q.trim().toLowerCase();
   let list = KBS.filter(k => {
-    if (state.source !== 'all' && k.source !== state.source) return false;
+    if (state.creator === 'mine' && k.owner !== CUR_USER) return false;
+    /* 我加入的：是成员但不是所有者 */
+    if (state.creator === 'joined' && !(k.owner !== CUR_USER && (k.members || []).some(m => m.name === CUR_USER))) return false;
     if (state.status !== 'all' && k.status !== state.status) return false;
     if (q) {
       const hay = (k.name + ' ' + (k.desc || '') + ' ' + k.owner + ' ' + (k.client ? k.client.device : '')).toLowerCase();
@@ -1936,7 +1986,7 @@ function renderResults() {
     box.innerHTML = `<div class="card empty-page" style="margin-top:0">
       <div class="big">${icon('i-book', 'ic xl')}</div>
       <b>没有找到匹配的知识库</b>
-      <span>试试其它关键词，或切换来源 / 状态筛选</span>
+      <span>试试其它关键词，或切换创建者 / 状态筛选</span>
     </div>`;
     return;
   }
@@ -1984,8 +2034,7 @@ function tableHTML(list) {
               </div>
             </td>
             <td>
-              ${sourceTagHTML(k)}
-              <div style="font-size:11px;color:var(--text-4);margin-top:4px">${esc(k.source === 'admin' ? '管理端统一维护' : k.client.device)}</div>
+              <div style="font-size:11px;color:var(--text-4)">${esc(k.source === 'admin' ? '管理端统一维护' : k.client.device)}</div>
             </td>
             <td>
               <div class="owner-cell">
@@ -2001,7 +2050,7 @@ function tableHTML(list) {
             <td><div class="time-cell">${esc(String(k.updatedAt).slice(0, 10))}<i>${esc(String(k.updatedAt).slice(11))}</i></div></td>
             <td class="col-actions">
               <div class="row-actions">
-                <button class="ibtn" onclick="event.stopPropagation();kbMenu(event,'${k.id}')">${icon('i-more', 'ic sm')}</button>
+                ${hasKbMenuActions(k) ? `<button class="ibtn" onclick="event.stopPropagation();kbMenu(event,'${k.id}')">${icon('i-more', 'ic sm')}</button>` : ''}
               </div>
             </td>
           </tr>`;
@@ -2017,7 +2066,7 @@ function gridHTML(list) {
       const owner = person(k.owner);
       const pct = kbSharePct(k);
       return `<div class="kb-card" onclick="openDetail('${k.id}')">
-        <button class="ibtn card-more" onclick="event.stopPropagation();kbMenu(event,'${k.id}')">${icon('i-more', 'ic sm')}</button>
+        ${hasKbMenuActions(k) ? `<button class="ibtn card-more" onclick="event.stopPropagation();kbMenu(event,'${k.id}')">${icon('i-more', 'ic sm')}</button>` : ''}
         <div class="kb-card-top">
           ${kbAvatarHTML(k)}
           <div class="kb-card-meta">
@@ -2027,7 +2076,7 @@ function gridHTML(list) {
             </div>
             <div class="kb-card-owner">
               <span>${esc(k.owner)} · ${esc(owner.dept)}</span>
-              <span class="src-tag ${k.source}">${k.source === 'admin' ? '管理端' : '客户端'}</span>
+              ${roleTagHTML(k)}
             </div>
           </div>
         </div>
@@ -2057,12 +2106,16 @@ function gridHTML(list) {
 function kbMenu(e, id) {
   e.stopPropagation();
   const k = getKb(id);
-  popMenu(e.currentTarget, `
-    <button onclick="openWizard('edit','${id}')">${icon('i-edit', 'ic sm')}编辑知识库</button>
-    <button onclick="closeMask('chatModal');openChatTry('${id}')">${icon('i-chat', 'ic sm')}对话试一试</button>
-    <div class="sep"></div>
-    <button class="danger" onclick="confirmDeleteKb('${id}')">${icon('i-trash', 'ic sm')}删除知识库</button>
-  `);
+  if (!k) return;
+  const items = [];
+  if (canConfig(k)) items.push(`<button onclick="openWizard('edit','${id}')">${icon('i-edit', 'ic sm')}编辑知识库</button>`);
+  if (canDebug(k)) items.push(`<button onclick="closeMask('chatModal');openChatTry('${id}')">${icon('i-bug', 'ic sm')}调试知识库</button>`);
+  if (canDelete(k)) {
+    items.push('<div class="sep"></div>');
+    items.push(`<button class="danger" onclick="confirmDeleteKb('${id}')">${icon('i-trash', 'ic sm')}删除知识库</button>`);
+  }
+  if (!items.length) return;
+  popMenu(e.currentTarget, items.join(''));
 }
 
 /* ============================================================
@@ -2322,7 +2375,6 @@ function trashCardHTML(t) {
           <span class="trash-name" title="${esc(t.name)}">${esc(t.name)}</span>
         </div>
         <div class="trash-card-owner">
-          <span class="src-tag ${t.source}">${t.source === 'admin' ? '管理端' : '客户端'}</span>
           <span>${esc(t.owner)}</span>
         </div>
       </div>
@@ -2475,7 +2527,7 @@ function renderDetail() {
         <div class="detail-title">
           <h1>${esc(k.name)}</h1>
           ${statusIconHTML(k)}
-          ${sourceTagHTML(k)}
+          ${roleTagHTML(k)}
         </div>
         <div class="detail-desc">${esc(k.desc || '无描述')}</div>
         <div class="detail-meta">
@@ -2485,9 +2537,9 @@ function renderDetail() {
         </div>
       </div>
       <div class="detail-actions">
-        <button class="btn" onclick="openWizard('edit','${k.id}')">${icon('i-edit', 'ic sm')}编辑知识库</button>
+        ${canConfig(k) ? `<button class="btn" onclick="openWizard('edit','${k.id}')">${icon('i-edit', 'ic sm')}编辑知识库</button>` : ''}
         <div class="add-doc-wrap">
-          <button class="btn primary btn-add-doc" onclick="toggleAddDocMenu(event)">${icon('i-plus', 'ic sm')}添加文档${icon('i-chev-d', 'ic sm')}</button>
+          ${canEdit(k) ? `<button class="btn primary btn-add-doc" onclick="toggleAddDocMenu(event)">${icon('i-plus', 'ic sm')}添加文档${icon('i-chev-d', 'ic sm')}</button>` : ''}
         </div>
       </div>
     </div>
@@ -2549,7 +2601,7 @@ function treeRowsHTML(k, nodes, depth) {
       ${icon(depth === 0 ? 'i-book' : 'i-folder', 'ic ' + (depth === 0 ? 'book' : 'folder'))}
       <span class="tree-name" title="${esc(n.name)}">${esc(n.name)}</span>
       <span class="cnt">${folderCount(k.files, n.path)}</span>
-      ${depth === 0 ? '' : `<button class="more" title="更多" onclick="event.stopPropagation();folderMenu(event,'${esc(n.path)}')">${icon('i-more', 'ic sm')}</button>`}
+      ${depth === 0 || !canEdit(k) ? '' : `<button class="more" title="更多" onclick="event.stopPropagation();folderMenu(event,'${esc(n.path)}')">${icon('i-more', 'ic sm')}</button>`}
     </div>
     ${hasChild && open ? treeRowsHTML(k, n.children, depth + 1) : ''}`;
   }).join('');
@@ -2712,10 +2764,11 @@ function filesPaneHTML(k) {
         <span>已选择 <b>${selCount}</b> 个文件</span>
         <div class="spacer"></div>
         <button class="btn sm" onclick="batchChatTry()">${icon('i-chat', 'ic sm')}试一试</button>
+        ${canEdit(k) ? `
         <button class="btn sm" onclick="batchMove()">${icon('i-move', 'ic sm')}批量移动</button>
-        <button class="btn sm" onclick="batchReparse()">${icon('i-refresh', 'ic sm')}重新处理</button>
+        <button class="btn sm" onclick="batchReparse()">${icon('i-refresh', 'ic sm')}重新处理</button>` : ''}
         <button class="btn sm" onclick="batchDownload()">${icon('i-dl', 'ic sm')}下载</button>
-        <button class="btn sm" onclick="batchDelete()" style="color:var(--err)">${icon('i-trash', 'ic sm')}批量删除</button>
+        ${canEdit(k) ? `<button class="btn sm" onclick="batchDelete()" style="color:var(--err)">${icon('i-trash', 'ic sm')}批量删除</button>` : ''}
         <button class="btn sm ghost" onclick="state.selected.clear();renderTabBody()">取消选择</button>
       </div>` : ''}
 
@@ -2761,8 +2814,9 @@ function filesPaneHTML(k) {
 function fileRowHTML(f) {
   const s = FILE_STATUS[f.status] || FILE_STATUS['解析完成'];
   const on = state.selected.has(f.id);
+  const editable = canEdit(current());
   return `<tr class="${on ? 'sel' : ''}">
-    <td class="col-check"><input type="checkbox" class="chk" ${on ? 'checked' : ''} onchange="toggleFileSelect('${f.id}',this.checked)"></td>
+    <td class="col-check">${editable ? `<input type="checkbox" class="chk" ${on ? 'checked' : ''} onchange="toggleFileSelect('${f.id}',this.checked)">` : ''}</td>
     <td>
       <div class="file-name-cell">
         <span class="fimg ${f.type}">${f.type === 'image' ? 'IMG' : f.type.toUpperCase()}</span>
@@ -2777,12 +2831,12 @@ function fileRowHTML(f) {
       <span class="file-status" style="color:${s.color}">
         <span class="dot" style="background:${s.color}"></span>${esc(f.status)}
       </span>
-      ${f.status === '处理失败' ? `<button class="reparse-btn" title="${esc(f.err || '点击重新处理')}" onclick="reparseFile('${f.id}')">${icon('i-refresh', 'ic sm')}</button>` : ''}
+      ${editable && f.status === '处理失败' ? `<button class="reparse-btn" title="${esc(f.err || '点击重新处理')}" onclick="reparseFile('${f.id}')">${icon('i-refresh', 'ic sm')}</button>` : ''}
     </td>
     <td><div class="file-time">${esc(f.time)}</div></td>
     <td style="font-size:12px;color:var(--text-3)">${esc(f.by)}</td>
     <td class="file-actions">
-      <button class="ibtn" onclick="fileRowMenu(event,'${f.id}')">${icon('i-more', 'ic sm')}</button>
+      ${editable ? `<button class="ibtn" onclick="fileRowMenu(event,'${f.id}')">${icon('i-more', 'ic sm')}</button>` : ''}
     </td>
   </tr>`;
 }
@@ -2825,16 +2879,21 @@ function fileRowMenu(e, id) {
   e.stopPropagation();
   const f = findFile(id);
   if (!f) return;
-  popMenu(e.currentTarget, `
-    ${f.status === '处理失败' ? `<button onclick="reparseFile('${id}')">${icon('i-refresh', 'ic sm')}重新处理</button>` : ''}
-    <button onclick="toast('正在下载「${esc(f.name)}」')">${icon('i-dl', 'ic sm')}下载文件</button>
-    <button onclick="promptRenameFile('${id}')">${icon('i-edit', 'ic sm')}重命名</button>
-    <button onclick="fileMoveModal('${id}')">${icon('i-move', 'ic sm')}移动</button>
-    <div class="sep"></div>
-    <button onclick="fileChatTry('${id}')">${icon('i-chat', 'ic sm')}试一试</button>
-    <div class="sep"></div>
-    <button class="danger" onclick="deleteFile('${id}')">${icon('i-trash', 'ic sm')}删除</button>
-  `);
+  const k = current(), editable = canEdit(k);
+  const items = [];
+  if (editable && f.status === '处理失败') items.push(`<button onclick="reparseFile('${id}')">${icon('i-refresh', 'ic sm')}重新处理</button>`);
+  items.push(`<button onclick="toast('正在下载「${esc(f.name)}」')">${icon('i-dl', 'ic sm')}下载文件</button>`);
+  if (editable) {
+    items.push(`<button onclick="promptRenameFile('${id}')">${icon('i-edit', 'ic sm')}重命名</button>`);
+    items.push(`<button onclick="fileMoveModal('${id}')">${icon('i-move', 'ic sm')}移动</button>`);
+  }
+  items.push('<div class="sep"></div>');
+  items.push(`<button onclick="fileChatTry('${id}')">${icon('i-bug', 'ic sm')}调试知识库</button>`);
+  if (editable) {
+    items.push('<div class="sep"></div>');
+    items.push(`<button class="danger" onclick="deleteFile('${id}')">${icon('i-trash', 'ic sm')}删除</button>`);
+  }
+  popMenu(e.currentTarget, items.join(''));
 }
 function reparseFile(id) {
   const f = findFile(id);
@@ -3310,7 +3369,7 @@ function openFileDetail(id) {
         ${icon('i-doc', 'ic')}
         <b title="${esc(f.name)}">${esc(f.name)}</b>
       </div>
-      <button class="btn sm" onclick="toast('正在下载「${esc(f.name)}」')">${icon('i-dl', 'ic sm')}下载</button>
+      ${canEdit(current()) ? `<button class="btn sm" onclick="toast('正在下载「${esc(f.name)}」')">${icon('i-dl', 'ic sm')}下载</button>` : ''}
       <button class="modal-close" onclick="closeMask('fileDetailModal')">${icon('i-x', 'ic')}</button>
     </div>
     <div class="modal-body" id="fdBody"></div>`;
@@ -3322,6 +3381,7 @@ function renderFileDetailBody() {
   const f = findFile(fdState.fileId || '');
   const box = $('#fdBody');
   if (!f || !box) return;
+  const editable = canEdit(current());
   const s = FILE_STATUS[f.status] || FILE_STATUS['解析完成'];
   const typeTag = (f.type === 'image' ? 'IMG' : f.type === 'docx' ? 'DOCX' : f.type.toUpperCase());
   box.innerHTML = `
@@ -3344,25 +3404,28 @@ function renderFileDetailBody() {
           <span class="fd-panel-title"><i class="fd-bar"></i>自定义元数据</span>
           <span class="fd-icon-btn status-ico" data-tip="可自定义字段名与值，用于检索过滤" tabindex="0">${icon('i-info', 'ic sm')}</span>
           <span class="fd-spacer"></span>
-          <button class="fd-icon-btn" title="${fdState.metaEdit ? '完成编辑' : '编辑元数据'}" onclick="toggleMetaEdit()">${icon('i-edit', 'ic sm')}</button>
+          ${editable ? `<button class="fd-icon-btn" title="${fdState.metaEdit ? '完成编辑' : '编辑元数据'}" onclick="toggleMetaEdit()">${icon('i-edit', 'ic sm')}</button>` : ''}
         </div>
         ${renderMetaRows(f)}
-        ${fdState.metaEdit ? `<div class="fd-meta-actions"><button class="btn sm" onclick="addMetaField()">${icon('i-plus', 'ic sm')}添加元数据字段</button></div>` : ''}
+        ${fdState.metaEdit && editable ? `<div class="fd-meta-actions"><button class="btn sm" onclick="addMetaField()">${icon('i-plus', 'ic sm')}添加元数据字段</button></div>` : ''}
       </div>
 
       <div class="fd-info-col fd-info-summary">
         <div class="fd-section-head">
           <span class="fd-panel-title"><i class="fd-bar"></i>摘要</span>
           <span class="fd-spacer"></span>
-          ${fdState.editSummary
+          ${editable ? (fdState.editSummary
             ? `<button class="fd-icon-btn" title="保存" onclick="saveSummary()">${icon('i-check', 'ic sm')}</button>
                <button class="fd-icon-btn" title="取消" onclick="fdState.editSummary=false;renderFileDetailBody()">${icon('i-x', 'ic sm')}</button>`
             : `<button class="fd-icon-btn" title="编辑摘要" onclick="fdState.editSummary=true;renderFileDetailBody()">${icon('i-edit', 'ic sm')}</button>
-               <button class="fd-icon-btn" title="重新生成摘要" onclick="regenSummary()">${icon('i-refresh', 'ic sm')}</button>`}
+               <button class="fd-icon-btn" title="重新生成摘要" onclick="regenSummary()">${icon('i-refresh', 'ic sm')}</button>`) : ''}
         </div>
-        ${fdState.editSummary
-          ? `<textarea class="summary-textarea" id="fdSummaryInput">${esc(f.summary || '')}</textarea>`
-          : `<div class="fd-summary-box ${f.summary ? '' : 'empty'}">${f.summary ? esc(f.summary) : '暂无摘要，可点击右上角「重新生成」由模型自动生成。'}</div>`}
+        ${(() => {
+          const editingSummary = editable && fdState.editSummary;
+          return editingSummary
+            ? `<textarea class="summary-textarea" id="fdSummaryInput">${esc(f.summary || '')}</textarea>`
+            : `<div class="fd-summary-box ${f.summary ? '' : 'empty'}">${f.summary ? esc(f.summary) : (editable ? '暂无摘要，可点击右上角「重新生成」由模型自动生成。' : '暂无摘要')}</div>`;
+        })()}
       </div>
     </div>
 
@@ -3422,18 +3485,19 @@ function renderMetaRows(f) {
 
 function chunkHTML(c, i) {
   const editing = fdState.editingChunk === c.id;
+  const editable = canEdit(current());
   return `<div class="chunk-item ${c.enabled ? '' : 'off'} ${i === 0 ? 'expanded' : ''}" id="chunk_${c.id}">
     <div class="chunk-head">
       <b>片段 ${i + 1}</b>
       <div class="spacer"></div>
-      <div class="chunk-tools">
+      ${editable ? `<div class="chunk-tools">
         <button title="辅助召回问题" onclick="openFaqModal('${c.id}')">${icon('i-info', 'ic sm')}</button>
         <button title="编辑分块" onclick="fdState.editingChunk='${c.id}';renderFileDetailBody()" ${editing ? 'disabled' : ''}>${icon('i-edit', 'ic sm')}</button>
         <button title="查看父块" onclick="toggleParent('${c.id}')">${icon('i-eye', 'ic sm')}</button>
         <span class="switch ${c.enabled ? 'on' : ''}" title="${c.enabled ? '已启用' : '已停用'}" onclick="toggleChunk('${c.id}',!${c.enabled})"></span>
-      </div>
+      </div>` : ''}
     </div>
-    ${editing
+    ${editing && editable
       ? `<textarea class="chunk-edit-box" id="ce_${c.id}">${esc(c.text)}</textarea>
          <div class="chunk-actions"><button onclick="saveChunk('${c.id}')" style="color:var(--primary)">保存</button><button onclick="fdState.editingChunk=null;renderFileDetailBody()">取消</button></div>`
       : `<div class="chunk-text">${esc(c.text)}</div>
@@ -3505,6 +3569,7 @@ function renderFaqModal() {
   if (!c || !box) return;
   const faqs = c.faqs || [];
   const editing = fdState.faqEditing;
+  const editable = canEdit(current());
 
   box.innerHTML = `
     <div class="modal-head">
@@ -3512,8 +3577,8 @@ function renderFaqModal() {
         <span class="fd-faq-count">${faqs.length}</span>
       </span>
       <div class="fd-faq-head-actions">
-        <button class="fd-icon-btn" data-tip="添加辅助召回问题" onclick="showFaqInput()">${icon('i-plus', 'ic sm')}</button>
-        <button class="fd-icon-btn" data-tip="重新生成" onclick="refreshFaqs()">${icon('i-refresh', 'ic sm')}</button>
+        ${editable ? `<button class="fd-icon-btn" data-tip="添加辅助召回问题" onclick="showFaqInput()">${icon('i-plus', 'ic sm')}</button>
+        <button class="fd-icon-btn" data-tip="重新生成" onclick="refreshFaqs()">${icon('i-refresh', 'ic sm')}</button>` : ''}
       </div>
       <button class="modal-close" onclick="closeFaqModal()">${icon('i-x', 'ic')}</button>
     </div>
@@ -3535,8 +3600,8 @@ function renderFaqModal() {
           : `<div class="fd-faq-item">
                ${icon('i-info', 'ic')}
                <span class="fd-faq-text">${esc(q)}</span>
-               <button class="fd-faq-act" title="编辑问题" onclick="startFaqEdit(${qi})">${icon('i-edit', 'ic sm')}</button>
-               <button class="fd-faq-act del" title="删除问题" onclick="delFaq(${qi})">${icon('i-x', 'ic sm')}</button>
+               ${editable ? `<button class="fd-faq-act" title="编辑问题" onclick="startFaqEdit(${qi})">${icon('i-edit', 'ic sm')}</button>
+               <button class="fd-faq-act del" title="删除问题" onclick="delFaq(${qi})">${icon('i-x', 'ic sm')}</button>` : ''}
              </div>`).join('')
           : `<div class="fd-faq-empty">暂无辅助召回问题</div>`}
       </div>
@@ -3710,7 +3775,9 @@ function openChatTry(id, fileId) {
 
     <div class="chat-body">
       <section class="chat-left">
-        <div class="chat-left-head">调试配置</div>
+        <div class="chat-left-head">调试配置
+          ${canConfig(k) ? `<button class="btn sm ghost" onclick="openChatRetrieval()">${icon('i-sliders', 'ic sm')}检索策略</button>` : ''}
+        </div>
         <div class="chat-left-body">
           <div class="chat-field">
             <label>模型 <span class="req">*</span></label>
@@ -3781,6 +3848,106 @@ function batchChatTry() {
   const ids = Array.from(state.selected || []);
   if (!ids.length) { toast('请先选择文件', 'warn'); return; }
   openChatTry(current().id, ids);
+}
+
+/* ============================================================
+   调试知识库 → 检索策略弹窗
+   读写当前知识库的 cfg.retrieval，保存后立即生效于调试对话
+============================================================ */
+let chatRetrievalDraft = null;
+
+function openChatRetrieval() {
+  const k = current();
+  if (!k) return;
+  const r = (k.cfg && k.cfg.retrieval) || {};
+  chatRetrievalDraft = {
+    vectorTopK: r.vectorTopK != null ? r.vectorTopK : 10,
+    keywordThreshold: r.keywordThreshold != null ? r.keywordThreshold : 0.3,
+    vectorThreshold: r.vectorThreshold != null ? r.vectorThreshold : 0.5,
+    rerank: !!r.rerank,
+    rerankModel: r.rerankModel || (k.cfg && k.cfg.rerank) || 'qwen3-rerank',
+    rerankTopK: r.rerankTopK != null ? r.rerankTopK : 5,
+    rerankThreshold: r.rerankThreshold != null ? r.rerankThreshold : 0.2
+  };
+  renderChatRetrieval();
+  openMask('chatRetrievalModal');
+}
+
+function renderChatRetrieval() {
+  const d = chatRetrievalDraft;
+  if (!d) return;
+  const k = current();
+  const setR = (key, val) => { d[key] = Number(val); };
+  const models = ['qwen3-rerank', 'bge-reranker-v2-m3', 'cohere-rerank-v3'];
+  $('#chatRetrievalModalBox').innerHTML = `
+    <div class="modal-head">
+      <b>检索策略</b>
+      <span class="sub">${esc(k ? k.name : '')}</span>
+      <div class="spacer"></div>
+      <button class="modal-close" onclick="closeMask('chatRetrievalModal')">${icon('i-x', 'ic')}</button>
+    </div>
+    <div class="modal-body">
+      <div class="hint" style="margin:0 0 4px">配置召回数量与相关性阈值，以及检索结果的重排方式</div>
+      <div class="set-list">
+        <div class="set-row">
+          <div class="txt"><b>向量召回数量</b><i>向量检索返回的最大结果数量</i></div>
+          <div class="ctl"><input class="input" type="number" min="1" max="100" value="${d.vectorTopK}"
+            oninput="chatRetrievalDraft.vectorTopK=+this.value"></div>
+        </div>
+        <div class="set-row">
+          <div class="txt"><b>关键词阈值</b><i>关键词检索的最低相关性分数</i></div>
+          <div class="ctl">${setRangeHTML('crKeyword', 0, 1, 0.01, d.keywordThreshold, 'chatRetrievalDraft.keywordThreshold=+this.value', 2)}</div>
+        </div>
+        <div class="set-row">
+          <div class="txt"><b>向量阈值</b><i>向量检索的最低相似度分数</i></div>
+          <div class="ctl">${setRangeHTML('crVector', 0, 1, 0.01, d.vectorThreshold, 'chatRetrievalDraft.vectorThreshold=+this.value', 2)}</div>
+        </div>
+        <div class="set-row">
+          <div class="txt"><b>重排序</b><i>对召回结果进行二次排序，提高回答准确性。启用后需配置重排数量、阈值与模型。</i></div>
+          <div class="ctl"><span class="switch ${d.rerank ? 'on' : ''}" onclick="chatRetrievalDraft.rerank=!chatRetrievalDraft.rerank;renderChatRetrieval()"></span></div>
+        </div>
+      </div>
+      ${d.rerank ? `<div class="set-list" style="margin-top:8px;padding-left:14px;border-left:2px solid var(--ok)">
+        <div class="set-row">
+          <div class="txt"><b>ReRank 模型 <span class="req">*</span></b><i>用于对知识库检索结果进行重排序，提高回答准确性</i></div>
+          <div class="ctl"><select class="select" onchange="chatRetrievalDraft.rerankModel=this.value">
+            ${models.map(m => `<option ${d.rerankModel === m ? 'selected' : ''}>${m}</option>`).join('')}
+          </select></div>
+        </div>
+        <div class="set-row">
+          <div class="txt"><b>重排数量</b><i>重排序后保留的最大结果数量</i></div>
+          <div class="ctl"><input class="input" type="number" min="1" max="50" value="${d.rerankTopK}"
+            oninput="chatRetrievalDraft.rerankTopK=+this.value"></div>
+        </div>
+        <div class="set-row">
+          <div class="txt"><b>重排阈值</b><i>重排序的最低相关性分数</i></div>
+          <div class="ctl">${setRangeHTML('crRerank', 0, 1, 0.01, d.rerankThreshold, 'chatRetrievalDraft.rerankThreshold=+this.value', 2)}</div>
+        </div>
+      </div>` : ''}
+    </div>
+    <div class="modal-foot">
+      <div class="spacer"></div>
+      <button class="btn" onclick="closeMask('chatRetrievalModal')">取消</button>
+      <button class="btn primary" onclick="saveChatRetrieval()">保存</button>
+    </div>`;
+}
+
+function saveChatRetrieval() {
+  const k = current();
+  if (!k || !chatRetrievalDraft) return;
+  const d = chatRetrievalDraft;
+  k.cfg.retrieval = {
+    ...k.cfg.retrieval,
+    vectorTopK: Number(d.vectorTopK) || 10,
+    keywordThreshold: Number(d.keywordThreshold),
+    vectorThreshold: Number(d.vectorThreshold),
+    rerank: !!d.rerank,
+    rerankTopK: Number(d.rerankTopK) || 5,
+    rerankThreshold: Number(d.rerankThreshold)
+  };
+  if (d.rerank) k.cfg.rerank = d.rerankModel;
+  closeMask('chatRetrievalModal');
+  toast('检索策略已更新');
 }
 
 /* 把 chatKey 还原成 { kb, files } */
@@ -4025,7 +4192,7 @@ function wikiPaneHTML(k) {
       <div class="big">${icon('i-wiki', 'ic xl')}</div>
       <b>尚未生成 Wiki 索引</b>
       <span>Wiki 会在文档解析完成后自动生成，也可在配置中开启 Wiki 提取以加速构建。</span>
-      <button class="btn primary" style="margin-top:6px" onclick="generateWiki()">${icon('i-spark', 'ic sm')}立即生成</button>
+      ${canEdit(k) ? `<button class="btn primary" style="margin-top:6px" onclick="generateWiki()">${icon('i-spark', 'ic sm')}立即生成</button>` : ''}
     </div></div>`;
   }
   if (w.state === 'processing') {
@@ -4047,8 +4214,8 @@ function wikiPaneHTML(k) {
         <div class="tools">
           <button class="ibtn" title="展开全部" onclick="wikiExpandAll(true)">${icon('i-chev-d', 'ic sm')}</button>
           <button class="ibtn" title="收起全部" onclick="wikiExpandAll(false)">${icon('i-chev', 'ic sm')}</button>
-          <button class="ibtn" title="新建目录" onclick="newWikiDir()">${icon('i-folder-plus', 'ic sm')}</button>
-          <button class="ibtn" title="新建页面" onclick="openWikiPageModal()">${icon('i-plus', 'ic sm')}</button>
+          ${canEdit(k) ? `<button class="ibtn" title="新建目录" onclick="newWikiDir()">${icon('i-folder-plus', 'ic sm')}</button>
+          <button class="ibtn" title="新建页面" onclick="openWikiPageModal()">${icon('i-plus', 'ic sm')}</button>` : ''}
         </div>
       </div>
       <div class="wiki-tree" id="wikiTree">${state.wikiMode === 'knowledge' ? wikiTreeHTML(k) : wikiSummaryNavHTML(k)}</div>
@@ -4058,6 +4225,7 @@ function wikiPaneHTML(k) {
 }
 function wikiTreeHTML(k) {
   const w = k.wiki;
+  const editable = canEdit(k);
   return w.dirs.map(d => {
     const pages = w.pages.filter(p => p.dir === d);
     const open = !state.wikiCollapsed.has(d);
@@ -4066,11 +4234,11 @@ function wikiTreeHTML(k) {
       ${icon('i-folder', 'ic sm')}
       <span style="overflow:hidden;text-overflow:ellipsis">${esc(d)}</span>
       <span style="margin-left:auto;font-size:10.5px;color:var(--text-4)">${pages.length}</span>
-      <button class="more" onclick="event.stopPropagation();wikiDirMenu(event,'${esc(d)}')">${icon('i-more', 'ic sm')}</button>
+      ${editable ? `<button class="more" onclick="event.stopPropagation();wikiDirMenu(event,'${esc(d)}')">${icon('i-more', 'ic sm')}</button>` : ''}
     </div>
     ${open ? pages.map(p => `<div class="wiki-node ${state.wikiPage === p.id ? 'on' : ''}" style="padding-left:22px" onclick="openWikiPage('${p.id}')">
       ${icon('i-doc', 'ic sm page')}<span style="overflow:hidden;text-overflow:ellipsis">${esc(p.title)}</span>
-      <button class="more" onclick="event.stopPropagation();wikiPageMenu(event,'${p.id}')">${icon('i-more', 'ic sm')}</button>
+      ${editable ? `<button class="more" onclick="event.stopPropagation();wikiPageMenu(event,'${p.id}')">${icon('i-more', 'ic sm')}</button>` : ''}
     </div>`).join('') : ''}`;
   }).join('');
 }
@@ -4082,6 +4250,7 @@ function wikiSummaryNavHTML(k) {
 }
 function wikiContentHTML(k) {
   const w = k.wiki;
+  const editable = canEdit(k);
   if (state.wikiIndex) return wikiIndexHTML(k);
   if (state.wikiMode === 'summary' && state.wikiSummary != null) {
     const s = w.summaries[state.wikiSummary];
@@ -4091,7 +4260,7 @@ function wikiContentHTML(k) {
           <div class="wiki-doc-title">${esc(s.name)}</div>
           <div class="wiki-doc-meta"><span>来源文档：<a onclick="jumpToFileByName('${esc(s.file)}')">${esc(s.file)}</a></span><span>引用分块：<b style="color:var(--text-2);font-weight:600">${(k.files.find(f => f.name === s.file) || {chunks:[]}).chunks?.length || 1}</b> 个</span></div>
         </div>
-        <div class="wiki-doc-actions"><button class="btn sm" onclick="regenSummaryPage(${state.wikiSummary})">${icon('i-refresh', 'ic sm')}重新生成</button></div>
+        ${editable ? `<div class="wiki-doc-actions"><button class="btn sm" onclick="regenSummaryPage(${state.wikiSummary})">${icon('i-refresh', 'ic sm')}重新生成</button></div>` : ''}
       </div>
       <div class="wiki-body"><p>${esc(s.text)}</p></div>
     </div>`;
@@ -4109,13 +4278,13 @@ function wikiContentHTML(k) {
           <span>来源文档：<a onclick="jumpToFileByName('${esc(p.sourceDoc)}')">${esc(p.sourceDoc)}</a></span>
         </div>
       </div>
-      <div class="wiki-doc-actions">
+      ${editable ? `<div class="wiki-doc-actions">
         <button class="btn sm" onclick="openWikiVersion('${p.id}')">${icon('i-history', 'ic sm')}版本历史</button>
         <button class="btn sm" onclick="openWikiPageModal('${p.id}')">${icon('i-edit', 'ic sm')}编辑</button>
         <button class="btn sm" onclick="moveWikiPage('${p.id}')">${icon('i-move', 'ic sm')}移动</button>
         <button class="btn sm" onclick="renameWikiPage('${p.id}')">${icon('i-tag', 'ic sm')}重命名</button>
         <button class="btn sm danger" onclick="deleteWikiPage('${p.id}')">${icon('i-trash', 'ic sm')}</button>
-      </div>
+      </div>` : ''}
     </div>
     <div class="wiki-body">${wikiBodyWithRefs(p, w, k)}</div>
     ${wikiRefsHTML(k, p)}
@@ -4584,7 +4753,7 @@ const PERM_ROWS = [
   ['查看与检索', ['✓', '✓', '✓', '✓']],
   ['上传 / 编辑文档', ['✓', '✓', '✓', '—']],
   ['删除文档', ['✓', '✓', '✓', '—']],
-  ['修改知识库配置', ['✓', '✓', '—', '—']],
+  ['修改知识库配置', ['✓', '✓', '✓', '—']],
   ['管理成员与角色', ['✓', '✓', '—', '—']],
   ['删除知识库 / 转让所有者', ['✓', '—', '—', '—']]
 ];
@@ -4596,7 +4765,7 @@ function membersPaneHTML(k) {
         <b style="font-size:14px">成员列表</b>
         <span class="badge gray">${k.members.length} 人</span>
       </div>
-      ${membersEditorHTML(k.members)}
+      ${membersEditorHTML(k.members, canManageMembers(k))}
     </div>
     <div class="card" style="padding:18px 20px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
@@ -4616,10 +4785,11 @@ function membersPaneHTML(k) {
 ============================================================ */
 
 /* 成员编辑区：添加成员行 + 成员列表 + 权限说明开关 */
-function membersEditorHTML(members) {
+function membersEditorHTML(members, editable) {
+  const canEditMembers = editable !== false;
   return `
     <div class="wiz-members">
-      <div class="wiz-field">
+      ${canEditMembers ? `<div class="wiz-field">
         <label>添加成员</label>
         <div class="member-add-row">
           <div class="member-picker" onclick="openMemberPickerDialog()">
@@ -4628,19 +4798,22 @@ function membersEditorHTML(members) {
           </div>
           <button class="btn primary" onclick="openMemberPickerDialog()">${icon('i-plus', 'ic sm')}添加</button>
         </div>
-      </div>
+      </div>` : ''}
 
       <div class="wiz-field">
         <label>成员列表</label>
-        ${members.map(memberRowHTML).join('')}
-        <div class="wiz-hint">所有者可将知识库转让给管理员或编辑者，转让后原所有者变为管理员。</div>
+        ${members.map((m, i) => memberRowHTML(m, i, canEditMembers)).join('')}
+        <div class="wiz-hint">${canEditMembers
+          ? '所有者可将知识库转让给管理员或编辑者，转让后原所有者变为管理员。'
+          : '你没有管理成员的权限，仅可查看成员列表。'}</div>
       </div>
     </div>`;
 }
 
 /* 单行成员：所有者展示「所有者」标签 + 转让；其他人展示角色下拉 + 移除 */
-function memberRowHTML(m, i) {
+function memberRowHTML(m, i, editable) {
   const isOwner = m.role === '所有者';
+  const canEdit = editable !== false;
   return `<div class="edit-member-row ${isOwner ? 'owner' : ''}">
     <span class="m-avatar">${icon('i-user', 'ic')}</span>
     <div class="m-info">
@@ -4648,11 +4821,13 @@ function memberRowHTML(m, i) {
       <i>${esc(person(m.name).dept)} · ${esc(phoneOf(m.name))}</i>
     </div>
     ${isOwner
-      ? `<span class="tag-owner">所有者</span><button class="m-transfer" onclick="openTransferDialog()">转让</button>`
-      : `<select class="m-role" onchange="memberSetRole(${i},this.value)">
-           ${['管理员', '编辑者', '只读'].map(r => `<option ${m.role === r ? 'selected' : ''}>${r}</option>`).join('')}
-         </select>
-         <button class="m-remove" title="移除成员" onclick="memberRemove(${i})">${icon('i-x', 'ic sm')}</button>`}
+      ? `<span class="tag-owner">所有者</span>${canEdit ? `<button class="m-transfer" onclick="openTransferDialog()">转让</button>` : ''}`
+      : `${canEdit
+        ? `<select class="m-role" onchange="memberSetRole(${i},this.value)">
+             ${['管理员', '编辑者', '只读'].map(r => `<option ${m.role === r ? 'selected' : ''}>${r}</option>`).join('')}
+           </select>
+           <button class="m-remove" title="移除成员" onclick="memberRemove(${i})">${icon('i-x', 'ic sm')}</button>`
+        : `<span class="tag-owner" style="background:#f3f4f6;color:var(--text-3)">${esc(m.role)}</span>`}`}
   </div>`;
 }
 
@@ -5029,15 +5204,13 @@ function logsPaneHTML(k) {
   return `<div class="log-wrap">
     <div class="log-head">${icon('i-log', 'ic sm')}操作日志
       <span style="font-weight:400;color:var(--text-4);font-size:11.5px">记录该知识库的创建、修改与成员变更</span>
-      <div class="spacer"></div>
-      <button class="btn sm" onclick="toast('已导出操作日志')">${icon('i-dl', 'ic sm')}导出</button>
     </div>
     <table class="log-table">
       <thead><tr><th style="width:150px">操作时间</th><th style="width:150px">操作人</th><th style="width:140px">分类</th><th style="width:180px">操作</th><th>对象 / 说明</th><th style="width:90px">来源</th></tr></thead>
       <tbody>
         ${rows.map(l => `<tr>
           <td class="log-time">${esc(l.time)}</td>
-          <td><div class="log-actor">${avatarHTML(l.actor)}${esc(l.actor)}</div></td>
+          <td><div class="log-actor">${esc(l.actor)}</div></td>
           <td><span class="log-group">${esc((LOG_ACTIONS[l.type] || {}).group || '其它')}</span></td>
           <td class="log-action">${esc(l.action)}</td>
           <td class="log-target" title="${esc(l.target)}">${esc(l.target)}</td>
@@ -5173,7 +5346,20 @@ function openWizard(mode, id) {
   renderWizard();
   openMask('wizardModal');
 }
-function wizSteps() { return (wiz.mode === 'edit' || wiz.createMode === 'full') ? WIZ_STEPS_FULL : WIZ_STEPS_QUICK; }
+function wizSteps() {
+  const all = (wiz.mode === 'edit' || wiz.createMode === 'full') ? WIZ_STEPS_FULL : WIZ_STEPS_QUICK;
+  /* 编辑已有知识库时，按当前用户角色裁剪可操作的步骤 */
+  if (wiz.mode !== 'edit') return all;
+  const k = getKb(wiz.id);
+  if (!k) return all;
+  if (isOwner(k) || isAdmin(k)) return all;
+  if (canEdit(k)) {
+    /* 编辑者：可见全部配置步骤（含模型配置），但无成员管理权限 */
+    return all.filter(s => s.key !== 'members');
+  }
+  /* 只读：仅可查看成员信息 */
+  return all.filter(s => s.key === 'members');
+}
 function renderWizard() {
   const steps = wizSteps();
   if (wiz.step >= steps.length) wiz.step = steps.length - 1;
@@ -5473,10 +5659,12 @@ function setRangeHTML(id, min, max, step, value, oninput, digits) {
 function wizMembersPane() {
   const d = wiz.data;
   wiz.permOpen = wiz.permOpen === undefined ? true : wiz.permOpen;
+  /* 编辑他人知识库且无成员管理权限时，成员区只读 */
+  const canManage = wiz.mode !== 'edit' || canManageMembers(getKb(wiz.id));
   return `
     <div class="wiz-pane-title">成员管理</div>
-    <div class="wiz-pane-sub">添加成员并为其分配角色，创建后可在知识库设置中调整</div>
-    ${membersEditorHTML(d.members)}
+    <div class="wiz-pane-sub">${canManage ? '添加成员并为其分配角色，创建后可在知识库设置中调整' : '仅可查看成员列表，你无权管理该知识库的成员'}</div>
+    ${membersEditorHTML(d.members, canManage)}
     ${permBlockHTML(wiz.permOpen)}
   `;
 }
@@ -5919,5 +6107,29 @@ function recallGoto(fileId) {
 }
 
 </script>
+
+<!-- PRD 文档入口（悬浮按钮） -->
+<style>
+.prd-fab-wrapper{position:fixed;bottom:32px;right:32px;z-index:9999;display:flex;align-items:center;justify-content:center}
+.prd-fab-btn{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;box-shadow:0 8px 28px rgba(79,70,229,.45);transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .3s ease;text-decoration:none;cursor:pointer;border:none;outline:none;position:relative}
+.prd-fab-btn:hover{transform:scale(1.10);box-shadow:0 12px 40px rgba(79,70,229,.60)}
+.prd-fab-btn:active{transform:scale(.92)}
+.prd-fab-btn svg{width:24px;height:24px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.08))}
+.prd-fab-tooltip{position:absolute;right:54px;background:#1e293b;color:#f1f5f9;padding:6px 16px;border-radius:8px;font-size:13px;font-weight:500;letter-spacing:.3px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;transform:translateX(4px);box-shadow:0 4px 16px rgba(0,0,0,.18)}
+.prd-fab-tooltip::after{content:'';position:absolute;right:-6px;top:50%;transform:translateY(-50%);border-left:6px solid #1e293b;border-top:6px solid transparent;border-bottom:6px solid transparent}
+.prd-fab-btn:hover .prd-fab-tooltip{opacity:1;transform:translateX(0)}
+</style>
+<div class="prd-fab-wrapper">
+  <a class="prd-fab-btn" href="./qyzsk-prd.html" target="_blank" rel="noopener noreferrer" aria-label="查看 PRD 文档">
+    <svg viewBox="0 0 24 24">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="8" y1="13" x2="16" y2="13"/>
+      <line x1="8" y1="17" x2="16" y2="17"/>
+    </svg>
+    <span class="prd-fab-tooltip">PRD 文档</span>
+  </a>
+</div>
+
 </body>
 </html>

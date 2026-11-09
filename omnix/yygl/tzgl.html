@@ -928,6 +928,7 @@
 				        <ul class="notice-help-list">
 				            <li><iconify-icon icon="mdi:check-circle-outline"></iconify-icon>技能审核通过</li>
 				            <li><iconify-icon icon="mdi:close-circle-outline"></iconify-icon>技能审核不通过</li>
+				            <li><iconify-icon icon="mdi:delete-outline"></iconify-icon>删除知识库通知</li>
 				        </ul>
 				    </div>
 				</div>
@@ -1357,6 +1358,18 @@
         const techIds = people.filter(p => p.dept === '技术部').map(p => p.id);
 
         let notices = [{
+            id: 13,
+            title: '删除知识库通知',
+            content: '知识库「历史需求归档（2025）」已由管理员删除，库内文件、分块与向量索引已一并清除。如有疑问请联系知识库管理员。',
+            source: 'manual',
+            status: 'sent',
+            scope: 'selected',
+            templateId: null,
+            recipients: makeRecipients([1, 2, 15, 16], [1, 2, 15, 16], '2026-10-27'),
+            createdBy: '系统',
+            createdAt: '2026-10-27 17:30',
+            sentAt: '2026-10-27 17:30'
+        }, {
             id: 1,
             title: '系统升级维护通知',
             content: '各位同事：\n系统将于 2026-11-08 22:00 至 2026-11-09 02:00 进行维护升级，期间将暂停服务。维护原因：数据库版本升级。给您带来不便敬请谅解。',
@@ -1503,7 +1516,7 @@
         }];
 
         notices.forEach(notice => {
-            if (notice.source === 'manual') {
+            if (notice.source === 'manual' && notice.id !== 13) {
                 notice.scope = 'all';
                 notice.recipients = makeRecipients(allIds, [], '');
             }

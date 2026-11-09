@@ -174,6 +174,28 @@
 
   /* ========== 顶部 Tab（知识库文件 / Wiki） ========== */
   .kb-tabs { display: flex; align-items: center; gap: 26px; }
+  /* 当前用户角色标签 */
+  .kb-role-tag {
+    display: inline-flex; align-items: center; height: 22px; padding: 0 8px;
+    border-radius: 5px; font-size: 12px; font-weight: 500; white-space: nowrap;
+    background: #f3f4f6; color: #9ca3af;
+  }
+  .kb-role-tag.owner  { background: #ecfdf5; color: #059669; }
+  .kb-role-tag.admin  { background: #eff6ff; color: #2563eb; }
+  .kb-role-tag.editor { background: #f5f3ff; color: #7c3aed; }
+  .kb-role-tag.viewer { background: #f3f4f6; color: #9ca3af; }
+  /* 只读角色：隐藏勾选列与操作列，并收回其宽度 */
+  body.role-viewer .batch-bar { display: none; }
+  body.role-viewer th.col-check,
+  body.role-viewer td.col-check,
+  body.role-viewer th.col-actions,
+  body.role-viewer td.col-actions { display: none; }
+  /* 只读角色：隐藏所有编辑类入口（文件夹「⋯」、Wiki「⋯」、行菜单等） */
+  body.role-viewer .tree-more,
+  body.role-viewer .wt-more,
+  body.role-viewer [data-perm="edit"],
+  body.role-viewer .wiki-page-actions,
+  body.role-viewer .wiki-topic-menu { display: none !important; }
   .kb-tab {
     position: relative; padding: 2px 0 10px; border: none; background: none;
     font-family: inherit; font-size: 15px; font-weight: 500; color: var(--text-secondary);
@@ -195,6 +217,70 @@
     animation: wiki-spin .9s linear infinite;
   }
   .tab-panel.hidden { display: none; }
+
+  /* ========== 操作日志面板 ========== */
+  .log-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .log-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 15px 20px; border-bottom: 1px solid var(--border-light);
+    font-size: 14px; font-weight: 600; color: var(--text);
+  }
+  .log-head > svg { color: var(--text-light); flex: none; }
+  .log-head-hint { font-weight: 400; font-size: 12px; color: var(--text-light); }
+  .log-table-wrap { overflow-x: auto; }
+  .log-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .log-table th {
+    text-align: left; background: #fafbfc; color: var(--text-secondary);
+    font-weight: 600; font-size: 12.5px; padding: 10px 20px;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  .log-table td {
+    padding: 13px 20px; border-bottom: 1px solid var(--border-light);
+    color: var(--text-secondary); vertical-align: middle;
+  }
+  .log-table tbody tr:last-child td { border-bottom: none; }
+  .log-table tbody tr:hover td { background: #fafbfc; }
+  .log-time { color: var(--text-light); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .log-actor { color: var(--text); white-space: nowrap; }
+  .log-group {
+    display: inline-flex; align-items: center; height: 20px; padding: 0 7px;
+    border-radius: 5px; background: #f3f5f7; color: var(--text-secondary);
+    font-size: 11.5px; white-space: nowrap;
+  }
+  .log-action { color: var(--text); font-weight: 500; white-space: nowrap; }
+  .log-target { color: var(--text-secondary); max-width: 460px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .log-src { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 5px; font-size: 11.5px; white-space: nowrap; }
+  .log-src.admin { background: #f5f3ff; color: #7c3aed; }
+  .log-src.client { background: #ecfdf5; color: #059669; }
+  .log-foot {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 20px; border-top: 1px solid var(--border-light);
+    font-size: 12.5px; color: var(--text-light);
+  }
+  .log-foot .spacer { flex: 1; }
+  .log-foot b { color: var(--text-secondary); }
+  .log-page-size {
+    height: 30px; padding: 0 8px; border: 1px solid var(--border);
+    border-radius: 7px; background: #fff; font-family: inherit;
+    font-size: 12.5px; color: var(--text-secondary); outline: none; cursor: pointer;
+  }
+  .log-page-btn {
+    width: 30px; height: 30px; border: 1px solid var(--border); border-radius: 7px;
+    background: #fff; color: var(--text-secondary); font-size: 14px;
+    cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    font-family: inherit; transition: .15s;
+  }
+  .log-page-btn:hover:not(:disabled) { border-color: #d1d5db; color: var(--text); }
+  .log-page-btn:disabled { opacity: .4; cursor: default; }
+  .log-pages { display: flex; gap: 6px; }
+  .log-page-num {
+    min-width: 30px; height: 30px; padding: 0 8px;
+    border: 1px solid var(--border); border-radius: 7px;
+    background: #fff; color: var(--text-secondary); font-size: 12.5px;
+    cursor: pointer; font-family: inherit; transition: .15s;
+  }
+  .log-page-num:hover { border-color: #d1d5db; color: var(--text); }
+  .log-page-num.on { background: #07c160; border-color: #07c160; color: #fff; font-weight: 600; }
 
   /* ========== 摘要面板 ========== */
   .summary-layout { display: flex; min-height: 660px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: #fff; }
@@ -1569,6 +1655,10 @@
   .perm-table th { background: #f6f8f7; font-weight: 500; color: var(--text-secondary); }
   .perm-table th:first-child, .perm-table td:first-child { text-align: left; color: var(--text-secondary); width: 40%; }
   .perm-table th:not(:first-child), .perm-table td:not(:first-child) { width: 15%; }
+  .perm-table tbody tr:hover td { background: #fafbfa; }
+  .perm-table td.pm-yes { color: #07c160; font-weight: 600; }
+  .perm-table td.pm-no { color: #c9cdd4; }
+  .perm-table td.pm-part { color: #d97706; font-size: 11.5px; }
 
   /* ========== Edit Modal: Chunk/Settings Rows ========== */
   .edit-chunk-row {
@@ -1852,6 +1942,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
             <span id="kbModeLabel">快速版</span>
           </span>
+          <span class="kb-role-tag" id="kbRoleTag" title=""></span>
         </div>
         <div class="kb-meta">
           <span class="kb-meta-item" title="知识库所有者">
@@ -1879,11 +1970,11 @@
         </div>
       </div>
       <div class="kb-head-actions">
-        <button class="btn-outline" onclick="openEditModal()">
+        <button class="btn-outline" data-perm="edit" onclick="openEditModal()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           编辑知识库
         </button>
-        <div class="add-doc-wrap">
+        <div class="add-doc-wrap" data-perm="edit">
           <button class="btn-add-doc" onclick="toggleAddDocMenu(event)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             添加文档
@@ -1940,6 +2031,7 @@
         <button class="kb-tab" data-tab="wiki" onclick="switchKbTab('wiki')">
           Wiki<span class="tab-spinner" aria-label="处理中"></span>
         </button>
+        <button class="kb-tab" data-tab="activity" onclick="switchKbTab('activity')">操作日志</button>
       </div>
       <div class="section-actions">
         <span class="capacity" id="capacityText" onclick="openCapacityDetail()" title="查看容量详情">知识库使用容量：1.94 MB</span>
@@ -2082,10 +2174,10 @@
               <button class="fd-icon-btn" title="刷新" onclick="showToast('Wiki 索引已刷新')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
               </button>
-              <button class="fd-icon-btn" title="新建目录" onclick="startNewWikiDirectory(this)">
+              <button class="fd-icon-btn" data-perm="edit" title="新建目录" onclick="startNewWikiDirectory(this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><line x1="12" y1="11.5" x2="12" y2="17"/><line x1="9.25" y1="14.25" x2="14.75" y2="14.25"/></svg>
               </button>
-              <button class="fd-icon-btn" title="新建页面" onclick="openNewWikiPageModal()">
+              <button class="fd-icon-btn" data-perm="edit" title="新建页面" onclick="openNewWikiPageModal()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12.5" x2="12" y2="17.5"/><line x1="9.5" y1="15" x2="14.5" y2="15"/></svg>
               </button>
             </span>
@@ -2101,6 +2193,44 @@
         <section class="wiki-content">
           <div class="wiki-doc" id="wikiKnowledgeContent"></div>
         </section>
+      </div>
+    </div>
+
+    <!-- ===== 操作日志面板 ===== -->
+    <div class="tab-panel hidden" id="tabPanelActivity">
+      <div class="log-wrap">
+        <div class="log-head">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+          操作日志
+          <span class="log-head-hint">记录该知识库的创建、修改与成员变更</span>
+        </div>
+        <div class="log-table-wrap">
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th style="width:160px">操作时间</th>
+                <th style="width:100px">操作人</th>
+                <th style="width:130px">分类</th>
+                <th style="width:160px">操作</th>
+                <th>对象 / 说明</th>
+                <th style="width:90px">来源</th>
+              </tr>
+            </thead>
+            <tbody id="logTableBody"></tbody>
+          </table>
+        </div>
+        <div class="log-foot">
+          <span>共 <b id="logTotal">0</b> 条</span>
+          <div class="spacer"></div>
+          <select class="log-page-size" onchange="logPageSize=+this.value;logPage=1;renderActivityLog()">
+            <option value="10">10 条/页</option>
+            <option value="20">20 条/页</option>
+            <option value="50">50 条/页</option>
+          </select>
+          <button class="log-page-btn" id="logPrev" onclick="logGoPage(logPage-1)">‹</button>
+          <div class="log-pages" id="logPages"></div>
+          <button class="log-page-btn" id="logNext" onclick="logGoPage(logPage+1)">›</button>
+        </div>
       </div>
     </div>
 
@@ -2136,8 +2266,8 @@
         <button class="edit-nav-btn" data-step="retrieval" onclick="switchEditStep('retrieval')">
           <span class="n">6</span>检索策略
         </button>
-        <div class="edit-nav-grp">权限管理</div>
-        <button class="edit-nav-btn" data-step="members" onclick="switchEditStep('members')">
+        <div class="edit-nav-grp" data-perm="members">权限管理</div>
+        <button class="edit-nav-btn" data-perm="members" data-step="members" onclick="switchEditStep('members')">
           <span class="n">7</span>成员管理
         </button>
       </nav>
@@ -2492,11 +2622,12 @@
                 <table>
                   <thead><tr><th>能力</th><th>所有者</th><th>管理员</th><th>编辑者</th><th>只读</th></tr></thead>
                   <tbody>
-                    <tr><td>查看 / 检索知识库内容</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
-                    <tr><td>上传 / 删除文档</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
-                    <tr><td>修改知识库配置</td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
-                    <tr><td>管理成员与角色</td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
-                    <tr><td>删除知识库 / 转让所有者</td><td>✓</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>查看 / 检索知识库内容</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td></tr>
+                    <tr><td>编辑知识库文件 / Wiki</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-no">—</td></tr>
+                    <tr><td>上传 / 删除文档</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-no">—</td></tr>
+                    <tr><td>修改知识库配置</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-no">—</td></tr>
+                    <tr><td>管理成员与角色</td><td class="pm-yes">✓</td><td class="pm-yes">✓</td><td class="pm-no">—</td><td class="pm-no">—</td></tr>
+                    <tr><td>删除知识库 / 转让所有者</td><td class="pm-yes">✓</td><td class="pm-no">—</td><td class="pm-no">—</td><td class="pm-no">—</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -2661,7 +2792,7 @@
         <span id="fdFileName">劳动合同·护士</span>
       </div>
       <div class="fd-head-actions">
-        <button class="fd-download-btn" id="fdDownloadBtn" onclick="downloadFdFile()" title="下载该文件的原始文档">
+        <button class="fd-download-btn" data-perm="edit" id="fdDownloadBtn" onclick="downloadFdFile()" title="下载该文件的原始文档">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           下载
         </button>
@@ -2699,12 +2830,12 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
           </button>
           <span class="fd-spacer"></span>
-          <button class="fd-icon-btn" id="fdMetaEditBtn" title="编辑元数据" onclick="toggleFdMetaEdit()">
+          <button class="fd-icon-btn" id="fdMetaEditBtn" data-perm="edit" title="编辑元数据" onclick="toggleFdMetaEdit()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
           </button>
         </div>
         <div class="fd-meta-list" id="fdMetaList"></div>
-        <button class="fd-add-meta" id="fdAddMetaBtn" onclick="addFdMetaField()">
+        <button class="fd-add-meta" data-perm="edit" id="fdAddMetaBtn" onclick="addFdMetaField()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           添加元数据字段
         </button>
@@ -2719,10 +2850,10 @@
         <div class="fd-section-head">
           <span class="fd-panel-title"><i class="fd-bar"></i>摘要</span>
           <span class="fd-spacer"></span>
-          <button class="fd-icon-btn" title="编辑摘要" onclick="startFdSummaryEdit()">
+          <button class="fd-icon-btn" data-perm="edit" title="编辑摘要" onclick="startFdSummaryEdit()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
           </button>
-          <button class="fd-icon-btn" title="重新生成摘要" onclick="regenerateFdSummary()">
+          <button class="fd-icon-btn" data-perm="edit" title="重新生成摘要" onclick="regenerateFdSummary()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
           </button>
         </div>
@@ -3093,6 +3224,50 @@
     { name: '李工', dept: '研发部', phone: '139****5723', role: '管理员' }
   ];
 
+  // ==================== 当前用户与角色权限 ====================
+  /* 当前登录用户（客户端） */
+  const CUR_USER = '赵楠';
+  const ROLE_OWNER = '所有者', ROLE_ADMIN = '管理员', ROLE_EDITOR = '编辑者', ROLE_VIEWER = '只读';
+
+  /* 当前用户在本知识库中的角色，由 URL 参数 role 指定，默认所有者 */
+  let myRole = ROLE_OWNER;
+  const ROLE_TIP = {
+    '所有者': '知识库唯一负责人，可移交',
+    '管理员': '协助管理成员与内容',
+    '编辑者': '维护文件、Wiki 与检索内容',
+    '只读': '仅可查看与检索'
+  };
+
+  /* 可编辑：所有者 / 管理员 / 编辑者 */
+  function canEditKb() { return myRole === ROLE_OWNER || myRole === ROLE_ADMIN || myRole === ROLE_EDITOR; }
+  /* 可管理成员：所有者 / 管理员 */
+  function canManageMembersKb() { return myRole === ROLE_OWNER || myRole === ROLE_ADMIN; }
+  /* 可删除知识库 / 转让：仅所有者 */
+  function canDeleteKb() { return myRole === ROLE_OWNER; }
+
+  /* 按角色应用界面权限：隐藏/禁用无权限的入口 */
+  function applyRolePermissions() {
+    const editable = canEditKb();
+    const canMembers = canManageMembersKb();
+
+    // 编辑知识库、添加文档：只读角色隐藏
+    document.querySelectorAll('[data-perm="edit"]').forEach(function (el) {
+      el.style.display = editable ? '' : 'none';
+    });
+
+    // 成员管理（导航分组 + 步骤按钮）：仅所有者 / 管理员可见
+    document.querySelectorAll('[data-perm="members"]').forEach(function (el) {
+      el.style.display = canMembers ? '' : 'none';
+    });
+
+    // 全域标记（供 JS 动态渲染时判断）
+    document.body.setAttribute('data-kb-role', myRole);
+    document.body.classList.toggle('role-viewer', myRole === ROLE_VIEWER);
+    document.body.classList.toggle('role-editor', myRole === ROLE_EDITOR);
+    document.body.classList.toggle('role-admin', myRole === ROLE_ADMIN);
+    document.body.classList.toggle('role-owner', myRole === ROLE_OWNER);
+  }
+
   (function initHeader() {
     const p = new URLSearchParams(window.location.search);
     const name = p.get('name');
@@ -3105,9 +3280,20 @@
     const emb = p.get('emb');
     const rerank = p.get('rerank');
     const mode = p.get('mode');
+    const role = p.get('role');
     const avatar = document.getElementById('kbAvatar');
     // 最外层文件夹与知识库名称保持一致
     kbDisplayName = (name || '').trim() || '劳动合同库';
+
+    // 角色：URL 指定优先，否则按所有者处理
+    if (role && ROLE_TIP[role]) myRole = role;
+    // 未指定所有者时，若角色是所有者则默认当前用户
+    if (!owner && myRole === ROLE_OWNER) {
+      setTimeout(function () {
+        const el = document.getElementById('kbOwner');
+        if (el) el.textContent = CUR_USER;
+      }, 0);
+    }
 
     if (name) {
       document.getElementById('displayName').textContent = name;
@@ -3146,6 +3332,16 @@
     backParams.set('kbRerank', rerank || '');
     backParams.set('kbMode', kbMode);
     document.getElementById('backNav').setAttribute('href', './list.html?' + backParams.toString());
+
+    /* 角色标签 + 按角色应用界面权限 */
+    const roleTag = document.getElementById('kbRoleTag');
+    if (roleTag) {
+      const cls = myRole === ROLE_OWNER ? 'owner' : myRole === ROLE_ADMIN ? 'admin' : myRole === ROLE_EDITOR ? 'editor' : 'viewer';
+      roleTag.textContent = myRole;
+      roleTag.className = 'kb-role-tag ' + cls;
+      roleTag.title = ROLE_TIP[myRole] || '';
+    }
+    applyRolePermissions();
   })();
   // ==================== Folder tree ====================
   const TREE_DATA = [
@@ -3503,7 +3699,7 @@
   /* 状态单元格：处理失败时紧跟一个快速重新处理按钮，悬浮显示失败原因 */
   function statusCellHTML(f, sc) {
     const badge = '<span class="status-badge ' + sc + '">' + f.status + '</span>';
-    if (f.status !== '处理失败') return badge;
+    if (f.status !== '处理失败' || !canEditKb()) return badge;
 
     const reason = (f.reason || '未知错误').replace(/</g, '&lt;');
     return '<span class="status-cell">' + badge +
@@ -3516,24 +3712,20 @@
 
   function rowHTML(f) {
     const sc = STATUS_CLASS[f.status] || '';
-    const reparseItem = f.status === '处理失败' ? (
+    const editable = canEditKb();
+    const reparseItem = (f.status === '处理失败' && editable) ? (
       '<div onclick="reparseOne(' + f.id + ')">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>' +
         '重新处理</div>'
     ) : '';
 
-    return '' +
-      '<tr data-id="' + f.id + '">' +
-        '<td class="col-check"><input type="checkbox" ' + (selected.has(f.id) ? 'checked' : '') + ' onchange="toggleSelect(' + f.id + ', this)" /></td>' +
-        '<td><div class="file-cell' + (f.status === '解析完成' ? ' clickable' : '') + '"' +
-          (f.status === '解析完成' ? ' onclick="openFileDetail(' + f.id + ')" title="查看文件详情与分块"' : '') + '>' +
-          '<span class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>' +
-          '<span class="file-name-text" title="' + f.name + '">' + f.name + '</span>' +
-        '</div></td>' +
-        '<td>' + f.size + '</td>' +
-        '<td>' + statusCellHTML(f, sc) + '</td>' +
-        '<td>' + f.time + '</td>' +
-        '<td class="col-actions"><div class="row-more">' +
+    /* 只读角色：无勾选框、无行菜单 */
+    const checkCell = editable
+      ? '<td class="col-check"><input type="checkbox" ' + (selected.has(f.id) ? 'checked' : '') + ' onchange="toggleSelect(' + f.id + ', this)" /></td>'
+      : '<td class="col-check"></td>';
+
+    const actionsCell = editable
+      ? '<td class="col-actions"><div class="row-more">' +
           '<button class="icon-btn-sm" onclick="toggleRowMenu(event, ' + f.id + ')" title="更多">' +
             '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>' +
           '</button>' +
@@ -3550,7 +3742,21 @@
             '</div>' +
             '<div class="danger" onclick="deleteOne(' + f.id + ')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>删除</div>' +
           '</div>' +
+        '</div></td>'
+      : '<td class="col-actions"></td>';
+
+    return '' +
+      '<tr data-id="' + f.id + '">' +
+        checkCell +
+        '<td><div class="file-cell' + (f.status === '解析完成' ? ' clickable' : '') + '"' +
+          (f.status === '解析完成' ? ' onclick="openFileDetail(' + f.id + ')" title="查看文件详情与分块"' : '') + '>' +
+          '<span class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>' +
+          '<span class="file-name-text" title="' + f.name + '">' + f.name + '</span>' +
         '</div></td>' +
+        '<td>' + f.size + '</td>' +
+        '<td>' + statusCellHTML(f, sc) + '</td>' +
+        '<td>' + f.time + '</td>' +
+        actionsCell +
       '</tr>';
   }
 
@@ -4092,15 +4298,17 @@
           '<span class="fd-tip-wrap" data-tip="父分块">' +
             '<button class="fd-icon-btn" onclick="toggleFdParent(' + i + ')">' + FD_ICONS.parent + '</button>' +
           '</span>' +
+          (canEditKb() ?
           '<span class="fd-tip-wrap" data-tip="辅助召回问题">' +
             '<button class="fd-icon-btn" onclick="toggleFdFaq(' + i + ')">' + FD_ICONS.faq + '</button>' +
-          '</span>' +
+          '</span>' : '') +
+          (canEditKb() ?
           '<span class="fd-tip-wrap" data-tip="编辑">' +
             '<button class="fd-icon-btn ' + (editing ? 'active' : '') + '" onclick="startFdEdit(' + i + ')" ' + (c.enabled ? '' : 'disabled') + '>' + FD_ICONS.edit + '</button>' +
           '</span>' +
           '<span class="fd-tip-wrap" data-tip="' + (c.enabled ? '停用' : '启用') + '">' +
             '<span class="fd-switch ' + (c.enabled ? 'on' : '') + '" role="switch" aria-checked="' + (c.enabled ? 'true' : 'false') + '" onclick="toggleFdChunk(' + i + ')"></span>' +
-          '</span>' +
+          '</span>' : '') +
         '</div>' +
         body +
       '</div>';
@@ -4527,7 +4735,7 @@
 
   // ==================== Header actions ====================
   /* ===== 顶部 Tab 切换：知识库文件 / Wiki ===== */
-  const KB_TAB_PANELS = { files: 'tabPanelFiles', wiki: 'tabPanelWiki' };
+  const KB_TAB_PANELS = { files: 'tabPanelFiles', wiki: 'tabPanelWiki', activity: 'tabPanelActivity' };
   let currentKbTab = 'files';
 
   function switchKbTab(tab) {
@@ -4542,6 +4750,78 @@
     });
     // 容量入口只在文件页展示
     document.querySelector('.section-actions').style.visibility = tab === 'files' ? '' : 'hidden';
+    // 首次进入操作日志时渲染
+    if (tab === 'activity') renderActivityLog();
+  }
+
+  /* ==================== 操作日志 ==================== */
+  const LOG_GROUPS = ['知识库', '编辑知识库', '文件', '分块', '文件夹', '调整成员权限', 'Wiki'];
+  const ACTIVITY_LOGS = [
+    { time: '2026-11-06 13:30', actor: '赵楠', group: '编辑知识库', action: '修改检索策略', target: '向量召回 10，关键词阈值 0.30，向量阈值 0.50，开启重排序', src: 'admin' },
+    { time: '2026-11-05 17:12', actor: '赵楠', group: '文件', action: '上传文档', target: '劳动合同·护士（试用期）.md', src: 'client' },
+    { time: '2026-11-05 16:48', actor: '赵楠', group: '文件', action: '删除文档', target: '旧版劳动合同模板.docx，其分块与向量索引一并移除', src: 'client' },
+    { time: '2026-11-04 10:05', actor: '李工', group: '调整成员权限', action: '添加成员', target: '「王倩（只读）」', src: 'client' },
+    { time: '2026-11-03 15:26', actor: '赵楠', group: '分块', action: '编辑分块', target: '编辑「劳动合同·护士（试用期）.md」片段 2 的正文内容', src: 'client' },
+    { time: '2026-11-02 09:40', actor: '赵楠', group: '文件夹', action: '新建文件夹', target: '在「劳动合同」下新建文件夹「2026年」', src: 'client' },
+    { time: '2026-10-30 14:18', actor: '孙礼飞', group: 'Wiki', action: '生成 Wiki 索引', target: '「产品需求文档库」共生成 8 个页面', src: 'admin' },
+    { time: '2026-10-28 11:32', actor: '李工', group: '编辑知识库', action: '修改模型配置', target: 'LLM：qwen3-8b-max；Embedding：qwen3.7-text-embedding', src: 'client' },
+    { time: '2026-10-27 16:55', actor: '赵楠', group: '调整成员权限', action: '修改成员角色', target: '「李工」角色：编辑者 → 管理员', src: 'client' },
+    { time: '2026-10-26 09:12', actor: '赵楠', group: '分块', action: '重新生成摘要', target: '由模型重新生成「劳动合同·护士（正式）.pdf」的摘要', src: 'client' },
+    { time: '2026-10-24 18:20', actor: '赵楠', group: '编辑知识库', action: '修改分块设置', target: '分块策略「按标题切分」，大小 512，重叠 80，开启父子分块', src: 'client' },
+    { time: '2026-10-22 10:35', actor: '孙礼飞', group: '编辑知识库', action: '修改基本信息', target: '描述更新为「收录医院各岗位劳动合同范本、补充协议、续签确认书与试用期考核材料」', src: 'admin' },
+    { time: '2026-10-20 15:08', actor: '赵楠', group: '文件', action: '重命名文档', target: '「劳动合同模板.docx」→「劳动合同·护士（正式）.pdf」', src: 'client' },
+    { time: '2026-10-18 13:44', actor: '李工', group: 'Wiki', action: '编辑 Wiki 页面', target: '编辑页面「护士岗位合同条款」', src: 'client' },
+    { time: '2026-10-15 09:30', actor: '赵楠', group: '知识库', action: '创建知识库', target: '产品需求文档库（客户端 MacBook Pro · 产品部）', src: 'client' }
+  ];
+
+  let logPage = 1;
+  let logPageSize = 10;
+
+  function logTotalPages() {
+    return Math.max(1, Math.ceil(ACTIVITY_LOGS.length / logPageSize));
+  }
+  function logGoPage(p) {
+    const total = logTotalPages();
+    logPage = Math.max(1, Math.min(total, p));
+    renderActivityLog();
+  }
+  function renderActivityLog() {
+    const body = document.getElementById('logTableBody');
+    if (!body) return;
+    const pages = logTotalPages();
+    if (logPage > pages) logPage = pages;
+    const start = (logPage - 1) * logPageSize;
+    const rows = ACTIVITY_LOGS.slice(start, start + logPageSize);
+
+    body.innerHTML = rows.map(function (l) {
+      return '<tr>' +
+        '<td class="log-time">' + l.time + '</td>' +
+        '<td class="log-actor">' + l.actor + '</td>' +
+        '<td><span class="log-group">' + l.group + '</span></td>' +
+        '<td class="log-action">' + l.action + '</td>' +
+        '<td class="log-target" title="' + l.target.replace(/"/g, '&quot;') + '">' + l.target + '</td>' +
+        '<td><span class="log-src ' + l.src + '">' + (l.src === 'admin' ? '管理端' : '客户端') + '</span></td>' +
+      '</tr>';
+    }).join('');
+
+    document.getElementById('logTotal').textContent = ACTIVITY_LOGS.length;
+
+    // 页码
+    const pagesBox = document.getElementById('logPages');
+    let pageHtml = '';
+    for (let i = 1; i <= pages; i++) {
+      if (pages <= 7 || i === 1 || i === pages || Math.abs(i - logPage) <= 1) {
+        pageHtml += '<button class="log-page-num' + (i === logPage ? ' on' : '') + '" onclick="logGoPage(' + i + ')">' + i + '</button>';
+      } else if (i === 2 && logPage > 3) {
+        pageHtml += '<span style="padding:0 4px;color:var(--text-light)">…</span>';
+      } else if (i === pages - 1 && logPage < pages - 2) {
+        pageHtml += '<span style="padding:0 4px;color:var(--text-light)">…</span>';
+      }
+    }
+    pagesBox.innerHTML = pageHtml;
+
+    document.getElementById('logPrev').disabled = logPage <= 1;
+    document.getElementById('logNext').disabled = logPage >= pages;
   }
 
   /* 只切换左侧栏的显示状态（知识树 / 摘要列表），不负责渲染右侧内容 */
@@ -6316,11 +6596,11 @@
         '<div><h1 class="wiki-doc-title">' + page.name + '</h1>' +
           '<div class="wiki-page-meta">' + chips + '</div></div>' +
         '<div class="wiki-page-side">' +
-          '<div class="wiki-page-actions">' +
+          (canEditKb() ? '<div class="wiki-page-actions">' +
             '<button class="fd-icon-btn" title="编辑页面" onclick="startWikiPageEdit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>' +
             '<button class="fd-icon-btn" title="版本记录" onclick="openWikiVersionHistory()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.4"/><polyline points="3 4 3 9.5 8.5 9.5"/><polyline points="12 7.5 12 12 15.5 14"/></svg></button>' +
             '<button class="fd-icon-btn danger" title="删除页面" onclick="deleteWikiPage()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>' +
-          '</div>' +
+          '</div>' : '') +
           '<span class="wiki-updated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>更新于 ' + page.updated + '</span>' +
         '</div>' +
       '</div>' +
@@ -6899,6 +7179,8 @@
   /* 单个实体 / 概念页面：删除 / 移动 / 重命名 */
   function openWikiPageMenu(e, name) {
     e && e.stopPropagation();
+    /* 只读角色无可执行操作，直接不弹菜单 */
+    if (!canEditKb()) return;
     const alreadyOpen = wikiTopicMenuTarget && wikiTopicMenuTarget.kind === 'page' && wikiTopicMenuTarget.name === name;
     closeWikiTopicMenu();
     if (alreadyOpen) return;
@@ -7619,6 +7901,8 @@
     initEditRanges();
     switchEditStep('basic');
     document.getElementById('editModal').classList.add('show');
+    /* 弹窗渲染完成后再按角色收一次入口（成员管理分组等） */
+    applyRolePermissions();
   }
 
   function closeEditModal() {
@@ -7779,9 +8063,9 @@
     const ownerRow =
       '<div class="edit-member-row owner">' +
         '<span class="m-avatar">' + USER_ICON + '</span>' +
-        '<div class="m-info"><b>' + ownerName + '（我）</b><i>产品部 · 138****2016</i></div>' +
+        '<div class="m-info"><b>' + ownerName + '</b><i>产品部 · 138****2016</i></div>' +
         '<span class="tag-owner">所有者</span>' +
-        '<button class="m-transfer" onclick="transferEditOwner()">转让</button>' +
+        (canDeleteKb() ? '<button class="m-transfer" onclick="transferEditOwner()">转让</button>' : '') +
       '</div>';
     const rows = editMembers.map(function (m, i) {
       return '<div class="edit-member-row">' +
