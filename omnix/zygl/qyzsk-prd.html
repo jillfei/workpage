@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理端企业知识库 - 产品需求文档 v1.0</title>
+<style>
+  :root {
+    --primary: #4F46E5;
+    --primary-light: #EEF2FF;
+    --text: #1F2937;
+    --text-secondary: #6B7280;
+    --text-tertiary: #9CA3AF;
+    --bg: #F9FAFB;
+    --card-bg: #FFFFFF;
+    --border: #E5E7EB;
+    --success: #059669;
+    --success-light: #ECFDF5;
+    --warning: #D97706;
+    --warning-light: #FFFBEB;
+    --danger: #DC2626;
+    --danger-light: #FEF2F2;
+    --sidebar-width: 268px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+  }
+
+  /* ============ 侧边导航 ============ */
+  .sidebar {
+    position: fixed; top: 0; left: 0;
+    width: var(--sidebar-width); height: 100vh;
+    background: #fff; border-right: 1px solid var(--border);
+    overflow-y: auto; z-index: 100; padding: 24px 0;
+    box-shadow: 2px 0 8px rgba(0,0,0,.04);
+  }
+  .sidebar-title {
+    font-size: 14px; font-weight: 700; color: var(--primary);
+    padding: 0 20px 16px; border-bottom: 1px solid var(--border);
+    margin-bottom: 12px; letter-spacing: .5px;
+  }
+  .sidebar-title span {
+    font-size: 11px; color: var(--text-secondary);
+    font-weight: 400; display: block; margin-top: 4px; letter-spacing: 0;
+  }
+  .nav-list { list-style: none; }
+  .nav-list > li > a {
+    display: block; padding: 9px 20px;
+    font-size: 13.5px; font-weight: 600; color: var(--text);
+    text-decoration: none; border-left: 3px solid transparent;
+    transition: all .2s ease;
+  }
+  .nav-list > li > a:hover { background: var(--primary-light); color: var(--primary); }
+  .nav-list > li > a.active {
+    border-left-color: var(--primary); background: var(--primary-light); color: var(--primary);
+  }
+  .nav-sub { list-style: none; }
+  .nav-sub li a {
+    display: block; padding: 6px 20px 6px 36px;
+    font-size: 12.5px; color: var(--text-secondary);
+    text-decoration: none; border-left: 3px solid transparent;
+    transition: all .15s ease;
+  }
+  .nav-sub li a:hover { color: var(--primary); background: #F5F7FF; }
+  .nav-sub li a.active {
+    color: var(--primary); border-left-color: var(--primary);
+    background: var(--primary-light); font-weight: 600;
+  }
+
+  /* ============ 主体 ============ */
+  .main-content { margin-left: var(--sidebar-width); padding: 40px; }
+  .container { max-width: 1180px; margin: 0 auto; }
+
+  .hero {
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    color: #fff; text-align: center;
+    padding: 56px 40px; border-radius: 16px; margin-bottom: 32px;
+  }
+  .hero h1 { font-size: 34px; font-weight: 700; margin-bottom: 12px; }
+  .hero p { font-size: 15px; opacity: 1; color: rgba(255,255,255,.92); }
+
+  .meta-bar {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 8px 24px; margin-bottom: 32px;
+  }
+
+  section { margin-bottom: 44px; scroll-margin-top: 24px; }
+  h2 {
+    font-size: 22px; font-weight: 700; color: var(--text);
+    padding-bottom: 12px; border-bottom: 2px solid var(--primary-light);
+    margin-bottom: 20px;
+  }
+  h3 {
+    font-size: 16px; font-weight: 600; color: var(--text);
+    margin: 26px 0 12px; padding-left: 11px;
+    border-left: 4px solid var(--primary);
+  }
+  h4 { font-size: 14px; font-weight: 600; margin: 18px 0 8px; color: var(--text); }
+  p { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; }
+  ul, ol { padding-left: 22px; margin-bottom: 14px; }
+  li { font-size: 14px; color: var(--text-secondary); margin-bottom: 6px; }
+  code {
+    background: #F3F4F6; color: #7C3AED; padding: 1px 6px;
+    border-radius: 4px; font-size: 12.5px;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  }
+
+  /* ============ 表格 ============ */
+  table {
+    width: 100%; border-collapse: collapse; margin: 16px 0 24px;
+    font-size: 13.5px; background: #fff;
+    border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+  }
+  th {
+    background: var(--primary-light); color: var(--primary);
+    font-weight: 600; font-size: 13px; letter-spacing: .3px;
+    padding: 12px 16px; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    text-align: left; padding: 11px 16px;
+    border-bottom: 1px solid #F3F4F6; vertical-align: top;
+    color: var(--text-secondary);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #FAFBFF; }
+  td b { color: var(--text); font-weight: 600; }
+  .t-center { text-align: center; }
+
+  /* 权限矩阵标记 */
+  .yes { color: var(--success); font-weight: 700; }
+  .no { color: #C9CDD4; }
+  .role-tag {
+    display: inline-flex; align-items: center; height: 22px; padding: 0 8px;
+    border-radius: 5px; font-size: 12px; font-weight: 500; white-space: nowrap;
+  }
+  .role-owner  { background: var(--success-light); color: var(--success); }
+  .role-admin  { background: #EFF6FF; color: #2563EB; }
+  .role-editor { background: #F5F3FF; color: #7C3AED; }
+  .role-viewer { background: #F3F4F6; color: var(--text-tertiary); }
+
+  /* ============ 卡片 / 提示 ============ */
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 24px; margin: 16px 0 24px;
+  }
+  .card h4 { margin-top: 0; }
+  .note {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 12px 16px; border-radius: 9px; font-size: 13.5px;
+    margin: 16px 0; line-height: 1.7;
+  }
+  .note-info { background: #EFF6FF; color: #1E40AF; }
+  .note-warn { background: var(--warning-light); color: #92400E; }
+  .note-ok   { background: var(--success-light); color: #065F46; }
+  .note b { font-weight: 600; }
+
+  .badge {
+    display: inline-block; padding: 1px 8px; border-radius: 4px;
+    font-size: 11.5px; font-weight: 600;
+  }
+  .badge-req { background: var(--danger-light); color: var(--danger); }
+  .badge-new { background: var(--success-light); color: var(--success); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 1080px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .elevation {
+    background: #F9FAFB; border: 1px solid var(--border); border-radius: 9px;
+    padding: 14px 16px; font-size: 13px; color: var(--text-secondary);
+  }
+  .elevation code { background: #fff; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-title">
+    目录导航
+    <span>管理端企业知识库 PRD v1.0</span>
+  </div>
+  <ul class="nav-list">
+    <li><a href="#sec1">一、概述</a>
+      <ul class="nav-sub">
+        <li><a href="#sec1-2">1.1 角色定义</a></li>
+      </ul>
+    </li>
+    <li><a href="#sec2">二、权限设计</a>
+      <ul class="nav-sub">
+        <li><a href="#sec2-1">2.1 权限矩阵</a></li>
+        <li><a href="#sec2-2">2.2 界面元素可见性</a></li>
+        <li><a href="#sec2-3">2.3 系统权限与知识库权限</a></li>
+      </ul>
+    </li>
+    <li><a href="#sec3">三、操作日志设计</a>
+      <ul class="nav-sub">
+        <li><a href="#sec3-1">3.1 日志字段</a></li>
+        <li><a href="#sec3-2">3.2 分类 / 操作 / 对象 对照表</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<div class="main-content">
+<div class="container">
+
+  <div class="hero">
+    <h1>管理端企业知识库</h1>
+    <p>权限体系 · 角色矩阵 · 操作日志审计 —— 产品需求文档 v1.0</p>
+  </div>
+
+  <div class="meta-bar">
+    <table style="margin:0;">
+      <tbody>
+        <tr><th style="width:14%">文档版本</th><th style="width:14%">修改日期</th><th style="width:14%">修改人</th><th>修改说明</th></tr>
+        <tr><td>v1.0</td><td>2026-11-06</td><td>产研中心</td><td>首版，定义管理端企业知识库的四类角色权限模型与操作日志分类</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ==================== 一、概述 ==================== -->
+  <section id="sec1">
+    <h2>一、概述</h2>
+
+    <h3 id="sec1-2">1.1 角色定义</h3>
+    <p>知识库内共设四类角色，权限由高到低依次为：</p>
+    <table>
+      <thead>
+        <tr><th style="width:18%">角色</th><th style="width:34%">定义</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="role-tag role-owner">所有者</span></td>
+          <td>知识库的唯一负责人</td>
+          <td>创建该知识库的用户，或经转让后承接的用户。可随时将知识库转让给管理员或编辑者，转让后原所有者变为管理员。</td>
+        </tr>
+        <tr>
+          <td><span class="role-tag role-admin">管理员</span></td>
+          <td>协助所有者管理知识库</td>
+          <td>可管理成员与角色、维护内容与配置，但不能删除知识库或转让所有权。</td>
+        </tr>
+        <tr>
+          <td><span class="role-tag role-editor">编辑者</span></td>
+          <td>内容维护者</td>
+          <td>可维护文件、Wiki 与检索内容，可修改知识库配置，但不能管理成员。</td>
+        </tr>
+        <tr>
+          <td><span class="role-tag role-viewer">只读</span></td>
+          <td>仅可查看与检索</td>
+          <td>可浏览文件、Wiki、分块与操作日志，不能做任何写操作。</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </section>
+
+  <!-- ==================== 二、权限设计 ==================== -->
+  <section id="sec2">
+    <h2>二、权限设计</h2>
+
+    <h3 id="sec2-1">2.1 权限矩阵</h3>
+    <p>下表定义四类角色在知识库各项能力上的准入边界。✓ 表示具备该能力，— 表示不具备。</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:30%">能力</th>
+          <th class="t-center" style="width:17.5%">所有者</th>
+          <th class="t-center" style="width:17.5%">管理员</th>
+          <th class="t-center" style="width:17.5%">编辑者</th>
+          <th class="t-center" style="width:17.5%">只读</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><b>查看 / 检索知识库内容</b></td><td class="t-center yes">✓</td><td class="t-center yes">✓</td><td class="t-center yes">✓</td><td class="t-center yes">✓</td></tr>
+        <tr><td><b>编辑知识库文件 / Wiki</b></td><td class="t-center yes">✓</td><td class="t-center yes">✓</td><td class="t-center yes">✓</td><td class="t-center no">—</td></tr>
+        <tr><td><b>上传 / 删除文档</b></td><td class="t-center yes">✓</td><td class="t-center yes">✓</td><td class="t-center yes">✓</td><td class="t-center no">—</td></tr>
+        <tr><td><b>修改知识库配置</b></td><td class="t-center yes">✓</td><td class="t-center yes">✓</td><td class="t-center yes">✓</td><td class="t-center no">—</td></tr>
+        <tr><td><b>管理成员与角色</b></td><td class="t-center yes">✓</td><td class="t-center yes">✓</td><td class="t-center no">—</td><td class="t-center no">—</td></tr>
+        <tr><td><b>删除知识库 / 转让所有者</b></td><td class="t-center yes">✓</td><td class="t-center no">—</td><td class="t-center no">—</td><td class="t-center no">—</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note note-warn">
+      <span>⚠️</span>
+      <div><b>权限收缩原则：</b>角色之间是包含关系，高权限角色自动具备低权限角色的全部能力。任何写操作在执行前都要二次校验，不能只依赖界面按钮的显隐。</div>
+    </div>
+
+    <h3 id="sec2-2">2.2 界面元素可见性</h3>
+    <p>管理端自身的权限由<b>菜单权限</b>与<b>角色权限</b>两套配置构成（配置入口：企业管理 → 菜单管理 / 角色管理），即 2.3 中的系统权限维度。</p>
+    <p>管理端中知识库相关界面元素（按钮、菜单、入口等）的显隐，先<b>继承客户端的知识库角色权限</b>判定结果（见客户端《企业知识库 · 功能说明》「各角色可操作按钮一览」），再与管理端自身的菜单 / 角色权限<b>取并集</b>——客户端角色或管理端权限任意一侧放行，该元素即显示；两侧均不具备时才隐藏。</p>
+    <p>同一界面元素对应多项能力时，同样<b>取并集</b>：具备其中任意一项即显示。</p>
+
+    <div class="note note-info">
+      <span>ℹ️</span>
+      <div><b>示例：</b>某成员在知识库 A 中为「只读」角色（客户端不具备「上传 / 删除文档」能力），但其管理端角色被授予了知识库管理权限，则管理端中该知识库的「添加文档」入口仍对其显示。</div>
+    </div>
+
+    <h3 id="sec2-3">2.3 系统权限与知识库权限</h3>
+
+    <p>系统中的权限由<b>两套独立的权限体系</b>共同决定，最终生效的权限是二者的<b>并集</b>：</p>
+
+    <table>
+      <thead>
+        <tr><th style="width:22%">权限来源</th><th style="width:30%">作用范围</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>系统权限</b><br><span style="font-size:12px;color:var(--text-tertiary)">（平台级）</span></td>
+          <td>整个管理端</td>
+          <td>由账号在企业管理中分配的系统角色决定，例如「管理员」「普通成员」。决定该用户能否进入管理端、能否看到企业知识库菜单、能否使用容量配额等平台级功能。</td>
+        </tr>
+        <tr>
+          <td><b>知识库权限</b><br><span style="font-size:12px;color:var(--text-tertiary)">（资源级）</span></td>
+          <td>单个知识库</td>
+          <td>由用户在该知识库内的角色决定，即 2.1 权限矩阵中的所有者 / 管理员 / 编辑者 / 只读。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card">
+      <h4>最终权限 = 系统权限 ∪ 知识库权限</h4>
+      <p style="margin-bottom:8px">判定顺序：</p>
+      <ol style="margin-bottom:0">
+        <li>先校验 <b>系统权限</b>：账号无管理端访问权限 → 无法进入管理端（此维度为门槛条件，不参与并集；客户端访问不受影响）；</li>
+        <li>再取 <b>知识库权限</b>：取用户在该知识库中的角色（所有者 / 管理员 / 编辑者 / 只读；非成员按只读处理）；</li>
+        <li>两者取并集：<b>系统权限或知识库权限任一侧允许的操作即可执行</b>，管理端权限可突破知识库内的角色边界，用于企业级管理与兜底。</li>
+      </ol>
+    </div>
+
+    <div class="elevation">
+      <b>示例</b><br>
+      用户 A 的系统角色具备知识库管理权限（系统权限允许删除知识库），但在知识库 X 中只是「编辑者」（知识库权限不允许删除）。<br>
+      → 并集结果：<b>可以删除知识库 X</b>。管理端权限可突破知识库内的角色边界；如不希望系统角色拥有该能力，不要在角色管理中授予对应权限。
+    </div>
+
+    <h4>取并集的典型场景</h4>
+    <table>
+      <thead>
+        <tr><th style="width:24%">系统权限</th><th style="width:20%">知识库权限</th><th style="width:18%">最终结果</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>无管理端访问权限</td>
+          <td>任意角色</td>
+          <td><b style="color:var(--danger)">无法进入管理端</b></td>
+          <td>管理端访问权限是门槛条件，不满足时知识库角色在管理端无意义；客户端访问不受影响。</td>
+        </tr>
+        <tr>
+          <td>仅基础访问权限（无知识库管理授权）</td>
+          <td>只读</td>
+          <td>只读</td>
+          <td>管理端未授予知识库能力时，退化为知识库内角色，仅能浏览。</td>
+        </tr>
+        <tr>
+          <td>有知识库管理权限</td>
+          <td>只读</td>
+          <td><b>系统权限生效</b></td>
+          <td>可执行系统角色允许的知识库操作（如编辑、删除），不受库内「只读」限制。</td>
+        </tr>
+        <tr>
+          <td>仅基础访问权限</td>
+          <td>编辑者</td>
+          <td>编辑者</td>
+          <td>可维护内容与配置，但不能管理成员、不能删除知识库。</td>
+        </tr>
+        <tr>
+          <td>仅基础访问权限</td>
+          <td>管理员</td>
+          <td>管理员</td>
+          <td>可管理成员与内容，但不能删除知识库或转让所有权。</td>
+        </tr>
+        <tr>
+          <td>仅基础访问权限</td>
+          <td>所有者</td>
+          <td>所有者</td>
+          <td>知识库内的全部权限。</td>
+        </tr>
+        <tr>
+          <td>有知识库管理权限</td>
+          <td>所有者</td>
+          <td><b>两侧能力叠加</b></td>
+          <td>知识库内全部权限 + 系统角色授予的管理端能力。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>边界情况</h4>
+    <table>
+      <thead>
+        <tr><th style="width:26%">场景</th><th style="width:22%">判定结果</th><th>产品行为</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>用户不是知识库成员</b></td>
+          <td>知识库权限按「只读」</td>
+          <td>与系统权限取并集：默认仅可浏览内容，角色标签显示「只读」；若系统角色被授予知识库管理能力，则对应入口正常显示，可用于无主知识库接管等场景。</td>
+        </tr>
+        <tr>
+          <td><b>转让所有者</b></td>
+          <td>原所有者 → 管理员</td>
+          <td>新所有者承接全部知识库权限；原所有者降级为管理员，仍在成员列表中。系统权限不受影响。</td>
+        </tr>
+        <tr>
+          <td><b>只读用户访问 Wiki 页面</b></td>
+          <td>仅浏览</td>
+          <td>页面正文与参考来源可读，版本历史 / 编辑 / 移动 / 重命名 / 删除按钮全部隐藏。</td>
+        </tr>
+        <tr>
+          <td><b>只读用户查看文件分块</b></td>
+          <td>仅浏览</td>
+          <td>可展开 / 收起分块阅读，辅助召回问题、编辑分块、查看父块、启用开关均隐藏。</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ==================== 三、操作日志 ==================== -->
+  <section id="sec3">
+    <h2>三、操作日志设计</h2>
+
+    <h3 id="sec3-1">3.1 日志字段</h3>
+    <p>知识库详情页的「操作日志」页签按时间倒序展示该知识库的全部操作记录，字段定义如下：</p>
+    <table>
+      <thead>
+        <tr><th style="width:16%">字段</th><th style="width:14%">类型</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><b>操作时间</b></td><td>时间</td><td>精确到分钟，格式 <code>YYYY-MM-DD HH:mm</code>，按时间倒序排列。</td></tr>
+        <tr><td><b>操作人</b></td><td>用户</td><td>触发该操作的用户，展示头像 + 姓名。</td></tr>
+        <tr><td><b>分类</b></td><td>枚举</td><td>操作所属的功能域，共 7 类：知识库 / 编辑知识库 / 文件 / 分块 / 文件夹 / 调整成员权限 / Wiki。</td></tr>
+        <tr><td><b>操作</b></td><td>枚举</td><td>具体动作，如「上传文档」「删除 Wiki 页面」。</td></tr>
+        <tr><td><b>对象 / 说明</b></td><td>文本</td><td>操作的具体对象与变更明细，例如「删除文件夹『竞品调研』（含 2 个文件）」。</td></tr>
+        <tr><td><b>来源</b></td><td>枚举</td><td>操作发起端：管理端 / 客户端。</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="sec3-2">3.2 分类 / 操作 / 对象 对照表</h3>
+    <p>下表穷举系统记录的全部操作类型，供研发对齐埋点口径、供测试设计用例。「对象 / 说明」列给出该操作的典型文案格式，<code>{}</code> 表示变量。</p>
+
+    <h4>知识库（生命周期）</h4>
+    <table>
+      <thead><tr><th style="width:18%">分类</th><th style="width:20%">操作</th><th>对象 / 说明</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="2"><b>知识库</b></td><td>创建知识库</td><td>{知识库名称}（创建来源：客户端 {设备} / 管理端）</td></tr>
+        <tr><td>删除知识库</td><td>删除知识库「{知识库名称}」</td></tr>
+      </tbody>
+    </table>
+
+    <h4>编辑知识库（配置项变更）</h4>
+    <table>
+      <thead><tr><th style="width:18%">分类</th><th style="width:20%">操作</th><th>对象 / 说明</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="6"><b>编辑知识库</b></td><td>修改基本信息</td><td>名称 / 描述 / 图标 更新为「{新值}」</td></tr>
+        <tr><td>修改模型配置</td><td>LLM：{模型名}；Embedding：{模型名}；Wiki 合成：{模型名}</td></tr>
+        <tr><td>修改分块设置</td><td>分块策略「{策略}」，大小 {n}，重叠 {n}，{开启/关闭}父子分块</td></tr>
+        <tr><td>修改图像处理</td><td>{开启/关闭}多模态，VLM 选用 {模型名}</td></tr>
+        <tr><td>修改高级设置</td><td>{开启/关闭} AI 问题生成，每块 {n} 个问题；Wiki 粒度「{粒度}」</td></tr>
+        <tr><td>修改检索策略</td><td>向量召回 {n}，关键词阈值 {x}，向量阈值 {x}，{开启/关闭}重排序</td></tr>
+      </tbody>
+    </table>
+
+    <h4>文件</h4>
+    <table>
+      <thead><tr><th style="width:18%">分类</th><th style="width:20%">操作</th><th>对象 / 说明</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="7"><b>文件</b></td><td>上传文档</td><td>上传「{文件名}」（{大小}）至 {目录}</td></tr>
+        <tr><td>重命名文档</td><td>「{旧文件名}」→「{新文件名}」</td></tr>
+        <tr><td>移动文档</td><td>将「{文件名}」从 {原目录} 移至 {目标目录}</td></tr>
+        <tr><td>删除文档</td><td>删除文档「{文件名}」，其分块与向量索引一并移除</td></tr>
+        <tr><td>重新解析文档</td><td>重新解析「{文件名}」</td></tr>
+        <tr><td>下载文档</td><td>下载「{文件名}」</td></tr>
+        <tr><td>修改自定义元数据</td><td>「{字段名}」：{旧值} → {新值}</td></tr>
+      </tbody>
+    </table>
+
+    <h4>分块</h4>
+    <table>
+      <thead><tr><th style="width:18%">分类</th><th style="width:20%">操作</th><th>对象 / 说明</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="8"><b>分块</b></td><td>编辑分块</td><td>编辑「{文件名}」片段 {n} 的正文内容</td></tr>
+        <tr><td>启用/停用分块</td><td>{启用/停用}「{文件名}」片段 {n}</td></tr>
+        <tr><td>添加辅助召回问题</td><td>为「{文件名}」片段 {n} 添加问题「{问题}」</td></tr>
+        <tr><td>编辑辅助召回问题</td><td>「{旧问题}」→「{新问题}」</td></tr>
+        <tr><td>删除辅助召回问题</td><td>删除辅助召回问题「{问题}」</td></tr>
+        <tr><td>重新生成辅助召回问题</td><td>重新生成「{文件名}」片段 {n} 的辅助召回问题</td></tr>
+        <tr><td>编辑摘要</td><td>编辑「{文件名}」的文档摘要</td></tr>
+        <tr><td>重新生成摘要</td><td>由模型重新生成「{文件名}」的摘要</td></tr>
+      </tbody>
+    </table>
+
+    <h4>文件夹</h4>
+    <table>
+      <thead><tr><th style="width:18%">分类</th><th style="width:20%">操作</th><th>对象 / 说明</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3"><b>文件夹</b></td><td>新建文件夹</td><td>在 {父路径} 下新建文件夹「{名称}」</td></tr>
+        <tr><td>重命名文件夹</td><td>「{旧名称}」→「{新名称}」</td></tr>
+        <tr><td>删除文件夹</td><td>删除文件夹「{名称}」（含 {n} 个文件）</td></tr>
+      </tbody>
+    </table>
+
+    <h4>调整成员权限</h4>
+    <table>
+      <thead><tr><th style="width:18%">分类</th><th style="width:20%">操作</th><th>对象 / 说明</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="4"><b>调整成员权限</b></td><td>添加成员</td><td>添加成员「{姓名}（{角色}）」</td></tr>
+        <tr><td>修改成员角色</td><td>「{姓名}」角色：{旧角色} → {新角色}</td></tr>
+        <tr><td>移除成员</td><td>移除成员「{姓名}（{角色}）」</td></tr>
+        <tr><td>转让所有者</td><td>所有者由「{原所有者}」转让给「{新所有者}」，{原所有者}变为管理员</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Wiki</h4>
+    <table>
+      <thead><tr><th style="width:18%">分类</th><th style="width:20%">操作</th><th>对象 / 说明</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="9"><b>Wiki</b></td><td>新建 Wiki 页面</td><td>在「{目录}」新建页面「{页面标题}」</td></tr>
+        <tr><td>编辑 Wiki 页面</td><td>编辑页面「{页面标题}」</td></tr>
+        <tr><td>重命名 Wiki 页面</td><td>「{旧标题}」→「{新标题}」</td></tr>
+        <tr><td>移动 Wiki 页面</td><td>将「{页面标题}」从「{原目录}」移至「{目标目录}」</td></tr>
+        <tr><td>删除 Wiki 页面</td><td>删除页面「{页面标题}」</td></tr>
+        <tr><td>新建 Wiki 目录</td><td>新建目录「{目录名}」</td></tr>
+        <tr><td>重命名 Wiki 目录</td><td>「{旧目录}」→「{新目录}」</td></tr>
+        <tr><td>删除 Wiki 目录</td><td>删除目录「{目录}」（含 {n} 个页面）</td></tr>
+        <tr><td>回滚 Wiki 版本</td><td>「{页面标题}」回滚到 {版本号}</td></tr>
+      </tbody>
+    </table>
+
+  </section>
+
+</div>
+</div>
+
+<script>
+  // 侧边导航滚动高亮
+  const links = Array.from(document.querySelectorAll('.nav-list a[href^="#"]'));
+  const targets = links.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+
+  function onScroll() {
+    const y = window.scrollY + 120;
+    let active = targets[0];
+    targets.forEach(t => { if (t.offsetTop <= y) active = t; });
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + (active && active.id)));
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+</body>
+</html>

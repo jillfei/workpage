@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通知管理模块 - 产品需求文档 v1.0</title>
+<style>
+  :root {
+    --primary: #4F46E5;
+    --primary-light: #EEF2FF;
+    --text: #1F2937;
+    --text-secondary: #6B7280;
+    --bg: #F9FAFB;
+    --card-bg: #FFFFFF;
+    --border: #E5E7EB;
+    --success: #059669;
+    --warning: #D97706;
+    --danger: #DC2626;
+    --sidebar-width: 260px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  /* ========== Sidebar Navigation ========== */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: #FFFFFF;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 24px 0;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+  }
+  .sidebar-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary);
+    padding: 0 20px 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+  .sidebar-title span {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    display: block;
+    margin-top: 4px;
+  }
+  .nav-list { list-style: none; padding: 0; }
+  .nav-list > li { margin-bottom: 2px; }
+  .nav-list > li > a {
+    display: block;
+    padding: 9px 20px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+  }
+  .nav-list > li > a:hover { background: var(--primary-light); color: var(--primary); }
+  .nav-list > li > a.active {
+    border-left-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .nav-sub { list-style: none; padding: 0; }
+  .nav-sub li a {
+    display: block;
+    padding: 6px 20px 6px 36px;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+  }
+  .nav-sub li a:hover { background: #F3F4F6; color: var(--primary); }
+  .nav-sub li a.active {
+    border-left-color: var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+    background: var(--primary-light);
+  }
+
+  /* ========== Main Content ========== */
+  .main-content { margin-left: var(--sidebar-width); padding: 40px; }
+  .container { max-width: 100%; margin: 0 auto; }
+
+  .hero {
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    color: white;
+    text-align: center;
+    padding: 60px 40px;
+    border-radius: 16px;
+    margin-bottom: 40px;
+  }
+  .hero h1 { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
+  .hero p { font-size: 16px; opacity: 0.85; }
+
+  .meta-bar {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 32px;
+    margin-bottom: 32px;
+  }
+  .meta-item { text-align: center; }
+  .meta-item .label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+  .meta-item .value { font-size: 15px; font-weight: 600; color: var(--text); margin-top: 4px; }
+
+  .section {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px;
+    margin-bottom: 24px;
+    scroll-margin-top: 24px;
+  }
+  .section h2 {
+    font-size: 22px;
+    color: var(--primary);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--primary-light);
+    scroll-margin-top: 24px;
+  }
+  .section h3 {
+    font-size: 17px;
+    color: var(--text);
+    margin: 28px 0 12px;
+    scroll-margin-top: 24px;
+  }
+  .section h3:first-of-type { margin-top: 0; }
+  .section h4 {
+    font-size: 15px;
+    color: var(--primary);
+    margin: 24px 0 10px;
+  }
+  .section p { margin-bottom: 12px; color: var(--text-secondary); }
+  .section p.note-text { color: var(--text-secondary); }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 20px 0;
+  }
+  .card {
+    background: var(--primary-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+  }
+  .card h4 { font-size: 15px; color: var(--primary); margin-bottom: 8px; }
+  .card p { font-size: 14px; color: var(--text-secondary); margin: 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+  }
+  tr:hover td { background: #FAFAFA; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .tag-p0 { background: #FEE2E2; color: var(--danger); }
+  .tag-p1 { background: #FEF3C7; color: var(--warning); }
+  .tag-p2 { background: #D1FAE5; color: var(--success); }
+  .tag-info { background: var(--primary-light); color: var(--primary); }
+
+  .feature-list { list-style: none; padding: 0; }
+  .feature-list li {
+    padding: 14px 16px;
+    border-left: 3px solid var(--primary);
+    margin-bottom: 10px;
+    background: var(--primary-light);
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .feature-list li strong { color: var(--primary); }
+
+  .story {
+    background: #FFFBEB;
+    border-left: 4px solid var(--warning);
+    padding: 16px 20px;
+    margin: 12px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .story .actor { color: var(--warning); font-weight: 700; }
+  .story .want { color: var(--text); }
+  .story .goal { color: var(--text-secondary); }
+
+  .flow-step { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+  .flow-num {
+    width: 32px; height: 32px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .flow-content h4 { margin-bottom: 4px; font-size: 15px; }
+  .flow-content p { font-size: 13px; color: var(--text-secondary); margin: 0; }
+
+  .note {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-left: 4px solid #3B82F6;
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 14px;
+    color: #1E40AF;
+  }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* ========== Mock UI ========== */
+  .mock-ui {
+    background: #F9FAFB;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin: 16px 0 24px;
+  }
+  .mock-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .mock-btn {
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+  }
+  .mock-btn-primary { background: var(--primary); color: white; }
+  .mock-btn-danger { background: #FEE2E2; color: var(--danger); border: 1px solid #FECACA; }
+  .mock-btn-ghost { background: white; color: var(--text-secondary); border: 1px solid var(--border); }
+  .mock-btn-success { background: #D1FAE5; color: var(--success); border: 1px solid #A7F3D0; }
+
+  .mock-item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mock-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .mock-item-left { display: flex; align-items: center; gap: 10px; }
+  .mock-icon-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    background: var(--primary-light);
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  .mock-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .mock-status-active { background: #D1FAE5; color: #047857; }
+  .mock-status-expired { background: #F3F4F6; color: #6B7280; }
+  .mock-status-paused { background: #FEF3C7; color: #D97706; }
+  .mock-status-running { background: #EFF6FF; color: #3B82F6; }
+  .mock-status-success { background: #D1FAE5; color: #047857; }
+  .mock-status-failed { background: #FEE2E2; color: #DC2626; }
+  .mock-status-pending { background: #F5F3FF; color: #8B5CF6; }
+
+  .mock-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .mock-action-btn {
+    width: 24px; height: 24px;
+    border-radius: 4px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mock-apply-btn {
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    background: #1F2937;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .mock-apply-btn:hover { background: #111827; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main-content { margin-left: 0; }
+  }
+  @media (max-width: 640px) {
+    .container { padding: 0 12px; }
+    .hero { padding: 40px 20px; }
+    .hero h1 { font-size: 24px; }
+    .section { padding: 24px; }
+    .meta-bar { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== Sidebar ========== -->
+<nav class="sidebar">
+  <div class="sidebar-title">
+    目录导航
+    <span>通知管理模块 PRD</span>
+  </div>
+  <ul class="nav-list">
+    <li><a href="#sec1" data-target="sec1">一、概述</a></li>
+    <li>
+      <ul class="nav-sub">
+        <li><a href="#sec1-1" data-target="sec1-1">1.1 背景说明</a></li>
+        <li><a href="#sec1-2" data-target="sec1-2">1.2 需求描述</a></li>
+        <li><a href="#sec1-3" data-target="sec1-3">1.3 核心概念定义</a></li>
+        <li><a href="#sec1-4" data-target="sec1-4">1.4 目标用户与典型场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#sec2" data-target="sec2">二、功能架构与流程图</a></li>
+    <li>
+      <ul class="nav-sub">
+        <li><a href="#sec2-1" data-target="sec2-1">2.1 系统架构图</a></li>
+        <li><a href="#sec2-2" data-target="sec2-2">2.2 业务流程图</a></li>
+      </ul>
+    </li>
+    <li><a href="#sec3" data-target="sec3">三、详细设计</a></li>
+    <li>
+      <ul class="nav-sub">
+        <li><a href="#sec3-1" data-target="sec3-1">3.1 通知管理页面</a></li>
+        <li><a href="#sec3-1-1" data-target="sec3-1-1">3.1.1 顶部栏模块</a></li>
+        <li><a href="#sec3-1-2" data-target="sec3-1-2">3.1.2 通知说明面板</a></li>
+        <li><a href="#sec3-1-3" data-target="sec3-1-3">3.1.3 筛选模块</a></li>
+        <li><a href="#sec3-1-4" data-target="sec3-1-4">3.1.4 通知列表模块</a></li>
+        <li><a href="#sec3-1-5" data-target="sec3-1-5">3.1.5 空状态模块</a></li>
+        <li><a href="#sec3-1-6" data-target="sec3-1-6">3.1.6 分页模块</a></li>
+        <li><a href="#sec3-1-7" data-target="sec3-1-7">3.1.7 创建通知弹窗</a></li>
+        <li><a href="#sec3-1-8" data-target="sec3-1-8">3.1.8 通知详情弹窗</a></li>
+        <li><a href="#sec3-1-9" data-target="sec3-1-9">3.1.9 全局轻提示</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<!-- ========== Main Content ========== -->
+<div class="main-content">
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>通知管理模块</h1>
+    <p>统一收口 · 全员触达 · 可查可溯 —— 产品需求文档 v1.0</p>
+  </div>
+
+  <!-- Meta -->
+  <div class="meta-bar" style="display:block;">
+    <table style="margin:0;">
+      <tbody><tr><th style="width:15%">文档版本</th><th style="width:15%">修改日期</th><th style="width:15%">修改人</th><th>修改说明</th></tr>
+      <tr>
+        <td>v1.0</td>
+        <td>2026-11-06</td>
+        <td>产品</td>
+        <td>通知管理模块首版：提供系统通知的集中查看、条件检索与全员通知创建能力，覆盖通知列表、筛选检索、分页浏览、创建通知、通知详情与全局反馈提示。</td>
+      </tr>
+    </tbody></table>
+  </div>
+
+  <!-- ========== 一、概述 ========== -->
+  <div class="section" id="sec1">
+    <h2>一、概述</h2>
+
+    <h3 id="sec1-1">1.1 背景说明</h3>
+    <p>企业内部的系统消息长期处于"多头产生、无人归口"的状态。系统运行过程中会自动产生大量业务消息——版本上线、维护停机、任务指派、审批结果、安全告警、报表生成等；同时行政、人事、运营等部门也需要主动发布放假安排、培训开课、网络升级等管理类通知。这些消息分散在各自的业务模块中，缺乏统一的沉淀与查看入口。</p>
+    <ul class="feature-list">
+      <li><strong>消息产生方多，查看方无统一入口</strong>：系统自动产生的消息与管理员手动发布的消息混在各业务模块，接收人需要逐个模块翻找，容易漏看关键通知。</li>
+      <li><strong>管理员缺少发布工具</strong>：需要向全体员工同步一条管理通知时，只能依赖邮件或即时通讯群发，无法在系统内留痕，事后也无法确认发布过什么、何时发布。</li>
+      <li><strong>历史通知不可追溯</strong>：通知发出后没有集中归档，无法按来源、状态检索，也无法回看某条通知的完整内容与发布信息，出现争议时无据可查。</li>
+      <li><strong>通知类型不透明</strong>：使用者并不清楚系统究竟会在哪些场景下自动推送通知，缺少一份可自查的清单说明。</li>
+    </ul>
+    <p>为此，需要在系统管理下建设<strong>通知管理模块</strong>：把系统自动产生与管理员手动发布的通知统一归集到一个列表中，提供检索、筛选与分页浏览能力；同时提供标准化的通知创建入口，让管理员能够以统一的格式向全员发布通知，并保证每条通知的标题、内容、来源、接收范围、发送时间与创建人都可查可溯。</p>
+
+    <h3 id="sec1-2">1.2 需求描述</h3>
+    <p>本期交付<strong>通知管理页面</strong>一个页面，作为系统通知的唯一管理与查看入口。页面采用"顶部操作栏 + 筛选栏 + 通知列表 + 底部分页"的经典管理后台布局，配合创建通知弹窗、通知详情弹窗与全局轻提示三类浮层完成全部交互。核心功能点如下：</p>
+    <table>
+      <tbody>
+        <tr><th style="width:12%">编号</th><th style="width:26%">功能点</th><th style="width:10%">优先级</th><th>能力说明</th></tr>
+        <tr>
+          <td>F-01</td>
+          <td>通知集中列表</td>
+          <td><span class="tag tag-p0">P0</span></td>
+          <td>以表格形式集中展示全部通知，逐条呈现标题、内容摘要、来源、接收人员、状态、发送时间与创建时间，支持整行点击进入详情。</td>
+        </tr>
+        <tr>
+          <td>F-02</td>
+          <td>关键词检索</td>
+          <td><span class="tag tag-p0">P0</span></td>
+          <td>按通知标题或通知内容进行模糊匹配，输入即时生效，不区分大小写，检索结果自动回到第一页。</td>
+        </tr>
+        <tr>
+          <td>F-03</td>
+          <td>来源与状态筛选</td>
+          <td><span class="tag tag-p1">P1</span></td>
+          <td>提供来源（系统自动 / 管理员手动）与状态（已发送 / 待发送）两个下拉筛选，可与关键词检索叠加使用。</td>
+        </tr>
+        <tr>
+          <td>F-04</td>
+          <td>创建并发送全员通知</td>
+          <td><span class="tag tag-p0">P0</span></td>
+          <td>管理员填写标题与内容后一键保存并发送，通知即时送达全体员工，创建人与创建时间由系统自动记录。</td>
+        </tr>
+        <tr>
+          <td>F-05</td>
+          <td>通知详情查看</td>
+          <td><span class="tag tag-p0">P0</span></td>
+          <td>以弹窗形式展示单条通知的完整信息：标题、来源、状态、接收范围、创建人、创建时间、发送时间与保留换行的完整正文。</td>
+        </tr>
+        <tr>
+          <td>F-06</td>
+          <td>分页浏览</td>
+          <td><span class="tag tag-p1">P1</span></td>
+          <td>底部常驻分页栏，展示总条数与当前区间，支持每页 10 / 20 / 50 / 100 条切换、上一页下一页与页码直达，页码过多时以省略号折叠。</td>
+        </tr>
+        <tr>
+          <td>F-07</td>
+          <td>空状态引导</td>
+          <td><span class="tag tag-p2">P2</span></td>
+          <td>列表无数据时隐藏表格与分页栏，展示引导插画文案与"创建通知"快捷入口，指引用户完成首次发布。</td>
+        </tr>
+        <tr>
+          <td>F-08</td>
+          <td>系统通知清单说明</td>
+          <td><span class="tag tag-p2">P2</span></td>
+          <td>顶部栏提供说明入口，展开后列出系统当前会自动推送的通知类型，帮助使用者了解消息来源。</td>
+        </tr>
+        <tr>
+          <td>F-09</td>
+          <td>操作结果反馈</td>
+          <td><span class="tag tag-p1">P1</span></td>
+          <td>发送成功、校验失败等操作结果以全局轻提示统一反馈，区分成功与错误两种样式，短暂停留后自动消失。</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note">💡 本期范围界定：接收范围固定为"全员"，通知创建后立即发送，不提供指定人员、定时发送、撤回与删除能力；通知列表为只读视图，除新建外不提供行级编辑操作。</div>
+
+    <h3 id="sec1-3">1.3 核心概念定义</h3>
+    <table>
+      <tbody>
+        <tr><th style="width:20%">概念</th><th>定义与说明</th></tr>
+        <tr>
+          <td>通知</td>
+          <td>系统内一条面向接收人发布的消息记录。一条通知包含：标题、内容、来源、接收范围、状态、创建人、创建时间与发送时间。通知一经发送即归档留存，可在列表中检索与查看详情。</td>
+        </tr>
+        <tr>
+          <td>通知来源</td>
+          <td>标识通知的产生方式，分两类：<strong>系统自动</strong>——由系统在业务节点触发自动推送，创建人记为"系统"；<strong>管理员手动</strong>——由管理员在通知管理页面主动创建发布，创建人记为实际操作人。两类来源在列表中以不同底色的标签区分。</td>
+        </tr>
+        <tr>
+          <td>通知状态</td>
+          <td>通知的发送生命周期状态，分两态：<strong>已发送</strong>——通知已送达接收人，为列表中的常态；<strong>待发送</strong>——通知已生成但尚未到达发送时点。本期管理员创建的通知在保存时即刻发送并置为"已发送"，因此手动发布不会产生待发送记录；待发送状态用于承接后续定时发送场景，筛选器已预留该选项。</td>
+        </tr>
+        <tr>
+          <td>接收人员 / 接收范围</td>
+          <td>通知的送达对象集合。本期接收范围固定为<strong>全员</strong>，即组织内全部在册成员。列表中按接收人数量呈现三种标识形态：全员、单人、多人（含"等 N 人"折叠）。</td>
+        </tr>
+        <tr>
+          <td>创建人</td>
+          <td>通知的责任主体。系统自动产生的通知，创建人显示为"系统"；管理员手动发布的通知，创建人显示为当前登录用户的姓名。创建人仅在通知详情中展示，列表不单列该字段。</td>
+        </tr>
+        <tr>
+          <td>创建时间 / 发送时间</td>
+          <td><strong>创建时间</strong>为通知记录生成的时刻，保存时由系统自动写入，不可人工指定；<strong>发送时间</strong>为通知实际送达接收人的时刻。本期两者在保存发送时同时生成，取值一致；后续支持定时发送时，发送时间将体现为计划发送时点。</td>
+        </tr>
+        <tr>
+          <td>系统通知清单</td>
+          <td>系统当前会自动推送的通知类型集合，通过顶部栏说明入口对使用者公开。本期清单包含"技能审核通过"与"技能审核不通过"两类，随系统能力扩展而增补。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 id="sec1-4">1.4 目标用户与典型场景</h3>
+    <table>
+      <tbody>
+        <tr><th style="width:20%">用户角色</th><th style="width:34%">需求特征</th><th>典型场景</th></tr>
+        <tr>
+          <td><strong>系统管理员</strong></td>
+          <td>负责全员管理类通知的发布与归档，关注发布是否成功、记录是否完整、历史是否可查。</td>
+          <td>行政管理员需要发布元旦放假安排：进入通知管理页面点击"创建通知"，填写标题与正文后保存并发送，系统提示"通知已发送"，新通知即刻出现在列表首位，创建人与创建时间自动留痕。</td>
+        </tr>
+        <tr>
+          <td><strong>系统运维人员</strong></td>
+          <td>关注系统自动产生的运行类消息，需要快速定位某个时间段的告警与维护通知。</td>
+          <td>运维人员排查一次夜间异常：在筛选栏将来源选为"系统自动"，并在搜索框输入"告警"，列表即时收敛到相关通知，点击行进入详情核对完整正文与发送时间。</td>
+        </tr>
+        <tr>
+          <td><strong>部门管理者</strong></td>
+          <td>需要确认本部门相关的会议、培训、任务类通知是否已下发，以及下发的具体内容。</td>
+          <td>部门经理收到员工询问培训时间：在搜索框输入培训名称关键词，找到对应通知后打开详情，将完整的开课时间与地点说明转达给员工。</td>
+        </tr>
+        <tr>
+          <td><strong>普通使用者</strong></td>
+          <td>被赋予查看权限时，关注与自己相关的历史通知，需要按状态与关键词快速找到目标消息。</td>
+          <td>员工想回看上个月发布的所有通知：将每页条数切换为 50 条，通过分页浏览完整历史，必要时用关键词缩小范围。</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="story">
+      作为 <span class="actor">系统管理员</span>，我希望 <span class="want">在一个页面填写标题与内容就能把通知发给全体员工</span>，以便 <span class="goal">不必依赖邮件或群聊，且发布记录在系统内自动留痕</span>。
+    </div>
+    <div class="story">
+      作为 <span class="actor">系统运维人员</span>，我希望 <span class="want">按来源和关键词快速筛出系统自动推送的通知</span>，以便 <span class="goal">在排查问题时迅速定位相关的告警与维护记录</span>。
+    </div>
+    <div class="story">
+      作为 <span class="actor">部门管理者</span>，我希望 <span class="want">点开任意一条通知看到完整正文、创建人与发送时间</span>，以便 <span class="goal">向团队成员准确转达信息，并在有争议时有据可查</span>。
+    </div>
+  </div>
+
+
+  <!-- ========== 二、功能架构与流程图 ========== -->
+  <div class="section" id="sec2">
+    <h2>二、功能架构与流程图</h2>
+
+    <h3 id="sec2-1">2.1 系统架构图</h3>
+    <p>通知管理模块由<strong>一个页面</strong>与<strong>三类浮层</strong>构成。页面自上而下分为顶部栏（面包屑、通知说明入口、创建通知入口）、筛选栏（关键词检索 + 来源筛选 + 状态筛选）、通知列表（表格 / 空状态）与底部分页栏四层；浮层包含创建通知弹窗、通知详情弹窗与全局轻提示。数据主链路为：创建通知弹窗提交后写入通知数据，列表即时刷新并将新通知置于首位，详情弹窗按行读取单条通知的完整信息。</p>
+    <div style="text-align:center; margin: 20px 0;">
+      <svg width="100%" height="470" viewBox="0 0 940 470" xmlns="http://www.w3.org/2000/svg" font-family="PingFang SC, Microsoft YaHei, sans-serif">
+        <!-- Top box -->
+        <rect x="320" y="10" width="300" height="50" rx="10" fill="#4F46E5"></rect>
+        <text x="470" y="42" text-anchor="middle" fill="white" font-size="17" font-weight="700">通知管理模块</text>
+
+        <!-- Lines to level 2 -->
+        <line x1="380" y1="60" x2="150" y2="112" stroke="#4F46E5" stroke-width="2"></line>
+        <line x1="470" y1="60" x2="470" y2="112" stroke="#4F46E5" stroke-width="2"></line>
+        <line x1="560" y1="60" x2="790" y2="112" stroke="#4F46E5" stroke-width="2"></line>
+
+        <!-- Level 2: three pillars -->
+        <rect x="40" y="112" width="220" height="62" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="150" y="139" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">页面框架层</text>
+        <text x="150" y="159" text-anchor="middle" fill="#6B7280" font-size="11">顶部栏 · 面包屑 · 全局入口</text>
+
+        <rect x="360" y="112" width="220" height="62" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="470" y="139" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">通知列表层</text>
+        <text x="470" y="159" text-anchor="middle" fill="#6B7280" font-size="11">筛选 · 表格 · 空状态 · 分页</text>
+
+        <rect x="680" y="112" width="220" height="62" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"></rect>
+        <text x="790" y="139" text-anchor="middle" fill="#4F46E5" font-size="14" font-weight="700">浮层交互层</text>
+        <text x="790" y="159" text-anchor="middle" fill="#6B7280" font-size="11">创建弹窗 · 详情弹窗 · 轻提示</text>
+
+        <!-- Level 3 connectors -->
+        <line x1="150" y1="174" x2="90" y2="216" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="150" y1="174" x2="230" y2="216" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="470" y1="174" x2="390" y2="216" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="470" y1="174" x2="540" y2="216" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="790" y1="174" x2="700" y2="216" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="790" y1="174" x2="860" y2="216" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+
+        <!-- Level 3 boxes -->
+        <rect x="20" y="216" width="140" height="60" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="90" y="241" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">通知说明面板</text>
+        <text x="90" y="260" text-anchor="middle" fill="#6B7280" font-size="10">系统通知清单</text>
+
+        <rect x="170" y="216" width="140" height="60" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="240" y="241" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">创建通知入口</text>
+        <text x="240" y="260" text-anchor="middle" fill="#6B7280" font-size="10">顶部按钮 · 空状态按钮</text>
+
+        <rect x="320" y="216" width="140" height="60" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="390" y="241" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">筛选与表格</text>
+        <text x="390" y="260" text-anchor="middle" fill="#6B7280" font-size="10">关键词 · 来源 · 状态</text>
+
+        <rect x="470" y="216" width="140" height="60" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="540" y="241" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">空状态与分页</text>
+        <text x="540" y="260" text-anchor="middle" fill="#6B7280" font-size="10">引导文案 · 页码页长</text>
+
+        <rect x="630" y="216" width="140" height="60" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="700" y="241" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">创建通知弹窗</text>
+        <text x="700" y="260" text-anchor="middle" fill="#6B7280" font-size="10">标题 · 内容 · 全员</text>
+
+        <rect x="790" y="216" width="140" height="60" rx="8" fill="#F5F3FF" stroke="#A5B4FC" stroke-width="1.5"></rect>
+        <text x="860" y="241" text-anchor="middle" fill="#6D28D9" font-size="12" font-weight="600">通知详情弹窗</text>
+        <text x="860" y="260" text-anchor="middle" fill="#6B7280" font-size="10">完整正文 · 发布信息</text>
+
+        <!-- Data layer -->
+        <rect x="240" y="304" width="460" height="46" rx="8" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5" stroke-dasharray="5"></rect>
+        <text x="470" y="332" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">通知数据集（标题 · 内容 · 来源 · 接收范围 · 状态 · 时间 · 创建人）</text>
+        <line x1="390" y1="276" x2="420" y2="304" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="700" y1="276" x2="600" y2="304" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+        <line x1="860" y1="276" x2="660" y2="304" stroke="#A5B4FC" stroke-width="1.5" stroke-dasharray="4"></line>
+
+        <!-- Bottom flow -->
+        <rect x="10" y="376" width="920" height="70" rx="10" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5"></rect>
+        <text x="470" y="398" text-anchor="middle" fill="#92400E" font-size="14" font-weight="700">通知管理主链路</text>
+        <text x="95" y="425" text-anchor="middle" fill="#D97706" font-size="12">创建通知</text>
+        <text x="180" y="425" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
+        <text x="265" y="425" text-anchor="middle" fill="#D97706" font-size="12">填写并校验</text>
+        <text x="355" y="425" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
+        <text x="445" y="425" text-anchor="middle" fill="#D97706" font-size="12">保存并发送</text>
+        <text x="535" y="425" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
+        <text x="620" y="425" text-anchor="middle" fill="#D97706" font-size="12">全员接收</text>
+        <text x="705" y="425" text-anchor="middle" fill="#6B7280" font-size="15">→</text>
+        <text x="810" y="425" text-anchor="middle" fill="#D97706" font-size="12">列表置顶 · 详情可查</text>
+      </svg>
+    </div>
+
+    <h3 id="sec2-2">2.2 业务流程图</h3>
+    <p>下图描述通知管理页面的核心业务流转，包含"发布通知"与"查阅通知"两条主线。管理员从顶部栏进入创建流程，填写标题与内容后提交；系统依次执行必填与长度校验，任一校验不通过则以错误轻提示阻断并停留在弹窗内，全部通过后写入通知数据、状态置为已发送、接收范围置为全员，列表刷新并将新通知置于首位。查阅主线中，使用者通过关键词与来源、状态筛选收敛结果，翻页浏览后点击任意行打开详情弹窗，查看完整正文与发布信息后关闭返回列表。</p>
+    <div style="text-align:center; margin: 20px 0;">
+      <svg width="100%" height="640" viewBox="0 0 940 640" xmlns="http://www.w3.org/2000/svg" font-family="PingFang SC, Microsoft YaHei, sans-serif">
+        <!-- Start -->
+        <rect x="380" y="10" width="140" height="42" rx="21" fill="#059669"></rect>
+        <text x="450" y="37" text-anchor="middle" fill="white" font-size="14" font-weight="700">开始</text>
+
+        <line x1="450" y1="52" x2="450" y2="84" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="450,84 440,68 460,68" fill="#6B7280"></polygon>
+        <rect x="330" y="84" width="240" height="42" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="450" y="110" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">进入通知管理页面 · 加载通知列表</text>
+
+        <line x1="450" y1="126" x2="450" y2="158" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="450,158 440,142 460,142" fill="#6B7280"></polygon>
+
+        <!-- Decision: 是否创建 -->
+        <polygon points="450,158 570,208 450,258 330,208" fill="#FFFBEB" stroke="#D97706" stroke-width="2"></polygon>
+        <text x="450" y="204" text-anchor="middle" fill="#92400E" font-size="13" font-weight="700">是否发布新通知？</text>
+        <text x="450" y="222" text-anchor="middle" fill="#6B7280" font-size="11">点击「创建通知」</text>
+
+        <!-- YES branch (right) -->
+        <line x1="570" y1="208" x2="640" y2="208" stroke="#059669" stroke-width="2"></line>
+        <polygon points="640,208 624,200 624,216" fill="#059669"></polygon>
+        <text x="600" y="198" text-anchor="middle" fill="#059669" font-size="12" font-weight="700">是</text>
+
+        <rect x="640" y="186" width="270" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="775" y="206" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">打开创建通知弹窗</text>
+        <text x="775" y="223" text-anchor="middle" fill="#6B7280" font-size="11">标题 / 内容置空 · 接收人员默认全员 · 预览创建时间</text>
+
+        <line x1="775" y1="230" x2="775" y2="262" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="775,262 765,246 785,246" fill="#6B7280"></polygon>
+        <rect x="655" y="262" width="240" height="42" rx="8" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="775" y="288" text-anchor="middle" fill="#1F2937" font-size="13">填写通知标题与通知内容</text>
+
+        <line x1="775" y1="304" x2="775" y2="336" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="775,336 765,320 785,320" fill="#6B7280"></polygon>
+        <rect x="655" y="336" width="240" height="42" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="775" y="362" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">点击「保存并发送」</text>
+
+        <line x1="775" y1="378" x2="775" y2="410" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="775,410 765,394 785,394" fill="#6B7280"></polygon>
+
+        <!-- Decision: 校验 -->
+        <polygon points="775,410 880,455 775,500 670,455" fill="#FFFBEB" stroke="#D97706" stroke-width="2"></polygon>
+        <text x="775" y="452" text-anchor="middle" fill="#92400E" font-size="12" font-weight="700">必填与长度</text>
+        <text x="775" y="469" text-anchor="middle" fill="#92400E" font-size="12" font-weight="700">校验通过？</text>
+
+        <!-- 是 -> save (left) -->
+        <line x1="670" y1="455" x2="604" y2="455" stroke="#059669" stroke-width="2"></line>
+        <polygon points="600,455 616,447 616,463" fill="#059669"></polygon>
+        <text x="636" y="445" text-anchor="middle" fill="#059669" font-size="12" font-weight="700">是</text>
+
+        <!-- 否 -> error toast (down), loop back to fill-in -->
+        <line x1="775" y1="500" x2="775" y2="522" stroke="#DC2626" stroke-width="2"></line>
+        <polygon points="775,526 767,510 783,510" fill="#DC2626"></polygon>
+        <text x="796" y="518" text-anchor="middle" fill="#DC2626" font-size="12" font-weight="700">否</text>
+        <rect x="640" y="528" width="270" height="44" rx="8" fill="#FEE2E2" stroke="#DC2626" stroke-width="1.5"></rect>
+        <text x="775" y="548" text-anchor="middle" fill="#B91C1C" font-size="12" font-weight="600">错误轻提示 · 停留弹窗内修正</text>
+        <text x="775" y="564" text-anchor="middle" fill="#6B7280" font-size="10">标题为空 / 内容为空 / 内容超 500 字符</text>
+        <line x1="910" y1="550" x2="926" y2="550" stroke="#DC2626" stroke-width="2"></line>
+        <line x1="926" y1="550" x2="926" y2="283" stroke="#DC2626" stroke-width="2"></line>
+        <line x1="926" y1="283" x2="903" y2="283" stroke="#DC2626" stroke-width="2"></line>
+        <polygon points="899,283 915,275 915,291" fill="#DC2626"></polygon>
+
+        <rect x="330" y="431" width="270" height="48" rx="8" fill="#D1FAE5" stroke="#059669" stroke-width="1.5"></rect>
+        <text x="465" y="451" text-anchor="middle" fill="#047857" font-size="13" font-weight="700">通知写入 · 状态置为已发送</text>
+        <text x="465" y="469" text-anchor="middle" fill="#047857" font-size="11">接收范围全员 · 创建人与时间自动记录</text>
+
+        <line x1="465" y1="479" x2="465" y2="511" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="465,511 455,495 475,495" fill="#6B7280"></polygon>
+        <rect x="335" y="511" width="260" height="42" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="465" y="531" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">关闭弹窗 · 列表回到第一页</text>
+        <text x="465" y="547" text-anchor="middle" fill="#6B7280" font-size="11">新通知置于列表首位 · 成功轻提示</text>
+
+        <!-- NO branch (left): browse -->
+        <line x1="330" y1="208" x2="255" y2="208" stroke="#4F46E5" stroke-width="2"></line>
+        <polygon points="255,208 271,200 271,216" fill="#4F46E5"></polygon>
+        <text x="292" y="198" text-anchor="middle" fill="#4F46E5" font-size="12" font-weight="700">否</text>
+
+        <rect x="20" y="184" width="235" height="48" rx="8" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="137" y="204" text-anchor="middle" fill="#1F2937" font-size="13">检索与筛选通知</text>
+        <text x="137" y="222" text-anchor="middle" fill="#6B7280" font-size="11">关键词 · 来源 · 状态（可叠加）</text>
+
+        <line x1="137" y1="232" x2="137" y2="264" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="137,264 127,248 147,248" fill="#6B7280"></polygon>
+        <rect x="20" y="264" width="235" height="44" rx="8" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="137" y="284" text-anchor="middle" fill="#1F2937" font-size="13">翻页 / 切换每页条数</text>
+        <text x="137" y="300" text-anchor="middle" fill="#6B7280" font-size="11">结果为空时展示空状态引导</text>
+
+        <line x1="137" y1="308" x2="137" y2="340" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="137,340 127,324 147,324" fill="#6B7280"></polygon>
+        <rect x="20" y="340" width="235" height="44" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"></rect>
+        <text x="137" y="360" text-anchor="middle" fill="#4F46E5" font-size="13" font-weight="600">点击行 / 查看 → 详情弹窗</text>
+        <text x="137" y="376" text-anchor="middle" fill="#6B7280" font-size="11">完整正文 · 创建人 · 发送时间</text>
+
+        <line x1="137" y1="384" x2="137" y2="416" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="137,416 127,400 147,400" fill="#6B7280"></polygon>
+        <rect x="20" y="416" width="235" height="40" rx="8" fill="#FFFFFF" stroke="#6B7280" stroke-width="1.5"></rect>
+        <text x="137" y="441" text-anchor="middle" fill="#1F2937" font-size="13">关闭详情 · 返回列表</text>
+
+        <!-- merge to end -->
+        <line x1="137" y1="456" x2="137" y2="580" stroke="#6B7280" stroke-width="2"></line>
+        <line x1="137" y1="580" x2="376" y2="580" stroke="#6B7280" stroke-width="2"></line>
+        <polygon points="380,580 364,572 364,588" fill="#6B7280"></polygon>
+        <line x1="465" y1="553" x2="465" y2="558" stroke="#6B7280" stroke-width="2"></line>
+        <rect x="380" y="560" width="150" height="40" rx="20" fill="#1F2937"></rect>
+        <text x="455" y="585" text-anchor="middle" fill="white" font-size="13" font-weight="600">结束</text>
+      </svg>
+    </div>
+    <div class="note">💡 业务闭环说明：发布主线以"校验通过 → 写入并发送 → 列表置顶 → 轻提示成功"闭环，校验失败不关闭弹窗、不产生脏数据，用户可在原弹窗内直接修正后重新提交；查阅主线以"筛选 → 分页 → 详情 → 关闭"闭环，详情弹窗为只读视图，关闭后列表的检索条件、筛选值与当前页码均保持不变。</div>
+  </div>
+
+
+  <!-- ========== 三、详细设计 ========== -->
+  <div class="section" id="sec3">
+    <h2>三、详细设计</h2>
+    <p>通知管理模块包含一个页面：<strong>通知管理页面</strong>。该页面为模块的唯一入口，承载通知的检索、浏览、创建与详情查看能力。以下按"页面 → 模块"两级组织，逐模块说明数据来源、显示规则、字段要求与交互行为。</p>
+
+    <!-- ========== 3.1 通知管理页面 ========== -->
+    <h3 id="sec3-1">🔹 3.1 通知管理页面</h3>
+
+    <h4>页面整体说明</h4>
+    <p>页面采用固定高度全屏布局，自上而下分为三个区域：<strong>顶部栏</strong>（固定高度，不随内容滚动）、<strong>内容滚动区</strong>（承载筛选栏与通知列表，纵向独立滚动，滚动条为细窄样式）、<strong>底部分页栏</strong>（固定在页面底部，不随内容滚动）。页面加载完成后立即读取全部通知数据并按当前分页参数渲染列表。三类浮层（创建通知弹窗、通知详情弹窗、全局轻提示）以覆盖层形式叠加在页面之上，其中弹窗带半透明黑色遮罩，点击遮罩空白区域等同于取消关闭。</p>
+    <table>
+      <tbody>
+        <tr><th style="width:16%">字段</th><th style="width:14%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr>
+          <td>页面标题</td>
+          <td>文本</td>
+          <td>是</td>
+          <td>浏览器标签页标题固定为"通知管理"；来源：模块名称，不随页面内操作变化。</td>
+        </tr>
+        <tr>
+          <td>页面布局</td>
+          <td>结构</td>
+          <td>是</td>
+          <td>顶部栏 + 内容滚动区 + 底部分页栏三段式；边界：整页禁止出现浏览器级滚动条，滚动只发生在内容区；内容区上下内边距为 24px。</td>
+        </tr>
+        <tr>
+          <td>弹窗遮罩</td>
+          <td>结构</td>
+          <td>—</td>
+          <td>创建通知弹窗与通知详情弹窗均带 40% 不透明度黑色遮罩，内容居中显示；交互：点击遮罩空白区域关闭弹窗，点击弹窗本体不关闭；效果：弹窗出现时带淡入与轻微上移动画。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 3.1.1 -->
+    <h3 id="sec3-1-1">3.1.1 顶部栏模块</h3>
+    <p>该模块固定于页面顶部，展示当前页面在系统导航中的位置，并承载模块级的全局操作入口。模块内数据均来自当前登录态与模块配置，不随列表筛选变化。</p>
+    <table>
+      <tbody>
+        <tr><th style="width:16%">字段</th><th style="width:14%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr>
+          <td>面包屑导航</td>
+          <td>文本</td>
+          <td>是</td>
+          <td>固定展示两级路径"系统管理 &gt; 通知管理"，以右向箭头分隔；显示规则：一级"系统管理"为常规灰色文字，末级"通知管理"为深色加粗，标识当前位置；来源：系统菜单层级；边界：本页面为末级页面，末级不可点击。</td>
+        </tr>
+        <tr>
+          <td>通知说明按钮</td>
+          <td>按钮</td>
+          <td>是</td>
+          <td>紧邻面包屑末级右侧的圆形图标按钮，图标为信息符号，悬停提示文案"系统通知说明"；显示规则：浅靛蓝底 + 靛蓝图标，尺寸 28×28px；交互：点击展开 / 收起通知说明面板；边界：点击按钮本身不会冒泡触发页面级的面板关闭逻辑。</td>
+        </tr>
+        <tr>
+          <td>创建通知按钮</td>
+          <td>按钮</td>
+          <td>是</td>
+          <td>位于顶部栏最右侧，蓝色实心按钮，图标为加号 + 文案"创建通知"；交互：点击打开创建通知弹窗，弹窗内表单全部重置为初始空值；显示规则：悬停时底色加深；边界：在通知列表任意筛选结果下均可见可用，包括列表为空时。</td>
+        </tr>
+        <tr>
+          <td>顶部栏高度</td>
+          <td>结构</td>
+          <td>—</td>
+          <td>固定 64px，白底 + 底部 1px 分隔线；边界：不参与内容区滚动，始终吸顶可见。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 3.1.2 -->
+    <h3 id="sec3-1-2">3.1.2 通知说明面板模块</h3>
+    <p>该模块为顶部栏通知说明按钮的展开浮层，用于向使用者公开系统当前会自动推送的通知类型清单。清单内容由模块统一维护，与通知列表数据相互独立。</p>
+    <table>
+      <tbody>
+        <tr><th style="width:16%">字段</th><th style="width:14%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr>
+          <td>面板标题</td>
+          <td>文本</td>
+          <td>是</td>
+          <td>固定文案"系统通知清单"；显示规则：13px 加粗深灰，位于面板顶部，与下方列表以 10px 间距分隔。</td>
+        </tr>
+        <tr>
+          <td>清单项</td>
+          <td>列表</td>
+          <td>是</td>
+          <td>逐条列出系统会自动推送的通知类型，每项前置一个状态图标；本期清单固定两项："技能审核通过"（前置对勾圆圈图标）、"技能审核不通过"（前置叉号圆圈图标）；显示规则：13px 灰色文字，图标为靛蓝色，单项上下内边距 5px；来源：模块维护的通知类型清单；边界：清单随系统能力扩展增补，无数据时不展示面板内容。</td>
+        </tr>
+        <tr>
+          <td>面板定位</td>
+          <td>结构</td>
+          <td>—</td>
+          <td>相对于说明按钮水平居中、向下偏移 8px 展开，顶部带指向按钮的小三角；边界：最小宽度 240px，层级高于页面内容，不被列表遮挡。</td>
+        </tr>
+        <tr>
+          <td>展开 / 收起状态</td>
+          <td>交互</td>
+          <td>—</td>
+          <td>触发：点击通知说明按钮切换展开与收起；显示规则：收起状态下面板完全透明且不响应鼠标事件，展开状态下带 0.15 秒淡入与位移动画；交互：点击面板与按钮以外的页面任意区域自动收起；边界：面板为纯展示内容，不可选中其中文字执行操作。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 3.1.3 -->
+    <h3 id="sec3-1-3">3.1.3 筛选模块</h3>
+    <p>该模块位于内容区顶部，提供通知列表的检索与筛选能力。三个筛选条件为"与"关系，可任意组合叠加使用；筛选作用于全部通知数据，任一条件变化都会立即重新计算结果集。</p>
+    <table>
+      <tbody>
+        <tr><th style="width:16%">字段</th><th style="width:14%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr>
+          <td>搜索关键词</td>
+          <td>单行文本</td>
+          <td>否</td>
+          <td>占位提示"搜索通知标题或内容..."，输入框左侧内嵌放大镜图标；匹配规则：对通知标题与通知内容做模糊匹配，命中任一即保留该条；边界：不区分大小写，输入值首尾空格自动忽略；为空表示不按关键词过滤；交互：输入即时生效（无需点击搜索按钮）；效果：条件变化后列表回到第一页并重新渲染，无匹配结果时展示空状态。</td>
+        </tr>
+        <tr>
+          <td>来源筛选</td>
+          <td>下拉单选</td>
+          <td>否</td>
+          <td>可选值：全部来源（默认）/ 系统自动 / 管理员手动；显示规则：右侧内嵌下拉箭头图标，箭头不响应点击（点击穿透至下拉框）；匹配规则：选择非"全部来源"时，仅保留来源完全相等的通知；交互：选择后立即生效并回到第一页。</td>
+        </tr>
+        <tr>
+          <td>状态筛选</td>
+          <td>下拉单选</td>
+          <td>否</td>
+          <td>可选值：全部状态（默认）/ 已发送 / 待发送；匹配规则：选择非"全部状态"时，仅保留状态完全相等的通知；交互：选择后立即生效并回到第一页；边界：本期通知创建后即刻发送，实际数据均为已发送，选择"待发送"通常返回空结果并展示空状态，该选项为后续定时发送能力预留。</td>
+        </tr>
+        <tr>
+          <td>筛选栏布局</td>
+          <td>结构</td>
+          <td>—</td>
+          <td>搜索框占据左侧弹性宽度且最大不超过 448px，两个下拉框成组靠右排列；边界：窄屏下允许换行，行间距 8px；筛选栏与下方列表间距 24px。</td>
+        </tr>
+        <tr>
+          <td>输入框聚焦态</td>
+          <td>交互</td>
+          <td>—</td>
+          <td>搜索框与下拉框获得焦点时，边框变为蓝色并叠加 2px 蓝色半透明外发光；效果：聚焦态与默认态切换带 0.15 秒过渡动画。</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note">💡 筛选与分页的联动规则：关键词、来源、状态任一条件变化时，当前页码强制重置为第 1 页，避免出现"筛选后停留在越界页码导致列表空白"的问题；每页条数不受筛选影响，保持用户上次的选择。</div>
+
+    <!-- 3.1.4 -->
+    <h3 id="sec3-1-4">3.1.4 通知列表模块</h3>
+    <p>该表格展示系统内全部通知记录，数据来源为通知数据集，并按筛选模块的条件实时过滤、按分页模块的参数切片展示。列表为只读视图，除跳转详情外不提供行级编辑操作。</p>
+    <h4>列表字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:16%">字段</th><th style="width:14%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr>
+          <td>标题</td>
+          <td>文本 + 图标</td>
+          <td>是</td>
+          <td>列最小宽度 170px。前置一个来源图标：系统自动的通知显示机器人图标（靛蓝色），管理员手动的通知显示铃铛图标（蓝色）。标题文字加粗深色，悬停整行时转为蓝色；显示规则：单行展示，最大宽度 190px，超出以省略号截断；边界：鼠标悬停时通过浮层提示展示完整标题；来源：创建通知时用户填写，或系统按业务节点自动生成。</td>
+        </tr>
+        <tr>
+          <td>内容</td>
+          <td>文本</td>
+          <td>是</td>
+          <td>列最小宽度 220px。展示通知正文摘要，灰色常规字重；显示规则：单行展示，最大宽度 230px，超出以省略号截断，正文中的换行统一替换为空格后展示；边界：鼠标悬停时通过浮层提示展示完整正文（含原始换行）；来源：通知正文原文。</td>
+        </tr>
+        <tr>
+          <td>来源</td>
+          <td>标签</td>
+          <td>是</td>
+          <td>以圆角胶囊标签展示，取值二选一：<strong>系统自动</strong>（浅靛蓝底 + 靛蓝字）、<strong>管理员手动</strong>（浅蓝底 + 蓝字）；显示规则：12px 中等字重，标签不换行；来源：通知的产生方式，系统写入不可修改。</td>
+        </tr>
+        <tr>
+          <td>接收人员</td>
+          <td>标签</td>
+          <td>是</td>
+          <td>以带图标的胶囊标识展示接收范围，最大宽度 200px，按接收人数量呈现三种形态：<br>① <strong>全员</strong>——群组图标 + 文案"全员"，浅靛蓝底靛蓝字，悬停提示"全员通知（N 人）"，N 为组织在册成员总数；<br>② <strong>单人</strong>——单人图标 + 该成员姓名，浅灰底灰字，悬停提示"单独发送给 某成员"；<br>③ <strong>多人</strong>——多人图标 + "前两位成员姓名、等 N 人"（恰好两人时不追加"等 N 人"），浅灰底灰字，悬停提示"指定人员："后接全部成员姓名以顿号分隔；<br>显示规则：文案过长时以省略号截断，图标不被压缩；边界：管理员手动创建的通知接收范围恒为全员。</td>
+        </tr>
+        <tr>
+          <td>状态</td>
+          <td>标签</td>
+          <td>是</td>
+          <td>以圆角胶囊标签展示，取值二选一：<strong>已发送</strong>（浅绿底 + 绿字）、<strong>待发送</strong>（浅黄底 + 橙字）；来源：通知发送生命周期，保存发送后自动置为已发送。</td>
+        </tr>
+        <tr>
+          <td>发送时间</td>
+          <td>日期时间</td>
+          <td>是</td>
+          <td>格式 YYYY-MM-DD HH:mm，不换行展示；显示规则：已发送的通知为常规灰色，待发送的通知以橙色展示（表示该时间为计划发送时点）；边界：无发送时间时展示长破折号"—"占位；来源：通知实际送达时刻，本期与创建时间同时生成。</td>
+        </tr>
+        <tr>
+          <td>创建时间</td>
+          <td>日期时间</td>
+          <td>是</td>
+          <td>格式 YYYY-MM-DD HH:mm，不换行展示，灰色常规字重；来源：通知记录生成时刻，保存时由系统自动写入，精确到分钟（秒位不展示）；边界：不可人工指定或修改。</td>
+        </tr>
+        <tr>
+          <td>操作</td>
+          <td>文字链接</td>
+          <td>是</td>
+          <td>列内容右对齐，本期仅提供一个链接：<strong>查看</strong>（蓝色文字，悬停加深）；交互：点击打开该条通知的详情弹窗；边界：点击链接不会重复触发行点击（链接已阻断事件冒泡），二者最终行为一致。</td>
+        </tr>
+        <tr>
+          <td>整行点击</td>
+          <td>交互</td>
+          <td>—</td>
+          <td>触发：点击数据行任意非链接区域；行为：打开该条通知的详情弹窗；显示规则：整行鼠标指针为手型，悬停时行背景变为浅灰；边界：表头行不响应点击。</td>
+        </tr>
+        <tr>
+          <td>表头</td>
+          <td>结构</td>
+          <td>—</td>
+          <td>固定八列：标题 / 内容 / 来源 / 接收人员 / 状态 / 发送时间 / 创建时间 / 操作；显示规则：浅灰底、12px 大写字距加宽的灰色加粗文字，底部 1px 分隔线；边界：本期不支持点击表头排序。</td>
+        </tr>
+        <tr>
+          <td>行分隔与容器</td>
+          <td>结构</td>
+          <td>—</td>
+          <td>数据行之间以极浅灰色 1px 底线分隔，行内单元格上下内边距 12px、左右 16px；外层容器为白底、12px 圆角、1px 浅灰描边且内容溢出裁切；边界：表格宽度撑满容器，横向不出现滚动条（依靠列内截断控制宽度）。</td>
+        </tr>
+        <tr>
+          <td>排序规则</td>
+          <td>规则</td>
+          <td>—</td>
+          <td>默认按通知记录的产生顺序倒序展示，最新创建或最新发送的通知排在最前；效果：新发布的通知保存后立即出现在第一页首行。</td>
+        </tr>
+      </tbody>
+    </table>
+
+
+    <!-- 3.1.5 -->
+    <h3 id="sec3-1-5">3.1.5 空状态模块</h3>
+    <p>该模块在通知列表没有任何可展示数据时替代表格出现，用于避免页面出现大面积空白，并直接把用户引导到"创建通知"这一核心动作上。空状态既覆盖"系统内尚无任何通知"的首次使用场景，也覆盖"筛选条件过严导致无匹配结果"的场景。</p>
+    <table>
+      <tbody>
+        <tr><th style="width:16%">字段</th><th style="width:14%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr>
+          <td>空状态图标</td>
+          <td>图标</td>
+          <td>是</td>
+          <td>居中展示铃铛轮廓图标，超大字号（60px 级）、极浅灰色；作用：以图形化方式弱化"无数据"的负面感受。</td>
+        </tr>
+        <tr>
+          <td>主文案</td>
+          <td>文本</td>
+          <td>是</td>
+          <td>固定文案"暂无通知"；显示规则：18px 中灰色，位于图标下方 16px 处。</td>
+        </tr>
+        <tr>
+          <td>辅助文案</td>
+          <td>文本</td>
+          <td>是</td>
+          <td>固定文案"点击「创建通知」向人员发送通知"；显示规则：14px 浅灰色，位于主文案下方 8px 处，与下方按钮间距 24px；作用：明确告知下一步操作路径。</td>
+        </tr>
+        <tr>
+          <td>创建通知按钮</td>
+          <td>按钮</td>
+          <td>是</td>
+          <td>蓝色实心按钮，文案"创建通知"，左右内边距 24px；交互：点击打开创建通知弹窗，行为与顶部栏创建按钮完全一致；显示规则：悬停底色加深。</td>
+        </tr>
+        <tr>
+          <td>显示条件</td>
+          <td>规则</td>
+          <td>—</td>
+          <td>触发：经筛选后的通知总数为 0；行为：隐藏通知表格容器，展示空状态模块，同时隐藏底部分页栏；边界：一旦总数大于 0（例如用户清空搜索关键词），立即恢复表格并隐藏空状态。</td>
+        </tr>
+        <tr>
+          <td>布局</td>
+          <td>结构</td>
+          <td>—</td>
+          <td>纵向居中排列，整体上下内边距 80px，全部元素水平居中对齐。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 3.1.6 -->
+    <h3 id="sec3-1-6">3.1.6 分页模块</h3>
+    <p>该模块固定于页面底部，展示当前筛选结果的分页统计信息并提供翻页控制。分页统计基于筛选后的结果集实时计算，页长变化或筛选条件变化时同步刷新。</p>
+    <table>
+      <tbody>
+        <tr><th style="width:16%">字段</th><th style="width:14%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr>
+          <td>总条数</td>
+          <td>数值</td>
+          <td>是</td>
+          <td>文案格式"共 N 条"，N 为筛选后命中的通知总数；显示规则：数字加粗深色，其余为灰色 13px 说明文字；来源：筛选结果集实时统计。</td>
+        </tr>
+        <tr>
+          <td>当前区间</td>
+          <td>文本</td>
+          <td>是</td>
+          <td>文案格式"第 X-Y 条"，X 为当前页首条在结果集中的序号，Y 为当前页末条序号；边界：Y 不超过总条数（末页按实际条数收口）；总数为 0 时展示"第 1-0 条"，但此时整个分页栏已隐藏。</td>
+        </tr>
+        <tr>
+          <td>每页条数</td>
+          <td>下拉单选</td>
+          <td>是</td>
+          <td>文案"每页 [N] 条"，可选值 10（默认）/ 20 / 50 / 100；交互：切换后立即按新页长重新分页，并强制回到第 1 页；边界：页长选择在同一页面会话内保持，不随筛选条件变化而重置；显示规则：下拉框获焦时边框转为靛蓝色。</td>
+        </tr>
+        <tr>
+          <td>上一页按钮</td>
+          <td>按钮</td>
+          <td>是</td>
+          <td>方形图标按钮（30×30px），图标为左向箭头，无障碍标签"上一页"；交互：点击跳转至前一页并重新渲染列表；边界：当前处于第 1 页时按钮禁用（透明度降至 40%，指针为禁止态，点击无效）。</td>
+        </tr>
+        <tr>
+          <td>页码列表</td>
+          <td>按钮组</td>
+          <td>是</td>
+          <td>逐个展示可跳转页码，点击直达对应页；显示规则：当前页为靛蓝底白字并带同色描边，其余页码为灰色文字、悬停浅灰底；折叠规则：总页数不超过 7 页时全部展示；超过 7 页时固定展示首页与末页，中间仅展示当前页及其前后各一页，被折叠的位置以省略号"…"占位（省略号不可点击）；边界：仅 1 页时展示单个高亮页码"1"。</td>
+        </tr>
+        <tr>
+          <td>下一页按钮</td>
+          <td>按钮</td>
+          <td>是</td>
+          <td>方形图标按钮（30×30px），图标为右向箭头，无障碍标签"下一页"；交互：点击跳转至后一页并重新渲染列表；边界：当前处于末页时按钮禁用（透明度降至 40%，指针为禁止态，点击无效）。</td>
+        </tr>
+        <tr>
+          <td>越界保护</td>
+          <td>规则</td>
+          <td>—</td>
+          <td>触发：请求跳转的页码小于 1 或大于总页数；行为：忽略该次跳转，保持当前页不变；补充：当筛选导致总页数减少、当前页码超出范围时，自动收敛到最后一个有效页再渲染。</td>
+        </tr>
+        <tr>
+          <td>分页栏显隐</td>
+          <td>规则</td>
+          <td>—</td>
+          <td>触发：筛选后的通知总数为 0；行为：整个分页栏隐藏，同时展示空状态模块；总数大于 0 时恢复展示。</td>
+        </tr>
+        <tr>
+          <td>分页栏布局</td>
+          <td>结构</td>
+          <td>—</td>
+          <td>白底 + 顶部 1px 分隔线，左右内边距 32px；左侧为统计信息组（总条数 | 当前区间 | 每页条数，以竖线分隔），右侧为翻页控制组（上一页 + 页码 + 下一页）；边界：固定在页面底部，不参与内容区滚动。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 3.1.7 -->
+    <h3 id="sec3-1-7">3.1.7 创建通知弹窗模块</h3>
+    <p>该模块为管理员发布全员通知的表单浮层，由顶部栏"创建通知"按钮或空状态"创建通知"按钮触发。弹窗打开时表单全部重置为初始状态：标题与内容清空、字数计数归零、接收人员恢复为默认的"全员"、创建时间预览刷新为当前时刻。弹窗内容区可独立纵向滚动，标题栏与底部按钮栏吸顶吸底常驻。</p>
+    <h4>表单字段说明</h4>
+    <table>
+      <tbody>
+        <tr><th style="width:16%">字段</th><th style="width:14%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr>
+          <td>通知标题</td>
+          <td>单行文本</td>
+          <td>是</td>
+          <td>占位提示"请输入通知标题"，标签右侧带红色星号标识必填；来源：用户输入；边界：最多 50 个字符，达到上限后无法继续输入；字数计数：输入框下方展示"当前字数/50"，默认灰色，超过 40 字符转为橙色警示；校验：去除首尾空格后为空时阻止提交，并以错误轻提示"请输入通知标题"，弹窗保持打开、已填内容不丢失。</td>
+        </tr>
+        <tr>
+          <td>通知内容</td>
+          <td>多行文本</td>
+          <td>是</td>
+          <td>占位提示"请输入通知内容..."，默认 5 行高度且不允许用户拖拽改变尺寸，标签右侧带红色星号；来源：用户输入；边界：最多 500 个字符，达到上限后无法继续输入，支持换行输入且换行在详情中按原样保留；字数计数：输入框下方展示"当前字数/500"，默认灰色，超过 450 字符转为橙色警示；校验：① 去除首尾空格后为空时提示"请输入通知内容"；② 长度超过 500 字符时提示"通知内容不能超过 500 字符"（作为提交兜底校验）；两种情况均阻止提交并停留在弹窗内。</td>
+        </tr>
+        <tr>
+          <td>接收人员</td>
+          <td>单选</td>
+          <td>是</td>
+          <td>标签右侧带红色星号；本期仅提供"全员"单一选项且默认选中，通知将送达组织内全部在册成员；显示规则：单选项前置圆形单选控件，选中态为蓝色；边界：因仅有单一选项，用户无需也无法切换到其他接收范围，指定人员发送为后续迭代能力；提交时接收范围固定写入"全员"。</td>
+        </tr>
+        <tr>
+          <td>创建时间（只读提示）</td>
+          <td>说明区</td>
+          <td>—</td>
+          <td>浅灰底信息条，左侧为时钟图标 + 文案"创建时间（保存时自动生成）"，右侧展示按当前时刻刷新的时间预览（格式 YYYY-MM-DD HH:mm）；作用：在提交前明确告知用户记录将采用的时间口径；边界：仅作展示不收集输入，用户不可修改；实际写入的创建时间以点击保存的时刻为准，可能与预览存在分钟级差异。</td>
+        </tr>
+        <tr>
+          <td>弹窗标题</td>
+          <td>文本</td>
+          <td>是</td>
+          <td>固定文案"创建通知"，18px 加粗深色；显示规则：位于吸顶标题栏左侧，右侧为关闭图标按钮。</td>
+        </tr>
+        <tr>
+          <td>关闭按钮</td>
+          <td>按钮</td>
+          <td>—</td>
+          <td>标题栏右侧的叉号图标按钮；交互：点击关闭弹窗并放弃本次填写，不做任何保存；显示规则：悬停时底色变为浅灰、图标为灰色。</td>
+        </tr>
+        <tr>
+          <td>取消（按钮）</td>
+          <td>按钮</td>
+          <td>—</td>
+          <td>底部按钮栏左侧，白底灰字带浅灰描边；交互：点击关闭弹窗，放弃本次填写的全部输入，不产生任何通知记录；显示规则：悬停底色转为浅灰。</td>
+        </tr>
+        <tr>
+          <td>保存并发送（按钮）</td>
+          <td>按钮</td>
+          <td>—</td>
+          <td>底部按钮栏右侧，蓝色实心按钮；交互：点击后依次执行必填与长度校验，全部通过则写入通知记录——来源记为"管理员手动"、状态置为"已发送"、接收范围置为"全员"、创建人记为当前登录用户、创建时间与发送时间取提交时刻（精确到分钟），随后关闭弹窗、列表回到第一页并刷新，新通知出现在列表首行，同时以成功轻提示"通知已发送"反馈；校验不通过时不关闭弹窗、不写入数据；显示规则：悬停底色加深。</td>
+        </tr>
+        <tr>
+          <td>弹窗尺寸与滚动</td>
+          <td>结构</td>
+          <td>—</td>
+          <td>宽度自适应且最大 672px，左右外边距 16px，最大高度为视口的 90%，超出时内容区纵向滚动并采用细窄滚动条样式；边界：标题栏与底部按钮栏在滚动时保持吸附可见；弹窗出现带淡入动画，圆角 16px 并带深投影。</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note">💡 校验顺序与反馈约定：提交时按"标题必填 → 内容必填 → 内容长度"顺序校验，命中第一条即中断并给出对应的错误轻提示，不累积展示多条错误；所有校验失败均保持弹窗打开并保留用户已填写的内容，避免误操作导致输入丢失。</div>
+
+    <!-- 3.1.8 -->
+    <h3 id="sec3-1-8">3.1.8 通知详情弹窗模块</h3>
+    <p>该模块为单条通知的只读详情浮层，由列表数据行点击或行内"查看"链接触发。弹窗打开时按被点击的通知记录读取其完整信息并渲染，数据与列表行完全一致。本期详情不提供接收人明细、已读统计与任何编辑或撤回操作。</p>
+    <table>
+      <tbody>
+        <tr><th style="width:16%">字段</th><th style="width:14%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr>
+          <td>通知图标</td>
+          <td>图标</td>
+          <td>是</td>
+          <td>头部左侧 48×48px 圆角图标块，内置铃铛图标，蓝色系；背景为从浅蓝到浅靛蓝的对角渐变；作用：作为详情弹窗的视觉锚点，不承载业务含义。</td>
+        </tr>
+        <tr>
+          <td>通知标题</td>
+          <td>文本</td>
+          <td>是</td>
+          <td>18px 加粗深色，展示完整标题；显示规则：单行展示，过长时以省略号截断且不挤压右侧标签与关闭按钮；来源：通知记录的标题原文。</td>
+        </tr>
+        <tr>
+          <td>来源标签</td>
+          <td>标签</td>
+          <td>是</td>
+          <td>紧随标题右侧，取值与列表一致：系统自动（浅靛蓝底靛蓝字）/ 管理员手动（浅蓝底蓝字）；显示规则：与状态标签水平并排，空间不足时允许换行到下一行。</td>
+        </tr>
+        <tr>
+          <td>状态标签</td>
+          <td>标签</td>
+          <td>是</td>
+          <td>紧随来源标签右侧，取值与列表一致：已发送（浅绿底绿字）/ 待发送（浅黄底橙字）。</td>
+        </tr>
+        <tr>
+          <td>接收人员</td>
+          <td>标签</td>
+          <td>是</td>
+          <td>位于标题行下方，前置说明文字"接收人员："，其后展示与列表规则完全一致的接收范围标识（全员 / 单人 / 多人三种形态及对应悬停提示）；来源：通知记录的接收范围与接收人集合。</td>
+        </tr>
+        <tr>
+          <td>创建人</td>
+          <td>文本</td>
+          <td>是</td>
+          <td>位于元信息行，前置人物轮廓图标与文字"创建人："；显示规则：系统自动产生的通知展示"系统"，管理员手动发布的通知展示操作人姓名；来源：通知记录的责任主体；边界：仅在详情中展示，列表不单列该字段。</td>
+        </tr>
+        <tr>
+          <td>创建时间</td>
+          <td>日期时间</td>
+          <td>是</td>
+          <td>位于元信息行，前置时钟图标与文字"创建时间："，格式 YYYY-MM-DD HH:mm；来源：通知记录生成时刻。</td>
+        </tr>
+        <tr>
+          <td>发送时间</td>
+          <td>日期时间</td>
+          <td>是</td>
+          <td>位于元信息行，前置发送图标与文字"发送时间："；显示规则：已发送的通知直接展示时间值；待发送的通知在时间值前追加"计划"二字，表示该时间为计划发送时点；边界：无发送时间时展示长破折号"—"占位。</td>
+        </tr>
+        <tr>
+          <td>元信息行布局</td>
+          <td>结构</td>
+          <td>—</td>
+          <td>创建人、创建时间、发送时间三项以 12px 浅灰色文字横向排列，项间距 16px；边界：窄屏下允许换行；与下方内容卡片间距 20px。</td>
+        </tr>
+        <tr>
+          <td>通知内容</td>
+          <td>多行文本</td>
+          <td>是</td>
+          <td>置于浅灰底圆角卡片内，卡片顶部为带正文图标的分区标题"通知内容"；显示规则：14px 深灰文字、宽松行高，<strong>完整展示正文且保留原始换行</strong>（换行按原样折行呈现，不做单行截断）；边界：卡片内容随正文长度自然撑高，超出弹窗最大高度时由弹窗整体滚动；来源：通知记录的正文原文。</td>
+        </tr>
+        <tr>
+          <td>关闭按钮</td>
+          <td>按钮</td>
+          <td>—</td>
+          <td>头部右侧 32×32px 叉号图标按钮；交互：点击关闭详情弹窗返回列表；显示规则：默认灰色，悬停时图标加深且底色转为浅灰。</td>
+        </tr>
+        <tr>
+          <td>底部关闭按钮</td>
+          <td>按钮</td>
+          <td>—</td>
+          <td>底部按钮栏右对齐，白底灰字带浅灰描边，文案"关闭"；交互：与头部关闭按钮行为一致，关闭弹窗返回列表；边界：本期底部仅提供关闭操作，无编辑、撤回、删除等按钮。</td>
+        </tr>
+        <tr>
+          <td>关闭方式汇总</td>
+          <td>交互</td>
+          <td>—</td>
+          <td>三种关闭途径：① 点击头部关闭按钮；② 点击底部"关闭"按钮；③ 点击弹窗外的遮罩空白区域。三者效果一致，关闭后列表的检索关键词、筛选值、当前页码与每页条数均保持不变。</td>
+        </tr>
+        <tr>
+          <td>弹窗尺寸与滚动</td>
+          <td>结构</td>
+          <td>—</td>
+          <td>宽度为视口的 90% 且最大 760px，最大高度为视口的 85%，内容超出时弹窗内部纵向滚动；圆角 16px、深投影；效果：出现时带 0.2 秒遮罩淡入与 0.25 秒内容上移动画；层级高于页面全部内容与创建通知弹窗以外的浮层。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 3.1.9 -->
+    <h3 id="sec3-1-9">3.1.9 全局轻提示模块</h3>
+    <p>该模块为跨模块复用的操作结果反馈组件，用于在不打断用户当前操作的前提下告知一次动作的结果。所有成功与失败反馈统一走该组件，不使用浏览器原生弹窗。</p>
+    <table>
+      <tbody>
+        <tr><th style="width:16%">字段</th><th style="width:14%">类型</th><th style="width:8%">必填</th><th>说明</th></tr>
+        <tr>
+          <td>提示文案</td>
+          <td>文本</td>
+          <td>是</td>
+          <td>一句话说明操作结果，14px 中等字重；本期文案清单：<br>成功类——"通知已发送"；<br>错误类——"请输入通知标题"、"请输入通知内容"、"通知内容不能超过 500 字符"；<br>边界：文案由触发方指定，单条提示仅承载一条信息，不堆叠多行。</td>
+        </tr>
+        <tr>
+          <td>提示类型</td>
+          <td>枚举</td>
+          <td>是</td>
+          <td>取值二选一，决定提示的视觉样式：<strong>成功</strong>——浅绿底 + 绿字 + 浅绿描边；<strong>错误</strong>——浅红底 + 红字 + 浅红描边；显示规则：两种类型均为 10px 圆角并带明显投影，便于在任意背景上识别。</td>
+        </tr>
+        <tr>
+          <td>展示位置</td>
+          <td>结构</td>
+          <td>—</td>
+          <td>固定在视口水平居中、距顶部约 10% 高度处；层级高于所有弹窗与遮罩，确保在弹窗之上依然可见；边界：不随页面内容滚动。</td>
+        </tr>
+        <tr>
+          <td>展示时长</td>
+          <td>规则</td>
+          <td>—</td>
+          <td>出现后停留 2.5 秒自动消失；效果：出现时带 0.25 秒淡入动画；边界：无需用户手动关闭，不可点击交互。</td>
+        </tr>
+        <tr>
+          <td>并发与覆盖</td>
+          <td>规则</td>
+          <td>—</td>
+          <td>同一时刻仅展示一条提示；触发：新提示到来时直接覆盖当前提示的文案与样式，并重新开始 2.5 秒计时；边界：不排队、不堆叠，避免多条提示遮挡页面。</td>
+        </tr>
+      </tbody>
+    </table>
+
+
+    <div style="text-align:center; padding:40px 0; color: var(--text-secondary); font-size:13px;"><br>— 文档结束 · 欢迎评审讨论 —
+  </div>
+
+  </div>
+  </div>
+  </div>
+
+<!-- ========== Scroll Spy & Smooth Scroll ========== -->
+<script>
+(function() {
+  document.querySelectorAll('.sidebar a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var targetId = this.getAttribute('href').substring(1);
+      var target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  var sections = [];
+  document.querySelectorAll('[id^="sec"]').forEach(function(el) {
+    sections.push({ id: el.id, el: el });
+  });
+
+  var navLinks = {};
+  document.querySelectorAll('.sidebar a[data-target]').forEach(function(link) {
+    navLinks[link.getAttribute('data-target')] = link;
+  });
+
+  function onScroll() {
+    var scrollTop = window.scrollY + 60;
+    var current = '';
+    for (var i = sections.length - 1; i >= 0; i--) {
+      var offsetTop = sections[i].el.offsetTop;
+      if (scrollTop >= offsetTop) {
+        current = sections[i].id;
+        break;
+      }
+    }
+    Object.values(navLinks).forEach(function(link) {
+      link.classList.remove('active');
+    });
+    if (current && navLinks[current]) {
+      navLinks[current].classList.add('active');
+    }
+  }
+
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+})();
+</script>
+
+
+</body></html>
