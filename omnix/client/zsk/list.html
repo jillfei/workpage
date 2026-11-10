@@ -1647,17 +1647,8 @@ document.addEventListener('click', function(e) {
 
 renderCards();
 
-// 从详情页「企业知识库」返回时，直接打开企业知识库列表；
-// 也从会话记录恢复上次所在的视图，避免详情页丢掉上下文
-let initialView = new URLSearchParams(window.location.search).get('view');
-if (!initialView) {
-  try { initialView = sessionStorage.getItem('omniKbScope'); } catch (e) {}
-}
-if (initialView === 'enterprise') {
-  switchView('enterprise');
-} else {
-  try { sessionStorage.setItem('omniKbScope', 'personal'); } catch (e) {}
-}
+const initialTab = new URLSearchParams(window.location.search).get('tab');
+switchView(initialTab === 'enterprise' ? 'enterprise' : 'personal');
 </script>
 
 <!-- ===== 悬浮 PRD 入口（可拖动） ===== -->

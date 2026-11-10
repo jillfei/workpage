@@ -1795,7 +1795,7 @@
         <ul class="nav-list">
             <li class="nav-item" data-src="../changelog.html">
                 📜 版本日志
-                <span style="font-size:10px;color:#999;margin-left:auto;">prd文档，无需开发</span>
+                <span style="font-size:10px;color:#999;margin-left:auto;">无需开发</span>
             </li>
             <li class="nav-item active" data-src="content.html">
                 <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
@@ -2363,7 +2363,8 @@
 
             window.addEventListener('message', function(e) {
                 if (e.data && e.data.type === 'navigate' && e.data.src) {
-                    var target = document.querySelector('[data-src="' + e.data.src + '"]');
+                    var baseSrc = e.data.src.split('?')[0];
+                    var target = document.querySelector('[data-src="' + baseSrc + '"]');
                     if (target && !target.classList.contains('item-disabled')) {
                         setActive(target);
                         switchTo(e.data.src);

@@ -1471,25 +1471,39 @@
         navItems[4].dataset.tab = 'tab-token';
         navItems[5].dataset.tab = 'tab-hotkey';
         
-        navItems.forEach(item => {
-            item.addEventListener('click', function() {
-                // 移除所有active状态
-                navItems.forEach(i => i.classList.remove('active'));
-                tabContents.forEach(content => content.style.display = 'none');
-                mainContent.classList.remove('tab-active-fullscreen');
-                document.body.style.overflow = 'auto';
-                
-                // 激活当前项
-                this.classList.add('active');
-                const tabId = this.dataset.tab;
+        // 切换标签页函数
+        function switchTab(tabId) {
+            navItems.forEach(i => i.classList.remove('active'));
+            tabContents.forEach(content => content.style.display = 'none');
+            mainContent.classList.remove('tab-active-fullscreen');
+            document.body.style.overflow = 'auto';
+            
+            const targetItem = document.querySelector(`[data-tab="${tabId}"]`);
+            if (targetItem) {
+                targetItem.classList.add('active');
                 document.getElementById(tabId).style.display = 'block';
                 
                 if (tabId === 'tab-token' || tabId === 'tab-model' || tabId === 'tab-memory' || tabId === 'tab-hotkey') {
                     mainContent.classList.add('tab-active-fullscreen');
                     document.body.style.overflow = 'hidden';
                 }
+            }
+        }
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                switchTab(this.dataset.tab);
             });
         });
+        
+        // 检查URL参数，自动切换到指定标签
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get('tab');
+        if (tabParam === 'memory') {
+            switchTab('tab-memory');
+        } else if (tabParam === 'model-config') {
+            switchTab('tab-model');
+        }
 
         // 发送验证码按钮倒计时
         document.querySelectorAll('.btn-send-code').forEach(btn => {
