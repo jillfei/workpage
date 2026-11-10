@@ -342,6 +342,7 @@
             font-size: 13px;
             text-decoration: none;
             border: 1px solid oklch(0.90 0.02 255);
+            cursor: pointer;
             transition: all 0.2s ease;
         }
         .doc-link:hover {
@@ -475,6 +476,28 @@
         .newline {
             width: 100%;
         }
+
+        .page-tip {
+            position: fixed;
+            left: 50%;
+            top: 24px;
+            z-index: 10;
+            padding: 10px 16px;
+            color: #fff;
+            font-size: 13px;
+            background: oklch(0.28 0.01 260 / 0.88);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            transform: translate(-50%, -12px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .page-tip.show {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -510,6 +533,90 @@
 
 
 
+                <!-- ========== v3.2 ========== -->
+                <div class="version-item" style="margin-bottom: 24px; position: relative; padding-left: 48px;" data-version="v3.2">
+                    <div class="timeline-dot"></div>
+
+                    <div class="version-card is-expanded" id="card-v22">
+                        <div class="card-header">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+										<!-- ========== 版本号 ========== -->
+                                        <span class="version-badge">v3.2</span>
+										<!-- ========== 版本号 ========== -->
+                                    </div>
+                                    <div style="font-size: 13px; color: var(--fg-subtle); margin-top: 4px;">2026-07-13 · 本地知识库</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Change summary -->
+                        <div style="padding: 14px 24px; background: oklch(0.985 0.003 260); border-bottom: 1px solid var(--border-light);">
+                            <div style="font-size: 13px; font-weight: 600; color: var(--fg-muted); margin-bottom: 6px;">📋 版本概述</div>
+                            <p style="font-size: 13px; color: var(--fg-muted); line-height: 1.7; margin: 0;">
+                                管理端：企业知识库、通知管理、反馈管理 <br/>
+								客户端：知识库 - 企业知识库、个人助理、设置-模型配置（个人助理模型配置）、设置 - 记忆；<br/>
+								其他：管理端菜单待处理图标
+                            </p>
+                        </div>
+
+                        <!-- Detailed changes -->
+                        <div class="change-detail expanded" id="detail-v22">
+                            <div style="padding: 20px 24px;">
+                                <div style="display: flex; flex-direction: column; gap: 24px;">
+
+                                    <!-- 相关链接 -->
+                                    <div>
+                                        <div class="section-label">
+                                            <span class="icon-emoji icon-emoji-muted">🔗</span>
+                                            <span style="font-size: 13px; font-weight: 600; color: var(--fg-muted);">相关链接</span>
+                                        </div>
+                                        <div class="link-group">
+											
+											<a  onclick="parentClickGL('./zygl/qyzsk.html')" class="doc-link" title="管理端">
+												<span class="icon-emoji icon-emoji-link">📄</span>
+												<span>企业知识库</span>
+											</a>
+											<a  onclick="parentClickGL('./yygl/fkgl.html')" class="doc-link" title="管理端">
+												<span class="icon-emoji icon-emoji-link">📄</span>
+												<span>反馈管理</span>
+											</a>
+											<a  onclick="parentClickGL('./yygl/fkgl.html')" class="doc-link" title="管理端">
+												<span class="icon-emoji icon-emoji-link">📄</span>
+												<span>通知管理</span>
+											</a>
+											
+											
+											<a onclick="parentClick('./assistant/detail.html')" class="doc-link-tertiary" title="客户端">
+											    <span class="icon-emoji icon-emoji-tertiary">🌐</span>
+											    <span>个人助理</span>
+											</a>
+											<a onclick="parentClick('./zsk/list.html?tab=enterprise')" class="doc-link-tertiary" title="客户端">
+											    <span class="icon-emoji icon-emoji-tertiary">🌐</span>
+											    <span>企业知识库</span>
+											</a>
+											
+											<a onclick="parentClick('./client/setting/account-management.html?tab=model-config',true)" class="doc-link-tertiary" title="客户端">
+											    <span class="icon-emoji icon-emoji-tertiary">🌐</span>
+											    <span>设置-模型配置</span>
+											</a>
+											<a onclick="parentClick('./client/setting/account-management.html?tab=memory',true)" class="doc-link-tertiary" title="客户端">
+											    <span class="icon-emoji icon-emoji-tertiary">🌐</span>
+											    <span>设置-记忆</span>
+											</a>
+											
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
                 <!-- ========== v3.1 ========== -->
                 <div class="version-item" style="margin-bottom: 24px; position: relative; padding-left: 48px;" data-version="v2.2">
                     <div class="timeline-dot"></div>
@@ -533,6 +640,7 @@
                             <div style="font-size: 13px; font-weight: 600; color: var(--fg-muted); margin-bottom: 6px;">📋 版本概述</div>
                             <p style="font-size: 13px; color: var(--fg-muted); line-height: 1.7; margin: 0;">
                                 个人知识库：知识库创建、管理
+                                群聊：
                             </p>
                         </div>
 
@@ -560,7 +668,6 @@
                         </div>
                     </div>
                 </div>
-
 
 
 
@@ -1033,13 +1140,61 @@
 		
 		
 		// 父窗口点击菜单
-		function parentClick(url='') {
-			if(url){
-				if (window.parent && window.parent !== window) {
-				  window.parent.postMessage({ type: 'navigate', src: url }, '*');
-				} else {
-				  window.location.href = url;
-				}
+		function parentClick(url='', isF=false) {
+			if (!url) return;
+
+			var isClientPage = false;
+			try {
+				isClientPage = window.parent !== window && /\/client\/index\.html$/i.test(window.parent.location.pathname);
+			} catch (e) {}
+
+			if (!isClientPage) {
+				showPageTip('该页面在客户端，前往客户端查看');
+				return;
+			}
+
+			if(isF){
+				parent.location.href = url;
+			} else {
+				window.parent.postMessage({ type: 'navigate', src: url }, '*');
+			}
+		}
+
+		function showPageTip(message) {
+			var tip = document.getElementById('pageTip');
+			if (!tip) {
+				tip = document.createElement('div');
+				tip.id = 'pageTip';
+				tip.className = 'page-tip';
+				document.body.appendChild(tip);
+			}
+
+			tip.textContent = message;
+			tip.classList.add('show');
+			window.clearTimeout(showPageTip.timer);
+			showPageTip.timer = window.setTimeout(function() {
+				tip.classList.remove('show');
+			}, 2200);
+		}
+		
+		
+		function parentClickGL(url='', isF=false) {
+			if (!url) return;
+
+			var isAdminPage = false;
+			try {
+				isAdminPage = window.parent !== window && /\/omnix\/index\.html$/i.test(window.parent.location.pathname);
+			} catch (e) {}
+
+			if (!isAdminPage) {
+				showPageTip('该页面在管理端，前往管理端查看');
+				return;
+			}
+
+			if(isF){
+				parent.location.href = url;
+			} else {
+				window.parent.postMessage({ type: 'navigate', src: url }, '*');
 			}
 		}
 		

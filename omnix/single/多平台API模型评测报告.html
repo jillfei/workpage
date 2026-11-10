@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多平台 API 模型供应商评测报告</title>
+<style>
+  :root{
+    --bg:#f6f8fb; --card:#ffffff; --card2:#f1f5fa; --fg:#1f2937; --muted:#64748b;
+    --border:#e4e9f2; --dom:#2563eb; --for:#db2777;
+    --good:#059669; --warn:#d97706; --bad:#dc2626;
+    --s1:#3b82f6; --s2:#ec4899; --s3:#f59e0b; --s4:#10b981; --s5:#8b5cf6;
+    --grid:#edf1f7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);
+    color:var(--fg);font-family:-apple-system,"Segoe UI",Roboto,"Microsoft YaHei",sans-serif;
+    line-height:1.6;padding:0 0 60px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  header{padding:48px 20px 28px;text-align:center;border-bottom:1px solid var(--border);
+    background:radial-gradient(1200px 300px at 50% -60px,rgba(37,99,235,.08),transparent),var(--card)}
+  header h1{margin:0 0 10px;font-size:30px;letter-spacing:.5px;color:#111827}
+  header .sub{color:var(--muted);font-size:14px}
+  .badges{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .badge{background:var(--card2);border:1px solid var(--border);border-radius:20px;
+    padding:6px 14px;font-size:13px;color:var(--muted)}
+  .badge b{color:var(--fg)}
+  h2.sec{font-size:21px;margin:44px 0 6px;padding-left:12px;border-left:4px solid var(--dom);color:#111827}
+  h2.sec .en{font-size:13px;color:var(--muted);font-weight:400;margin-left:8px}
+  .lead{color:var(--muted);font-size:14px;margin:0 0 18px;padding-left:16px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;
+    box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .card h3{margin:0 0 4px;font-size:15px;color:#111827}
+  .card .note{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th,td{padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)}
+  th{color:var(--muted);font-weight:600;background:var(--card2)}
+  td.name{text-align:left;font-weight:600}
+  .tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:10px;margin-left:6px;font-weight:600}
+  .tag.dom{background:rgba(37,99,235,.1);color:var(--dom)}
+  .tag.for{background:rgba(219,39,119,.1);color:var(--for)}
+  .rank-card{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:12px;
+    background:var(--card2);border:1px solid var(--border);margin-bottom:10px}
+  .rank-no{font-size:24px;font-weight:800;width:38px;text-align:center;color:var(--muted)}
+  .rank-no.top{color:var(--warn)}
+  .rank-body{flex:1}
+  .rank-body .nm{font-size:15px;font-weight:700}
+  .rank-body .md{font-size:12px;color:var(--muted)}
+  .rank-score{font-size:22px;font-weight:800}
+  .bar-track{height:6px;border-radius:3px;background:#e2e8f0;overflow:hidden;margin-top:6px}
+  .bar-track>i{display:block;height:100%;border-radius:3px}
+  .fp{font-size:13px;color:#374151;background:#fafbfd;border:1px solid var(--border);
+    border-left:3px solid var(--s3);border-radius:8px;padding:10px 12px;margin-top:8px}
+  .pill{font-size:11.5px;padding:2px 9px;border-radius:10px;font-weight:600}
+  .pill.g{background:rgba(5,150,105,.12);color:var(--good)}
+  .pill.y{background:rgba(217,119,6,.12);color:var(--warn)}
+  .pill.r{background:rgba(220,38,38,.12);color:var(--bad)}
+  .legend-note{font-size:12px;color:var(--muted);margin-top:10px}
+  ul.concl{margin:6px 0 0;padding-left:20px}
+  ul.concl li{margin-bottom:8px;font-size:14px}
+  .kpi{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0 0}
+  .kpi>div{flex:1;min-width:140px;background:var(--card2);border:1px solid var(--border);
+    border-radius:10px;padding:12px 14px}
+  .kpi .v{font-size:22px;font-weight:800;color:#111827}
+  .kpi .l{font-size:12px;color:var(--muted)}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:50px;
+    padding-top:20px;border-top:1px solid var(--border)}
+  .sw{display:flex;gap:16px;justify-content:center;margin:10px 0 0;font-size:12.5px;color:var(--muted)}
+  .sw span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  /* ---------- 纯 CSS 柱状图（无外部依赖） ---------- */
+  .vchart{margin-top:4px}
+  .vplot{display:flex;height:280px}
+  .vplot .yaxis{display:flex;flex-direction:column;justify-content:space-between;
+    align-items:flex-end;padding-right:8px;font-size:11px;color:var(--muted);
+    height:240px;flex:0 0 auto}
+  .vplot .cols{flex:1;display:flex;align-items:flex-end;gap:6px;height:240px;
+    border-left:1px solid var(--border);border-bottom:1px solid #cbd5e1;position:relative;
+    background-image:repeating-linear-gradient(to top,transparent 0 calc(25% - 1px),var(--grid) calc(25% - 1px) 25%);
+    padding:0 4px}
+  .vplot .col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;min-width:0}
+  .vplot .bars{display:flex;align-items:flex-end;gap:3px;height:100%;width:100%;justify-content:center}
+  .vplot .bargrp{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+  .vplot .vlabel{font-size:10px;color:var(--muted);margin-bottom:2px;white-space:nowrap}
+  .vplot .bar{border-radius:4px 4px 0 0;min-height:2px}
+  .vplot .xlab{margin-top:6px;font-size:11.5px;color:#374151;text-align:center;
+    word-break:break-all;line-height:1.3}
+  .vlegend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:10px;font-size:12px;color:var(--muted)}
+  .vlegend span{display:inline-flex;align-items:center;gap:5px}
+  .vlegend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+
+    /* ---------- 能力总结表 ---------- */
+    table.sumtab th,table.sumtab td{text-align:left;vertical-align:top;line-height:1.75}
+    table.sumtab th:first-child,table.sumtab td:first-child{width:150px;font-weight:600;white-space:nowrap}
+    table.sumtab td:nth-child(2){border-left:1px solid var(--border)}
+    table.sumtab td:nth-child(3){border-left:1px solid var(--border)}
+    table.sumtab .hdom{color:var(--dom)}
+    table.sumtab .hfor{color:var(--for)}
+</style>
+</head>
+<body>
+<header>
+  <h1>多平台 API 模型供应商评测报告</h1>
+  <div class="sub">基于 610 条真实 API 测试记录 · 10 个平台 · 覆盖 Token 消耗 / 响应性能 / 并发稳定性 / 模型真实度</div>
+  <div class="badges">
+    <span class="badge">测试样本 <b>610</b> 条</span>
+    <span class="badge">国内平台 <b>6</b> 个</span>
+    <span class="badge">国外平台 <b>4</b> 个</span>
+    <span class="badge">成功率 <b>99.8%</b></span>
+    <span class="badge">并发压测 <b>5 / 10 / 20</b></span>
+  </div>
+  <div class="sw">
+    <span><i class="dot" style="background:var(--dom)"></i>国内模型平台</span>
+    <span><i class="dot" style="background:var(--for)"></i>国外模型平台</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 综合排名 -->
+
+
+  <h2 class="sec">综合排名总览 <span class="en">Overall Ranking</span></h2>
+  <p class="lead">综合评分 = Token效率(20%) + 响应性能(30%) + 并发稳定性(25%) + 模型真实度(25%)，各维度归一化到 0–100 后加权。</p>
+  <div class="grid2">
+    <div class="card">
+      <h3>🏆 国内模型平台排名</h3>
+      <div class="note">DeepSeek 系列（6 家供应商）</div>
+      <div id="rankDom"></div>
+    </div>
+    <div class="card">
+      <h3>🌍 国外模型平台排名</h3>
+      <div class="note">GPT-6.1-sol 系列（4 家供应商）</div>
+      <div id="rankFor"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px;display:none">
+    <h3>全平台综合得分对比（柱状图）</h3>
+    <div class="note">蓝色为国内平台，粉色为国外平台，按总分降序排列</div>
+    <div id="chOverall" class="vchart"></div>
+  </div>
+
+  <!-- 能力总结 -->
+  <h2 class="sec">能力总结及模型推荐 <span class="en">Capability Summary</span></h2>
+  <p class="lead">按"国内模型（DeepSeek-V4-Flash-0731）/ 国外模型（gpt-6.1-sol）"两条模型线汇总五大能力维度的实测结论；价格行取自各服务商报价单（元/百万 tokens，含税口径以报价单为准）。</p>
+  <div class="card">
+    <table class="sumtab">
+      <thead>
+        <tr>
+          <th>项目</th>
+          <th class="hdom">国内模型（DeepSeek-V4-Flash-0731）</th>
+          <th class="hfor">国外模型（gpt-6.1-sol）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>相同问题 Token 消耗</td>
+          <td>控制较好：天宽（237.6）、通服（270.0）、阿里云（275.7）、联通国内（291.1）<br/>
+			控制较差：SMA 偏多（430.2），移动最冗长（586.6，medium/code 题型尤为突出）。</td>
+          <td>相差不大：SMA海外模型最省（199.2），联通（209.2）、正凯在用（217.0）、TokenBridge（235.8）</td>
+        </tr>
+        <tr>
+          <td>响应性能与速度</td>
+          <td>首字延迟普遍 1.2–3.3s（天宽 1.22s 最快，移动 4.76s 偏慢，联通中等：2.41s）</td>
+          <td>各平台相差不大：首字延迟 3.4–3.9s，与国内差距不大，但总耗时 7.4–9.6s 明显更长；生成速度是短板，中位 TPS 仅 33.5–59.8，约为国内系的 1/3–1/10。</td>
+        </tr>
+        <tr>
+          <td>并发能力与稳定性</td>
+          <td>5/10/20 并发成功率均 100%；<br/>
+		  高并发几乎无感：联通国内（劣化 -2.7%）、通服（-1.4%）、阿里云（+1.8%）、天宽（+11.7%）；<br/>
+		  高并发劣化明显 ：SMA（+65.5%）、移动（+76.5%）。</td>
+          <td>成功率同样 100%；<br/>
+		  但 20 并发耗时劣化普遍 +40.9%~+79.8%（联通相对最好）</td>
+        </tr>
+        <tr>
+          <td>模型真实程度</td>
+          <td>可信度高：天宽（85）、阿里云（85）、联通国内（85）、SMA（82）<br/>
+		  可信度低：通服（68，日期假）、移动（60，拒绝自报身份）
+		  </td>
+          <td>最贴近宣称：联通（78）；<br/>其他平台回复保守或回避。</td>
+        </tr>
+        <tr>
+          <td>价格</td>
+          <td>
+			  <b>天宽自部署 64折 > 联通7折 > 通服76折 > SMA 85折 >  天宽官Key 94折 > 移动95折</b>
+		  </td>
+          <td><b>联通：85折，tokenbridge：无折扣（待商务对接），SMA：9折</b></td>
+        </tr>
+        <tr>
+          <td>总结及推荐</td>
+          <td>能力第一梯队：天宽（84.2）、联通（81.8）<br/>
+		  价格上：自部署天宽略有优势，官key则联通折扣最大<br/>
+		  <b>考虑价格及能力因素：推荐：联通</b>
+		  </td>
+          <td>能力第一梯队：<b>联通（61.5）、TokenBridge（59.8）</b>；<br/>
+		  价格上：联通折扣最大<br/>
+		  <b>考虑价格及能力因素：推荐：联通</b>
+		  </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 维度1 Token -->
+  <h2 class="sec">① 相同问题 Token 消耗 <span class="en">Token Consumption</span></h2>
+  <p class="lead">同一批 prompt 下各平台平均输出（completion）Token 数。数值越低代表相同问题越"省 Token"，直接关系调用成本。</p>
+  <div class="grid2">
+    <div class="card">
+      <h3>平均输出 Token（顺序测试）</h3>
+      <div class="note">越低越省 · 单位：tokens</div>
+      <div id="chToken" class="vchart"></div>
+    </div>
+    <div class="card">
+      <h3>分题型输出 Token</h3>
+      <div class="note">short / medium / long_gen / reasoning / code</div>
+      <div id="chTokenType" class="vchart"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <div class="kpi" id="kpiToken"></div>
+    <p class="legend-note" id="tokenConcl"></p>
+  </div>
+
+  <!-- 维度2 性能 -->
+  <h2 class="sec">② 响应性能与速度 <span class="en">Latency & Speed</span></h2>
+  <p class="lead">首 Token 延迟（TTFT）反映"多久开始出字"，总耗时反映"整条回答多久完成"，生成速度（TPS）反映吐字快慢。</p>
+  <div class="grid2">
+    <div class="card">
+      <h3>平均首字延迟 TTFT & 总耗时</h3>
+      <div class="note">越低越快 · 单位：秒</div>
+      <div id="chLatency" class="vchart"></div>
+    </div>
+    <div class="card">
+      <h3>中位生成速度 TPS</h3>
+      <div class="note">越高越快 · 单位：tokens/秒（剔除 TTFT）</div>
+      <div id="chTps" class="vchart"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <table id="tblPerf"></table>
+  </div>
+
+  <!-- 维度3 并发 -->
+  <h2 class="sec">③ 并发能力与稳定性 <span class="en">Concurrency & Stability</span></h2>
+  <p class="lead">在 5 / 10 / 20 并发压测下的平均总耗时与成功率。理想平台应在高并发下耗时不明显劣化、成功率保持 100%。</p>
+  <div class="grid2">
+    <div class="card">
+      <h3>并发压测平均总耗时</h3>
+      <div class="note">5 / 10 / 20 并发 · 越低越稳 · 单位：秒</div>
+      <div id="chConc" class="vchart"></div>
+    </div>
+    <div class="card">
+      <h3>并发下相对单请求耗时劣化</h3>
+      <div class="note">20并发平均耗时 vs 单请求 · 越低越抗压 · 单位：%</div>
+      <div id="chDegrade" class="vchart"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <table id="tblConc"></table>
+  </div>
+
+  <!-- 维度4 真实度 -->
+  <h2 class="sec">④ 模型真实程度 <span class="en">Model Authenticity</span></h2>
+  <p class="lead">通过"指纹问询"让模型自报身份、开发方与训练截止日期，比对其回答与所宣称模型（DeepSeek / GPT-6.1）的一致性、确定性与稳定性，评估供应商是否"挂真模型"。</p>
+  <div class="card">
+    <h3>模型真实度评分</h3>
+    <div class="note">人工评定 0–100：身份自报一致性 + 回答确定性 + 多次稳定性</div>
+    <div id="chReal" class="vchart"></div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h3>知识截止日期横向对比（DeepSeek 同名模型）</h3>
+    <div class="note">来源：指纹问询自报原文；宣称同一模型（deepseek-v4-flash-0731）的平台，截止日期应当一致</div>
+    <table class="sumtab">
+      <thead><tr><th>平台</th><th>宣称模型</th><th>自报知识截止日期</th><th>与其余同名平台一致性</th><th>判定</th></tr></thead>
+      <tbody>
+        <tr><td class="name">天宽</td><td>DeepSeek-V4-Flash-0731</td><td><b>2025 年 5 月</b></td><td>与阿里云、联通国内一致</td><td><span class="pill g">正常</span> 截止日期与"最新版"宣称相符</td></tr>
+        <tr><td class="name">联通国内</td><td>deepseek-v4-flash-0731</td><td><b>2025 年 5 月</b></td><td>与天宽、阿里云一致</td><td><span class="pill g">正常</span> 截止日期与"最新版"宣称相符</td></tr>
+        <tr><td class="name">阿里云</td><td>deepseek-v4-flash-0731</td><td><b>2025 年 5 月</b></td><td>与天宽、联通国内一致</td><td><span class="pill g">正常</span> 截止日期与"最新版"宣称相符</td></tr>
+        <tr><td class="name">通服</td><td>deepseek-v4-flash-0731</td><td><b>2024 年 7 月</b></td><td><b>落后其余三家 10 个月</b></td><td><span class="pill r">存疑</span> 自报"DeepSeek 最新版"但截止日期停留在上一代（与 DeepSeek-V3 公开截止日期相同），疑似旧权重/旧版本部署</td></tr>
+      </tbody>
+    </table>
+    <div class="note" style="margin-top:10px">对比结论：天宽、联通国内、阿里云三家截止日期互相印证（2025-05），与宣称版本匹配；通服自报 2024-07 为孤立值，与"最新模型"宣称矛盾，故其真实度评分由 88 下调至 68，综合得分由 82.3 降至 77.3，国内排名由第 2 降至第 4。</div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h3>各平台指纹自报内容摘录</h3>
+    <div id="fpList"></div>
+  </div>
+
+  <!-- 结论 -->
+  <h2 class="sec" style="display: none;">评测结论 <span class="en">Conclusions</span></h2>
+  <div class="card" style="display: none;">
+    <ul class="concl" id="conclusions"></ul>
+  </div>
+
+  <footer>
+    本报告由 OmniX 依据《多平台api测试记录.csv》自动统计生成 · 所有数值均来自 610 条真实 API 调用记录<br>
+    评分模型为归一化加权，仅用于横向对比参考；实际选型请结合报价、SLA 与业务场景综合判断。
+  </footer>
+</div>
+
+<script>
+const S = {"domestic": ["移动", "通服", "天宽", "SMA", "阿里云", "联通国内"], "foreign": ["联通", "TokenBridge", "SMA海外模型", "正凯在用"], "detail": {"移动": {"model": "DeepSeek-V4-Flash-0731", "group": "国内", "avg_completion_tokens": 586.6, "total_completion_tokens": 14664, "completion_by_type": {"short": 94.0, "medium": 1028.2, "long_gen": 390.0, "reasoning": 176.4, "code": 1244.2}, "avg_ttft": 4.76, "p90_ttft": 10.98, "avg_total": 6.29, "p90_total": 12.29, "median_gen_tps": 490.9, "avg_gen_tps": 8020.4, "concurrency": {"5": {"n": 5, "ok": 5, "ok_rate": 100.0, "avg_ttft": 11.71, "max_ttft": 14.95, "avg_total": 12.97, "max_total": 16.49}, "10": {"n": 10, "ok": 10, "ok_rate": 100.0, "avg_ttft": 9.21, "max_ttft": 12.32, "avg_total": 10.6, "max_total": 13.81}, "20": {"n": 20, "ok": 20, "ok_rate": 100.0, "avg_ttft": 9.59, "max_ttft": 14.39, "avg_total": 11.1, "max_total": 16.04}}, "fingerprint_output": "如实说：我无法从当前系统提示和对话中确认自己的具体底层模型名称、开发公司，或训练数据截止日期。  当前我能确定的只有：我是一个通过 API 访问的 AI 助手。具体由哪个模型、哪家公司提供，以及训练数据截止到什么时候，取决于调用我的 API 服务配置。若需要准确信息，建议查看该 API 提供方的模型文档或模型卡。", "fingerprint_tokens": 4046, "errors": [], "conc_meta": {"ok_rate": 100.0, "degrade": 76.5, "ttft20": 9.59, "total20": 11.1}, "score_token": 0.0, "score_perf": 50.9, "score_conc": 52.1, "score_real": 60, "overall": 43.3}, "通服": {"model": "deepseek-v4-flash-0731", "group": "国内", "avg_completion_tokens": 270.0, "total_completion_tokens": 6751, "completion_by_type": {"short": 56.4, "medium": 290.2, "long_gen": 387.2, "reasoning": 163.2, "code": 453.2}, "avg_ttft": 2.33, "p90_ttft": 4.19, "avg_total": 4.27, "p90_total": 6.62, "median_gen_tps": 131.7, "avg_gen_tps": 206.4, "concurrency": {"5": {"n": 5, "ok": 5, "ok_rate": 100.0, "avg_ttft": 1.97, "max_ttft": 3.44, "avg_total": 4.17, "max_total": 5.5}, "10": {"n": 10, "ok": 10, "ok_rate": 100.0, "avg_ttft": 1.58, "max_ttft": 2.11, "avg_total": 4.38, "max_total": 4.97}, "20": {"n": 20, "ok": 20, "ok_rate": 100.0, "avg_ttft": 1.82, "max_ttft": 3.8, "avg_total": 4.21, "max_total": 6.08}}, "fingerprint_output": "我是 **DeepSeek 最新版模型**，由 **深度求索（DeepSeek）公司** 开发。   我的训练数据截止到 **2024年7月**。", "fingerprint_tokens": 545, "errors": [], "conc_meta": {"ok_rate": 100.0, "degrade": -1.4, "ttft20": 1.82, "total20": 4.21}, "score_token": 81.7, "score_perf": 64.0, "score_conc": 99.2, "score_real": 68, "overall": 77.3}, "天宽": {"model": "DeepSeek-V4-Flash-0731", "group": "国内", "avg_completion_tokens": 237.6, "total_completion_tokens": 5941, "completion_by_type": {"short": 40.2, "medium": 308.8, "long_gen": 339.8, "reasoning": 148.0, "code": 351.4}, "avg_ttft": 1.22, "p90_ttft": 1.49, "avg_total": 4.03, "p90_total": 6.15, "median_gen_tps": 90.4, "avg_gen_tps": 85.6, "concurrency": {"5": {"n": 5, "ok": 5, "ok_rate": 100.0, "avg_ttft": 1.23, "max_ttft": 1.51, "avg_total": 5.08, "max_total": 5.85}, "10": {"n": 10, "ok": 10, "ok_rate": 100.0, "avg_ttft": 1.17, "max_ttft": 1.28, "avg_total": 4.65, "max_total": 5.33}, "20": {"n": 20, "ok": 20, "ok_rate": 100.0, "avg_ttft": 1.18, "max_ttft": 1.33, "avg_total": 4.5, "max_total": 5.64}}, "fingerprint_output": "我是 **DeepSeek 最新版模型**，由 **深度求索（DeepSeek）公司** 开发。  关于训练数据截止时间，目前我的知识截止日期是 **2025年5月**。如果需要更具体的版本细节，建议查阅官方文档或公告，因为模型会持续更新。  有什么问题我可以帮你解答吗？😊", "fingerprint_tokens": 74, "errors": [], "conc_meta": {"ok_rate": 100.0, "degrade": 11.8, "ttft20": 1.18, "total20": 4.5}, "score_token": 90.1, "score_perf": 73.7, "score_conc": 91.2, "score_real": 85, "overall": 84.2}, "SMA": {"model": "deepseek-v4.1-flash-1017", "group": "国内", "avg_completion_tokens": 430.2, "total_completion_tokens": 10756, "completion_by_type": {"short": 77.2, "medium": 621.2, "long_gen": 613.2, "reasoning": 160.2, "code": 679.4}, "avg_ttft": 3.33, "p90_ttft": 5.54, "avg_total": 4.41, "p90_total": 6.84, "median_gen_tps": 447.3, "avg_gen_tps": 460.3, "concurrency": {"5": {"n": 5, "ok": 5, "ok_rate": 100.0, "avg_ttft": 6.44, "max_ttft": 10.63, "avg_total": 8.09, "max_total": 13.08}, "10": {"n": 10, "ok": 10, "ok_rate": 100.0, "avg_ttft": 5.16, "max_ttft": 9.1, "avg_total": 6.6, "max_total": 11.42}, "20": {"n": 20, "ok": 20, "ok_rate": 100.0, "avg_ttft": 5.94, "max_ttft": 10.02, "avg_total": 7.3, "max_total": 11.13}}, "fingerprint_output": "我是 **DeepSeek 模型**，由 **深度求索（DeepSeek）公司**开发。  关于训练数据截止时间：我无法从当前对话中可靠读取具体部署版本的精确截止日期；公开资料中不同 DeepSeek 版本的截止时间可能不同，例如 **DeepSeek-V3 的知识截止日期为 2024 年 7 月**，后续版本可能有所更新。若需要精确到当前部署版本，请以 DeepSeek 官方模型卡/文档为准。", "fingerprint_tokens": 870, "errors": [], "conc_meta": {"ok_rate": 100.0, "degrade": 65.5, "ttft20": 5.94, "total20": 7.3}, "score_token": 40.4, "score_perf": 73.9, "score_conc": 58.7, "score_real": 82, "overall": 65.4}, "阿里云": {"model": "deepseek-v4-flash-0731", "group": "国内", "avg_completion_tokens": 275.7, "total_completion_tokens": 6892, "completion_by_type": {"short": 57.4, "medium": 271.8, "long_gen": 414.0, "reasoning": 155.8, "code": 479.4}, "avg_ttft": 2.51, "p90_ttft": 5.24, "avg_total": 4.52, "p90_total": 7.29, "median_gen_tps": 131.0, "avg_gen_tps": 198.1, "concurrency": {"5": {"n": 5, "ok": 5, "ok_rate": 100.0, "avg_ttft": 2.89, "max_ttft": 6.17, "avg_total": 5.2, "max_total": 7.89}, "10": {"n": 10, "ok": 10, "ok_rate": 100.0, "avg_ttft": 1.95, "max_ttft": 2.97, "avg_total": 4.32, "max_total": 5.23}, "20": {"n": 20, "ok": 20, "ok_rate": 100.0, "avg_ttft": 1.84, "max_ttft": 2.62, "avg_total": 4.6, "max_total": 5.59}}, "fingerprint_output": "我是 DeepSeek 最新版模型，由**深度求索公司**（DeepSeek）开发。我的知识截止日期为**2025年5月**。", "fingerprint_tokens": 141, "errors": [], "conc_meta": {"ok_rate": 100.0, "degrade": 1.8, "ttft20": 1.84, "total20": 4.6}, "score_token": 80.3, "score_perf": 60.6, "score_conc": 97.3, "score_real": 85, "overall": 79.8}, "联通": {"model": "gpt-6.1-sol", "group": "国外", "avg_completion_tokens": 209.2, "total_completion_tokens": 5229, "completion_by_type": {"short": 32.0, "medium": 374.4, "long_gen": 378.4, "reasoning": 67.8, "code": 193.2}, "avg_ttft": 3.86, "p90_ttft": 5.39, "avg_total": 9.04, "p90_total": 16.88, "median_gen_tps": 50.2, "avg_gen_tps": 47.0, "concurrency": {"5": {"n": 5, "ok": 5, "ok_rate": 100.0, "avg_ttft": 5.58, "max_ttft": 11.68, "avg_total": 17.72, "max_total": 21.95}, "10": {"n": 10, "ok": 10, "ok_rate": 100.0, "avg_ttft": 3.21, "max_ttft": 4.19, "avg_total": 12.21, "max_total": 16.84}, "20": {"n": 20, "ok": 20, "ok_rate": 100.0, "avg_ttft": 3.72, "max_ttft": 6.14, "avg_total": 12.74, "max_total": 19.28}}, "fingerprint_output": "我是 **Codex，基于 GPT-6 的 AI 助手**，由 **OpenAI** 开发。  我的训练知识截止时间是 **2024 年 12 月**。这不代表我掌握该日期之前的所有信息；对于之后发生的事情，需要依靠你提供的资料或可用工具核实。", "fingerprint_tokens": 124, "errors": [], "conc_meta": {"ok_rate": 100.0, "degrade": 41.0, "ttft20": 3.72, "total20": 12.74}, "score_token": 97.4, "score_perf": 13.7, "score_conc": 73.5, "score_real": 78, "overall": 61.5}, "TokenBridge": {"model": "gpt-6.1-sol", "group": "国外", "avg_completion_tokens": 235.8, "total_completion_tokens": 5896, "completion_by_type": {"short": 31.8, "medium": 437.6, "long_gen": 402.8, "reasoning": 77.4, "code": 229.6}, "avg_ttft": 3.77, "p90_ttft": 6.09, "avg_total": 7.42, "p90_total": 11.76, "median_gen_tps": 59.8, "avg_gen_tps": 63.6, "concurrency": {"5": {"n": 5, "ok": 5, "ok_rate": 100.0, "avg_ttft": 6.34, "max_ttft": 8.64, "avg_total": 12.06, "max_total": 13.62}, "10": {"n": 10, "ok": 10, "ok_rate": 100.0, "avg_ttft": 7.06, "max_ttft": 12.92, "avg_total": 12.8, "max_total": 21.78}, "20": {"n": 20, "ok": 20, "ok_rate": 100.0, "avg_ttft": 6.12, "max_ttft": 10.72, "avg_total": 11.61, "max_total": 16.83}}, "fingerprint_output": "我是 **ChatGPT，由 OpenAI 开发**。  - **具体模型版本**：当前对话没有向我提供可核实的底层型号信息，因此我不能确定具体是哪一款模型。 - **知识截止时间**：我掌握的知识截止到 **2024 年 6 月**。这不等同于我能确认所有训练数据的确切截止日期；后者我无法核实。", "fingerprint_tokens": 162, "errors": [], "conc_meta": {"ok_rate": 100.0, "degrade": 56.5, "ttft20": 6.12, "total20": 11.61}, "score_token": 90.6, "score_perf": 25.3, "score_conc": 64.2, "score_real": 72, "overall": 59.8}, "SMA海外模型": {"model": "gpt-6.1-sol", "group": "国外", "avg_completion_tokens": 199.2, "total_completion_tokens": 4780, "completion_by_type": {"short": 32.0, "medium": 384.2, "long_gen": 337.8, "reasoning": 66.2, "code": 169.8}, "avg_ttft": 3.42, "p90_ttft": 4.37, "avg_total": 9.63, "p90_total": 17.68, "median_gen_tps": 33.5, "avg_gen_tps": 40.0, "concurrency": {"5": {"n": 5, "ok": 5, "ok_rate": 100.0, "avg_ttft": 4.43, "max_ttft": 6.99, "avg_total": 15.08, "max_total": 16.8}, "10": {"n": 10, "ok": 10, "ok_rate": 100.0, "avg_ttft": 4.23, "max_ttft": 7.78, "avg_total": 15.75, "max_total": 18.03}, "20": {"n": 20, "ok": 20, "ok_rate": 100.0, "avg_ttft": 4.6, "max_ttft": 12.3, "avg_total": 15.06, "max_total": 18.02}}, "fingerprint_output": "如实回答：  - **我是什么模型**：我是通过 API 提供服务的 OpenAI AI 助手。当前会话没有向我提供可核实的具体模型名称或版本，因此我不能准确声称自己是某个 GPT 型号。 - **由哪家公司开发**：OpenAI。 - **训练数据截止到什么时候**：当前会话没有提供可核实的训练数据截止日期，我无法可靠地给出具体年月。  如果你需要确认具体型号，可以查看 API 请求中的 `model` 参数、响应中的模型标识，以及相应的官方模型文档。", "fingerprint_tokens": 232, "errors": [["sequential", "空响应(200但无内容)", "200"]], "conc_meta": {"ok_rate": 100.0, "degrade": 56.3, "ttft20": 4.6, "total20": 15.06}, "score_token": 100.0, "score_perf": 13.2, "score_conc": 64.3, "score_real": 65, "overall": 56.3}, "正凯在用": {"model": "gpt-6.1-sol", "group": "国外", "avg_completion_tokens": 217.0, "total_completion_tokens": 5425, "completion_by_type": {"short": 32.2, "medium": 411.8, "long_gen": 378.2, "reasoning": 81.2, "code": 181.6}, "avg_ttft": 3.66, "p90_ttft": 6.69, "avg_total": 8.9, "p90_total": 16.18, "median_gen_tps": 49.1, "avg_gen_tps": 50.4, "concurrency": {"5": {"n": 5, "ok": 5, "ok_rate": 100.0, "avg_ttft": 6.26, "max_ttft": 8.35, "avg_total": 15.1, "max_total": 16.95}, "10": {"n": 10, "ok": 10, "ok_rate": 100.0, "avg_ttft": 7.08, "max_ttft": 9.55, "avg_total": 16.27, "max_total": 18.44}, "20": {"n": 20, "ok": 20, "ok_rate": 100.0, "avg_ttft": 7.18, "max_ttft": 10.66, "avg_total": 16.0, "max_total": 18.16}}, "fingerprint_output": "如实回答：  - **我是什么模型**：我是 OpenAI 的 AI 助手，通过 API 提供服务。当前会话没有提供确切的底层模型名称或版本，我无法可靠确认。 - **由哪家公司开发**：OpenAI。 - **训练数据截止到什么时候**：当前会话没有提供可核实的训练数据截止日期，因此我不能给出一个确定的年月，以免误导你。", "fingerprint_tokens": 229, "errors": [], "conc_meta": {"ok_rate": 100.0, "degrade": 79.9, "ttft20": 7.18, "total20": 16.0}, "score_token": 95.4, "score_perf": 16.5, "score_conc": 50.0, "score_real": 65, "overall": 52.8}, "联通国内": {"model": "deepseek-v4-flash-0731", "group": "国内", "avg_completion_tokens": 291.1, "total_completion_tokens": 6986, "completion_by_type": {"short": 71.8, "medium": 407.0, "long_gen": 455.6, "reasoning": 187.6, "code": 356.6}, "avg_ttft": 2.41, "p90_ttft": 4.57, "avg_total": 4.09, "p90_total": 6.88, "median_gen_tps": 184.0, "avg_gen_tps": 254.3, "concurrency": {"5": {"n": 5, "ok": 5, "ok_rate": 100.0, "avg_ttft": 1.41, "max_ttft": 1.46, "avg_total": 3.85, "max_total": 4.24}, "10": {"n": 10, "ok": 10, "ok_rate": 100.0, "avg_ttft": 1.63, "max_ttft": 2.53, "avg_total": 3.89, "max_total": 4.63}, "20": {"n": 20, "ok": 20, "ok_rate": 100.0, "avg_ttft": 1.77, "max_ttft": 3.41, "avg_total": 3.98, "max_total": 5.68}}, "fingerprint_output": "我是DeepSeek最新版模型，由深度求索（DeepSeek）公司开发。我的训练数据截止到2025年5月。", "fingerprint_tokens": 168, "errors": [], "conc_meta": {"ok_rate": 100.0, "degrade": -2.7, "ttft20": 1.77, "total20": 3.98}, "score_token": 76.3, "score_perf": 67.7, "score_conc": 100.0, "score_real": 85, "overall": 81.8}}, "rank_domestic": ["天宽", "联通国内", "阿里云", "通服", "SMA", "移动"], "rank_foreign": ["联通", "TokenBridge", "SMA海外模型", "正凯在用"], "rank_all": ["天宽", "联通国内", "阿里云", "通服", "SMA", "联通", "TokenBridge", "SMA海外模型", "正凯在用", "移动"]};
+const DOM = S.domestic, FOR = S.foreign, D = S.detail;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const CDOM = css('--dom'), CFOR = css('--for');
+const isDom = p => DOM.includes(p);
+const colorOf = p => isDom(p) ? CDOM : CFOR;
+const ALL = S.rank_all; // sorted desc by overall
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* ---------- 纯 CSS 柱状图渲染器（无外部依赖） ---------- */
+function fmtV(v){
+  if(v==null) return '';
+  if(Math.abs(v)>=100) return Math.round(v).toString();
+  return (Math.round(v*10)/10).toString();
+}
+function niceMax(m){
+  if(m<=0) return 1;
+  const mag = Math.pow(10, Math.floor(Math.log10(m)));
+  const r = m/mag;
+  const step = r<=1?1:r<=2?2:r<=2.5?2.5:r<=5?5:10;
+  return step*mag;
+}
+/**
+ * vchart(elId, labels, series, opts)
+ * series: [{name, color: string|fn(label)=>color, data: number[]}]
+ * opts: {max, unit}
+ */
+function vchart(elId, labels, series, opts={}){
+  const el = document.getElementById(elId);
+  const vals = series.flatMap(s=>s.data).filter(v=>v!=null&&!isNaN(v));
+  const rawMax = Math.max(...vals, 0);
+  const max = opts.max!=null ? opts.max : niceMax(rawMax*1.08);
+  const n = series.length;
+  const bw = n===1 ? 46 : Math.max(8, Math.min(24, Math.floor(150/n)));
+  const ticks = [max, max*0.75, max*0.5, max*0.25, 0].map(fmtV);
+  const legend = n>1 ? `<div class="vlegend">${series.map(s=>
+    `<span><i style="background:${typeof s.color==='function'?'#94a3b8':s.color}"></i>${s.name}</span>`).join('')}</div>` : '';
+  el.innerHTML = `
+    <div class="vplot">
+      <div class="yaxis">${ticks.map(t=>`<span>${t}</span>`).join('')}</div>
+      <div class="cols">
+        ${labels.map((L,i)=>`
+          <div class="col">
+            <div class="bars">
+              ${series.map(s=>{
+                const v = s.data[i];
+                const h = (v==null||isNaN(v)) ? 0 : Math.max(v/max*100, v>0?1:0);
+                const c = typeof s.color==='function' ? s.color(L) : s.color;
+                return `<div class="bargrp">
+                  ${n===1?`<span class="vlabel">${fmtV(v)}</span>`:''}
+                  <div class="bar" style="height:${h}%;width:${bw}px;background:${c}"
+                    title="${esc(L)}${n>1?' · '+esc(s.name):''}: ${fmtV(v)}${opts.unit||''}"></div>
+                </div>`;
+              }).join('')}
+            </div>
+            <div class="xlab">${esc(L)}</div>
+          </div>`).join('')}
+      </div>
+    </div>${legend}`;
+}
+
+/* ---------- 排名卡片 ---------- */
+function rankCards(el, list, color){
+  const max = D[list[0]].overall;
+  document.getElementById(el).innerHTML = list.map((p,i)=>{
+    const d=D[p], w=(d.overall/max*100).toFixed(0);
+    return `<div class="rank-card">
+      <div class="rank-no ${i===0?'top':''}">${i+1}</div>
+      <div class="rank-body">
+        <div class="nm">${p} <span class="tag ${isDom(p)?'dom':'for'}">${d.group}</span></div>
+        <div class="md">${d.model}</div>
+        <div class="bar-track"><i style="width:${w}%;background:${color}"></i></div>
+      </div>
+      <div class="rank-score" style="color:${color}">${d.overall}</div>
+    </div>`;
+  }).join('');
+}
+rankCards('rankDom', S.rank_domestic, CDOM);
+rankCards('rankFor', S.rank_foreign, CFOR);
+
+/* ---------- 综合得分柱状图 ---------- */
+vchart('chOverall', ALL, [{name:'综合得分', color:colorOf, data:ALL.map(p=>D[p].overall)}], {max:100});
+
+/* ---------- 维度1 Token ---------- */
+vchart('chToken', ALL, [{name:'平均输出Token', color:colorOf, data:ALL.map(p=>D[p].avg_completion_tokens)}]);
+
+const types=['short','medium','long_gen','reasoning','code'];
+const tcols=[css('--s1'),css('--s2'),css('--s3'),css('--s4'),css('--s5')];
+vchart('chTokenType', ALL, types.map((t,i)=>({name:t, color:tcols[i],
+  data:ALL.map(p=>D[p].completion_by_type[t]||0)})));
+
+// KPI
+const toks=ALL.map(p=>D[p].avg_completion_tokens);
+const minT=ALL[toks.indexOf(Math.min(...toks))], maxT=ALL[toks.indexOf(Math.max(...toks))];
+document.getElementById('kpiToken').innerHTML=`
+  <div><div class="v" style="color:var(--good)">${D[minT].avg_completion_tokens}</div><div class="l">最省Token · ${minT}</div></div>
+  <div><div class="v" style="color:var(--bad)">${D[maxT].avg_completion_tokens}</div><div class="l">最耗Token · ${maxT}</div></div>
+  <div><div class="v">${(Math.max(...toks)/Math.min(...toks)).toFixed(1)}×</div><div class="l">最大差距倍数</div></div>
+  <div><div class="v">${Math.round(toks.reduce((a,b)=>a+b,0)/toks.length)}</div><div class="l">全平台平均</div></div>`;
+document.getElementById('tokenConcl').innerHTML=
+  `国外 GPT-6.1-sol 系列输出普遍精简（平均约 200 tokens），单题最省；`+
+  `国内平台中 <b>天宽(${D['天宽'].avg_completion_tokens})</b>、<b>通服(${D['通服'].avg_completion_tokens})</b>、<b>阿里云(${D['阿里云'].avg_completion_tokens})</b>、<b>联通国内(${D['联通国内'].avg_completion_tokens})</b> 控制较好，`+
+  `而 <b>移动(${D['移动'].avg_completion_tokens})</b> 输出冗长（medium/code 题型明显偏长），相同问题 Token 成本最高，约为最省平台的 ${(D['移动'].avg_completion_tokens/D[minT].avg_completion_tokens).toFixed(1)} 倍。`;
+
+/* ---------- 维度2 性能 ---------- */
+vchart('chLatency', ALL, [
+  {name:'平均TTFT(s)', color:css('--s3'), data:ALL.map(p=>D[p].avg_ttft)},
+  {name:'平均总耗时(s)', color:css('--s1'), data:ALL.map(p=>D[p].avg_total)}
+]);
+
+vchart('chTps', ALL, [{name:'中位生成速度TPS', color:colorOf, data:ALL.map(p=>D[p].median_gen_tps||0)}]);
+
+document.getElementById('tblPerf').innerHTML=`
+  <thead><tr><th>平台</th><th>模型</th><th>平均TTFT(s)</th><th>P90 TTFT(s)</th>
+  <th>平均总耗时(s)</th><th>P90总耗时(s)</th><th>中位TPS</th></tr></thead>
+  <tbody>${ALL.map(p=>{const d=D[p];return `<tr>
+    <td class="name">${p}<span class="tag ${isDom(p)?'dom':'for'}">${d.group}</span></td>
+    <td>${d.model}</td><td>${d.avg_ttft}</td><td>${d.p90_ttft}</td>
+    <td>${d.avg_total}</td><td>${d.p90_total}</td>
+    <td><b>${d.median_gen_tps||'-'}</b></td></tr>`;}).join('')}</tbody>`;
+
+/* ---------- 维度3 并发 ---------- */
+const cl=['5','10','20'];
+const ccols=[css('--s4'),css('--s3'),css('--s2')];
+vchart('chConc', ALL, cl.map((c,i)=>({name:c+'并发', color:ccols[i],
+  data:ALL.map(p=>{const cc=D[p].concurrency[c];return cc?cc.avg_total:null;})})));
+
+vchart('chDegrade', ALL, [{name:'20并发耗时劣化(%)',
+  color:p=>D[p].conc_meta.degrade>60?css('--bad'):D[p].conc_meta.degrade>25?css('--warn'):css('--good'),
+  data:ALL.map(p=>D[p].conc_meta.degrade)}], {unit:'%'});
+
+document.getElementById('tblConc').innerHTML=`
+  <thead><tr><th>平台</th><th>模型</th><th>5并发(s)</th><th>10并发(s)</th><th>20并发(s)</th>
+  <th>20并发最大(s)</th><th>成功率</th><th>劣化</th></tr></thead>
+  <tbody>${ALL.map(p=>{const d=D[p],m=d.conc_meta;
+    const g=(c)=>d.concurrency[c]?d.concurrency[c].avg_total:'-';
+    const gmax=(c)=>d.concurrency[c]?d.concurrency[c].max_total:'-';
+    const pill=m.degrade>60?'r':m.degrade>25?'y':'g';
+    return `<tr><td class="name">${p}<span class="tag ${isDom(p)?'dom':'for'}">${d.group}</span></td>
+    <td>${d.model}</td><td>${g('5')}</td><td>${g('10')}</td><td>${g('20')}</td><td>${gmax('20')}</td>
+    <td><span class="pill ${m.ok_rate===100?'g':'y'}">${m.ok_rate}%</span></td>
+    <td><span class="pill ${pill}">${m.degrade>0?'+':''}${m.degrade}%</span></td></tr>`;}).join('')}</tbody>`;
+
+/* ---------- 维度4 真实度 ---------- */
+vchart('chReal', ALL, [{name:'模型真实度评分', color:colorOf, data:ALL.map(p=>D[p].score_real)}], {max:100});
+
+document.getElementById('fpList').innerHTML=ALL.map(p=>{const d=D[p];
+  const sc=d.score_real, pill=sc>=85?'g':sc>=70?'y':'r';
+  return `<div style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <b>${p}</b><span class="tag ${isDom(p)?'dom':'for'}">${d.group}</span>
+      <span style="color:var(--muted);font-size:12px">${d.model}</span>
+      <span class="pill ${pill}" style="margin-left:auto">真实度 ${sc}</span>
+    </div>
+    <div class="fp">${esc(d.fingerprint_output)}</div></div>`;}).join('');
+
+/* ---------- 结论 ---------- */
+const topP=S.rank_all[0], bottomP=S.rank_all[S.rank_all.length-1];
+document.getElementById('conclusions').innerHTML=`
+<li><b>综合第一：${topP}（${D[topP].overall} 分）。</b>国内 DeepSeek 系整体优于国外 GPT-6.1-sol 系——首字延迟更低、生成速度更快（中位 TPS 数百，而 GPT 系仅 30–60），并发抗压也更稳。</li>
+<li><b>国内推荐梯队：</b>天宽 / 联通国内 / 阿里云 三家综合得分 80+（新增联通国内并发抗压最佳，20 并发劣化仅 -2.7%），响应快、Token 省、20 并发几乎无劣化且身份自报可信，适合生产环境主力；通服（77.3）性能与并发指标仍属第一梯队，但知识截止日期存疑（见模型真实度条目），选型前建议书面确认部署版本；SMA 性能尚可但 Token 偏多、并发有劣化；移动输出最冗长、首字延迟高（P90 TTFT 近 11s），综合垫底（${D['移动'].overall} 分），需重点优化。</li>
+<li><b>国外梯队：</b>联通、TokenBridge 相对领先，但受限于生成速度慢（TPS 40–64）与总耗时高（平均 7–9s），4 家综合分均低于国内第一梯队；正凯在用并发劣化明显（+${D['正凯在用'].conc_meta.degrade}%）、真实度自报保守，排名最后。</li>
+<li><b>Token 成本：</b>相同问题下国外 GPT 系输出最精简（约 200 tokens），国内以天宽/通服/阿里云最省；移动最耗，同题 Token 成本可达最省平台的 ${(D['移动'].avg_completion_tokens/Math.min(...ALL.map(p=>D[p].avg_completion_tokens))).toFixed(1)} 倍。</li>
+<li><b>并发稳定性：</b>10 家平台压测成功率均为 100%（仅 SMA海外模型出现 1 次"200空响应"），整体可用性良好；差异主要体现在高并发下的耗时劣化——通服/阿里云/天宽几乎无感，移动/正凯在用劣化较大。</li>
+<li><b>模型真实度：</b>DeepSeek 系中天宽、阿里云、联通国内明确自报"深度求索 DeepSeek"且知识截止日期互相印证（均为 2025-05），与"最新版"宣称相符，可信度高；<b>通服自报截止日期为 2024-07，比其余三家落后 10 个月、与 DeepSeek-V3 的公开截止日期相同，却同时自称"最新版模型"，二者矛盾，真实度由 88 下调至 68（综合 82.3→77.3，国内排名 2→4），建议要求其提供部署版本证明或复测指纹</b>；SMA 自报 DeepSeek 但实为 v4.1 不同版本且对截止日期谨慎；GPT 系自报为 OpenAI 助手，但对具体型号/截止日期普遍谨慎或回避（联通自报 Codex/GPT-6 最贴近宣称），"移动"则完全拒绝自报身份，真实度评分最低，建议进一步核验其底层模型。</li>`;
+</script>
+</body>
+</html>
