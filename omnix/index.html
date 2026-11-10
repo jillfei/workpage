@@ -497,6 +497,17 @@
             frame.src = src;
         }
 
+        window.addEventListener('message', function(event) {
+            if (!event.data || event.data.type !== 'navigate' || !event.data.src) {
+                return;
+            }
+
+            var target = document.querySelector('.nav-item[data-src="' + event.data.src.split('?')[0] + '"]');
+            if (target) {
+                navigate(target);
+            }
+        });
+
         frame.addEventListener('load', () => {
             loader.classList.remove('visible');
         });
