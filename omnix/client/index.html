@@ -31,13 +31,168 @@
             overflow: hidden;
             height: 100vh;
             display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== Top Software Menu Bar ===== */
+        .software-menubar {
+            width: 100%;
+            height: 40px;
+            flex: 0 0 40px;
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            background: #f3f3f3;
+            border-bottom: 1px solid #e5e7eb;
+            user-select: none;
+            position: relative;
+            z-index: 1900;
+        }
+        .software-menu-groups {
+            display: flex;
+            align-items: center;
+            padding-left: 18px;
+            gap: 2px;
+        }
+        .software-menu-group {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .software-menu-trigger {
+            height: 30px;
+            padding: 0 10px;
+            border: 0;
+            border-radius: 4px;
+            background: transparent;
+            color: #202124;
+            font: inherit;
+            font-size: 13px;
+            cursor: default;
+        }
+        .software-menu-trigger:hover,
+        .software-menu-group.open .software-menu-trigger {
+            background: #e5e7eb;
+        }
+        .software-menu-dropdown {
+            display: none;
+            position: absolute;
+            top: 36px;
+            left: 0;
+            min-width: 210px;
+            padding: 6px;
+            background: #fff;
+            border: 1px solid #dfe3e8;
+            border-radius: 7px;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
+        }
+        .software-menu-group.open .software-menu-dropdown {
+            display: block;
+            animation: software-menu-in 0.12s ease-out;
+        }
+        @keyframes software-menu-in {
+            from { opacity: 0; transform: translateY(-3px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .software-menu-item {
+            width: 100%;
+            height: 32px;
+            padding: 0 10px;
+            border: 0;
+            border-radius: 5px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 28px;
+            color: #202124;
+            font: inherit;
+            font-size: 13px;
+            text-align: left;
+            white-space: nowrap;
+            cursor: default;
+        }
+        .software-menu-item:hover,
+        .software-menu-item:focus-visible {
+            color: #1d4ed8;
+            background: #eff6ff;
+            outline: none;
+        }
+        .software-menu-shortcut {
+            color: #8a919e;
+            font-size: 11px;
+        }
+        .software-menu-separator {
+            height: 1px;
+            margin: 5px 8px;
+            background: #eceff3;
+        }
+        .software-window-controls {
+            display: flex;
+            height: 100%;
+        }
+        .software-window-control {
+            width: 48px;
+            height: 100%;
+            border: 0;
+            background: transparent;
+            color: #343a40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: default;
+        }
+        .software-window-control:hover { background: #e2e2e2; }
+        .software-window-control.close:hover {
+            color: #fff;
+            background: #e81123;
+        }
+        .software-window-control svg {
+            width: 12px;
+            height: 12px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.35;
+        }
+        .software-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 26px;
+            z-index: 4000;
+            padding: 9px 14px;
+            border-radius: 6px;
+            background: rgba(17, 24, 39, 0.92);
+            color: #fff;
+            font-size: 12px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.2);
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, 8px);
+            transition: opacity 0.18s, transform 0.18s;
+        }
+        .software-toast.visible {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+        .app-body {
+            width: 100%;
+            min-height: 0;
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        @media (max-width: 520px) {
+            .software-menu-groups { padding-left: 4px; }
+            .software-menu-trigger { padding: 0 7px; font-size: 12px; }
+            .software-window-control { width: 36px; }
         }
 
         /* ===== Sidebar ===== */
         .sidebar {
             width: 260px;
             min-width: 260px;
-            height: 100vh;
+            height: 100%;
             background: #f7f7f7;
             border-right: 1px solid #e8e8e8;
             display: flex;
@@ -176,7 +331,7 @@
         }
         .notification-panel {
             position: absolute;
-            top: 36px;
+            top: 76px;
             left: 12px;
             width: 420px;
             max-width: calc(100vw - 24px);
@@ -1223,7 +1378,7 @@
         /* ===== Main Content Area (iframe) ===== */
         .main-area {
             flex: 1;
-            height: 100vh;
+            height: 100%;
             overflow: hidden;
             background: #ffffff;
         }
@@ -1763,6 +1918,71 @@
 </head>
 <body>
 
+    <header class="software-menubar" id="softwareMenubar">
+        <nav class="software-menu-groups" aria-label="软件操作菜单">
+            <div class="software-menu-group">
+                <button class="software-menu-trigger" type="button" aria-haspopup="true" aria-expanded="false">文件</button>
+                <div class="software-menu-dropdown" role="menu">
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-action="new-session">
+                        <span>新会话</span><span class="software-menu-shortcut">Ctrl+N</span>
+                    </button>
+                    <div class="software-menu-separator" role="separator"></div>
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-action="exit-app">
+                        <span>退出 OmniX</span><span class="software-menu-shortcut">Alt+F4</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="software-menu-group">
+                <button class="software-menu-trigger" type="button" aria-haspopup="true" aria-expanded="false">编辑</button>
+                <div class="software-menu-dropdown" role="menu">
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-command="undo"><span>撤销</span><span class="software-menu-shortcut">Ctrl+Z</span></button>
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-command="redo"><span>重做</span><span class="software-menu-shortcut">Ctrl+Y</span></button>
+                    <div class="software-menu-separator" role="separator"></div>
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-command="cut"><span>剪切</span><span class="software-menu-shortcut">Ctrl+X</span></button>
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-command="copy"><span>复制</span><span class="software-menu-shortcut">Ctrl+C</span></button>
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-command="paste"><span>粘贴</span><span class="software-menu-shortcut">Ctrl+V</span></button>
+                    <div class="software-menu-separator" role="separator"></div>
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-command="selectAll"><span>全选</span><span class="software-menu-shortcut">Ctrl+A</span></button>
+                </div>
+            </div>
+
+            <div class="software-menu-group">
+                <button class="software-menu-trigger" type="button" aria-haspopup="true" aria-expanded="false">窗口</button>
+                <div class="software-menu-dropdown" role="menu">
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-action="minimize"><span>最小化</span></button>
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-action="maximize"><span>最大化/还原</span></button>
+                    <div class="software-menu-separator" role="separator"></div>
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-action="close-window"><span>关闭</span><span class="software-menu-shortcut">Alt+F4</span></button>
+                </div>
+            </div>
+
+            <div class="software-menu-group">
+                <button class="software-menu-trigger" type="button" aria-haspopup="true" aria-expanded="false">帮助</button>
+                <div class="software-menu-dropdown" role="menu">
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-action="version"><span>版本信息</span></button>
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-action="manual"><span>操作手册</span></button>
+                    <div class="software-menu-separator" role="separator"></div>
+                    <button class="software-menu-item" type="button" role="menuitem" data-software-action="feedback"><span>意见反馈</span></button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="software-window-controls" aria-label="窗口控制">
+            <button class="software-window-control" type="button" title="最小化" aria-label="最小化" data-software-action="minimize">
+                <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 9.5h9" /></svg>
+            </button>
+            <button class="software-window-control" type="button" title="最大化/还原" aria-label="最大化/还原" data-software-action="maximize">
+                <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="1.75" y="1.75" width="8.5" height="8.5" /></svg>
+            </button>
+            <button class="software-window-control close" type="button" title="关闭" aria-label="关闭" data-software-action="close-window">
+                <svg viewBox="0 0 12 12" aria-hidden="true"><path d="m2 2 8 8M10 2 2 10" /></svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="app-body">
+
     <!-- ====== Sidebar ====== -->
     <aside class="sidebar">
 
@@ -1932,8 +2152,8 @@
         <!-- User Profile -->
         <div class="sidebar-footer">
             <div class="user-profile" role="button" tabindex="0">
-                <div class="user-avatar">👾</div>
-                <span class="user-name">J1hyo</span>
+                <div class="user-avatar">👻</div>
+                <span class="user-name">孙礼飞</span>
                 <span class="user-updating-tag" id="userUpdatingTag" style="display:none;font-size:11px;color:#4a6cf7;background:#f0f4ff;padding:2px 8px;border-radius:10px;">更新中</span>
                 <svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15" /></svg>
             </div>
@@ -1988,7 +2208,7 @@
     <div class="user-popup-overlay" id="userPopupOverlay">
         <div class="user-popup" id="userPopup">
             <div class="popup-header">
-                <span class="popup-username">J1hyo</span>
+                <span class="popup-username">孙礼飞</span>
                 <span class="popup-badge">个人版</span>
             </div>
 
@@ -2136,7 +2356,135 @@
         <iframe id="content-frame" src="content.html?view=new-chat" title="OmniX 内容区"></iframe>
     </main>
 
+    </div>
+
+    <div class="software-toast" id="softwareToast" role="status" aria-live="polite"></div>
+
     <script>
+        const softwareMenuGroups = document.querySelectorAll('.software-menu-group');
+        const softwareToast = document.getElementById('softwareToast');
+        let softwareToastTimer;
+
+        function closeSoftwareMenus() {
+            softwareMenuGroups.forEach(function(group) {
+                group.classList.remove('open');
+                group.querySelector('.software-menu-trigger').setAttribute('aria-expanded', 'false');
+            });
+        }
+
+        function showSoftwareToast(message) {
+            clearTimeout(softwareToastTimer);
+            softwareToast.textContent = message;
+            softwareToast.classList.add('visible');
+            softwareToastTimer = setTimeout(function() {
+                softwareToast.classList.remove('visible');
+            }, 2200);
+        }
+
+        softwareMenuGroups.forEach(function(group) {
+            const trigger = group.querySelector('.software-menu-trigger');
+            trigger.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const shouldOpen = !group.classList.contains('open');
+                closeSoftwareMenus();
+                if (shouldOpen) {
+                    group.classList.add('open');
+                    trigger.setAttribute('aria-expanded', 'true');
+                }
+            });
+            group.addEventListener('mouseenter', function() {
+                if (document.querySelector('.software-menu-group.open') && !group.classList.contains('open')) {
+                    closeSoftwareMenus();
+                    group.classList.add('open');
+                    trigger.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+
+        function runSoftwareEditCommand(command) {
+            const contentFrame = document.getElementById('content-frame');
+            try {
+                const targetDocument = contentFrame.contentDocument || document;
+                targetDocument.execCommand(command, false, null);
+                if (command === 'paste') showSoftwareToast('若未能粘贴，请使用 Ctrl+V');
+            } catch (error) {
+                showSoftwareToast('当前内容不支持此编辑操作');
+            }
+        }
+
+        function closeSoftwareApplication() {
+            if (!window.confirm('确定要关闭 OmniX 吗？')) return;
+            window.close();
+            setTimeout(function() {
+                if (!window.closed) window.location.href = '../../index.html';
+            }, 120);
+        }
+
+        function runSoftwareAction(action) {
+            closeSoftwareMenus();
+            switch (action) {
+                case 'new-session': {
+                    const contentFrame = document.getElementById('content-frame');
+                    const newSessionItem = document.querySelector('.nav-item[data-src="content.html"]');
+                    document.querySelectorAll('.nav-item, .section-item, .sub-item').forEach(function(item) {
+                        item.classList.remove('active');
+                    });
+                    if (newSessionItem) newSessionItem.classList.add('active');
+                    if (contentFrame) contentFrame.src = 'content.html?view=new-chat';
+                    break;
+                }
+                case 'exit-app':
+                case 'close-window':
+                    closeSoftwareApplication();
+                    break;
+                case 'minimize':
+                    showSoftwareToast('浏览器环境不支持窗口最小化');
+                    break;
+                case 'maximize':
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    } else {
+                        document.documentElement.requestFullscreen().catch(function() {
+                            showSoftwareToast('当前环境不支持全屏显示');
+                        });
+                    }
+                    break;
+                case 'version':
+                    window.alert('OmniX 企业智能体平台\n版本：v3.2');
+                    break;
+                case 'manual':
+                    window.open('../docs/OmniX操作手册/OmniX操作手册.html', '_blank', 'noopener');
+                    break;
+                case 'feedback':
+                    openFeedbackModal();
+                    break;
+            }
+        }
+
+        document.querySelectorAll('[data-software-action]').forEach(function(item) {
+            item.addEventListener('click', function(event) {
+                event.stopPropagation();
+                runSoftwareAction(item.dataset.softwareAction);
+            });
+        });
+
+        document.querySelectorAll('[data-software-command]').forEach(function(item) {
+            item.addEventListener('click', function(event) {
+                event.stopPropagation();
+                closeSoftwareMenus();
+                runSoftwareEditCommand(item.dataset.softwareCommand);
+            });
+        });
+
+        document.addEventListener('click', closeSoftwareMenus);
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') closeSoftwareMenus();
+            if (event.ctrlKey && !event.shiftKey && event.key.toLowerCase() === 'n') {
+                event.preventDefault();
+                runSoftwareAction('new-session');
+            }
+        });
+
         (function() {
             const iframe = document.getElementById('content-frame');
 
