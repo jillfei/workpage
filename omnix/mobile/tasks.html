@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f5f5" />
+    <meta name="color-scheme" content="light" />
+    <meta name="description" content="OMNIX 任务页面，发消息或描述任务并选择专家、技能与模型。" />
+    <title>任务 · OMNIX</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./omnix-static.css" />
+  </head>
+  <body class="app-page">
+    <div class="mobile-stage">
+      <main class="app-shell">
+        <input class="nav-toggle" type="checkbox" id="task-menu" />
+        <input class="nav-toggle" type="checkbox" id="device-sheet-toggle" />
+        <input class="nav-toggle" type="checkbox" id="run-settings-toggle" />
+        <input class="nav-toggle" type="checkbox" id="pick-device-toggle" />
+        <input class="nav-toggle" type="checkbox" id="pick-workspace-toggle" />
+        <input class="nav-toggle" type="checkbox" id="pick-permission-toggle" />
+
+        <header class="app-header">
+          <div class="header-leading">
+            <label class="icon-button" for="task-menu" role="button" tabindex="0" aria-label="打开任务菜单">
+              <svg class="icon" aria-hidden="true" focusable="false">
+                <use href="./omnix-icons.svg#menu"></use>
+              </svg>
+            </label>
+          </div>
+          <div class="header-brand is-task">
+            <span class="header-title">OMNIX</span>
+            <label
+              class="header-context"
+              for="run-settings-toggle"
+              role="button"
+              tabindex="0"
+              aria-label="任务运行设置"
+            >
+              <svg class="icon ctx-icon ctx-icon-cloud" aria-hidden="true" focusable="false">
+                <use href="./omnix-icons.svg#cloud"></use>
+              </svg>
+              <svg class="icon ctx-icon ctx-icon-laptop" aria-hidden="true" focusable="false">
+                <use href="./omnix-icons.svg#monitor"></use>
+              </svg>
+              <svg class="icon ctx-icon ctx-icon-zhaonan" aria-hidden="true" focusable="false">
+                <use href="./omnix-icons.svg#monitor"></use>
+              </svg>
+              <span class="ctx-label ctx-label-cloud">云电脑</span>
+              <span class="ctx-label ctx-label-laptop">LAPTOP-S25L2SKO</span>
+              <span class="ctx-label ctx-label-zhaonan">zhaonan</span>
+              <span class="header-context-sep">|</span>
+              <span>会话</span>
+              <svg class="icon header-context-caret" aria-hidden="true" focusable="false">
+                <use href="./omnix-icons.svg#chevron-right"></use>
+              </svg>
+            </label>
+          </div>
+          <div class="header-trailing"></div>
+        </header>
+
+        <div class="drawer-layer">
+          <label class="drawer-scrim" for="task-menu" aria-label="关闭任务菜单"></label>
+          <aside class="side-drawer" aria-label="任务菜单">
+            <div class="drawer-workspace">
+              <label
+                class="workspace-switch"
+                for="device-sheet-toggle"
+                role="button"
+                tabindex="0"
+                aria-label="切换设备"
+              >
+                <span class="workspace-mark">
+                  <svg class="icon ws-icon ws-icon-cloud" aria-hidden="true" focusable="false">
+                    <use href="./omnix-icons.svg#cloud"></use>
+                  </svg>
+                  <svg class="icon ws-icon ws-icon-laptop" aria-hidden="true" focusable="false">
+                    <use href="./omnix-icons.svg#monitor"></use>
+                  </svg>
+                  <svg class="icon ws-icon ws-icon-zhaonan" aria-hidden="true" focusable="false">
+                    <use href="./omnix-icons.svg#monitor"></use>
+                  </svg>
+                </span>
+                <span class="workspace-name">
+                  <span class="ws-label ws-label-cloud">云电脑</span>
+                  <span class="ws-label ws-label-laptop">LAPTOP-S25L2SKO</span>
+                  <span class="ws-label ws-label-zhaonan">zhaonan</span>
+                </span>
+                <svg class="icon workspace-caret" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#chevron-down"></use>
+                </svg>
+              </label>
+            </div>
+
+            <a class="drawer-create" href="./tasks.html">
+              <svg class="icon" aria-hidden="true" focusable="false">
+                <use href="./omnix-icons.svg#circle-plus"></use>
+              </svg>
+              新建任务
+            </a>
+
+            <details class="drawer-group" open>
+              <summary class="drawer-group-head">
+                <span class="drawer-group-title">会话</span>
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#chevron-down"></use>
+                </svg>
+              </summary>
+              <nav class="drawer-task-list" aria-label="会话列表">
+                <a href="./tasks.html">调研AI原生矩阵营销产品竞品</a>
+                <a href="./tasks.html">将EA500I-PRO智能工作站规格书P...</a>
+                <a href="./tasks.html">制作星屿光谱检测仪宣传PPT</a>
+                <a href="./tasks.html">将PDF转换为Word文档</a>
+                <a href="./tasks.html">制作面料识别系统产品宣传PPT</a>
+                <a href="./tasks.html">将PPTX转换为Word文档</a>
+                <a href="./tasks.html">PPT转Word格式转换</a>
+              </nav>
+              <button class="drawer-more" type="button">展开更多</button>
+            </details>
+
+            <details class="drawer-group" open>
+              <summary class="drawer-group-head">
+                <span class="drawer-group-title">项目 <span class="drawer-group-count">(1)</span></span>
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#chevron-down"></use>
+                </svg>
+              </summary>
+              <div class="drawer-space">
+                <details class="drawer-project" open>
+                  <summary class="drawer-project-head">
+                    <svg class="icon" aria-hidden="true" focusable="false">
+                      <use href="./omnix-icons.svg#folder"></use>
+                    </svg>
+                    <span>OmniX操作手册</span>
+                    <svg class="icon drawer-project-caret" aria-hidden="true" focusable="false">
+                      <use href="./omnix-icons.svg#chevron-down"></use>
+                    </svg>
+                  </summary>
+                  <div class="drawer-project-tasks">
+                    <a href="./tasks.html">更新 OmniX操作手册企业知识库...</a>
+                    <a href="./tasks.html">根据操作手册更新网页内容并制...</a>
+                  </div>
+                </details>
+                <a class="drawer-space-action" href="./discover.html#disc-projects" aria-label="在 OmniX操作手册 中新建">
+                  <svg class="icon" aria-hidden="true" focusable="false">
+                    <use href="./omnix-icons.svg#plus"></use>
+                  </svg>
+                </a>
+              </div>
+            </details>
+
+            <div class="drawer-footer">
+              <a class="drawer-account" href="./profile.html">
+                <span class="drawer-avatar">赵</span>
+                <span>
+                  <strong>赵楠</strong>
+                  <small>企业版</small>
+                </span>
+              </a>
+            </div>
+          </aside>
+        </div>
+
+        <div class="sheet-layer" id="device-sheet-layer">
+          <label class="sheet-scrim" for="device-sheet-toggle" aria-label="关闭设备选择"></label>
+          <div class="device-sheet" id="device-sheet" role="dialog" aria-label="选择设备" aria-modal="true">
+            <div class="device-sheet-head">
+              <h2>选择设备</h2>
+              <label class="icon-button is-plain" for="device-sheet-toggle" role="button" tabindex="0" aria-label="关闭">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#x"></use>
+                </svg>
+              </label>
+            </div>
+            <div class="device-list" role="radiogroup" aria-label="选择设备">
+              <label class="device-option">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#cloud"></use>
+                </svg>
+                <span class="device-name">云电脑</span>
+                <input type="radio" name="device" id="device-cloud" value="cloud" checked />
+              </label>
+              <label class="device-option">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#monitor"></use>
+                </svg>
+                <span class="device-name">LAPTOP-S25L2SKO</span>
+                <span class="device-status">在线</span>
+                <input type="radio" name="device" id="device-laptop" value="laptop" />
+              </label>
+              <label class="device-option">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#monitor"></use>
+                </svg>
+                <span class="device-name">zhaonan</span>
+                <span class="device-status">在线</span>
+                <input type="radio" name="device" id="device-zhaonan" value="zhaonan" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="sheet-layer" id="run-settings-layer">
+          <label class="sheet-scrim" for="run-settings-toggle" aria-label="关闭任务运行设置"></label>
+          <div class="run-settings" role="dialog" aria-label="任务运行设置" aria-modal="true">
+            <div class="run-settings-head">
+              <h2>任务运行设置</h2>
+              <label class="icon-button is-plain" for="run-settings-toggle" role="button" tabindex="0" aria-label="关闭">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#x"></use>
+                </svg>
+              </label>
+            </div>
+            <div class="run-settings-list">
+              <label class="run-setting-row" for="pick-device-toggle">
+                <span class="run-setting-label">设备</span>
+                <span class="run-setting-value">
+                  <svg class="icon" aria-hidden="true" focusable="false">
+                    <use href="./omnix-icons.svg#monitor"></use>
+                  </svg>
+                  zhaonan
+                </span>
+                <svg class="icon run-setting-caret" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#chevron-right"></use>
+                </svg>
+              </label>
+              <label class="run-setting-row" for="pick-workspace-toggle">
+                <span class="run-setting-label">工作空间</span>
+                <span class="run-setting-value">会话</span>
+                <svg class="icon run-setting-caret" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#chevron-right"></use>
+                </svg>
+              </label>
+              <label class="run-setting-row" for="pick-permission-toggle">
+                <span class="run-setting-label">权限模式</span>
+                <span class="run-setting-value">默认权限</span>
+                <svg class="icon run-setting-caret" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#chevron-right"></use>
+                </svg>
+              </label>
+            </div>
+          </div>
+
+          <div class="pick-sheet" id="pick-device">
+            <div class="pick-head">
+              <label class="pick-back" for="pick-device-toggle" role="button" tabindex="0" aria-label="返回">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#chevron-right"></use>
+                </svg>
+              </label>
+              <h2>选择设备</h2>
+              <label class="icon-button is-plain" for="run-settings-toggle" role="button" tabindex="0" aria-label="关闭">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#x"></use>
+                </svg>
+              </label>
+            </div>
+            <div class="pick-list" role="radiogroup" aria-label="选择设备">
+              <label class="pick-option">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#cloud"></use>
+                </svg>
+                <span class="pick-name">云电脑</span>
+                <input type="radio" name="run-device" id="run-device-cloud" value="cloud" />
+              </label>
+              <label class="pick-option">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#monitor"></use>
+                </svg>
+                <span class="pick-name">LAPTOP-S25L2SKO</span>
+                <span class="device-status">在线</span>
+                <input type="radio" name="run-device" id="run-device-laptop" value="laptop" />
+              </label>
+              <label class="pick-option">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#monitor"></use>
+                </svg>
+                <span class="pick-name">zhaonan</span>
+                <span class="device-status">在线</span>
+                <input type="radio" name="run-device" id="run-device-zhaonan" value="zhaonan" checked />
+              </label>
+            </div>
+          </div>
+
+          <div class="pick-sheet" id="pick-workspace">
+            <div class="pick-head">
+              <label class="pick-back" for="pick-workspace-toggle" role="button" tabindex="0" aria-label="返回">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#chevron-right"></use>
+                </svg>
+              </label>
+              <h2>选择工作空间</h2>
+              <label class="icon-button is-plain" for="run-settings-toggle" role="button" tabindex="0" aria-label="关闭">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#x"></use>
+                </svg>
+              </label>
+            </div>
+            <div class="pick-list" role="radiogroup" aria-label="选择工作空间">
+              <label class="pick-option">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#send"></use>
+                </svg>
+                <span class="pick-name">会话</span>
+                <input type="radio" name="run-workspace" id="run-ws-tasks" value="tasks" checked />
+              </label>
+              <label class="pick-option">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#folder"></use>
+                </svg>
+                <span class="pick-name">OmniX操作手册</span>
+                <input type="radio" name="run-workspace" id="run-ws-manual" value="manual" />
+              </label>
+              <label class="pick-option">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#folder"></use>
+                </svg>
+                <span class="pick-name">2026-11-19-09-29-47</span>
+                <input type="radio" name="run-workspace" id="run-ws-a" value="a" />
+              </label>
+              <label class="pick-option">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#folder"></use>
+                </svg>
+                <span class="pick-name">2026-11-19-09-29-15</span>
+                <input type="radio" name="run-workspace" id="run-ws-b" value="b" />
+              </label>
+              <label class="pick-option">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#folder"></use>
+                </svg>
+                <span class="pick-name">2026-11-18-18-18-30</span>
+                <input type="radio" name="run-workspace" id="run-ws-c" value="c" />
+              </label>
+              <button class="pick-create" type="button">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#plus"></use>
+                </svg>
+                新建工作空间
+              </button>
+            </div>
+          </div>
+
+          <div class="pick-sheet" id="pick-permission">
+            <div class="pick-head">
+              <label class="pick-back" for="pick-permission-toggle" role="button" tabindex="0" aria-label="返回">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#chevron-right"></use>
+                </svg>
+              </label>
+              <h2>选择权限模式</h2>
+              <label class="icon-button is-plain" for="run-settings-toggle" role="button" tabindex="0" aria-label="关闭">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#x"></use>
+                </svg>
+              </label>
+            </div>
+            <div class="pick-list" role="radiogroup" aria-label="选择权限模式">
+              <label class="pick-option is-stacked">
+                <svg class="icon is-ok" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#shield-check"></use>
+                </svg>
+                <span class="pick-copy">
+                  <strong>默认权限</strong>
+                  <small>所有操作都会在安全沙箱约束内进行，超出范围会请求你的允许。</small>
+                </span>
+                <input type="radio" name="run-permission" id="run-perm-default" value="default" checked />
+              </label>
+              <label class="pick-option is-stacked">
+                <svg class="icon is-danger" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#shield-alert"></use>
+                </svg>
+                <span class="pick-copy">
+                  <strong>允许完全访问</strong>
+                  <small>AI 可直接执行更多操作，包括敏感操作、文件修改和外部执行。</small>
+                </span>
+                <input type="radio" name="run-permission" id="run-perm-full" value="full" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <section class="app-content is-no-scrollbar" aria-label="任务主页">
+          <div class="page task-home">
+            <section class="task-hero" aria-labelledby="task-hero-title">
+              <div class="mascot" aria-hidden="true">
+                <span class="mascot-orbit"></span>
+                <span class="mascot-antenna"></span>
+                <span class="mascot-head">
+                  <span class="mascot-eye"></span>
+                  <span class="mascot-eye"></span>
+                  <span class="mascot-mouth"></span>
+                </span>
+                <span class="mascot-body">
+                  <span class="mascot-core"></span>
+                </span>
+              </div>
+
+              <div class="hero-copy">
+                <div class="hero-kicker">你好，赵楠</div>
+                <h1 class="hero-title" id="task-hero-title">OMNIX，<br />我来帮你。</h1>
+                <p>描述目标，它会规划步骤、调用能力并交付结果。</p>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <form class="task-composer" id="task-composer">
+          <label class="sr-only" for="task-prompt">任务内容</label>
+          <textarea
+            id="task-prompt"
+            name="prompt"
+            placeholder="发消息或描述一个任务..."
+            aria-label="任务内容"
+          ></textarea>
+          <div class="composer-actions">
+            <div class="composer-tools">
+              <details class="tool-dropdown">
+                <summary>
+                  <svg class="icon" aria-hidden="true" focusable="false">
+                    <use href="./omnix-icons.svg#at-sign"></use>
+                  </svg>
+                  <span>专家</span>
+                </summary>
+                <div class="tool-menu">
+                  <a href="./discover.html#disc-experts">
+                    <svg class="icon" aria-hidden="true" focusable="false">
+                      <use href="./omnix-icons.svg#bot"></use>
+                    </svg>
+                    产品经理
+                    <small>推荐</small>
+                  </a>
+                  <a href="./discover.html#disc-experts">
+                    <svg class="icon" aria-hidden="true" focusable="false">
+                      <use href="./omnix-icons.svg#chart-no-axes-combined"></use>
+                    </svg>
+                    数据分析师
+                  </a>
+                  <a href="./discover.html#disc-experts">
+                    <svg class="icon" aria-hidden="true" focusable="false">
+                      <use href="./omnix-icons.svg#file-text"></use>
+                    </svg>
+                    合同审查专家
+                  </a>
+                </div>
+              </details>
+
+              <details class="tool-dropdown">
+                <summary>
+                  <svg class="icon" aria-hidden="true" focusable="false">
+                    <use href="./omnix-icons.svg#slash"></use>
+                  </svg>
+                  <span>技能</span>
+                </summary>
+                <div class="tool-menu">
+                  <a href="./discover.html#disc-skills">
+                    <svg class="icon" aria-hidden="true" focusable="false">
+                      <use href="./omnix-icons.svg#search"></use>
+                    </svg>
+                    深度搜索
+                    <small>已安装</small>
+                  </a>
+                  <a href="./discover.html#disc-skills">
+                    <svg class="icon" aria-hidden="true" focusable="false">
+                      <use href="./omnix-icons.svg#blocks"></use>
+                    </svg>
+                    编程大神.Skill
+                  </a>
+                  <a href="./discover.html#disc-skills">
+                    <svg class="icon" aria-hidden="true" focusable="false">
+                      <use href="./omnix-icons.svg#sparkles"></use>
+                    </svg>
+                    多模态创作
+                  </a>
+                </div>
+              </details>
+
+              <details class="tool-dropdown">
+                <summary aria-label="添加内容">
+                  <svg class="icon" aria-hidden="true" focusable="false">
+                    <use href="./omnix-icons.svg#plus"></use>
+                  </svg>
+                </summary>
+                <div class="tool-menu">
+                  <a href="./discover.html#disc-projects">
+                    <svg class="icon" aria-hidden="true" focusable="false">
+                      <use href="./omnix-icons.svg#folder"></use>
+                    </svg>
+                    选择项目
+                  </a>
+                  <a href="#task-prompt">
+                    <svg class="icon" aria-hidden="true" focusable="false">
+                      <use href="./omnix-icons.svg#upload"></use>
+                    </svg>
+                    上传文件
+                  </a>
+                  <a href="./discover.html#disc-connectors">
+                    <svg class="icon" aria-hidden="true" focusable="false">
+                      <use href="./omnix-icons.svg#plug"></use>
+                    </svg>
+                    添加连接器
+                  </a>
+                </div>
+              </details>
+            </div>
+
+            <span class="composer-spacer"></span>
+
+            <details class="tool-dropdown">
+              <summary>
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#sparkles"></use>
+                </svg>
+                <span>3.0 Pro</span>
+              </summary>
+              <div class="tool-menu is-right">
+                <a href="./profile.html#model-settings">
+                  OmniX 3.0 Pro
+                  <small>当前</small>
+                </a>
+                <a href="./profile.html#model-settings">
+                  OmniX 3.0
+                  <small>均衡</small>
+                </a>
+                <a href="./profile.html#model-settings">
+                  OmniX Fast
+                  <small>快速</small>
+                </a>
+              </div>
+            </details>
+
+            <button
+              class="send-button"
+              type="button"
+              popovertarget="task-ready"
+              aria-label="发送任务"
+            >
+              <svg class="icon" aria-hidden="true" focusable="false">
+                <use href="./omnix-icons.svg#arrow-up"></use>
+              </svg>
+            </button>
+          </div>
+        </form>
+
+        <nav class="tabbar" aria-label="底部导航">
+          <a class="tabbar-item is-active" href="./tasks.html" aria-current="page">
+            <svg class="icon" aria-hidden="true" focusable="false">
+              <use href="./omnix-icons.svg#message-square-text"></use>
+            </svg>
+            <span>任务</span>
+          </a>
+          <a class="tabbar-item" href="./automations.html">
+            <svg class="icon" aria-hidden="true" focusable="false">
+              <use href="./omnix-icons.svg#calendar-clock"></use>
+            </svg>
+            <span>定时任务</span>
+          </a>
+          <a class="tabbar-item" href="./discover.html">
+            <svg class="icon" aria-hidden="true" focusable="false">
+              <use href="./omnix-icons.svg#compass"></use>
+            </svg>
+            <span>发现</span>
+          </a>
+          <a class="tabbar-item" href="./profile.html">
+            <svg class="icon" aria-hidden="true" focusable="false">
+              <use href="./omnix-icons.svg#user-round"></use>
+            </svg>
+            <span>我的</span>
+          </a>
+        </nav>
+
+        <div class="sheet" id="task-ready" popover>
+          <div class="sheet-card">
+            <div class="sheet-handle"></div>
+            <div class="sheet-head">
+              <div>
+                <h2>任务已准备好</h2>
+                <p>当前版本以静态页面展示 OMNIX 的任务发起流程。</p>
+              </div>
+              <button
+                class="icon-button is-plain"
+                type="button"
+                popovertarget="task-ready"
+                popoveraction="close"
+                aria-label="关闭"
+              >
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#x"></use>
+                </svg>
+              </button>
+            </div>
+            <div class="sheet-body">
+              <div class="notice">
+                <svg class="icon" aria-hidden="true" focusable="false">
+                  <use href="./omnix-icons.svg#sparkles"></use>
+                </svg>
+                <span>OMNIX 会先理解目标，再规划步骤、调用专家与技能并交付结果。</span>
+              </div>
+              <div class="form-field">
+                <span>本次配置</span>
+                <div class="tag-row">
+                  <span class="tag is-accent">OMNIX 3.0 Pro</span>
+                  <span class="tag">自动规划</span>
+                  <span class="tag">可调用能力</span>
+                </div>
+              </div>
+            </div>
+            <div class="sheet-footer">
+              <button class="secondary-button" type="button" popovertarget="task-ready" popoveraction="close">
+                返回修改
+              </button>
+              <a class="primary-button" href="./automations.html">查看定时任务</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
